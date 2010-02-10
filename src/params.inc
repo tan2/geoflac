@@ -3,11 +3,11 @@
 common /mesh/ x0,z0,rxbo,rzbo,sizez_x(10),sizez_y(10), &
     dx_rem,angle_rem,anglemin1,anglemint,topo_kappa,bottom_kappa, &
     velbc_l,velbc_r,nx,nz,nq,nzonx,nzony,nelz_x(10),nelz_y(10), &
-    ny_rem,mode_rem,ntest_rem,v_min,v_max,ivis_shape,efoldc, &
-    igeotherm,g_x0,g_y0c,g_amplitude,g_width,ydrsides,ynstressbc, &
+    ny_rem,mode_rem,ntest_rem,v_min,v_max,ivis_shape,igeotherm,efoldc, &
+    g_x0,g_y0c,g_amplitude,g_width,ydrsides,ynstressbc, &
     ny_inject,nelem_inject,rate_inject,nmass_update,nopbmax,iinj, &
-    nofbc,nofside(20),nbc1(20),nbc2(20),nbc(20),iac_rem, &
-    bca(20),bcb(20),bcc(20),dx_init,xReyn,i_rey, &
+    nofbc,nofside(20),nbc1(20),nbc2(20),nbc(20), &
+    bca(20),bcb(20),bcc(20),dx_init,xReyn,i_rey,iac_rem, &
     bcd(20),bce(20),bcf(20),bcg(20),bch(20),bci(20),iph_int, & 
     iynts,tbos, iax1,iay1,ibx1,iby1,icx1,icy1,idx1,idy1
 common /flac_ctrl/ dt_scale,strain_inert,vbc,amul,ratl,ratu,frac, &

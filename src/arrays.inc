@@ -13,8 +13,9 @@ common /rheol_arrays/ aps(mnz,mnx),visn(mnz,mnx),irheol_fl(mnz,mnx),e2sr(mnz,mnx
 
 common /temp_arrays/ temp(mnz+1,mnx+1),temp0(mnz+1,mnx+1),source(mnz,mnx),shrheat(mnz,mnx)
     
-common /boundc/ bc(mnz+1,mnx+1,2),ibc(mnz+1,mnx+1),ncod(mnz+1,mnx+1,2), &
-   bcstress((mnz+mnx)*4,3), nopbou((mnz+mnx)*4,4), ncodbou((mnz+mnx)*4,3)
+common /boundc/ bcstress((mnz+mnx)*4,3),bc(mnz+1,mnx+1,2), &
+     ibc(mnz+1,mnx+1),ncod(mnz+1,mnx+1,2), &
+     nopbou((mnz+mnx)*4,4), ncodbou((mnz+mnx)*4,3)
 
 ! total of 57 arrays
 ! approx size = 57*mnz*mnz
