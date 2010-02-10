@@ -1,3 +1,5 @@
+! -*- F90 -*-
+
 common /mesh/ x0,z0,rxbo,rzbo,sizez_x(10),sizez_y(10), &
     dx_rem,angle_rem,anglemin1,anglemint,topo_kappa,bottom_kappa, &
     velbc_l,velbc_r,nx,nz,nq,nzonx,nzony,nelz_x(10),nelz_y(10), &

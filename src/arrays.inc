@@ -1,3 +1,5 @@
+! -*- F90 -*-
+
 parameter(mnz=100, mnx=800 )
 
 common /geom_arrays/ cord(mnz+1,mnx+1,2),area(4,mnz,mnx),phasez(mnz,mnx), &
