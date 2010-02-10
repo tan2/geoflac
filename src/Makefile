@@ -82,4 +82,5 @@ $(EXE): $(OBJS) Makefile
 $(OBJS): %.o : %.f90
 	$(F90) $(CFLAGS) -c $< -o $@
 
-
+clean:
+	rm *.o
