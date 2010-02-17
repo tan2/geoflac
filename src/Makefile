@@ -23,7 +23,10 @@ F90 = f90
 CFLAGS = -O3 -openmp
 LDFLAGS =
 
-SRCS = \
+MODULE_SRCS = \
+	marker_data.f90
+
+SRCS =	\
 	bar2euler.f90 \
 	bc_update.f90 \
 	dt_adjust.f90 \
@@ -48,7 +51,6 @@ SRCS = \
 	init_visc.f90 \
 	lpeuler2bar.f90 \
 	marker2elem.f90 \
-	marker_data.f90 \
 	matprops.f90 \
 	newphase2marker.f90 \
 	outflac.f90 \
@@ -71,7 +73,7 @@ SRCS = \
 	user_ab.f90 \
 	user_luc.f90
 
-OBJS = $(SRCS:.f90=.o)
+OBJS = $(MODULE_SRCS:.f90=.o) $(SRCS:.f90=.o)
 EXE = flac
 
 all: $(SRCS) $(EXE)
@@ -83,4 +85,4 @@ $(OBJS): %.o : %.f90
 	$(F90) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm *.o
+	@rm -f $(OBJS) $(EXE)
