@@ -15,8 +15,8 @@
 
 ## for GNU gfortran >= 4.2
 F90 = gfortran
-CFLAGS = -O3 -openmp
-LDFLAGS =
+CFLAGS = -O3 -fopenmp
+LDFLAGS = -lgomp
 
 ## for Solaris
 #F90 = f90
@@ -73,16 +73,21 @@ SRCS =	\
 	user_ab.f90 \
 	user_luc.f90
 
-OBJS = $(MODULE_SRCS:.f90=.o) $(SRCS:.f90=.o)
+MODULES = $(MODULE_SRCS:.f90=.mod)
+MODULE_OBJS = $(MODULE_SRCS:.f90=.o)
+OBJS = $(SRCS:.f90=.o)
 EXE = flac
 
-all: $(SRCS) $(EXE)
+all: $(EXE)
 
-$(EXE): $(OBJS)
-	$(F90) $(LDFLAGS) $(OBJS) -o $@
+$(EXE): $(MODULES) $(OBJS)
+	$(F90) $(LDFLAGS) $(MODULE_OBJS) $(OBJS) -o $@
+
+$(MODULES): %.mod : %.f90
+	$(F90) $(CFLAGS) -c $<
 
 $(OBJS): %.o : %.f90
-	$(F90) $(CFLAGS) -c $< -o $@
+	$(F90) $(CFLAGS) -c $<
 
 clean:
-	@rm -f $(OBJS) $(EXE)
+	@rm -f $(MODULES) $(MODULE_OBJS) $(OBJS) $(EXE)
