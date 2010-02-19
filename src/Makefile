@@ -9,9 +9,9 @@
 #### fortran 90 compiler, compiler flags, linker flags
 
 ## for GNU gfortran < 4.2
-F90 = gfortran
-CFLAGS = -O3
-LDFLAGS =
+#F90 = gfortran
+#CFLAGS = -O3
+#LDFLAGS =
 
 ## for GNU gfortran >= 4.2
 F90 = gfortran
@@ -19,9 +19,9 @@ CFLAGS = -O3 -openmp
 LDFLAGS =
 
 ## for Solaris
-F90 = f90
-CFLAGS = -O3 -openmp
-LDFLAGS =
+#F90 = f90
+#CFLAGS = -O3 -openmp
+#LDFLAGS =
 
 MODULE_SRCS = \
 	marker_data.f90
@@ -78,7 +78,7 @@ EXE = flac
 
 all: $(SRCS) $(EXE)
 
-$(EXE): $(OBJS) Makefile
+$(EXE): $(OBJS)
 	$(F90) $(LDFLAGS) $(OBJS) -o $@
 
 $(OBJS): %.o : %.f90
