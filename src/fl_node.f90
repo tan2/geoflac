@@ -33,7 +33,12 @@ boff = 0
 drat = dt / dt_elastic
 if (drat .lt. 1.) drat = 1.
 
-!$OMP parallel private(i,j,fx,fy,p_est,rosubg,press_norm_l,dly_l,press_norm_r,dlx_r,dlx_l,iunknown,rho_water,water_depth)
+!$OMP parallel private(i, j, fx, fy, &
+!$OMP                  p_est, rosubg, &
+!$OMP                  press_norm_l, dlx_l, dly_l, &
+!$OMP                  press_norm_r, dlx_r, dly_r, &
+!$OMP                  iunknown, rho_water, water_depth)
+!
 !$OMP do
 do i = 1,nx
     do j = 1,nz
