@@ -33,15 +33,15 @@ LDFLAGS = -lgomp
 ## for Solaris
 #F90 = f90
 #ifeq ($(debug), 0)
-#	CFLAGS = -O3 -openmp -r8const -fast -xloopinfo -xtarget=generic64 -s -xipo
+#	CFLAGS = -O3 -xopenmp=parallel -r8const -fast -xloopinfo -xtarget=generic64 -s -xipo
 #else
 #	# -r8const: Promote single precision const to double precision.
 #	# -C: Enable runtime subscript range checking
 #	# -fpover=yes: Provide run-time overflow check during READ
 #	# -xcheck=%all: Enable all run-time check
-#	CFLAGS = -O0 -g -w4 -openmp -r8const -C -fpover=yes -xcheck=%all
+#	CFLAGS = -g -w3 -xopenmp=noopt -r8const -C -fpover=yes -xcheck=%all
 #endif
-#LDFLAGS =
+#LDFLAGS = -xopenmp
 
 MODULE_SRCS = \
 	marker_data.f90
