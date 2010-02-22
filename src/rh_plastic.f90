@@ -250,7 +250,7 @@ include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 
-character*100 msg
+character*200 msg
 
 data im /259200/, ia /7141/, ic /54773/
 
@@ -627,7 +627,7 @@ isoft = 0
 !end do
  
 if (isoft.eq.0 ) then
-    write( msg, * ) 'Pre_plast: No segment for current plastic strain (j,i,aps): ', iph,j,i,pls_curr
+    write( msg, * ) 'Pre_plast: No segment for current plastic strain (iph,j,i,pls_curr): ', iph,j,i,pls_curr
     call SysMsg( msg )
     stop 25
 endif
