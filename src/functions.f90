@@ -144,7 +144,7 @@ do i=1,N
                         ICOL=k
                     endif
                 else if( IPIV(k).gt.1 ) then
-                    pause 'Singular matrix'
+                    write(*,*) 'Singular matrix'
                     stop
                 endif
             end do
@@ -166,7 +166,7 @@ do i=1,N
     INDXR(i) = IROW
     INDXC(i) = ICOL
     if( A(ICOL,ICOL).eq.0. ) then
-        pause 'Singular matrix.'
+        write(*,*) 'Singular matrix.'
         stop
     endif
     pivinv = 1./A(ICOL,ICOL)
