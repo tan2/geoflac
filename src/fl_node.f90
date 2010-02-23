@@ -395,35 +395,35 @@ if(nyhydro.gt.0) then
 endif
 !$OMP do reduction(max:boff)
 do i=1,nx
-  do j=1,nz
+    do j=1,nz
         
         ! BALANCE-OFF
         if( iand(ncod(j,i,1),1).eq.1 .or. j.le.n_boff_cutoff ) then
             balance(j,i,1) = 0
         else
-           	balance(j,i,1) = abs(force(j,i,1)) / (balance(j,i,1) + 1.e-9)
+            balance(j,i,1) = abs(force(j,i,1)) / (balance(j,i,1) + 1.e-9)
         endif
 
         if( iand(ncod(j,i,2),2).eq.2 .or. j.le.n_boff_cutoff ) then
             balance(j,i,2) = 0
         else
-           	balance(j,i,2) = abs(force(j,i,2)) / (balance(j,i,2) + 1.e-9)
+            balance(j,i,2) = abs(force(j,i,2)) / (balance(j,i,2) + 1.e-9)
         endif
 
-		! DAMPING
+        ! DAMPING
         if( iand(ncod(j,i,1),1).ne.1 .and. abs(vel(j,i,1)).gt.1.e-13 ) then
             force(j,i,1) = force(j,i,1) - demf*sign(force(j,i,1),vel(j,i,1))
-		endif
+        endif
 
         if( iand(ncod(j,i,2),2).ne.2 .and. abs(vel(j,i,2)).gt.1.e-13 ) then
-       	    force(j,i,2) = force(j,i,2) - demf*sign(force(j,i,2),vel(j,i,2))
-		endif
+            force(j,i,2) = force(j,i,2) - demf*sign(force(j,i,2),vel(j,i,2))
+        endif
 
         ! VELOCITIES FROM FORCES
         iunknown = 0
         if( ncod(j,i,1) .eq. 1 ) then
             vel(j,i,1) = bc(j,i,1) 
-!            vel(j,i,1) = 0.0 
+!            vel(j,i,1) = 0.0
 
 !        write(*,*) i,j,vel(j,i,1)
         else
@@ -432,13 +432,13 @@ do i=1,nx
         if( ncod(j,i,2) .eq. 1 ) then
             vel(j,i,2) = bc(j,i,2)
             if(iunknown.eq.1) then
-            vel(j,i,2) = bc(j,i,2)* sin(time*3.14159/(2*sec_year)) 
-            write(*,*) bc(j,i,2), sin(time*3.14159/(2*sec_year))
+                vel(j,i,2) = bc(j,i,2)* sin(time*3.14159/(2*sec_year))
+                write(*,*) bc(j,i,2), sin(time*3.14159/(2*sec_year))
             endif
 !        write(*,*) i,j,vel(j,i,2)
         else
             vel(j,i,2) = vel(j,i,2) + dt*force(j,i,2)/(amass(j,i)*drat*drat)
-        endif 
+        endif
         ! MAX balance-off
         boff = max(boff,balance(j,i,1))
         boff = max(boff,balance(j,i,2))
@@ -448,16 +448,16 @@ end do
 !$OMP end do
 !$OMP end parallel
 ! Prestress to form the topo when density differences are present WITHOUT PUSHING OR PULLING!
-        if (i_prestress.eq.1.and.(time/sec_year).lt.200000.) then 
-        do k = 1,2
+if (i_prestress.eq.1.and.(time/sec_year).lt.200000.) then
+    do k = 1,2
         do i = 1, nx
-           vel(nz,i,k) = 0.
+            vel(nz,i,k) = 0.
         enddo
         do j = 1, nz
-           vel(j,1,k) = 0.
-          vel(j,nx,k) = 0.
+            vel(j,1,k) = 0.
+            vel(j,nx,k) = 0.
         enddo
-        enddo
-        endif
+    enddo
+endif
 return
-end
+end subroutine fl_node

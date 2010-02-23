@@ -9,7 +9,7 @@ parameter( min_elmarkers = 0, max_elmarkers = 12 )
 ! find the triangle in which the marker belongs
 inc = 0 
 kkk = 0
-111 continue
+
 ibeg = ii-10
 iend = ii+10
 jbeg = jj-10

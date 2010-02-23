@@ -10,7 +10,7 @@ parameter( min_elmarkers = 0, max_elmarkers = 12 )
 real*4 D1d(nmarkers)
 integer*4 D1i(nmarkers)
 parameter( kindr=4, kindi=2 )
-real*4 rtime
+
 nrec = 0
 D1d = 0.
 ! define record number and write it to contents
