@@ -13,7 +13,6 @@ real*4 D1d(nmtracers)
 common /tracers/ tracerid(mnz*mnx*2)
 parameter( kindr=4, kindi=2 )
 
-real*4 rtime
 nrec = 0
 ! define record number and write it to contents
 if( lastout .eq. 1 ) then

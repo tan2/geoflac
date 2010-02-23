@@ -295,17 +295,15 @@ character*1 buf
 
 10    read(iu, '(A1)') buf
       if( buf(1:1).eq.';' ) then
-       goto 10 
-       else
-        backspace( iu )
-       return
-       endif
+          goto 10
+      else
+          backspace( iu )
+          return
+      endif
 
-20 continue
 print *, 'AdvanceToNextInputLine: EOF reached!'
 stop
 
-30 continue
 print *, 'AdvanceToNextInputLine: Error reading file!'
 stop
 

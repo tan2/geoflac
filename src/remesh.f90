@@ -583,7 +583,7 @@ do i = 1, nxt
         io = (numqu-1)/(nzt-1) + 1
         jo = numqu - (io-1)*(nzt-1)
 
-	    if( mod(numtr(j,i),2).eq.0 ) then
+        if( mod(numtr(j,i),2).eq.0 ) then
             dist1 = sqrt((xx-cold(jo,io+1,1))**2 + (yy-cold(jo,io+1,2))**2)
             dist2 = sqrt((xx-cold(jo+1,io,1))**2 + (yy-cold(jo+1,io,2))**2)
             dist3 = sqrt((xx-cold(jo+1,io+1,1))**2 + (yy-cold(jo+1,io+1,2))**2)
@@ -671,7 +671,7 @@ do i = 1, nxt
         !  | /         / |
         !  2         2---3
 
-	    if( mod(numtr(j,i),2).eq.0 ) then
+        if( mod(numtr(j,i),2).eq.0 ) then
             f1 = dummy(jo  ,io+1)
             f2 = dummy(jo+1,io  )
             f3 = dummy(jo+1,io+1)

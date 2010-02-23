@@ -65,10 +65,10 @@ do i = 1, nx
     do j = 1, nz, nz-1
         xx = cord(j,i,1)
         if ( xx .le. cordo(j,1,1) ) then
-	        cord(j,i,2) = cordo(j,1,2)
-	    elseif ( xx .ge. cordo(j,nx,1) ) then
+            cord(j,i,2) = cordo(j,1,2)
+        elseif ( xx .ge. cordo(j,nx,1) ) then
             cord(j,i,2) = cordo(j,nx,2)
-	    else
+        else
             do ii = 1,nx-1
                 xl = cordo(j,ii,1)
                 xr = cordo(j,ii+1,1)

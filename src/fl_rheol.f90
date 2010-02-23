@@ -10,7 +10,6 @@ include 'arrays.inc'
 dimension depl(4)
 dimension s11p(4),s22p(4),s12p(4),s33p(4),s11v(4),s22v(4),s12v(4),s33v(4)
 logical rh_sel
-real*8 sarc11,sarc22
 
 c1d3 = 1./3.
 c1d6 = 1./6.

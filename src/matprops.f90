@@ -272,8 +272,8 @@ xeactiv = eactiv(iph)
        if (tmpr.gt.550) then
            trpres = -0.3e9 + 2.2e6*tmpr
            if ((-1.0*press).ge.trpres) then
-             xeactiv  = 3.5e5
-	endif
+               xeactiv  = 3.5e5
+           endif
         endif
      endif
 

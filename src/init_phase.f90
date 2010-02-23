@@ -178,7 +178,6 @@ do i = 1,inhom
     endif
 end do
 
-10 continue
 
 ! Check if viscous rheology present
 ivis_present = 0

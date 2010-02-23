@@ -75,8 +75,8 @@ anglemint = 180.
 imint = 0
 jmint = 0
 
-do 1 i = 1, nx-1
-    do 1 j = 1,nz-1
+do i = 1, nx-1
+    do j = 1,nz-1
         ! loop for each 4 sub-triangles
         do ii = 1,4
             if (ii.eq.1) then
@@ -116,8 +116,8 @@ do 1 i = 1, nx-1
 
         end do
 
-1   continue
-2   continue
+    end do
+end do
 
 if( dtout_screen .ne. 0 ) then
     write (6,'(A,F5.2,A,I3,A,I3)') '        min.angle=',anglemint,' j=', jmint, ' i=',imint

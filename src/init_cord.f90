@@ -33,16 +33,16 @@ do i = 1,nx
     end do
 end do
 if (i_topost.eq.1) then
-do kj = 1 , nx
-	cord(1,kj,2) = 0.
-enddo
-	cord(1,50,2) = 500. 
-	cord(1,51,2) = 1000. 
-do kk = 52,78 
-	cord(1,kk,2) = 1500. 
-enddo
-	cord(1,79,2) = 1000. 
-	cord(1,80,2) = 500. 
+    do kj = 1 , nx
+        cord(1,kj,2) = 0.
+    enddo
+    cord(1,50,2) = 500.
+    cord(1,51,2) = 1000.
+    do kk = 52,78
+        cord(1,kk,2) = 1500.
+    enddo
+    cord(1,79,2) = 1000.
+    cord(1,80,2) = 500.
 endif
 i_topost = 0
 
