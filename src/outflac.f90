@@ -10,7 +10,7 @@ include 'arrays.inc'
 parameter( kindr=4, kindi=2 )
 
 real(kindr), allocatable :: D1d(:),De(:,:),Dn2(:,:,:)
-real*4 rtime
+real(kindr) rtime
 
 ! define record number and write it to contents
 if( lastout .eq. 1 ) then
