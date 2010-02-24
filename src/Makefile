@@ -26,7 +26,7 @@ F90 = gfortran
 ifeq ($(debug), 0)
 	CFLAGS = -O3 -fopenmp -ffast-math
 else
-	CFLAGS = -O0 -g -Wall -fopenmp -fbounds-check -ftrapv
+	CFLAGS = -O0 -g -Wall -fbounds-check -ftrapv -fbacktrace -fdump-core
 endif
 LDFLAGS = -lgomp
 
