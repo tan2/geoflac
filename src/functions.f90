@@ -79,13 +79,8 @@ include 'precision.inc'
 include 'params.inc'
 character* (*) message
 
-open( 13, file='sys.msg' )
-do while (.TRUE.)
-    read( 13, *, end=10 )
-end do
-10 continue
-backspace(1)
-write(13, '(i7,5x,9HTime[Ma]:,1x,f5.2)' ) nloop, time/sec_year/1.e+6
+open( 13, file='sys.msg', position="append", action="write" )
+write(13, * ) "Loops:", nloop, "Time[Ma]:", time/sec_year/1.e+6
 write(13, * ) message
 close(13)
 
