@@ -272,6 +272,7 @@ tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
 do nab = 1,3
    kabove = j-nab
    if (tmpr.gt.1000.) cycle
+   if(kabove .le. 0) exit
    if(phase_ratio(j,i,kocean1).gt.0.8.and.phase_ratio(kabove,i,kcont1).gt.0.8) then
       phasez(kabove,i) = 12. 
       do k = 1,2
