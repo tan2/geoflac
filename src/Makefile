@@ -28,7 +28,7 @@ ifeq ($(debug), 0)
 else
 	CFLAGS = -O0 -g -Wall -fbounds-check -ftrapv -fbacktrace -fdump-core
 endif
-LDFLAGS = -lgomp
+LDFLAGS = -fopenmp
 
 ## for Solaris
 #F90 = f90
@@ -39,7 +39,7 @@ LDFLAGS = -lgomp
 #	# -C: Enable runtime subscript range checking
 #	# -fpover=yes: Provide run-time overflow check during READ
 #	# -xcheck=%all: Enable all run-time check
-#	CFLAGS = -g -w3 -xopenmp=noopt -r8const -C -fpover=yes -xcheck=%all
+#	CFLAGS = -g -w3 -r8const -C -fpover=yes -xcheck=%all
 #endif
 #LDFLAGS = -xopenmp
 
