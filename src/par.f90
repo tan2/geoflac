@@ -164,5 +164,4 @@ close(33)
 close(333)
 
 call SysMsg('Congratulations !')
-stop 999
-end
+end program DREZINA
