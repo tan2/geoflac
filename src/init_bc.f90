@@ -14,7 +14,7 @@ subroutine init_bc
   !      ---- ncod(nh*2)-the entries of this array are coded zero for a nodal
   !      degree-of-freedom with no applied boundary conditions ,and unity
   !      for an applied boundary condition.
-  ! 
+  !
   bc = 0.
   ncod = 0
   bcstress = 0.
@@ -47,11 +47,13 @@ subroutine init_bc
   ! nnop is numeration pointer  only for boundary arrays
   ! as nebou, bcstress, nopbou, ncodbou 
 
-  nnop = 0 
+  nnop = 0
   do i = 1, nofbc
-      if(nbc(i).eq.nbc(i-1).and.nofside(i).eq.nofside(i-1)) then
-          ndbc1 = ndbc
-          ndbc = (ndbc)+nbc2(i) - nbc1(i) + 1
+      if(i.gt.1) then
+          if (nbc(i).eq.nbc(i-1).and.nofside(i).eq.nofside(i-1)) then
+              ndbc1 = ndbc
+              ndbc = (ndbc)+nbc2(i) - nbc1(i) + 1
+          endif
       else
           ndbc = nbc2(i) - nbc1(i) +1
       endif
@@ -77,8 +79,10 @@ subroutine init_bc
 
           do n = 1,ndbc
               k = i
-              if(nbc(i).eq.nbc(i-1).and.nofside(i).eq.nofside(i-1).and.n.le.ndbc1)then 
-                  k=i-1
+              if(i.gt.1) then
+                  if(nbc(i).eq.nbc(i-1).and.nofside(i).eq.nofside(i-1).and.n.le.ndbc1)then
+                      k=i-1
+                  endif
               endif
               numbp  = n   
               numbp1 = n + 1 
@@ -106,8 +110,10 @@ subroutine init_bc
 
           do n = 1,ndbc
               k = i
-              if(nbc(i).eq.nbc(i-1).and.nofside(i).eq.nofside(i-1).and.n.le.ndbc1)then
-                  k=i-1
+              if(i.gt.1) then
+                  if(nbc(i).eq.nbc(i-1).and.nofside(i).eq.nofside(i-1).and.n.le.ndbc1)then
+                      k=i-1
+                  endif
               endif
               numbp  = n
               numbp1 = n + 1
@@ -136,8 +142,10 @@ subroutine init_bc
 
           do n = 1,ndbc
               k = i
-              if(nbc(i).eq.nbc(i-1).and.nofside(i).eq.nofside(i-1).and.n.le.ndbc1)then
-                  k=i-1
+              if(i.gt.1) then
+                  if(nbc(i).eq.nbc(i-1).and.nofside(i).eq.nofside(i-1).and.n.le.ndbc1)then
+                      k=i-1
+                  endif
               endif
 
               numbp  =  n
@@ -167,8 +175,10 @@ subroutine init_bc
 
           do n = 1,ndbc
               k = i
-              if(nbc(i).eq.nbc(i-1).and.nofside(i).eq.nofside(i-1).and.n.le.ndbc1)then
-                  k=i-1
+              if(i.gt.1) then
+                  if(nbc(i).eq.nbc(i-1).and.nofside(i).eq.nofside(i-1).and.n.le.ndbc1)then
+                      k=i-1
+                  endif
               endif
 
               numbp  = n
