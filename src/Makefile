@@ -111,3 +111,6 @@ $(OBJS): %.o : %.f90
 
 clean:
 	@rm -f $(MODULES) $(MODULE_OBJS) $(OBJS) $(EXE)
+
+clean-data:
+	@rm -f *.0 *.rs sys.msg marker_init.asc vbc.s area.dat output.asc temp0.dat
