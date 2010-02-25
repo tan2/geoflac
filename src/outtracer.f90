@@ -6,12 +6,12 @@ include 'params.inc'
 include 'arrays.inc'
 common /markers/ nfreemarkers,ndeadmarkers,xmpt(mnz*mnx*2,2,3)
 parameter( min_elmarkers = 0, max_elmarkers = 12 )
+parameter( kindr=4 )
 !type(marker) :: mark(nmarkers)
 real xik(nmtracers),timtrk(nmtracers),xtrak(nmtracers),ytrak(nmtracers),temptrak(nmtracers)
 real prestrak(nmtracers),straintrak(nmtracers)
-real*4 D1d(nmtracers)
+real(kindr) D1d(nmtracers)
 common /tracers/ tracerid(mnz*mnx*2)
-parameter( kindr=4, kindi=2 )
 
 nrec = 0
 ! define record number and write it to contents
