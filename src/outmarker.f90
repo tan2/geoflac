@@ -6,10 +6,10 @@ include 'params.inc'
 include 'arrays.inc'
 common /markers/ nfreemarkers,ndeadmarkers,xmpt(mnz*mnx*2,2,3)
 parameter( min_elmarkers = 0, max_elmarkers = 12 )
+parameter( kindr=4, kindi=4 )
 !type(marker) :: mark (nmarkers)
-real*4 D1d(nmarkers)
-integer*4 D1i(nmarkers)
-parameter( kindr=4, kindi=2 )
+real(kindr) D1d(nmarkers)
+integer(kindi) D1i(nmarkers)
 
 nrec = 0
 D1d = 0.
