@@ -58,8 +58,8 @@ D1i = 0
 do l = 1,nmarkers
  D1i(l)= mark(l)%phase
 enddo
-open (1,file='outmarkphase.0',access='direct',recl=nwords*kindr)
-write (1,rec=nrec) float(D1i) 
+open (1,file='outmarkphase.0',access='direct',recl=nwords*kindi)
+write (1,rec=nrec) D1i
 close (1)
 
 return
