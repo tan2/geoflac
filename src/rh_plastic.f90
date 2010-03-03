@@ -502,8 +502,8 @@ isoft = 0
 ! Find current properties from linear interpolation
 !is=1        do is = 1,nsegments-1
      if(phase_ratio(j,i,kcont2).gt.0.8.and.tmpr.gt.300..and.tmpr.lt.400. &
-          .and.stressII(i,j)*strainII(i,j).gt.4.e6) then
-  !      ! write(*,*) i,j,strainII(i,j)
+          .and.stressII(j,i)*strainII(j,i).gt.4.e6) then
+  !      ! write(*,*) i,j,strainII(j,i)
        phasez(j,i) = 15. 
          do k = 1,2
          ! Calculate triangle number in which the markers belong
@@ -544,8 +544,8 @@ isoft = 0
 !end do
 !is=2         do is = 1,nsegments-1
      if(phase_ratio(j,i,kcont2).gt.0.8.and.tmpr.gt.300..and.tmpr.lt.400. &
-          .and.stressII(i,j)*strainII(i,j).gt.4.e6) then
-  !      ! write(*,*) i,j,strainII(i,j)
+          .and.stressII(j,i)*strainII(j,i).gt.4.e6) then
+  !      ! write(*,*) i,j,strainII(j,i)
        phasez(j,i) = 15. 
          do k = 1,2
          ! Calculate triangle number in which the markers belong
@@ -586,8 +586,8 @@ isoft = 0
 !end do
 !is=3         do is = 1,nsegments-1
      if(phase_ratio(j,i,kcont2).gt.0.8.and.tmpr.gt.300..and.tmpr.lt.400. &
-          .and.stressII(i,j)*strainII(i,j).gt.4.e6) then
-  !      ! write(*,*) i,j,strainII(i,j)
+          .and.stressII(j,i)*strainII(j,i).gt.4.e6) then
+  !      ! write(*,*) i,j,strainII(j,i)
        phasez(j,i) = 15. 
          do k = 1,2
          ! Calculate triangle number in which the markers belong

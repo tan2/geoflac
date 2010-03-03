@@ -7,7 +7,7 @@ include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 
-parameter( kindr=4 )
+parameter( kindr=8 )
 
 real(kindr), allocatable :: D1d(:),De(:,:),Dn2(:,:,:)
 real(kindr) rtime
@@ -22,11 +22,10 @@ else
         read( 1, *, end=10 ) nrec
     end do
     5 continue
-    open (1,file='_contents.0')
+    open (1,file='_contents.0',position='append')
     nrec = 0
     10 continue
     nrec = nrec + 1
-    backspace(1)
 endif
 write( 1, '(i4,1x,i8,1x,f6.2)' ) nrec, nloop, time/sec_year/1.e6
 close(1)
@@ -100,7 +99,7 @@ endif
 if( io_eII.eq.1 ) then
     do i = 1, nx-1
         do j = 1, nz-1
-            De(j,i) = strainII(i,j)
+            De(j,i) = strainII(j,i)
         end do
     end do
     open (1,file='eII.0',access='direct',recl=nwords*kindr) 
@@ -110,7 +109,7 @@ endif
 
     do i = 1, nx-1
         do j = 1, nz-1
-            De(j,i) = strainI(i,j)
+            De(j,i) = strainI(j,i)
         end do
     end do
     open (1,file='eI.0',access='direct',recl=nwords*kindr) 
@@ -144,7 +143,7 @@ endif
 if( io_sII.eq.1 ) then
     do i = 1, nx-1
         do j = 1, nz-1
-            De(j,i) = stressII(i,j) * 1.e-8
+            De(j,i) = stressII(j,i) * 1.e-8
         end do
     end do
     open (1,file='sII.0',access='direct',recl=nwords*kindr) 
@@ -158,7 +157,7 @@ if( io_sxx.eq.1 ) then
     do i = 1, nx-1
         do j = 1, nz-1
             sxx = 0.25 * (stress0(1,1,j,i)+stress0(1,2,j,i)+stress0(1,3,j,i)+stress0(1,4,j,i) )
-            De(j,i) = ( sxx-stressI(i,j) ) * 1.e-8
+            De(j,i) = ( sxx-stressI(j,i) ) * 1.e-8
         end do
     end do
     open (1,file='sxx.0',access='direct',recl=nwords*kindr) 
@@ -172,7 +171,7 @@ if( io_szz.eq.1 ) then
     do i = 1, nx-1
         do j = 1, nz-1
             szz = 0.25 * (stress0(2,1,j,i)+stress0(2,2,j,i)+stress0(2,3,j,i)+stress0(2,4,j,i) )
-            De(j,i) = ( szz-stressI(i,j) ) * 1.e-8
+            De(j,i) = ( szz-stressI(j,i) ) * 1.e-8
         end do
     end do
     open (1,file='szz.0',access='direct',recl=nwords*kindr) 
@@ -199,7 +198,7 @@ endif
 if( io_pres.eq.1 ) then
     do i = 1, nx-1
         do j = 1, nz-1
-            De(j,i) = stressI(i,j) * 1.e-8
+            De(j,i) = stressI(j,i) * 1.e-8
         end do
     end do
     open (1,file='pres.0',access='direct',recl=nwords*kindr) 

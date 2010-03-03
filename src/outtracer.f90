@@ -41,23 +41,14 @@ do i = 1,nmtracers
 do j = 1,nmarkers
 if (tracerid(i).eq.mark(j)%ID) then
      n = mark(j)%ntriag
+     nn = (n-1)/2
 ! if triangle number is pair or impair
-     ntest = n/2
-     xntest = float(n)/2
-     yntest = float(ntest)    
-     if ((yntest-xntest).eq.0) then
-         k = 2
-     else
-         k = 1
-     endif
-     do l = 1, nz - 1
-     xxik = (1. + ((float(n)-float(k))/2-float(l) + 1)/(float(nz)-1))
-     ik   = int(xxik)
-     xxi  = float(ik)
-        if ((abs(xxik)-abs(xxi)).eq.0) goto 33 
-     enddo
-33   mark(j)%meII = strainII(ik,l)
-     mark(j)%mpres = stressI(ik,l)
+     k = mod(n-1, 2) + 1
+     l = mod(nn, nz-1) + 1
+     ik = nn/(nz-1) + 1
+
+     mark(j)%meII = strainII(l,ik)
+     mark(j)%mpres = stressI(l,ik)
      tmpr = 0.25*(temp(l,ik)+temp(l+1,ik)+temp(l,ik+1)+temp(l+1,ik+1))
      mark(j)%mtemp = tmpr
 !write(*,*) i,k,n,ik,l, mark(j)%meII,mark(j)%mpres,mark(j)%mtemp
