@@ -41,7 +41,7 @@ press = press / 4
 dens = den(iph) * ( 1 - alfa(iph)*tmpr + beta(iph)*press )
 zcord = 0.25*(cord(j,i,2)+cord(j+1,i,2)+cord(j,i+1,2)+cord(j+1,i+1,2))
 press = 0
-!press = stressI(i,j) 
+!press = stressI(j,i)
 press = dens*g*zcord
 !    if (iph.eq.1.or.iph.eq.3.or.iph.eq.7.or.iph.eq.2.or.iph.eq.6) then
 !if(tmpr.gt.110.) then
@@ -265,7 +265,7 @@ do k = 1, nphasl
 iph = lphase(k) 
 tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
 srat = e2sr(j,i)
-press = stressI(i,j) 
+press = stressI(j,i)
 
 xeactiv = eactiv(iph)
     if (iph.eq.20.or.iph.eq.30) then

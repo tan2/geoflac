@@ -31,8 +31,8 @@ do i = 1 , nmarkers
         if ((abs(xxik)-abs(xxi)).eq.0) goto 33
      enddo
 33            mark(i)%maps = aps (j,ik)
-            mark(i)%meII = strainII(ik,j)
-            mark(i)%mpres = stressI(ik,j)
+            mark(i)%meII = strainII(j,ik)
+            mark(i)%mpres = stressI(j,ik)
             tmpr = 0.25*(temp(j,ik)+temp(j+1,ik)+temp(j,ik+1)+temp(j+1,ik+1))
             mark(i)%mtemp = tmpr
 enddo

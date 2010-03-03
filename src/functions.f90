@@ -1,76 +1,76 @@
 !================================
 ! First invariant of strain
-function strainI(i,j)
+function strainI(iz,ix)
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 
-strainI = 0.5 * ( strain(1,j,i) + strain(2,j,i) )
+strainI = 0.5 * ( strain(1,iz,ix) + strain(2,iz,ix) )
 
 return
-end
+end function strainI
 
 
 !================================
 ! Second invariant of strain
-function strainII(i,j)
+function strainII(iz,ix)
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 
-strainII = 0.5 * sqrt((strain(1,j,i)-strain(2,j,i))**2 + 4*strain(3,j,i)**2)
+strainII = 0.5 * sqrt((strain(1,iz,ix)-strain(2,iz,ix))**2 + 4*strain(3,iz,ix)**2)
 
 return
-end
+end function strainII
 
 
 !================================
 ! Second invariant of strain rate
-function srateII(i,j)
+function srateII(iz,ix)
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 
-s11 = 0.25 * (strainr(1,1,j,i)+strainr(1,2,j,i)+strainr(1,3,j,i)+strainr(1,4,j,i))
-s22 = 0.25 * (strainr(2,1,j,i)+strainr(2,2,j,i)+strainr(2,3,j,i)+strainr(2,4,j,i))
-s12 = 0.25 * (strainr(3,1,j,i)+strainr(3,2,j,i)+strainr(3,3,j,i)+strainr(3,4,j,i))
+s11 = 0.25 * (strainr(1,1,iz,ix)+strainr(1,2,iz,ix)+strainr(1,3,iz,ix)+strainr(1,4,iz,ix))
+s22 = 0.25 * (strainr(2,1,iz,ix)+strainr(2,2,iz,ix)+strainr(2,3,iz,ix)+strainr(2,4,iz,ix))
+s12 = 0.25 * (strainr(3,1,iz,ix)+strainr(3,2,iz,ix)+strainr(3,3,iz,ix)+strainr(3,4,iz,ix))
 srateII = 0.5 * sqrt((s11-s22)**2 + 4*s12*s12)
 
 return
-end
+end function srateII
 
 
 !================================
 ! First invariant of stress (pressure)
-function stressI(i,j)
+function stressI(iz,ix)
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 
-s11 = 0.25 * (stress0(1,1,j,i)+stress0(1,2,j,i)+stress0(1,3,j,i)+stress0(1,4,j,i))
-s22 = 0.25 * (stress0(2,1,j,i)+stress0(2,2,j,i)+stress0(2,3,j,i)+stress0(2,4,j,i))
-s33 = 0.25 * (stress0(4,1,j,i)+stress0(4,2,j,i)+stress0(4,3,j,i)+stress0(4,4,j,i))
+s11 = 0.25 * (stress0(1,1,iz,ix)+stress0(1,2,iz,ix)+stress0(1,3,iz,ix)+stress0(1,4,iz,ix))
+s22 = 0.25 * (stress0(2,1,iz,ix)+stress0(2,2,iz,ix)+stress0(2,3,iz,ix)+stress0(2,4,iz,ix))
+s33 = 0.25 * (stress0(4,1,iz,ix)+stress0(4,2,iz,ix)+stress0(4,3,iz,ix)+stress0(4,4,iz,ix))
 stressI = (s11+s22+s33)/3
 
 return
-end
+end function stressI
 
 
 !================================
 ! Second invariant of stress
-function stressII(i,j)
+function stressII(iz,ix)
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 
-s11 = 0.25 * (stress0(1,1,j,i)+stress0(1,2,j,i)+stress0(1,3,j,i)+stress0(1,4,j,i))
-s22 = 0.25 * (stress0(2,1,j,i)+stress0(2,2,j,i)+stress0(2,3,j,i)+stress0(2,4,j,i))
-s12 = 0.25 * (stress0(3,1,j,i)+stress0(3,2,j,i)+stress0(3,3,j,i)+stress0(3,4,j,i))
-s33 = 0.25 * (stress0(4,1,j,i)+stress0(4,2,j,i)+stress0(4,3,j,i)+stress0(4,4,j,i))
+s11 = 0.25 * (stress0(1,1,iz,ix)+stress0(1,2,iz,ix)+stress0(1,3,iz,ix)+stress0(1,4,iz,ix))
+s22 = 0.25 * (stress0(2,1,iz,ix)+stress0(2,2,iz,ix)+stress0(2,3,iz,ix)+stress0(2,4,iz,ix))
+s12 = 0.25 * (stress0(3,1,iz,ix)+stress0(3,2,iz,ix)+stress0(3,3,iz,ix)+stress0(3,4,iz,ix))
+s33 = 0.25 * (stress0(4,1,iz,ix)+stress0(4,2,iz,ix)+stress0(4,3,iz,ix)+stress0(4,4,iz,ix))
 stressII = 0.5 * sqrt((s11-s22)**2 + 4*s12*s12)
 
 return
-end
+end function stressII
 
 
 !==================================================
@@ -100,7 +100,7 @@ ERFCC=T*EXP(-Z*Z-1.26551223+T*(1.00002368+T*(.37409196+ &
 IF (X.LT.0.) ERFCC=2.-ERFCC
 
 RETURN
-END
+END FUNCTION ERFCC
 
 
 !===========================================
@@ -115,7 +115,7 @@ else
 endif
 
 return
-end
+end function dlog10ab
 
 
 !===============================
@@ -194,4 +194,4 @@ end do
 
 
 return
-end
+end subroutine Gauss
