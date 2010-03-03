@@ -24,11 +24,10 @@ else
         read( 1, *, end=10 ) nrec,nmtracers
     end do
     5 continue
-    open (1,file='_tracers.0')
+    open (1,file='_tracers.0',position='append')
     nrec = 0
     10 continue
     nrec = nrec + 1
-    backspace(1)
 endif
 write(*,*) nmtracers
 write( 1, '(i4,1x,i8,1x,i8,1x,f6.2)' ) nrec, nmtracers,nloop,  time/sec_year/1.e6

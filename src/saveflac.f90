@@ -27,11 +27,10 @@ else
         read( 1, *, end=10 ) nrec
     end do
     5 continue
-    open (1,file='_contents.rs')
+    open (1,file='_contents.rs',position='append')
     nrec = 0
     10 continue
     nrec = nrec + 1
-    backspace(1)
 endif
 write( 1, '(i4,1x,i8,1x,f6.2,1x,i9,1x,i9)' ) nrec, nloop, time/sec_year/1.e6, &
      nmarkers,nmtracers

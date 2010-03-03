@@ -24,11 +24,10 @@ else
         read( 1, *, end=10 ) nrec
     end do
     5 continue
-    open (1,file='_outmarkers.0')
+    open (1,file='_outmarkers.0',position='append')
     nrec = 0
     10 continue
     nrec = nrec + 1
-    backspace(1)
 endif
 write( 1, '(i4,1x,i8,1x,i8,1x,f6.2)' ) nrec, nloop,nmarkers, time/sec_year/1.e6
 close(1)
