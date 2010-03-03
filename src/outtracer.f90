@@ -56,7 +56,7 @@ if (tracerid(i).eq.mark(j)%ID) then
      xxi  = float(ik)
         if ((abs(xxik)-abs(xxi)).eq.0) goto 33 
      enddo
-33   mark(j)%meII = strainII(l,ik)
+33   mark(j)%meII = strainII(ik,l)
      mark(j)%mpres = stressI(ik,l)
      tmpr = 0.25*(temp(l,ik)+temp(l+1,ik)+temp(l,ik+1)+temp(l+1,ik+1))
      mark(j)%mtemp = tmpr
