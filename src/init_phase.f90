@@ -24,6 +24,7 @@ do k = 1,nphasl
     do i = 1,nx-1
         do j = ltop(k),lbottom(k)
             phasez(j,i) = lphase(k)
+            !XXX: hard-coded weak zone layer? remove?
             if(i.ge.170) phasez(j,i) = 8.
 !making everything west of the continent oceanic mantle....
 !!! THAT IS THE LINES FOR THE CONTINENT ON THE RIGHT!!!
@@ -54,7 +55,9 @@ do k = 1,nphasl
         end do
     end do
 end do
-nphasl = 12 
+
+!XXX: hard-coded phase layers
+nphasl = 12
 lphase(1) = 2
 lphase(2) = 3
 lphase(3) = 4 
@@ -79,10 +82,12 @@ do 332 i=1,nx-1
 do 332 j=1,nz-1
 !write(*,*) nx,nz
 read(12,*) ii,jj,phasez(j,i)
+!XXX: hard-coded phase; remove?
 if (j.eq.1.and.i.gt.65) phasez(j,i) = 3.
 if (j.eq.2.and.i.gt.64) phasez(j,i) = 3.
 if (j.eq.3.and.i.gt.63) phasez(j,i) = 3.
 332  continue
+!XXX: hard-coded phase number; remove?
 nphasl = 3
 lphase(3) = 3
 close(12)

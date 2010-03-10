@@ -18,6 +18,7 @@ if (irtemp .gt. 0) then
     enddo
     close(1)
 
+!XXX: hard-coded temperature. remove?
     do i = 1, nx
      if(temp(16,i).gt.450.) then
          do 7 k= 1,16
