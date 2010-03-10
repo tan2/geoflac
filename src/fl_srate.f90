@@ -28,7 +28,10 @@ endif
 
 
 !$OMP parallel do &
-!$OMP private(j,x1,y1,x2,y2,x3,y3,x4,y4,vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4,em,eda,edb,sr11,sr22,sr12,srII,srI,srs2,stII)
+!$OMP private(i,j,x1,y1,x2,y2,x3,y3,x4,y4, &
+!$OMP         vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4, &
+!$OMP         em,eda,edb,s11,s22,s12 &
+!$OMP         srII,srI,srs2,stII)
 do 2  i = 1,nx-1
     do 2  j = 1,nz-1
 
