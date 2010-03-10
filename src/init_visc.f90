@@ -7,7 +7,7 @@ irh = irheol(mphase)
 do i = 1,nx-1  
     do j = 1,nz-1 
 
-        visn(j,i) = Eff_visc(i,j)
+        visn(j,i) = Eff_visc(j,i)
 
        if (irh.eq.11) then
        xc = 0.25*(cord (j,i  ,1) + cord(j+1,i  ,1) + &

@@ -25,7 +25,7 @@ do 1 i = 1, nx-1
     do 1 j = 1, nz-1
 
         !  Area and densities of zones
-        dens = Eff_dens( i,j )
+        dens = Eff_dens( j,i )
 
         ! Distribution 1/3 of the mass of each element to the nodes 
         ! *0.5 - becuase 1/area is double of real area; *0.5 - 2 grids
