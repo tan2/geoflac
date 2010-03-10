@@ -1,5 +1,5 @@
 
-!------ calculation parametrs of triangle (coef of basic functions) 
+!------ calculation parameters of triangle (coef of basic functions)
 
 ! THE area(n,it) is inverse of "real" DOUBLE area (=1./det) =>
 ! area (n,it) ( in program) = 1./(2 real_area)

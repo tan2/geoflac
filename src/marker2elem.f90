@@ -32,10 +32,7 @@ do i = 1 , nx-1
                cycle 
             else
                kinc = kinc + 1
-! if there more than 11 markers in one element shift
-         !  if(kinc.gt.11) then
-          !      nmarkers = nmarkers - 1
-          !  else
+
                phasez(j,i) = phasez(j,i)+ mark(l)%phase
                meml = l
 ! To linearly interpolate for density, conductivities, viscosities calculate phases ratios
@@ -43,11 +40,10 @@ do i = 1 , nx-1
          if(mark(l)%phase.eq.lphase(m)) phase_counter(m) = phase_counter(m) + 1
               enddo
              endif
-           ! endif    
-          enddo
-          enddo
+          enddo ! m
+          enddo ! k
 
-!  if there are only 6 markers in the elmenent create a new one
+!  if there are too few markers in the elmenent, create a new one
            if(kinc.le.2) then
            nmarkers = nmarkers+1
           kinc = kinc +1
@@ -78,6 +74,7 @@ do i = 1 , nx-1
            mark(nmarkers)%mpres = stressI(j,i)
            mark(nmarkers)%mtemp = tmpr 
            mark(nmarkers)%ID = nmarkers 
+! assign phase to the new marker
            if(kinc.gt.1) then
            mark(nmarkers)%phase = mark(meml)%phase 
            phasez(j,i) = phasez(j,i)+mark(nmarkers)%phase

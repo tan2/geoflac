@@ -17,11 +17,13 @@ c1d6 = 1./6.
 ! initialization of random generators
 jran = 13
 
+!XXX: hard-code constant
 if( mod(nloop,10).eq.0 .OR. ireset.eq.1 ) then
     rh_sel = .true.
 else
     rh_sel = .false.
 endif
+!XXX: hard-coded constant!!!
 rh_sel = .true.
 irh=irheol(mphase)
 if(irh.eq.11) call init_visc
@@ -52,10 +54,18 @@ if (ny_inject.gt.0) then
          !write(*,*) sarc1,sarc2
 endif
 irh_mark = 0
-!$OMP Parallel Private(j,k,irh,iph,stherm,bulkm,rmu,vis,coh,phi,psi,ipls,diss,hardn,sII_plas,sII_visc,quad_area,s0,s0a,s0b,&
-!$OMP                  de11,de22,de12,de33,dv,s11p,s22p,s12p,s33p,s11v,s22v,s12v,s33v,depl,tau_heal,fric1,fric2,fric3,fric4,&
-!$OMP                  plstrain1,plstrain2,plstrain3,plstrain4,dilat1,dilat2,dilat3,dilat4,cohesion1,cohesion2,cohesion3,&
-!$OMP                  cohesion4)
+!$OMP Parallel Private(i,j,k,iph,irh,bulkm,rmu,vis,coh,phi,psi, &
+!$OMP                  stherm,hardn,vis, &
+!$OMP                  de11,de22,de12,de33,dv, &
+!$OMP                  s11p,s22p,s12p,s33p, &
+!$OMP                  s11v,s22v,s12v,s33v, &
+!$OMP                  depl,ipls,diss, &
+!$OMP                  sII_plas,sII_visc, &
+!$OMP                  quad_area,s0a,s0b,s0,tau_heal, &
+!$OMP                  fric1,fric2,fric3,fric4, &
+!$OMP                  plstrain1,plstrain2,plstrain3,plstrain4, &
+!$OMP                  dilat1,dilat2,dilat3,dilat4, &
+!$OMP                  cohesion1,cohesion2,cohesion3,cohesion4)
 !$OMP do
 do 3 i = 1,nx-1
     do 3 j = 1,nz-1
