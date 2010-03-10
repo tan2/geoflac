@@ -108,7 +108,7 @@ do 1 i = 1,nx-1
 
         ! Find the maximum THERMAL time step from Stability Criterion
         ! dtmax = dxmin^2/diffusivity = dx^2/(lyamda/cp*dens)  
-        diff = Eff_conduct(i,j)/den(iph)/Eff_cp(i,j)
+        diff = Eff_conduct(j,i)/den(iph)/Eff_cp(j,i)
         dtt = dlmin*dlmin/diff
         dtmax_therm =min (dtmax_therm,dtt)
 

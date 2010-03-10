@@ -22,7 +22,7 @@
         rogh = 0.      
         do 787 j=1,nz-1
         iph=iphase(1,j,phasez(j,1)) 
-        densT = Eff_dens(1,j) 
+        densT = Eff_dens(j,1)
         dh1 = cord (j,1  ,2) - cord (j+1,1  ,2)
         dh2 = cord (j,2,2) - cord (j+1,2,2)
         dh  = 0.5 * (dh1+dh2)
@@ -58,7 +58,7 @@
         do 797 j=1,nz-1
         iph=iphase(nx-1,j,phasez(j,nx-1)) 
  
-        densT = Eff_dens(nx-1,j) 
+        densT = Eff_dens(j,nx-1)
         dh1 = cord (j,nx-1,2) - cord (j+1,nx-1,2)
         dh2 = cord (j,nx,2) - cord (j+1,nx,2)
         dh  = 0.5 * (dh1+dh2)

@@ -1,6 +1,6 @@
 !==============================================
 ! Density
-function Eff_dens( i, j )
+function Eff_dens( j, i)
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
@@ -19,7 +19,7 @@ press = press / 4
 dens = den(iph) * ( 1 - alfa(iph)*tmpr + beta(iph)*press )
 
 ! Effect of melt
-fmelt(j,i) = Eff_melt( i,j )
+fmelt(j,i) = Eff_melt( j,i )
 dens = dens * ( 1.-0.1*fmelt(j,i) )
 Eff_dens = dens
 
@@ -68,7 +68,7 @@ if (j.eq.1.and.cord(j,i,2).gt.0.) dens = (2750.*(1.-alfa(iph)*tmpr))
      endif
          
 ! Effect of melt
-!fmelt(j,i) = Eff_melt( i,j )
+!fmelt(j,i) = Eff_melt( j,i )
 !dens = dens * ( 1.-0.1*fmelt(j,i) )
 
 Eff_dens = Eff_dens + ratio*dens
@@ -76,13 +76,13 @@ Eff_dens = Eff_dens + ratio*dens
 enddo
 endif
 return
-end
+end function Eff_dens
 
 
 !==============================================
 ! Melt fraction
 !==============================================
-function Eff_melt( i, j )
+function Eff_melt( j, i )
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
@@ -108,13 +108,13 @@ if( fm .gt. 1 ) fm = 1.
 Eff_melt = fm
 
 return
-end
+end function Eff_melt
 
 
 !=================================================
 ! Effective Heat Capacity incorporating latent heat
 !=================================================
-function Eff_cp( i,j )
+function Eff_cp( j, i )
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
@@ -154,13 +154,13 @@ if( if_intrus .eq. 1 ) then
 endif
 
 return
-end
+end function Eff_cp
 
 
 !=================================================
 ! Effective Thermal Conductivity
 !=================================================
-function Eff_conduct( i,j )
+function Eff_conduct( j, i )
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
@@ -205,7 +205,7 @@ enddo
 endif
 !write(*,*) Eff_conduct, cond
 return
-end
+end function Eff_conduct
 
 
 
@@ -217,7 +217,7 @@ end
 ! Uses A value in MPa and but gives viscosity in (Pa * s) 
 ! Therefore there is a coefficient 1.e+6 
 
-function Eff_visc( i,j )
+function Eff_visc( j, i )
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
@@ -319,4 +319,4 @@ enddo
 if(vis.eq.0.) write(*,*) e2sr(j,i),phase_ratio(j,i,k),Eff_visc,vis
 endif
 return
-end
+end function Eff_visc

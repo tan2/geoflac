@@ -121,7 +121,7 @@ if( io_mark.eq.1 ) then
 !    De(1:nz-1,1:nx-1) = rmarker(1:nz-1,1:nx-1)
    do j = 1, nz-1
    do i = 1, nx-1
-          De(j,i) = Eff_dens(i,j)
+          De(j,i) = Eff_dens(j,i)
    enddo
    enddo
     open (1,file='phas.0',access='direct',recl=nwords*kindr)
@@ -274,7 +274,7 @@ if( io_hfl.eq.1 ) then
         ii = min(i,nx-1)
         dtmpr = temp(2,i) - temp(1,i)
         dl = -(cord(2,i,2)-cord(1,i,2))/1000
-        D1d(i) = Eff_conduct(ii,1) * dtmpr/dl
+        D1d(i) = Eff_conduct(1,ii) * dtmpr/dl
     end do
     open (1,file='hfl.0',access='direct',recl=nwords*kindr)
     write (1,rec=nrec) D1d
