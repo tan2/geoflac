@@ -61,11 +61,7 @@ irh_mark = 0
 !$OMP                  s11v,s22v,s12v,s33v, &
 !$OMP                  depl,ipls,diss, &
 !$OMP                  sII_plas,sII_visc, &
-!$OMP                  quad_area,s0a,s0b,s0,tau_heal, &
-!$OMP                  fric1,fric2,fric3,fric4, &
-!$OMP                  plstrain1,plstrain2,plstrain3,plstrain4, &
-!$OMP                  dilat1,dilat2,dilat3,dilat4, &
-!$OMP                  cohesion1,cohesion2,cohesion3,cohesion4)
+!$OMP                  quad_area,s0a,s0b,s0,tau_heal)
 !$OMP do
 do 3 i = 1,nx-1
     do 3 j = 1,nz-1
@@ -93,7 +89,7 @@ do 3 i = 1,nx-1
               
         ! Re-evaluate viscosity
         if (irh.eq.3 .or. irh.eq.12) then 
-            if( mod(nloop,ifreq_visc).eq.0 .OR. ireset.eq.1 ) visn(j,i) = Eff_visc(i,j)
+            if( mod(nloop,ifreq_visc).eq.0 .OR. ireset.eq.1 ) visn(j,i) = Eff_visc(j,i)
 !            if (ny_inject.gt.0.and.i.eq.iinj) visn(j,i) = v_min
         endif
         vis = visn(j,i)
