@@ -252,8 +252,6 @@ include 'arrays.inc'
 
 character*200 msg
 
-data im /259200/, ia /7141/, ic /54773/
-
 nab = 0
 kabove = 0
 iph = iphase(i,j,phasez(j,i))
