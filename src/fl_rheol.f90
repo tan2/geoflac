@@ -106,6 +106,7 @@ do 3 i = 1,nx-1
             s11p(k) = stress0(1,k,j,i) + stherm 
             s22p(k) = stress0(2,k,j,i) + stherm 
             if(ny_inject.gt.0.and.j.le.nelem_inject) then
+!XXX: iinj is un-init'd if ny_inject is not 1 or 2.
             if(i.eq.iinj) then
             s11p(k) = stress0(1,k,j,i) + stherm +sarc1 
             s22p(k) = stress0(2,k,j,i) + stherm +sarc2 
