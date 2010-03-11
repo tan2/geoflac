@@ -8,6 +8,7 @@
 
 ## execute "make debug=0" if making production run
 debug = 1
+coverage = 0
 
 
 #### fortran 90 compiler, compiler flags, linker flags
@@ -23,12 +24,20 @@ debug = 1
 
 ## for GNU gfortran >= 4.2
 F90 = gfortran
+
 ifeq ($(debug), 0)
 	CFLAGS = -O3 -fopenmp -ffast-math
+	LDFLAGS = -fopenmp
 else
 	CFLAGS = -O0 -g -Wall -fbounds-check -ftrapv -fbacktrace -fdump-core
+	LDFLAGS = -g
 endif
-LDFLAGS = -fopenmp
+
+ifeq ($(coverage), 1)
+	CFLAGS += -fprofile-arcs -ftest-coverage
+	LDFLAGS += -fprofile-arcs -ftest-coverage
+endif
+
 
 ## for Solaris
 #F90 = f90
