@@ -226,7 +226,7 @@ end
 function cnd( j )
 include 'precision.inc'
 
-cnd = Eff_conduct(1,j)
+cnd = Eff_conduct(j,1)
 
 return
 end

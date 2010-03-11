@@ -50,8 +50,8 @@ do i = 1,nx-1
         iph = iphase(i,j,phasez(j,i))
 
         ! Calculating effective material properties
-        cp_eff = Eff_cp( i,j )
-        cond_eff = Eff_conduct( i,j )
+        cp_eff = Eff_cp( j,i )
+        cond_eff = Eff_conduct( j,i )
 
         ! if shearh-heating flag is true
         if( ishearh.eq.1 .and. itherm.ne.2 ) then
@@ -61,7 +61,7 @@ do i = 1,nx-1
         endif
 
         ! Additional sources - radiogenic and shear heating
-        add_source(j,i) = ( source(j,i) + dissip/den(iph) - 600.*cp_eff*Eff_melt(i,j)) / cp_eff
+        add_source(j,i) = ( source(j,i) + dissip/den(iph) - 600.*cp_eff*Eff_melt(j,i)) / cp_eff
 
         ! diffusivity
         diff = cond_eff/den(iph)/cp_eff
@@ -224,9 +224,9 @@ do i = 1,nx
         temp(nz,i) = bot_bc
     elseif( itemp_bc.eq.2 ) then
         if( i.ne. nx ) then
-            cond_eff = Eff_conduct( i,nz-1 )
+            cond_eff = Eff_conduct( nz-1,i )
         else
-            cond_eff = Eff_conduct( nx-1,nz-1 )
+            cond_eff = Eff_conduct( nz-1,nx-1 )
         endif
         temp(nz,i) = temp(nz-1,i)  +  bot_bc * ( cord(nz-1,i,2)-cord(nz,i,2) ) / cond_eff
     endif
