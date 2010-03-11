@@ -30,7 +30,9 @@ enddo
 if( topo_kappa.gt.0. .OR. bottom_kappa.gt.0. ) call diff_topo    
 
 
-!$OMP parallel private(i,j,x1,y1,x2,y2,x3,y3,x4,y4,vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4,oldvol,det,dw12,s11,s22,s12)
+!$OMP parallel private(i,j,x1,y1,x2,y2,x3,y3,x4,y4, &
+!$OMP                  vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4, &
+!$OMP                  oldvol,det,dw12,s11,s22,s12)
 !$OMP do
 !--- Adjusting Stresses And Updating Areas Of Elements
 do  i = 1,nx-1
