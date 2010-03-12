@@ -8,7 +8,6 @@ include 'params.inc'
 include 'arrays.inc'
 
 dimension rmesh1(nx+nz)
-i_topost = 0
 ! Check dimensions for the mesh (number of elements and sizes)  
 call test_grid
 !  X - component 
@@ -32,19 +31,6 @@ do i = 1,nx
 !        write(*,*) i,j,cord(j,i,1),cord(j,i,2)
     end do
 end do
-if (i_topost.eq.1) then
-    do kj = 1 , nx
-        cord(1,kj,2) = 0.
-    enddo
-    cord(1,50,2) = 500.
-    cord(1,51,2) = 1000.
-    do kk = 52,78
-        cord(1,kk,2) = 1500.
-    enddo
-    cord(1,79,2) = 1000.
-    cord(1,80,2) = 500.
-endif
-i_topost = 0
 
 dx_init = abs(cord(1,2,1)-cord(1,1,1))
 
