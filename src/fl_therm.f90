@@ -42,7 +42,7 @@ dt_therm = dt
 
 !$OMP Parallel private(i,j,iph,cp_eff,cond_eff,dissip,diff, &
 !$OMP                  x1,x2,x3,x4,y1,y2,y3,y4,t1,t2,t3,t4, &
-!OMP                   qs,real_area13)
+!$OMP                  qs,real_area13)
 !$OMP do
 do i = 1,nx-1
     do j = 1,nz-1

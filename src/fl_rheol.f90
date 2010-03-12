@@ -54,7 +54,7 @@ if (ny_inject.gt.0) then
          !write(*,*) sarc1,sarc2
 endif
 irh_mark = 0
-!$OMP Parallel Private(i,j,k,iph,irh,bulkm,rmu,vis,coh,phi,psi, &
+!$OMP Parallel Private(i,j,k,iph,irh,bulkm,rmu,coh,phi,psi, &
 !$OMP                  stherm,hardn,vis, &
 !$OMP                  de11,de22,de12,de33,dv, &
 !$OMP                  s11p,s22p,s12p,s33p, &
