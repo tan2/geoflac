@@ -18,15 +18,6 @@ if (irtemp .gt. 0) then
     enddo
     close(1)
 
-!XXX: hard-coded temperature. remove?
-    do i = 1, nx
-     if(temp(16,i).gt.450.) then
-         do 7 k= 1,16
-           temp(k,i)= k*28.125
- 7    continue
-     endif
-    enddo
- 
    goto 10
     101 call SysMsg('INIT_TEMP: Cannot open file with temperatures initial distrib!')
     stop 21
