@@ -1,6 +1,7 @@
 syntax:glob
 
 # files created by build
+src/*.mod
 src/*.o
 src/flac
 
