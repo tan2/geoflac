@@ -8,7 +8,7 @@ include 'params.inc'
 include 'arrays.inc'
 
 r=8.31448e0
-iph = iphase(i,j,phasez(j,i))
+iph = iphase(phasez(j,i))
 tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
 srat = e2sr(j,i)
 if( srat .eq. 0 ) srat = vbc/rxbo

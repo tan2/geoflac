@@ -188,7 +188,7 @@ end do
 ivis_present = 0
 do i = 1,nx-1
     do j = 1, nz-1
-        iph = iphase(i,j,phasez(j,i))
+        iph = iphase(phasez(j,i))
         if( irheol(iph).eq.3 .or. irheol(iph).ge.11 ) ivis_present = 1
     end do
 end do
@@ -211,7 +211,7 @@ end
 !==========================================================
 ! convert REAL to INTEGER phases for use as array indexes
 !==========================================================
-function iphase( ki,kj,phas )
+function iphase( phas )
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'

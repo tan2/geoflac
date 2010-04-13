@@ -252,7 +252,7 @@ endif
 if( io_diss.eq.1 ) then
     do i = 1, nx-1
         do j = 1, nz-1
-            iph = iphase(i,j,phasez(j,i))
+            iph = iphase(phasez(j,i))
             De(j,i) = shrheat(j,i)/den(iph)/hs
         enddo
     enddo

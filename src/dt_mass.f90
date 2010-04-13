@@ -60,7 +60,7 @@ dt_maxwell = 1.e+28
 do 1 i = 1,nx-1
     do 1 j = 1,nz-1
 
-        iph     = iphase(i,j,phasez(j,i))
+        iph     = iphase(phasez(j,i))
         pwave   = rl(iph) + 0.6666*rm(iph)  
         dens    = den(iph)
         vel_sound = dlmin*frac/dt_elastic  

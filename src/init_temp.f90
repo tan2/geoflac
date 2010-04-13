@@ -230,7 +230,7 @@ include 'arrays.inc'
 
 y = - cord(j,1,2)*1.e-3
 
-iph = iphase(1,j,phasez(j,1))
+iph = iphase(phasez(j,1))
 
 htgen = den(iph)*hs*exp(-y/hr) * 1.e+6
 

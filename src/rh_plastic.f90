@@ -254,7 +254,7 @@ character*200 msg
 
 nab = 0
 kabove = 0
-iph = iphase(i,j,phasez(j,i))
+iph = iphase(phasez(j,i))
 do kphase = 1, nphasl
    if (lphase(kphase).eq.3) kocean1 = kphase
   if (lphase(kphase).eq.7) kocean2 = kphase

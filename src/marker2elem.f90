@@ -92,7 +92,7 @@ do i = 1 , nx-1
 !	if (j.eq.1.and.i.eq.nx-1) xiph = (o_phasez(j,i-1)+o_phasez(j+1,i)+o_phasez(j+1,i-1))/3.
 !	if (j.eq.nz-1.and.i.eq.1) xiph = (o_phasez(j,i+1)+o_phasez(j-1,i)+o_phasez(j-1,i+1))/3.
 !	if (i.eq.1) xiph = o_phasez(j,5)
-           mark(nmarkers)%phase = iphase(i,j,xiph) 
+           mark(nmarkers)%phase = iphase(xiph)
            phasez(j,i) = phasez(j,i)+mark(nmarkers)%phase
 write(*,*) xiph,o_phasez(j,i-1),o_phasez(j,i+1),o_phasez(j-1,i),o_phasez(j+1,i)
 write(333,*) xiph,o_phasez(j,i-1),o_phasez(j,i+1),o_phasez(j-1,i),o_phasez(j+1,i)
