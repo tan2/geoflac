@@ -19,7 +19,7 @@ return
 
 end
 
-function HydroDiff( i,j )
+function HydroDiff( j, i )
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'

@@ -169,7 +169,7 @@ cond = conduct(iph)
 ! HOOK
 ! Hydrothermal alteration of thermal diffusivity  - see user_luc.f90
 if( if_hydro .eq. 1 ) then
-    cond = HydroDiff(i,j)*den(iph)*cp(iph)
+    cond = HydroDiff(j,i)*den(iph)*cp(iph)
 endif
  Eff_conduct = cond
 
@@ -189,7 +189,7 @@ cond = conduct(iph)
 ! HOOK
 ! Hydrothermal alteration of thermal diffusivity  - see user_luc.f90
 if( if_hydro .eq. 1 ) then
-    cond = HydroDiff(i,j)*den(iph)*cp(iph)
+    cond = HydroDiff(j,i)*den(iph)*cp(iph)
 endif
 Eff_conduct = Eff_conduct + phase_ratio(j,i,k)*cond
 enddo
