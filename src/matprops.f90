@@ -5,45 +5,39 @@ function Eff_dens( j, i)
   include 'params.inc'
   include 'arrays.inc'
 
-  Eff_dens = 0.
-
-  iph = iphase(i,j,phasez(j,i))
-
   zcord = 0.25*(cord(j,i,2)+cord(j+1,i,2)+cord(j,i+1,2)+cord(j+1,i+1,2))
   tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
+
   press = 0
   do ii = 1, 4
-      press = press - (stress0(1,ii,j,i)+stress0(2,ii,j,i)+stress0(4,ii,j,i))/3
+      press = press - (stress0(1,ii,j,i)+stress0(2,ii,j,i)+stress0(4,ii,j,i))
   enddo
-  press = press / 4
-  dens = den(iph) * ( 1 - alfa(iph)*tmpr + beta(iph)*press )
+  press = press / 12
 
-  ! Effect of melt
-  fmelt = Eff_melt(iph, tmpr)
-  dens = dens * ( 1.-0.1*fmelt )
-  Eff_dens = dens
+  if (iint_marker.ne.1) then
+      iph = iphase(i,j,phasez(j,i))
+      dens = den(iph) * ( 1 - alfa(iph)*tmpr + beta(iph)*press )
 
-  if (iint_marker.eq.1) then
+      ! Effect of melt
+      fmelt = Eff_melt(iph, tmpr)
+      dens = dens * ( 1.-0.1*fmelt )
+      Eff_dens = dens
+  else
       Eff_dens = 0.
       do k = 1, nphasl
+          ratio = phase_ratio(j,i,k)
+          ! when ratio is small, it won't affect the density
+          if(ratio .lt. 1e-9) cycle
 
           iph = lphase(k)
-          delta_rho= 0.
-
-
-          ratio = phase_ratio (j,i,k) 
-          tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
-          press = 0
-          do ii = 1, 4
-              press = press - (stress0(1,ii,j,i)+stress0(2,ii,j,i)+stress0(4,ii,j,i))/3
-          enddo
-          press = press / 4
           dens = den(iph) * ( 1 - alfa(iph)*tmpr + beta(iph)*press )
-          zcord = 0.25*(cord(j,i,2)+cord(j+1,i,2)+cord(j,i+1,2)+cord(j+1,i+1,2))
-          press = 0
+
+          !press = 0
           !press = stressI(j,i)
           press = dens*g*zcord
-          !    if (iph.eq.1.or.iph.eq.3.or.iph.eq.7.or.iph.eq.2.or.iph.eq.6) then
+
+          delta_rho = 0.
+          !if (iph.eq.1.or.iph.eq.3.or.iph.eq.7.or.iph.eq.2.or.iph.eq.6) then
           !if(tmpr.gt.110.) then
           !            trpres = 1.3e9
           !           if ((-1.0*press).ge.trpres) then
@@ -58,6 +52,7 @@ function Eff_dens( j, i)
           !        endif
           !     endif
           dens = (den(iph)+delta_rho) * ( 1 - alfa(iph)*tmpr + beta(iph)*press )
+
           if(iph.eq.11) then
               delta_den = 400.
               zefold = 6000.
