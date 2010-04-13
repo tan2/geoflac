@@ -2,7 +2,7 @@
 ! Uses A value in MPa and but gives viscosity in (Pa * s) 
 ! Therefore there is a coefficient 1.e+6 
 
-function vis_creep(i,j)
+function vis_creep(j,i)
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
