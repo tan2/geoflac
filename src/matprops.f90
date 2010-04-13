@@ -19,8 +19,8 @@ press = press / 4
 dens = den(iph) * ( 1 - alfa(iph)*tmpr + beta(iph)*press )
 
 ! Effect of melt
-fmelt(j,i) = Eff_melt( j,i )
-dens = dens * ( 1.-0.1*fmelt(j,i) )
+fmelt = Eff_melt2(iph, tmpr)
+dens = dens * ( 1.-0.1*fmelt )
 Eff_dens = dens
 
 if (iint_marker.eq.1) then
@@ -68,8 +68,8 @@ if (j.eq.1.and.cord(j,i,2).gt.0.) dens = (2750.*(1.-alfa(iph)*tmpr))
      endif
          
 ! Effect of melt
-!fmelt(j,i) = Eff_melt( j,i )
-!dens = dens * ( 1.-0.1*fmelt(j,i) )
+!fmelt = Eff_melt2(iph, tmpr)
+!dens = dens * ( 1.-0.1*fmelt )
 
 Eff_dens = Eff_dens + ratio*dens
 
@@ -246,9 +246,10 @@ vis = 0.25 * srat**pow*(0.75*acoef(iph))**pow1* &
 
 ! Effect of melt
 fmelt_crit = 0.05
-if( fmelt(j,i) .gt. 0. ) then
-    if( fmelt(j,i) .lt. fmelt_crit ) then
-        vislog = fmelt(j,i)/fmelt_crit*dlog10(v_min/vis) + dlog10(vis)
+fmelt = Eff_melt2(iph, tmpr)
+if( fmelt .gt. 0. ) then
+    if( fmelt .lt. fmelt_crit ) then
+        vislog = fmelt/fmelt_crit*dlog10(v_min/vis) + dlog10(vis)
         vis = 10.**vislog
     else
         vis = v_min
@@ -302,9 +303,10 @@ if (iph.eq.5) vis = 10*vis
 
 ! Effect of melt
 !fmelt_crit = 0.05
-!if( fmelt(j,i) .gt. 0. ) then
-!    if( fmelt(j,i) .lt. fmelt_crit ) then
-!        vislog = fmelt(j,i)/fmelt_crit*dlog10(v_min/vis) + dlog10(vis)
+!fmelt = Eff_melt2(iph, tmpr)
+!if( fmelt .gt. 0. ) then
+!    if( fmelt .lt. fmelt_crit ) then
+!        vislog = fmelt/fmelt_crit*dlog10(v_min/vis) + dlog10(vis)
 !        vis = 10.**vislog
 !    else
 !        vis = v_min
