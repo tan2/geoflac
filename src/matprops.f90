@@ -91,8 +91,18 @@ include 'arrays.inc'
 iph = iphase(i,j,phasez(j,i))
 tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
 
-! Effect of melting on density (here - max 10%)
+Eff_melt = Eff_melt2(iph, tmpr)
+return
+end function Eff_melt
+
+
+!==============================================
+function Eff_melt2(iph, tmpr)
+include 'precision.inc'
+include 'params.inc'
+
 if( tmpr .lt. ts(iph) ) then
+    ! below solidus
     fm = 0.
 elseif( tmpr .lt. tk(iph) ) then
     fm = fk(iph)/(tk(iph)-ts(iph)) * (tmpr-ts(iph))
@@ -105,10 +115,10 @@ endif
 if( fm .lt. 0 ) fm = 0.
 if( fm .gt. 1 ) fm = 1.
 
-Eff_melt = fm
+Eff_melt2 = fm
 
 return
-end function Eff_melt
+end function Eff_melt2
 
 
 !=================================================
