@@ -60,9 +60,6 @@ do i = 1,nx-1
             dissip = 0
         endif
 
-        ! Additional sources - radiogenic and shear heating
-        add_source(j,i) = ( source(j,i) + dissip/den(iph) - 600.*cp_eff*Eff_melt(j,i)) / cp_eff
-
         ! diffusivity
         diff = cond_eff/den(iph)/cp_eff
 
@@ -79,6 +76,10 @@ do i = 1,nx-1
         t2 = temp (j+1 ,i  )
         t3 = temp (j   ,i+1)
         t4 = temp (j+1 ,i+1)
+
+        ! Additional sources - radiogenic and shear heating
+        tmpr = 0.25*(t1 + t2 + t3 + t4)
+        add_source(j,i) = ( source(j,i) + dissip/den(iph) - 600.*cp_eff*Eff_melt2(iph,tmpr)) / cp_eff
 
         ! (1) A element:
         flux(j,i,1,1) = -diff * ( t1*(y2-y3)+t2*(y3-y1)+t3*(y1-y2) ) * area(1,j,i)
