@@ -1,81 +1,82 @@
 !==============================================
 ! Density
 function Eff_dens( j, i)
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
+  include 'precision.inc'
+  include 'params.inc'
+  include 'arrays.inc'
 
-Eff_dens = 0.
+  Eff_dens = 0.
 
-iph = iphase(i,j,phasez(j,i))
+  iph = iphase(i,j,phasez(j,i))
 
-zcord = 0.25*(cord(j,i,2)+cord(j+1,i,2)+cord(j,i+1,2)+cord(j+1,i+1,2))
- tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
-press = 0
-do ii = 1, 4
-    press = press - (stress0(1,ii,j,i)+stress0(2,ii,j,i)+stress0(4,ii,j,i))/3
-enddo
-press = press / 4
-dens = den(iph) * ( 1 - alfa(iph)*tmpr + beta(iph)*press )
+  zcord = 0.25*(cord(j,i,2)+cord(j+1,i,2)+cord(j,i+1,2)+cord(j+1,i+1,2))
+  tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
+  press = 0
+  do ii = 1, 4
+      press = press - (stress0(1,ii,j,i)+stress0(2,ii,j,i)+stress0(4,ii,j,i))/3
+  enddo
+  press = press / 4
+  dens = den(iph) * ( 1 - alfa(iph)*tmpr + beta(iph)*press )
 
-! Effect of melt
-fmelt = Eff_melt(iph, tmpr)
-dens = dens * ( 1.-0.1*fmelt )
-Eff_dens = dens
+  ! Effect of melt
+  fmelt = Eff_melt(iph, tmpr)
+  dens = dens * ( 1.-0.1*fmelt )
+  Eff_dens = dens
 
-if (iint_marker.eq.1) then
-Eff_dens = 0.
-do k = 1, nphasl
-   
-iph = lphase(k)
-delta_rho= 0.
+  if (iint_marker.eq.1) then
+      Eff_dens = 0.
+      do k = 1, nphasl
+
+          iph = lphase(k)
+          delta_rho= 0.
 
 
-ratio = phase_ratio (j,i,k) 
-tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
-press = 0
-do ii = 1, 4
-   press = press - (stress0(1,ii,j,i)+stress0(2,ii,j,i)+stress0(4,ii,j,i))/3
-enddo
-press = press / 4
-dens = den(iph) * ( 1 - alfa(iph)*tmpr + beta(iph)*press )
-zcord = 0.25*(cord(j,i,2)+cord(j+1,i,2)+cord(j,i+1,2)+cord(j+1,i+1,2))
-press = 0
-!press = stressI(j,i)
-press = dens*g*zcord
-!    if (iph.eq.1.or.iph.eq.3.or.iph.eq.7.or.iph.eq.2.or.iph.eq.6) then
-!if(tmpr.gt.110.) then
-!            trpres = 1.3e9
-!           if ((-1.0*press).ge.trpres) then
-!              delta_rho = 600.
-!           endif
-!       endif
-!       if (tmpr.gt.550) then
-!           trpres = -0.3e9 + 2.2e6*tmpr
-!           if ((-1.0*press).ge.trpres) then
-!              delta_rho = 400.
-!	endif
-!        endif
-!     endif
-dens = (den(iph)+delta_rho) * ( 1 - alfa(iph)*tmpr + beta(iph)*press )
-if(iph.eq.11) then
-         delta_den = 400.
-         zefold = 6000.
-!dens = (den(iph) - delta_den*exp(zcord/zefold)) * ( 1 - alfa(iph)*tmpr + beta(iph)*press )
-dens = (den(iph) - delta_den*exp((zcord-0.5*(cord(1,i,2)+cord(1,i+1,2)))/zefold)) * ( 1 - alfa(iph)*tmpr + beta(iph)*press )
-if (j.eq.1.and.cord(j,i,2).gt.0.) dens = (2750.*(1.-alfa(iph)*tmpr))        
-       if (dens.lt.2400.) dens = 2400.
-     endif
-         
-! Effect of melt
-!fmelt = Eff_melt(iph, tmpr)
-!dens = dens * ( 1.-0.1*fmelt )
+          ratio = phase_ratio (j,i,k) 
+          tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
+          press = 0
+          do ii = 1, 4
+              press = press - (stress0(1,ii,j,i)+stress0(2,ii,j,i)+stress0(4,ii,j,i))/3
+          enddo
+          press = press / 4
+          dens = den(iph) * ( 1 - alfa(iph)*tmpr + beta(iph)*press )
+          zcord = 0.25*(cord(j,i,2)+cord(j+1,i,2)+cord(j,i+1,2)+cord(j+1,i+1,2))
+          press = 0
+          !press = stressI(j,i)
+          press = dens*g*zcord
+          !    if (iph.eq.1.or.iph.eq.3.or.iph.eq.7.or.iph.eq.2.or.iph.eq.6) then
+          !if(tmpr.gt.110.) then
+          !            trpres = 1.3e9
+          !           if ((-1.0*press).ge.trpres) then
+          !              delta_rho = 600.
+          !           endif
+          !       endif
+          !       if (tmpr.gt.550) then
+          !           trpres = -0.3e9 + 2.2e6*tmpr
+          !           if ((-1.0*press).ge.trpres) then
+          !              delta_rho = 400.
+          !	endif
+          !        endif
+          !     endif
+          dens = (den(iph)+delta_rho) * ( 1 - alfa(iph)*tmpr + beta(iph)*press )
+          if(iph.eq.11) then
+              delta_den = 400.
+              zefold = 6000.
+              !dens = (den(iph) - delta_den*exp(zcord/zefold)) * ( 1 - alfa(iph)*tmpr + beta(iph)*press )
+              dens = (den(iph) - delta_den*exp((zcord-0.5*(cord(1,i,2)+cord(1,i+1,2)))/zefold)) &
+                   * ( 1 - alfa(iph)*tmpr + beta(iph)*press )
+              if (j.eq.1.and.cord(j,i,2).gt.0.) dens = (2750.*(1.-alfa(iph)*tmpr))        
+              if (dens.lt.2400.) dens = 2400.
+          endif
 
-Eff_dens = Eff_dens + ratio*dens
+          ! Effect of melt
+          !fmelt = Eff_melt(iph, tmpr)
+          !dens = dens * ( 1.-0.1*fmelt )
 
-enddo
-endif
-return
+          Eff_dens = Eff_dens + ratio*dens
+
+      enddo
+  endif
+  return
 end function Eff_dens
 
 
