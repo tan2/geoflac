@@ -340,7 +340,7 @@ enddo
 
 !do i = 1, nxt
 !    do j = 1, nzt
-!        iph = iphase(i,j,phasez(j,i) )
+!        iph = iphase(phasez(j,i) )
 !        phasez(j,i) = float(iph)
 !    end do
 !end do
@@ -407,7 +407,7 @@ if (iac_rem.eq.1) then
 do 522 i = iinj-1,iinj+1
      rogh = 0.
    do 522 j = 1,nz-1
-     iph = iphase(i,j,phasez (j,i))
+     iph = iphase(phasez (j,i))
      if (iph.eq.0) goto 522
         tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
         densT = den(iph) * ( 1 - alfa(iph)*tmpr )

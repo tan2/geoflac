@@ -25,7 +25,7 @@ include 'params.inc'
 include 'arrays.inc'
 common /hydroth/ xenhc,xwidth,xmaxstr,xmaxdepth,xmaxt,ixh1t
 
-    iph = iphase(i,j,phasez(j,i))
+    iph = iphase(phasez(j,i))
     diff = conduct(iph)/den(iph)/cp(iph) 
    if(i.gt.ixh1t+1.and.i.lt.nx-ixh1t-1) then
     do 10 k= i-ixh1t,i
