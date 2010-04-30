@@ -3,6 +3,7 @@
 !
 subroutine init_bc
 
+  use arrays
   include 'precision.inc'
   include 'arrays.inc'
   include 'params.inc'

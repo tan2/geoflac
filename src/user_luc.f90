@@ -20,6 +20,7 @@ return
 end
 
 function HydroDiff( j, i )
+use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'

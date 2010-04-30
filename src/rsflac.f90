@@ -2,6 +2,7 @@
 ! Re-starting FLAC
 
 subroutine rsflac
+use arrays
 USE marker_data
 
 include 'precision.inc'

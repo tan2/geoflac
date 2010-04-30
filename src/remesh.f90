@@ -1,5 +1,6 @@
  
 subroutine re_mesh
+use arrays
 
 include 'precision.inc'
 include 'params.inc'

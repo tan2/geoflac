@@ -3,6 +3,7 @@
 ! Mixed of volumetric strain_rates (for incompressible flow)
 
 subroutine fl_srate
+use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'

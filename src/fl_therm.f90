@@ -2,6 +2,7 @@
 ! Calculate thermal field in explict form
 
 subroutine fl_therm
+use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'

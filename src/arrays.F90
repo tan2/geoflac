@@ -4,9 +4,6 @@ module arrays
   use iso_c_binding
   implicit none
 
-  ! maximum number of ELEMENTS
-  integer, parameter :: mnz=100, mnx=800
-
   ! fortran array pointer
   real*8, pointer, save :: cord(:,:,:)
 
@@ -41,24 +38,24 @@ module arrays
 
 contains
 
-  subroutine allocate_arrays
+  subroutine allocate_arrays(nz, nx)
     use iso_c_binding
     implicit none
 
+    integer, intent(in) :: nz, nx
+
 #ifndef USE_CUDA
 
-    allocate(cord(mnz+1, mnx+1, 2))
+    allocate(cord(nz, nx, 2))
 
 #else
 
 
     real*8, pointer :: tmp1d(:)
-    real*8, pointer :: tmp3d(:,:,:)
 
     ! allocate as 1D array, then reshape the dimension
-    call allocate_double(pcord, tmp1d, (mnz+1)*(mnx+1)*2)
-    call c_f_pointer(pcord, tmp3d, [mnz+1, mnx+1, 2])
-
+    call allocate_double(pcord, tmp1d, nz*nx*2)
+    call c_f_pointer(pcord, cord, [nz, nx, 2])
 
   contains
 

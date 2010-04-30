@@ -3,7 +3,8 @@
 !  Calculate total finite strain and plastic strain  
     
 subroutine fl_rheol
-include 'precision.inc' 
+use arrays
+include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 

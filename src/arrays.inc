@@ -1,9 +1,9 @@
 ! -*- F90 -*-
 
 !!! maximum number of ELEMENTS !!!
-parameter(mnz=100, mnx=800 )
+parameter(mnz=10, mnx=50 )
 
-common /geom_arrays/ cord(mnz+1,mnx+1,2),area(4,mnz,mnx),phasez(mnz,mnx), &
+common /geom_arrays/ area(4,mnz,mnx),phasez(mnz,mnx), &
     dvol(4,mnz,mnx),o_phasez(mnz,mnx)
 
 common /all_arrays/ vel(mnz+1,mnx+1,2),strainr(3,4,mnz,mnx),strain(3,mnz,mnx), &

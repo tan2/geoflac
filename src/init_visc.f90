@@ -1,5 +1,6 @@
 
 subroutine init_visc
+use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'

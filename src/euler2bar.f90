@@ -1,5 +1,6 @@
 subroutine euler2bar(x,y,bar1,bar2,ntr,ii,jj,inc)
 
+use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'

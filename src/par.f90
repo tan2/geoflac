@@ -1,12 +1,13 @@
 program DREZINA
+use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 include 'omp_lib.h'
 
 
-
 real*4 secnds,time0
+
 ! Area
 open( 33, file='area.dat' )
 open( 333, file='output.asc' )
@@ -18,6 +19,7 @@ sec_year = 3.1558e+7
 
 ! Read task parameters
 call read_params()
+call allocate_arrays(nz, nx)
 
 ! Try to read save-file contents. If file exist - restart, othewise - new start
 open(1,file='_contents.rs',status='old',err=10)
