@@ -21,8 +21,8 @@ vis = 0.25 * srat**pow*(0.75*acoef(iph))**pow1* &
 
 ! Effect of melt
 fmelt_crit = 0.05
-fmelt = Eff_melt2(iph, tmpr)
-if( fmelt2 .gt. 0. ) then
+fmelt = Eff_melt(iph, tmpr)
+if( fmelt .gt. 0. ) then
     if( fmelt .lt. fmelt_crit ) then
         vislog = fmelt/fmelt_crit*dlog10(v_min/vis) + dlog10(vis)
         vis = 10.**vislog
