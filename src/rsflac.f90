@@ -12,7 +12,7 @@ include 'arrays.inc'
 parameter( kindr=4, kindi=4 )
 
 real(kindr), allocatable :: dum1(:),dum2(:,:),dum3(:,:,:),dum4(:,:,:,:)
-integer(kindi), allocatable :: dum11(:),dum22(:,:)
+integer(kindi), allocatable :: dum11(:)
 real*8 rtime, rdt
 common /markers/ nfreemarkers,ndeadmarkers,xmpt(mnz*mnx*2,2,3)
 parameter( min_elmarkers = 0, max_elmarkers = 12 )
@@ -165,18 +165,8 @@ lphase(11) = 14
 
 
 if (iint_marker.eq.1) then
-allocate(dum22(nx-1,nz-1))
-! ID of elements with high res 
-open (1,file='IDHIGHRES.rs',access='direct',recl=nwords*kindi) 
-read (1,rec=nrec) dum22
-close (1)
-idtr(1:nx-1,1:nz-1) = dum22(1:nx-1,1:nz-1)
 
 
-deallocate( dum22 )
-
-
-nwords= nmarkers
 ! Markers
 nwords= nmarkers
 allocate (dum1(nmarkers))
