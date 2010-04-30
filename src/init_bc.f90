@@ -85,15 +85,15 @@ subroutine init_bc
                   endif
               endif
               numbp  = n   
-              numbp1 = n + 1 
-              x  = (cord (numbp,1,2)  - x1)/(x2-x1)   
-              xn = (cord (numbp1,1,2) - x1)/(x2-x1)   
-              xa = 0.5 * (x+xn)
-              if (nbc(i).eq.1.or.nbc(i).eq.10.or.nbc(i).eq.30)  & 
+              x  = (cord (numbp,1,2)  - x1)/(x2-x1)
+              if (nbc(i).eq.1.or.nbc(i).eq.10.or.nbc(i).eq.30)  &
                    call velbc (k,numbp,x)  
 
               if (nbc(i).eq.2.or.nbc(i).eq.20.or.nbc(i).eq.40) then
                   nnop = nnop + 1
+                  numbp1 = n + 1
+                  xn = (cord (numbp1,1,2) - x1)/(x2-x1)
+                  xa = 0.5 * (x+xn)
                   call stressbc (i,nnop,numbp,numbp1,xa)  
               endif
 
@@ -116,15 +116,15 @@ subroutine init_bc
                   endif
               endif
               numbp  = n
-              numbp1 = n + 1
               x = (cord (nz,numbp,1) - x1)/(x2-x1)
-              xn = (cord (nz,numbp1,1) - x1)/(x2-x1)
-              xa = 0.5 * (x+xn)
 
               if (nbc(i).eq.1.or.nbc(i).eq.10.or.nbc(i).eq.30)  &
                    call velbc (k,numbp,x)
               if (nbc(i).eq.2.or.nbc(i).eq.20.or.nbc(i).eq.40) then
                   nnop = nnop + 1
+                  numbp1 = n + 1
+                  xn = (cord (nz,numbp1,1) - x1)/(x2-x1)
+                  xa = 0.5 * (x+xn)
                   call stressbc (i,nnop,numbp,numbp1,xa)
               endif
 
@@ -149,17 +149,16 @@ subroutine init_bc
               endif
 
               numbp  =  n
-              numbp1 = n + 1
-
               x  = (cord (numbp,nx,2) - x1)/(x2-x1)
-              xn = (cord (numbp1,nx,2) - x1)/(x2-x1)
-              xa = 0.5 * (x+xn)
 
               if (nbc(i).eq.1.or.nbc(i).eq.10.or.nbc(i).eq.30)  &
                    call velbc (k,numbp,x)
 
               if (nbc(i).eq.2.or.nbc(i).eq. 20.or.nbc(i).eq.40) then
                   nnop = nnop + 1
+                  numbp1 = n + 1
+                  xn = (cord (numbp1,nx,2) - x1)/(x2-x1)
+                  xa = 0.5 * (x+xn)
                   call stressbc (i,nnop,numbp,numbp1,xa)
               endif
 
@@ -182,18 +181,16 @@ subroutine init_bc
               endif
 
               numbp  = n
-              numbp1 = n + 1
-
               x = (cord (1,numbp,1) - x1)/(x2-x1)
-              xn = (cord (1,numbp1,1) - x1)/(x2-x1)
-              xa = 0.5 * (x+xn)
-
 
               if (nbc(i).eq.1.or.nbc(i).eq.10.or.nbc(i).eq.30)   &
                    call velbc (k,numbp,x)
 
               if (nbc(i).eq.2.or.nbc(i).eq.20.or.nbc(i).eq.40) then
                   nnop = nnop + 1
+                  numbp1 = n + 1
+                  xn = (cord (1,numbp1,1) - x1)/(x2-x1)
+                  xa = 0.5 * (x+xn)
                   call stressbc (i,nnop,numbp,numbp1,xa)
               endif
 
