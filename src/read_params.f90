@@ -3,7 +3,7 @@
 subroutine read_params
 include 'precision.inc'
 include 'params.inc'
-
+include 'arrays.inc'
 
 iu =4 
 open( iu, file='drezina.inp' )
@@ -14,6 +14,12 @@ read(4,*) nx, nz
 open(11,file='nxnz.0')
 write(11,*) nx, nz
 close(11)
+
+if((nx.ge.mnx) .or. (nz.ge.mnz)) then
+    write(*,*) '# of elements exceed maximum. Increase mnx and mnz in "arrays.inc".'
+    stop 1
+endif
+
 nq = nx*nz
 nx = nx+1
 nz = nz+1
