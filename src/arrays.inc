@@ -3,7 +3,7 @@
 parameter(mnz=100, mnx=800 )
 
 common /geom_arrays/ cord(mnz+1,mnx+1,2),area(4,mnz,mnx),phasez(mnz,mnx), &
-    dvol(4,mnz,mnx),idtr(mnx,mnz),o_phasez(mnz,mnx)
+    dvol(4,mnz,mnx),o_phasez(mnz,mnx)
 
 common /all_arrays/ vel(mnz+1,mnx+1,2),strainr(3,4,mnz,mnx),strain(3,mnz,mnx), &
     force(mnz+1,mnx+1,2),balance(mnz+1,mnx+1,2),rmass(mnz+1,mnx+1),amass(mnz+1,mnx+1), &
