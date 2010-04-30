@@ -314,7 +314,11 @@ do i = 1,nx
         ! pressure from water sea on top
         if (nyhydro.gt.0.and. j.eq.1)  then
             rho_water = -10300.
-            water_depth = 0.5*(cord(1,i+1,2)+cord(1,i,2))
+            if(i.lt.nx) then
+                water_depth = 0.5*(cord(1,i+1,2)+cord(1,i,2))
+            else
+                water_depth = 0.5*(cord(1,i-1,2)+cord(1,i,2))
+            endif
             if (water_depth.lt.0.) then ! No water (above sea level)
                 if(i.eq.1) then
                   press_norm_l = 0
