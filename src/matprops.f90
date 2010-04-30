@@ -19,7 +19,7 @@ press = press / 4
 dens = den(iph) * ( 1 - alfa(iph)*tmpr + beta(iph)*press )
 
 ! Effect of melt
-fmelt = Eff_melt2(iph, tmpr)
+fmelt = Eff_melt(iph, tmpr)
 dens = dens * ( 1.-0.1*fmelt )
 Eff_dens = dens
 
@@ -68,7 +68,7 @@ if (j.eq.1.and.cord(j,i,2).gt.0.) dens = (2750.*(1.-alfa(iph)*tmpr))
      endif
          
 ! Effect of melt
-!fmelt = Eff_melt2(iph, tmpr)
+!fmelt = Eff_melt(iph, tmpr)
 !dens = dens * ( 1.-0.1*fmelt )
 
 Eff_dens = Eff_dens + ratio*dens
@@ -82,22 +82,7 @@ end function Eff_dens
 !==============================================
 ! Melt fraction
 !==============================================
-function Eff_melt( j, i )
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
-
-
-iph = iphase(i,j,phasez(j,i))
-tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
-
-Eff_melt = Eff_melt2(iph, tmpr)
-return
-end function Eff_melt
-
-
-!==============================================
-function Eff_melt2(iph, tmpr)
+function Eff_melt(iph, tmpr)
 include 'precision.inc'
 include 'params.inc'
 
@@ -115,10 +100,10 @@ endif
 if( fm .lt. 0 ) fm = 0.
 if( fm .gt. 1 ) fm = 1.
 
-Eff_melt2 = fm
+Eff_melt = fm
 
 return
-end function Eff_melt2
+end function Eff_melt
 
 
 !=================================================
@@ -246,7 +231,7 @@ vis = 0.25 * srat**pow*(0.75*acoef(iph))**pow1* &
 
 ! Effect of melt
 fmelt_crit = 0.05
-fmelt = Eff_melt2(iph, tmpr)
+fmelt = Eff_melt(iph, tmpr)
 if( fmelt .gt. 0. ) then
     if( fmelt .lt. fmelt_crit ) then
         vislog = fmelt/fmelt_crit*dlog10(v_min/vis) + dlog10(vis)
@@ -303,7 +288,7 @@ if (iph.eq.5) vis = 10*vis
 
 ! Effect of melt
 !fmelt_crit = 0.05
-!fmelt = Eff_melt2(iph, tmpr)
+!fmelt = Eff_melt(iph, tmpr)
 !if( fmelt .gt. 0. ) then
 !    if( fmelt .lt. fmelt_crit ) then
 !        vislog = fmelt/fmelt_crit*dlog10(v_min/vis) + dlog10(vis)
