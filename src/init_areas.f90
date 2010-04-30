@@ -6,6 +6,7 @@
 ! real_area = 0.5* (1./area(n,t))
 
 subroutine init_areas
+use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
@@ -74,6 +75,7 @@ end
 
 
 function total_area( iph )
+use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'

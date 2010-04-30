@@ -1,6 +1,7 @@
 ! Initiate temperature profile
 
 subroutine init_temp
+use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
@@ -224,6 +225,7 @@ end
 
 
 function htgen( j )
+use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'

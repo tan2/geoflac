@@ -2,6 +2,7 @@
 ! Move grid and adjust stresses due to rotation
 
 subroutine fl_move
+use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
@@ -141,6 +142,7 @@ end
 ! Diffuse topography
 !============================================================
 subroutine diff_topo
+use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
@@ -250,6 +252,7 @@ end
 
 
 subroutine diff_topo_old
+use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'

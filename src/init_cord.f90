@@ -3,6 +3,7 @@
 ! ---------------------------------------------------------------
 
 subroutine init_cord
+use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'

@@ -1,6 +1,7 @@
 !==============================================
 ! Density
 function Eff_dens( j, i)
+  use arrays
   include 'precision.inc'
   include 'params.inc'
   include 'arrays.inc'

@@ -15,6 +15,7 @@
 
 subroutine dt_mass
 
+use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
@@ -139,6 +140,7 @@ end
 !   dlmin = Area/Dmax for each triangle
 
 function dlmin_prop()
+use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'

@@ -7,6 +7,7 @@
 ! go from the left to the right and backwards
  
 integer function itest_mesh()
+use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'

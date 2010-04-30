@@ -3,6 +3,7 @@
 !---------------------------------------------------------------
 
 subroutine outflac
+use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'

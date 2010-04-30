@@ -3,6 +3,7 @@
 !---------------------------------------------------------------
 
 subroutine saveflac
+use arrays
 USE marker_data
 include 'precision.inc'
 include 'params.inc'

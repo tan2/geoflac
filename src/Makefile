@@ -7,9 +7,11 @@
 
 
 ## execute "make debug=0 cuda=1" if making production run
-debug = 1	# 0: optimized build; 1: debugging build
+## debug = 0: optimized build; 1: debugging build
+## cuda = 0:f90 only; 1: cuda runtime; 2: cuda emulation
+debug = 1
 coverage = 0
-cuda = 1	# 0:f90 only; 1: cuda runtime; 2: cuda emulation
+cuda = 2
 
 
 #### fortran 90 compiler, compiler flags, linker flags
@@ -172,10 +174,10 @@ else
 all: $(CUEXE)
 endif
 
-$(EXE): $(MODULES) $(OBJS) $(OBJS2)
+$(EXE): $(MODULES) $(OBJS2) $(OBJS)
 	$(F90) $(LDFLAGS) $(MODULE_OBJS) $(OBJS) $(OBJS2) -o $@
 
-$(CUEXE): $(MODULES) $(OBJS) $(OBJS2) $(CUDAFLAC_OBJS)
+$(CUEXE): $(MODULES) $(OBJS2) $(OBJS) $(CUDAFLAC_OBJS)
 	$(F90) $(LDFLAGS) $(MODULE_OBJS) $(OBJS) $(OBJS2) $(CUDAFLAC_OBJS) -o $@
 
 $(MODULES): %.mod : %.f90

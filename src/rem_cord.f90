@@ -1,4 +1,5 @@
 subroutine rem_cord(cordo)
+use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'

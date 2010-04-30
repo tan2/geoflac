@@ -1,4 +1,5 @@
 subroutine bar2euler
+use arrays
 USE marker_data
 
 include 'precision.inc'
