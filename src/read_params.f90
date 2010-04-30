@@ -15,7 +15,7 @@ open(11,file='nxnz.0')
 write(11,*) nx, nz
 close(11)
 
-if((nx.ge.mnx) .or. (nz.ge.mnz)) then
+if((nx.gt.mnx) .or. (nz.gt.mnz)) then
     write(*,*) '# of elements exceed maximum. Increase mnx and mnz in "arrays.inc".'
     stop 1
 endif
