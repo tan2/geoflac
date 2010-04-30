@@ -4,10 +4,7 @@ USE marker_data
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
-common /markers/ nfreemarkers,ndeadmarkers,xmpt(mnz*mnx*2,2,3)
-parameter( min_elmarkers = 0, max_elmarkers = 12 )
 parameter( kindr=4 )
-!type(marker) :: mark(nmarkers)
 real xik(nmtracers),timtrk(nmtracers),xtrak(nmtracers),ytrak(nmtracers),temptrak(nmtracers)
 real prestrak(nmtracers),straintrak(nmtracers)
 real(kindr) D1d(nmtracers)

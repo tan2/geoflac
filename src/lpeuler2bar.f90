@@ -4,9 +4,7 @@ USE marker_data
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
-common /markers/ nfreemarkers,ndeadmarkers,xmpt(mnz*mnx*2,2,3)
-parameter( min_elmarkers = 0, max_elmarkers = 12 )
-!type(marker):: mark(nmarkers)
+
 !!!$DIR LOOP_PARALLEL
 !!!$DIR LOOP_PRIVATE(k,xx,yy,bar1,bar2,ntr)
 do k = 1 , nmarkers

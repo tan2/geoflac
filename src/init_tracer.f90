@@ -4,9 +4,6 @@ USE marker_data
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
-common /markers/ nfreemarkers,ndeadmarkers,mpt(mnz*mnx*2,2,3)
-parameter( min_elmarkers = 0, max_elmarkers = 12 )
-!type(marker) :: mark(nmarkers)
 
 common /tracers/ tracerid(mnz*mnx*2)
 kint = 0

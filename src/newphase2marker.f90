@@ -3,9 +3,6 @@ USE marker_data
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
-common /markers/ nfreemarkers,ndeadmarkers,xmpt(mnz*mnx*2,2,3)
-parameter( min_elmarkers = 0, max_elmarkers = 12 )
-!type(marker) :: mark(nmarkers)
 
 ! Interpolate element properties into markers 
 ! Find the element in which each marker belongs

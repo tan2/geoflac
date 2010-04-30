@@ -14,9 +14,6 @@ parameter( kindr=4, kindi=4 )
 real(kindr), allocatable :: dum1(:),dum2(:,:),dum3(:,:,:),dum4(:,:,:,:)
 integer(kindi), allocatable :: dum11(:)
 real*8 rtime, rdt
-common /markers/ nfreemarkers,ndeadmarkers,xmpt(mnz*mnx*2,2,3)
-parameter( min_elmarkers = 0, max_elmarkers = 12 )
-!type(marker) :: mark(nmarkers)
 
 ! Try to open 'restart.rec'. 
 ! If file does not exist - restart from last record in '_contents.rs'
