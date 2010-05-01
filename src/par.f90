@@ -77,12 +77,12 @@ do while( time .lt. time_max )
          force_l=0.
          force_r=0.
          do j = 1,nz-1
-           sxx = 0.25 * (stress0(1,1,j,1)+stress0(1,2,j,1)+stress0(1,3,j,1)+stress0(1,4,j,1) )
+           sxx = 0.25 * (stress0(j,1,1,1)+stress0(j,1,1,2)+stress0(j,1,1,3)+stress0(j,1,1,4) )
            sxxd = sxx-stressI(j,1)
            dl = cord(j+1,1,2)-cord(j,1,2)
            force_l = force_l+abs(sxxd)*abs(dl)
 
-           sxx = 0.25 * (stress0(1,1,j,nx-1)+stress0(1,2,j,nx-1)+stress0(1,3,j,nx-1)+stress0(1,4,j,nx-1) )
+           sxx = 0.25 * (stress0(j,nx-1,1,1)+stress0(j,nx-1,1,2)+stress0(j,nx-1,1,3)+stress0(j,nx-1,1,4) )
            sxxd = sxx-stressI(j,nx-1)
            dl = cord(j+1,nx-1,2)-cord(j,nx-1,2)
            force_r = force_r+abs(sxxd)*abs(dl)

@@ -115,9 +115,9 @@ do 2  i = 1,nx-1
         srs2 = (s11-srI)*(s11-srI) + (s22-srI)*(s22-srI) + 2*s12*s12
         se2sr(j,i) = se2sr(j,i) + srII*dt
 
-        s11 = 0.25 * (stress0(1,1,j,i)+stress0(1,2,j,i)+stress0(1,3,j,i)+stress0(1,4,j,i))
-        s22 = 0.25 * (stress0(2,1,j,i)+stress0(2,2,j,i)+stress0(2,3,j,i)+stress0(2,4,j,i))
-        s12 = 0.25 * (stress0(3,1,j,i)+stress0(3,2,j,i)+stress0(3,3,j,i)+stress0(3,4,j,i))
+        s11 = 0.25 * (stress0(j,i,1,1)+stress0(j,i,1,2)+stress0(j,i,1,3)+stress0(j,i,1,4))
+        s22 = 0.25 * (stress0(j,i,2,1)+stress0(j,i,2,2)+stress0(j,i,2,3)+stress0(j,i,2,4))
+        s12 = 0.25 * (stress0(j,i,3,1)+stress0(j,i,3,2)+stress0(j,i,3,3)+stress0(j,i,3,4))
         stII = 0.5 * sqrt((s11-s22)**2 + 4*s12*s12)
         if( srII.ne.0. ) sshrheat(j,i) = sshrheat(j,i) + stII/srII*srs2*dt
 

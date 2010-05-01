@@ -43,7 +43,7 @@ do k = 1,4
 do l = 1,4
 do i= 1,iinj-2
    do j= 1,nz
-      stress0(k,l,j,i) = stress0(k,l,j,i+1)
+      stress0(j,i,k,l) = stress0(j,i+1,k,l)
 enddo
 enddo
 enddo
@@ -67,7 +67,7 @@ do k = 1,4
 do l = 1,4
 do i= nx-1,iinj+2,-1
    do j= 1,nz
-      stress0(k,l,j,i) = stress0(k,l,j,i-1)
+      stress0(j,i,k,l) = stress0(j,i-1,k,l)
 enddo
 enddo
 enddo
@@ -120,16 +120,16 @@ call rem_barcord
 ! Interpolate Stress (in quadralaterals) 
 do k = 1,4
     do l = 1,4
-        dummy(1:nzt,1:nxt) = stress0(k,l,1:nzt,1:nxt)
+        dummy(1:nzt,1:nxt) = stress0(1:nzt,1:nxt,k,l)
         call rem_interpolate( dummy )
-        stress0(k,l,1:nzt,1:nxt) = dummy(1:nzt,1:nxt)
+        stress0(1:nzt,1:nxt,k,l) = dummy(1:nzt,1:nxt)
     end do
 end do
 !do k = 1,4
 !do l = 1,4
 !do j = 1, nz
 !   do i = 1,  3
-!	stress0(k,l,j,i) = stress0(k,l,j,4)
+!	stress0(j,i,k,l) = stress0(j,4,k,l)
 !enddo
 !enddo
 !enddo
@@ -421,10 +421,10 @@ do 522 i = iinj-1,iinj+1
 
         press = rogh + 0.5*dP
         do ii = 1,4
-            stress0 (1,ii,j,i) = -press
-            stress0 (2,ii,j,i) = -press
-            stress0 (3,ii,j,i) = 0.
-            stress0 (4,ii,j,i) = -press
+            stress0(j,i,1,ii) = -press
+            stress0(j,i,2,ii) = -press
+            stress0(j,i,3,ii) = 0.
+            stress0(j,i,4,ii) = -press
         end do
         rogh = rogh + dP
         aps(j,i) = 0.

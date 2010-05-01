@@ -81,10 +81,10 @@ do i = 1,nx-1
             yc = cnew(j,i,2)
             press_norm = pisos-(den(iphsub)+drosub)*g*(yc-rzbo)
             do ii = 1,4 
-                stress0(1,ii,j,i) = - press_norm 
-                stress0(2,ii,j,i) = - press_norm 
-                stress0(3,ii,j,i) = 0.
-                stress0(4,ii,j,i) = - press_norm 
+                stress0(j,i,1,ii) = - press_norm 
+                stress0(j,i,2,ii) = - press_norm 
+                stress0(j,i,3,ii) = 0.
+                stress0(j,i,4,ii) = - press_norm 
             end do
         endif
     end do

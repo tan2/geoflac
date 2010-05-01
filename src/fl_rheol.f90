@@ -104,18 +104,18 @@ do 3 i = 1,nx-1
             de12 = strainr(3,k,j,i)*dt
             de33 = 0.
             dv = dvol(k,j,i)
-            s11p(k) = stress0(1,k,j,i) + stherm 
-            s22p(k) = stress0(2,k,j,i) + stherm 
+            s11p(k) = stress0(j,i,1,k) + stherm 
+            s22p(k) = stress0(j,i,2,k) + stherm 
             if(ny_inject.gt.0.and.j.le.nelem_inject) then
 !XXX: iinj is un-init'd if ny_inject is not 1 or 2.
             if(i.eq.iinj) then
-            s11p(k) = stress0(1,k,j,i) + stherm +sarc1 
-            s22p(k) = stress0(2,k,j,i) + stherm +sarc2 
+            s11p(k) = stress0(j,i,1,k) + stherm +sarc1 
+            s22p(k) = stress0(j,i,2,k) + stherm +sarc2 
 !!            irh = 1 
             endif
             endif
-            s12p(k) = stress0(3,k,j,i) 
-            s33p(k) = stress0(4,k,j,i) + stherm
+            s12p(k) = stress0(j,i,3,k) 
+            s33p(k) = stress0(j,i,4,k) + stherm
             s11v(k) = s11p(k)
             s22v(k) = s22p(k)
             s12v(k) = s12p(k)
@@ -125,28 +125,28 @@ do 3 i = 1,nx-1
                 ! elastic
                 call elastic(bulkm,rmu,s11p(k),s22p(k),s33p(k),s12p(k),de11,de22,de12,iph)
                 irheol_fl(j,i) = 0  
-                stress0(1,k,j,i) = s11p(k)
-                stress0(2,k,j,i) = s22p(k)
-                stress0(3,k,j,i) = s12p(k)
-                stress0(4,k,j,i) = s33p(k)
+                stress0(j,i,1,k) = s11p(k)
+                stress0(j,i,2,k) = s22p(k)
+                stress0(j,i,3,k) = s12p(k)
+                stress0(j,i,4,k) = s33p(k)
 
             elseif (irh.eq.3) then
                 ! viscous
                 call maxwell(bulkm,rmu,vis,s11v(k),s22v(k),s33v(k),s12v(k),de11,de22,de33,de12,dv)
                 irheol_fl(j,i) = -1  
-                stress0(1,k,j,i) = s11v(k)
-                stress0(2,k,j,i) = s22v(k)
-                stress0(3,k,j,i) = s12v(k)
-                stress0(4,k,j,i) = s33v(k)
+                stress0(j,i,1,k) = s11v(k)
+                stress0(j,i,2,k) = s22v(k)
+                stress0(j,i,3,k) = s12v(k)
+                stress0(j,i,4,k) = s33v(k)
 
             elseif (irh.eq.6) then
                 ! plastic
                 call plastic(bulkm,rmu,coh,phi,psi,depl(k),ipls,diss,hardn,s11p(k),s22p(k),s33p(k),s12p(k),de11,de22,de33,de12)
                 irheol_fl(j,i) = 1
-                stress0(1,k,j,i) = s11p(k)
-                stress0(2,k,j,i) = s22p(k)
-                stress0(3,k,j,i) = s12p(k)
-                stress0(4,k,j,i) = s33p(k)
+                stress0(j,i,1,k) = s11p(k)
+                stress0(j,i,2,k) = s22p(k)
+                stress0(j,i,3,k) = s12p(k)
+                stress0(j,i,4,k) = s33p(k)
 
             elseif (irh.ge.11) then 
                 ! Mixed rheology (Maxwell or plastic)
@@ -159,17 +159,17 @@ do 3 i = 1,nx-1
                     if( irheol_fl(j,i) .eq. 1 ) then
                         call plastic(bulkm,rmu,coh,phi,psi,depl(k),ipls,diss,hardn,&
                             s11p(k),s22p(k),s33p(k),s12p(k),de11,de22,de33,de12)
-                        stress0(1,k,j,i) = s11p(k)
-                        stress0(2,k,j,i) = s22p(k)
-                        stress0(3,k,j,i) = s12p(k)
-                        stress0(4,k,j,i) = s33p(k)
+                        stress0(j,i,1,k) = s11p(k)
+                        stress0(j,i,2,k) = s22p(k)
+                        stress0(j,i,3,k) = s12p(k)
+                        stress0(j,i,4,k) = s33p(k)
                     else  ! irheol_fl(j,i) = -1
                         call maxwell(bulkm,rmu,vis,s11v(k),s22v(k),s33v(k),s12v(k),&
                             de11,de22,de33,de12,dv)
-                        stress0(1,k,j,i) = s11v(k)
-                        stress0(2,k,j,i) = s22v(k)
-                        stress0(3,k,j,i) = s12v(k)
-                        stress0(4,k,j,i) = s33v(k)
+                        stress0(j,i,1,k) = s11v(k)
+                        stress0(j,i,2,k) = s22v(k)
+                        stress0(j,i,3,k) = s12v(k)
+                        stress0(j,i,4,k) = s33v(k)
                     endif
                 endif
             endif
@@ -186,18 +186,18 @@ do 3 i = 1,nx-1
 
             if (sII_plas .lt. sII_visc) then
                 do k = 1, 4
-                    stress0(1,k,j,i) = s11p(k)
-                    stress0(2,k,j,i) = s22p(k)
-                    stress0(3,k,j,i) = s12p(k)
-                    stress0(4,k,j,i) = s33p(k)
+                    stress0(j,i,1,k) = s11p(k)
+                    stress0(j,i,2,k) = s22p(k)
+                    stress0(j,i,3,k) = s12p(k)
+                    stress0(j,i,4,k) = s33p(k)
                 end do
                 irheol_fl (j,i) = 1
             else 
                 do k = 1, 4
-                    stress0(1,k,j,i) = s11v(k)
-                    stress0(2,k,j,i) = s22v(k)
-                    stress0(3,k,j,i) = s12v(k)
-                    stress0(4,k,j,i) = s33v(k)
+                    stress0(j,i,1,k) = s11v(k)
+                    stress0(j,i,2,k) = s22v(k)
+                    stress0(j,i,3,k) = s12v(k)
+                    stress0(j,i,4,k) = s33v(k)
                 end do
                 irheol_fl (j,i) = -1
             endif
@@ -210,23 +210,23 @@ do 3 i = 1,nx-1
             ! For A and B couple:
             ! area(n,it) is INVERSE of "real" DOUBLE area (=1./det)
             quad_area = 1./(area(1,j,i)+area(2,j,i))
-            s0a=0.5*(stress0(1,1,j,i)+stress0(2,1,j,i))
-            s0b=0.5*(stress0(1,2,j,i)+stress0(2,2,j,i))
+            s0a=0.5*(stress0(j,i,1,1)+stress0(j,i,2,1))
+            s0b=0.5*(stress0(j,i,1,2)+stress0(j,i,2,2))
             s0=(s0a*area(2,j,i)+s0b*area(1,j,i))*quad_area
-            stress0(1,1,j,i) = stress0(1,1,j,i) - s0a + s0
-            stress0(2,1,j,i) = stress0(2,1,j,i) - s0a + s0
-            stress0(1,2,j,i) = stress0(1,2,j,i) - s0b + s0
-            stress0(2,2,j,i) = stress0(2,2,j,i) - s0b + s0
+            stress0(j,i,1,1) = stress0(j,i,1,1) - s0a + s0
+            stress0(j,i,2,1) = stress0(j,i,2,1) - s0a + s0
+            stress0(j,i,1,2) = stress0(j,i,1,2) - s0b + s0
+            stress0(j,i,2,2) = stress0(j,i,2,2) - s0b + s0
 
             ! For C and D couple:
             quad_area = 1./(area(3,j,i)+area(4,j,i))
-            s0a=0.5*(stress0(1,3,j,i)+stress0(2,3,j,i))
-            s0b=0.5*(stress0(1,4,j,i)+stress0(2,4,j,i))
+            s0a=0.5*(stress0(j,i,1,3)+stress0(j,i,2,3))
+            s0b=0.5*(stress0(j,i,1,4)+stress0(j,i,2,4))
             s0=(s0a*area(4,j,i)+s0b*area(3,j,i))*quad_area
-            stress0(1,3,j,i) = stress0(1,3,j,i) - s0a + s0
-            stress0(2,3,j,i) = stress0(2,3,j,i) - s0a + s0
-            stress0(1,4,j,i) = stress0(1,4,j,i) - s0b + s0
-            stress0(2,4,j,i) = stress0(2,4,j,i) - s0b + s0
+            stress0(j,i,1,3) = stress0(j,i,1,3) - s0a + s0
+            stress0(j,i,2,3) = stress0(j,i,2,3) - s0a + s0
+            stress0(j,i,1,4) = stress0(j,i,1,4) - s0b + s0
+            stress0(j,i,2,4) = stress0(j,i,2,4) - s0b + s0
         endif
 
         !  ACCUMULATED PLASTIC STRAIN

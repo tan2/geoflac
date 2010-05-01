@@ -11,7 +11,7 @@ function Eff_dens( j, i)
 
   press = 0
   do ii = 1, 4
-      press = press - (stress0(1,ii,j,i)+stress0(2,ii,j,i)+stress0(4,ii,j,i))
+      press = press - (stress0(j,i,1,ii)+stress0(j,i,2,ii)+stress0(j,i,4,ii))
   enddo
   press = press / 12
 

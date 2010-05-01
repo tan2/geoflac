@@ -28,10 +28,10 @@ do 51 i = 1,nx-1
 
         press = rogh + 0.5*dP
         do ii = 1,4
-            stress0 (1,ii,j,i) = -press
-            stress0 (2,ii,j,i) = -press
-            stress0 (3,ii,j,i) = 0.
-            stress0 (4,ii,j,i) = -press
+            stress0(j,i,1,ii) = -press
+            stress0(j,i,2,ii) = -press
+            stress0(j,i,3,ii) = 0.
+            stress0(j,i,4,ii) = -press
         end do
         !write (*,*) -press
         rogh = rogh + dP
