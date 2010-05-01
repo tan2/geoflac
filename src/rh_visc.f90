@@ -39,9 +39,9 @@ if (iph .eq. 115 ) then
     PL_A = 5.7e+11
     PL_q = 2.
 
-    s11avg = 0.25*(stress0(1,1,j,i) + stress0(1,2,j,i) + stress0(1,3,j,i) + stress0(1,4,j,i))
-    s22avg = 0.25*(stress0(2,1,j,i) + stress0(2,2,j,i) + stress0(2,3,j,i) + stress0(2,4,j,i))
-    s12avg = 0.25*(stress0(3,1,j,i) + stress0(3,2,j,i) + stress0(3,3,j,i) + stress0(3,4,j,i))
+    s11avg = 0.25*(stress0(j,i,1,1) + stress0(j,i,1,2) + stress0(j,i,1,3) + stress0(j,i,1,4))
+    s22avg = 0.25*(stress0(j,i,2,1) + stress0(j,i,2,2) + stress0(j,i,2,3) + stress0(j,i,2,4))
+    s12avg = 0.25*(stress0(j,i,3,1) + stress0(j,i,3,2) + stress0(j,i,3,3) + stress0(j,i,3,4))
     sII = sqrt(0.25*(s11avg-s22avg)**2 + s12avg**2)
 
     if (sII .eq. 0) then

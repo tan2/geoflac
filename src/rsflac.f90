@@ -86,14 +86,14 @@ deallocate( dum3 )
 
 
 ! Stress
-allocate( dum4(4,4,nz-1,nx-1) )
+allocate( dum4(nz-1,nx-1,4,4) )
 
 nwords = 4*4*(nz-1)*(nx-1)
 
 open (1,file='stress.rs',access='direct',recl=nwords*kindr) 
 read (1,rec=nrec) dum4
 close (1)
-stress0(1:4,1:4,1:nz-1,1:nx-1) = dum4(1:4,1:4,1:nz-1,1:nx-1)
+stress0(1:nz-1,1:nx-1,1:4,1:4) = dum4
 
 deallocate( dum4 )
 

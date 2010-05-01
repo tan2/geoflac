@@ -157,7 +157,7 @@ endif
 if( io_sxx.eq.1 ) then
     do i = 1, nx-1
         do j = 1, nz-1
-            sxx = 0.25 * (stress0(1,1,j,i)+stress0(1,2,j,i)+stress0(1,3,j,i)+stress0(1,4,j,i) )
+            sxx = 0.25 * (stress0(j,i,1,1)+stress0(j,i,1,2)+stress0(j,i,1,3)+stress0(j,i,1,4) )
             De(j,i) = ( sxx-stressI(j,i) ) * 1.e-8
         end do
     end do
@@ -171,7 +171,7 @@ endif
 if( io_szz.eq.1 ) then
     do i = 1, nx-1
         do j = 1, nz-1
-            szz = 0.25 * (stress0(2,1,j,i)+stress0(2,2,j,i)+stress0(2,3,j,i)+stress0(2,4,j,i) )
+            szz = 0.25 * (stress0(j,i,2,1)+stress0(j,i,2,2)+stress0(j,i,2,3)+stress0(j,i,2,4) )
             De(j,i) = ( szz-stressI(j,i) ) * 1.e-8
         end do
     end do
@@ -185,7 +185,7 @@ endif
 if( io_sxz.eq.1 ) then
     do i = 1, nx-1
         do j = 1, nz-1
-            sxz = 0.25 * (stress0(3,1,j,i)+stress0(3,2,j,i)+stress0(3,3,j,i)+stress0(3,4,j,i)) * 1.e-8
+            sxz = 0.25 * (stress0(j,i,3,1)+stress0(j,i,3,2)+stress0(j,i,3,3)+stress0(j,i,3,4)) * 1.e-8
             De(j,i) = sxz * 1.e-8
         end do
     end do

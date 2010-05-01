@@ -77,7 +77,7 @@ deallocate( dum3 )
 allocate( dum4(4,4,nz-1,nx-1) )
 
 nwords = 4*4*(nz-1)*(nx-1)
-dum4(1:4,1:4,1:nz-1,1:nx-1) = stress0(1:4,1:4,1:nz-1,1:nx-1)
+dum4(1:4,1:4,1:nz-1,1:nx-1) = stress0(1:nz-1,1:nx-1,1:4,1:4)
 open (1,file='stress.rs',access='direct',recl=nwords*kindr) 
 write (1,rec=nrec) dum4
 close (1)

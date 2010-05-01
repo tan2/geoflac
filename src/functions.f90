@@ -47,9 +47,9 @@ include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 
-s11 = 0.25 * (stress0(1,1,iz,ix)+stress0(1,2,iz,ix)+stress0(1,3,iz,ix)+stress0(1,4,iz,ix))
-s22 = 0.25 * (stress0(2,1,iz,ix)+stress0(2,2,iz,ix)+stress0(2,3,iz,ix)+stress0(2,4,iz,ix))
-s33 = 0.25 * (stress0(4,1,iz,ix)+stress0(4,2,iz,ix)+stress0(4,3,iz,ix)+stress0(4,4,iz,ix))
+s11 = 0.25 * (stress0(iz,ix,1,1)+stress0(iz,ix,1,2)+stress0(iz,ix,1,3)+stress0(iz,ix,1,4))
+s22 = 0.25 * (stress0(iz,ix,2,1)+stress0(iz,ix,2,2)+stress0(iz,ix,2,3)+stress0(iz,ix,2,4))
+s33 = 0.25 * (stress0(iz,ix,4,1)+stress0(iz,ix,4,2)+stress0(iz,ix,4,3)+stress0(iz,ix,4,4))
 stressI = (s11+s22+s33)/3
 
 return
@@ -63,10 +63,10 @@ include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 
-s11 = 0.25 * (stress0(1,1,iz,ix)+stress0(1,2,iz,ix)+stress0(1,3,iz,ix)+stress0(1,4,iz,ix))
-s22 = 0.25 * (stress0(2,1,iz,ix)+stress0(2,2,iz,ix)+stress0(2,3,iz,ix)+stress0(2,4,iz,ix))
-s12 = 0.25 * (stress0(3,1,iz,ix)+stress0(3,2,iz,ix)+stress0(3,3,iz,ix)+stress0(3,4,iz,ix))
-s33 = 0.25 * (stress0(4,1,iz,ix)+stress0(4,2,iz,ix)+stress0(4,3,iz,ix)+stress0(4,4,iz,ix))
+s11 = 0.25 * (stress0(iz,ix,1,1)+stress0(iz,ix,1,2)+stress0(iz,ix,1,3)+stress0(iz,ix,1,4))
+s22 = 0.25 * (stress0(iz,ix,2,1)+stress0(iz,ix,2,2)+stress0(iz,ix,2,3)+stress0(iz,ix,2,4))
+s12 = 0.25 * (stress0(iz,ix,3,1)+stress0(iz,ix,3,2)+stress0(iz,ix,3,3)+stress0(iz,ix,3,4))
+s33 = 0.25 * (stress0(iz,ix,4,1)+stress0(iz,ix,4,2)+stress0(iz,ix,4,3)+stress0(iz,ix,4,4))
 stressII = 0.5 * sqrt((s11-s22)**2 + 4*s12*s12)
 
 return

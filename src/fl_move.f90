@@ -68,12 +68,12 @@ do  i = 1,nx-1
         ! Adjusting stresses due to rotation
         dw12 = 0.5*(vx1*(x3-x2)+vx2*(x1-x3)+vx3*(x2-x1) - &
             vy1*(y2-y3)-vy2*(y3-y1)-vy3*(y1-y2))/det*dt
-        s11 = stress0 (1,1,j,i)
-        s22 = stress0 (2,1,j,i)
-        s12 = stress0 (3,1,j,i)
-        stress0 (1,1,j,i) = s11 + s12*2.*dw12
-        stress0 (2,1,j,i) = s22 - s12*2.*dw12
-        stress0 (3,1,j,i) = s12 + dw12*(s22-s11)
+        s11 = stress0(j,i,1,1)
+        s22 = stress0(j,i,2,1)
+        s12 = stress0(j,i,3,1)
+        stress0(j,i,1,1) = s11 + s12*2.*dw12
+        stress0(j,i,2,1) = s22 - s12*2.*dw12
+        stress0(j,i,3,1) = s12 + dw12*(s22-s11)
 
         ! rotate strains 
         s11 = strain (1,j,i)
@@ -92,12 +92,12 @@ do  i = 1,nx-1
         ! Adjusting stresses due to rotation
         dw12 = 0.5*(vx3*(x4-x2)+vx2*(x3-x4)+vx4*(x2-x3) - &
            vy3*(y2-y4)-vy2*(y4-y3)-vy4*(y3-y2))/det*dt
-        s11 = stress0 (1,2,j,i)
-        s22 = stress0 (2,2,j,i)
-        s12 = stress0 (3,2,j,i)
-        stress0 (1,2,j,i) = s11 + s12*2.*dw12
-        stress0 (2,2,j,i) = s22 - s12*2.*dw12
-        stress0 (3,2,j,i) = s12 + dw12*(s22-s11)
+        s11 = stress0(j,i,1,2)
+        s22 = stress0(j,i,2,2)
+        s12 = stress0(j,i,3,2)
+        stress0(j,i,1,2) = s11 + s12*2.*dw12
+        stress0(j,i,2,2) = s22 - s12*2.*dw12
+        stress0(j,i,3,2) = s12 + dw12*(s22-s11)
 
         ! (3) Element C:
         oldvol = 1./2/area(3,j,i)
@@ -108,12 +108,12 @@ do  i = 1,nx-1
         ! Adjusting stresses due to rotation
         dw12 = 0.5*(vx1*(x4-x2)+vx2*(x1-x4)+vx4*(x2-x1) - &
            vy1*(y2-y4)-vy2*(y4-y1)-vy4*(y1-y2))/det*dt
-        s11 = stress0 (1,3,j,i)
-        s22 = stress0 (2,3,j,i)
-        s12 = stress0 (3,3,j,i)
-        stress0 (1,3,j,i) = s11 + s12*2.*dw12
-        stress0 (2,3,j,i) = s22 - s12*2.*dw12
-        stress0 (3,3,j,i) = s12 + dw12*(s22-s11)
+        s11 = stress0(j,i,1,3)
+        s22 = stress0(j,i,2,3)
+        s12 = stress0(j,i,3,3)
+        stress0(j,i,1,3) = s11 + s12*2.*dw12
+        stress0(j,i,2,3) = s22 - s12*2.*dw12
+        stress0(j,i,3,3) = s12 + dw12*(s22-s11)
 
         ! (4) Element D:
         oldvol = 1./2/area(4,j,i)
@@ -124,12 +124,12 @@ do  i = 1,nx-1
         ! Adjusting stresses due to rotation
         dw12 = 0.5*(vx1*(x3-x4)+vx4*(x1-x3)+vx3*(x4-x1) - &
             vy1*(y4-y3)-vy4*(y3-y1)-vy3*(y1-y4))/det*dt
-        s11 = stress0 (1,4,j,i)
-        s22 = stress0 (2,4,j,i)
-        s12 = stress0 (3,4,j,i)
-        stress0 (1,4,j,i) = s11 + s12*2.*dw12
-        stress0 (2,4,j,i) = s22 - s12*2.*dw12
-        stress0 (3,4,j,i) = s12 + dw12*(s22-s11)
+        s11 = stress0(j,i,1,4)
+        s22 = stress0(j,i,2,4)
+        s12 = stress0(j,i,3,4)
+        stress0(j,i,1,4) = s11 + s12*2.*dw12
+        stress0(j,i,2,4) = s22 - s12*2.*dw12
+        stress0(j,i,3,4) = s12 + dw12*(s22-s11)
     enddo
 enddo
 !$OMP end do

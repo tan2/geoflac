@@ -66,7 +66,7 @@ subroutine bc_update
           dP = dPT * ( 1 - beta(iph)*rogh ) / ( 1 + beta(iph)/2*dPT )
           press = rogh +0.5*dP
 
-          !        write(*,*) j,stress0(1,1,j,nx-1),press_norm,densT
+          !        write(*,*) j,stress0(j,nx-1,1,1),press_norm,densT
           dlx = cord(j+1,nx,1)-cord(j,nx,1)
           dly = cord(j+1,nx,2)-cord(j,nx,2)
           press_norm = -press
