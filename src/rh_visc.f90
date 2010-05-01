@@ -3,6 +3,7 @@
 ! Therefore there is a coefficient 1.e+6 
 
 function vis_creep(j,i)
+use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'

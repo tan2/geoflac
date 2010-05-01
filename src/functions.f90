@@ -43,6 +43,7 @@ end function srateII
 !================================
 ! First invariant of stress (pressure)
 function stressI(iz,ix)
+use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
@@ -59,6 +60,7 @@ end function stressI
 !================================
 ! Second invariant of stress
 function stressII(iz,ix)
+use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
