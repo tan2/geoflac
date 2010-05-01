@@ -5,13 +5,15 @@ module arrays
   implicit none
 
   ! fortran array pointer
-  real*8, pointer, save :: cord(:,:,:), stress0(:,:,:,:)
+  real*8, pointer, save :: cord(:,:,:), vel(:,:,:), stress0(:,:,:,:), &
+       force(:,:,:), balance(:,:,:)
 
 
 #ifdef USE_CUDA
 
   ! mirror pointer for C
-  type(c_ptr), target, save :: pcord, pstress0
+  type(c_ptr), target, save :: pcord, pvel, pstress0, &
+       pforce, pbalance
 
   !-----------------------------------
   ! functions from external library
@@ -47,7 +49,10 @@ contains
 #ifndef USE_CUDA
 
     allocate(cord(nz, nx, 2))
+    allocate(vel(nz, nx, 2))
     allocate(stress0(nz, nx, 4, 4))
+    allocate(force(nz, nx, 2))
+    allocate(balance(nz, nx, 2))
 
 #else
 
@@ -58,8 +63,17 @@ contains
     call allocate_double(pcord, tmp1d, nz*nx*2)
     call c_f_pointer(pcord, cord, [nz, nx, 2])
 
+    call allocate_double(pvel, tmp1d, nz*nx*2)
+    call c_f_pointer(pvel, vel, [nz, nx, 2])
+
     call allocate_double(pstress0, tmp1d, nz*nx*4*4)
     call c_f_pointer(pstress0, stress0, [nz, nx, 4, 4])
+
+    call allocate_double(pforce, tmp1d, nz*nx*2)
+    call c_f_pointer(pforce, force, [nz, nx, 2])
+
+    call allocate_double(pbalance, tmp1d, nz*nx*2)
+    call c_f_pointer(pbalance, balance, [nz, nx, 2])
 
   contains
 
