@@ -5,13 +5,13 @@ module arrays
   implicit none
 
   ! fortran array pointer
-  real*8, pointer, save :: cord(:,:,:)
+  real*8, pointer, save :: cord(:,:,:), stress0(:,:,:,:)
 
 
 #ifdef USE_CUDA
 
   ! mirror pointer for C
-  type(c_ptr), target, save :: pcord
+  type(c_ptr), target, save :: pcord, pstress0
 
   !-----------------------------------
   ! functions from external library
@@ -47,6 +47,7 @@ contains
 #ifndef USE_CUDA
 
     allocate(cord(nz, nx, 2))
+    allocate(stress0(nz, nx, 4, 4))
 
 #else
 
@@ -56,6 +57,9 @@ contains
     ! allocate as 1D array, then reshape the dimension
     call allocate_double(pcord, tmp1d, nz*nx*2)
     call c_f_pointer(pcord, cord, [nz, nx, 2])
+
+    call allocate_double(pstress0, tmp1d, nz*nx*4*4)
+    call c_f_pointer(pstress0, stress0, [nz, nx, 4, 4])
 
   contains
 

@@ -68,6 +68,7 @@ end
 ! REMESHING STRESS FOR MODE 3 - put hydrostatic pressure to new elements at the bottom
 !=======================================================
 subroutine rem_stress_alt()
+use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
