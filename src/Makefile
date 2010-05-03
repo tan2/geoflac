@@ -187,7 +187,6 @@ $(OBJS): %.o : %.f90
 	$(F90) $(CFLAGS) -c $<
 
 $(OBJS2): %.o : %.F90
-	@echo $(OBJS2)
 	$(F90) $(CFLAGS) -c $<
 
 $(CUDAFLAC_OBJS): %.o : %.cu
