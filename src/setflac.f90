@@ -2,6 +2,7 @@
 ! Setup some parameters (rmass,amass,initial stress,vel,viscosity)
 
 subroutine setflac
+use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
@@ -14,6 +15,9 @@ call init_cord
 
 ! Initial accumulated plastic strain
 aps = 0
+
+! Initial velocity
+vel = 0
 
 ! Phases in the mesh
 call init_phase

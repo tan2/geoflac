@@ -45,9 +45,9 @@ elseif (idt_scale.eq.2) then
     endif
 endif
 vel_max = 0.
+do k = 1,2
 do i = 1,nx
 do j = 1,nz
-do k = 1,2
    vel_max = max(vel_max,abs(vel(j,i,k)))
 enddo
 enddo
