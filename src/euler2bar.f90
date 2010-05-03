@@ -121,7 +121,6 @@ xmin = min(xmin1,x3)
 !      if (mar
       if (ninters.eq.1) then
 !         write(*,*) x1,x2,x3,y1,y2,y3,cord(j,i,1),cord(j,i+1,1),cord(j+1,i,1),cord(j,i,2),cord(j,i+1,2) 
-         iiiiin = iiiiin +1
          inc = inc + 1
 ! Calculate triangle number in which marker belongs
          ntr = 2 * ( (nz-1)*(i-1)+j-1) + k
