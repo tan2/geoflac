@@ -1,5 +1,6 @@
 subroutine elem2marker 
 USE marker_data
+use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'

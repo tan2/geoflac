@@ -107,6 +107,7 @@ end function Eff_melt
 ! Effective Heat Capacity incorporating latent heat
 !=================================================
 function Eff_cp( j, i )
+use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
@@ -153,6 +154,7 @@ end function Eff_cp
 ! Effective Thermal Conductivity
 !=================================================
 function Eff_conduct( j, i )
+use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
@@ -210,6 +212,7 @@ end function Eff_conduct
 ! Therefore there is a coefficient 1.e+6 
 
 function Eff_visc( j, i )
+use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'

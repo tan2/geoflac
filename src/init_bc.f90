@@ -217,6 +217,7 @@ end subroutine init_bc
 !----------------------------------------------------------------
 subroutine stressbc (i,n,numbp,numbp1,x)      
 
+  use arrays
   include 'precision.inc'
   include 'arrays.inc'
   include 'params.inc'
@@ -274,6 +275,7 @@ end subroutine stressbc
 !----------------------------------------------------------------
 subroutine velbc (i,numbp,x)  
 
+  use arrays
   include 'precision.inc' 
   include 'arrays.inc'
   include 'params.inc'
@@ -332,6 +334,7 @@ end subroutine velbc
 !
 subroutine vbcal 
 
+  use arrays
   include 'precision.inc'
   include 'arrays.inc'
   include 'params.inc'
