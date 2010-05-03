@@ -6,6 +6,11 @@
 
 #include "cu_flac.h"
 
+// size of thread block
+// requirement: nthz is multiple of 8, nthx*nthz is multiple of 32
+static const int nthx = 16;
+static const int nthz = 16;
+
 // global variable holding constant model parameters
 flac_param_t param;
 
@@ -31,6 +36,415 @@ void checkCUDAError(const char *msg)
 }
 
 
+__global__ static
+void cu_fl_node(double *force_d, double *balance_d, double *vel_d,
+                const double *cord_d, const double *stress0_d, const double *temp_d,
+                const double *rmass_d, const double *amass_d,
+                const double *bc_d, const int *ncod_d,
+                const double dt, const double drat, const double time,
+                int nx, int nz)
+{
+    // i and j are indices to fortran arrays
+    const int i = blockIdx.x * blockDim.x + threadIdx.x + 1;
+    const int j = blockIdx.y * blockDim.y + threadIdx.y + 1;
+
+    double fx, fy;
+    double fcx, fcy, blx, bly;
+
+    if(j > nz || i > nx) return;
+
+    if(PAR.ynstressbc) {
+        fcx = force(j,i,1);
+        fcy = force(j,i,2);
+        blx = balance(j,i,1);
+        bly = balance(j,i,2);
+    } else {
+        fcx = fcy = blx = bly = 0.0;
+    }
+
+    // REGULAR PART - forces from stresses
+
+    // Element (j-1,i-1). Triangles B,C,D
+    if (j>1 && i>1 ) {
+
+        // triangle B
+        // side 2-3
+        fx = stress0(j-1,i-1,1,2) * (cord(j  ,i  ,2)-cord(j  ,i-1,2)) -
+            stress0(j-1,i-1,3,2) * (cord(j  ,i  ,1)-cord(j  ,i-1,1));
+        fy = stress0(j-1,i-1,3,2) * (cord(j  ,i  ,2)-cord(j  ,i-1,2)) -
+            stress0(j-1,i-1,2,2) * (cord(j  ,i  ,1)-cord(j  ,i-1,1));
+        fcx = fcx - 0.25*fx;
+        fcy = fcy - 0.25*fy;
+        blx = blx + 0.25*fabs(fx);
+        bly = bly + 0.25*fabs(fy);
+        // side 3-1
+        fx = stress0(j-1,i-1,1,2) * (cord(j-1,i  ,2)-cord(j  ,i  ,2)) -
+            stress0(j-1,i-1,3,2) * (cord(j-1,i  ,1)-cord(j  ,i  ,1));
+        fy = stress0(j-1,i-1,3,2) * (cord(j-1,i  ,2)-cord(j  ,i  ,2)) -
+            stress0(j-1,i-1,2,2) * (cord(j-1,i  ,1)-cord(j  ,i  ,1));
+        fcx = fcx - 0.25*fx;
+        fcy = fcy - 0.25*fy;
+        blx = blx + 0.25*fabs(fx);
+        bly = bly + 0.25*fabs(fy);
+
+        // triangle C
+        // side 2-3
+        fx = stress0(j-1,i-1,1,3) * (cord(j  ,i  ,2)-cord(j  ,i-1,2)) -
+            stress0(j-1,i-1,3,3) * (cord(j  ,i  ,1)-cord(j  ,i-1,1));
+        fy = stress0(j-1,i-1,3,3) * (cord(j  ,i  ,2)-cord(j  ,i-1,2)) -
+            stress0(j-1,i-1,2,3) * (cord(j  ,i  ,1)-cord(j  ,i-1,1));
+        fcx = fcx - 0.25*fx;
+        fcy = fcy - 0.25*fy;
+        blx = blx + 0.25*fabs(fx);
+        bly = bly + 0.25*fabs(fy);
+        // side 3-1
+        fx = stress0(j-1,i-1,1,3) * (cord(j-1,i-1,2)-cord(j  ,i  ,2)) -
+         stress0(j-1,i-1,3,3) * (cord(j-1,i-1,1)-cord(j  ,i  ,1));
+        fy = stress0(j-1,i-1,3,3) * (cord(j-1,i-1,2)-cord(j  ,i  ,2)) -
+            stress0(j-1,i-1,2,3) * (cord(j-1,i-1,1)-cord(j  ,i  ,1));
+        fcx = fcx - 0.25*fx;
+        fcy = fcy - 0.25*fy;
+        blx = blx + 0.25*fabs(fx);
+        bly = bly + 0.25*fabs(fy);
+
+        // triangle D
+        // side 1-2
+        fx = stress0(j-1,i-1,1,4) * (cord(j  ,i  ,2)-cord(j-1,i-1,2)) -
+            stress0(j-1,i-1,3,4) * (cord(j  ,i  ,1)-cord(j-1,i-1,1));
+        fy = stress0(j-1,i-1,3,4) * (cord(j  ,i  ,2)-cord(j-1,i-1,2)) -
+            stress0(j-1,i-1,2,4) * (cord(j  ,i  ,1)-cord(j-1,i-1,1));
+        fcx = fcx - 0.25*fx;
+        fcy = fcy - 0.25*fy;
+        blx = blx + 0.25*fabs(fx);
+        bly = bly + 0.25*fabs(fy);
+        // side 2-3
+        fx = stress0(j-1,i-1,1,4) * (cord(j-1,i  ,2)-cord(j  ,i  ,2)) -
+            stress0(j-1,i-1,3,4) * (cord(j-1,i  ,1)-cord(j  ,i  ,1));
+        fy = stress0(j-1,i-1,3,4) * (cord(j-1,i  ,2)-cord(j  ,i  ,2)) -
+            stress0(j-1,i-1,2,4) * (cord(j-1,i  ,1)-cord(j  ,i  ,1));
+        fcx = fcx - 0.25*fx;
+        fcy = fcy - 0.25*fy;
+        blx = blx + 0.25*fabs(fx);
+        bly = bly + 0.25*fabs(fy);
+    }
+
+    // Element (j-1,i). Triangles A,B,C.
+    if (j>1 && i<nx) {
+
+        // triangle A
+        // side 1-2
+        fx = stress0(j-1,i  ,1,1) * (cord(j  ,i  ,2)-cord(j-1,i  ,2)) -
+            stress0(j-1,i  ,3,1) * (cord(j  ,i  ,1)-cord(j-1,i  ,1));
+        fy = stress0(j-1,i  ,3,1) * (cord(j  ,i  ,2)-cord(j-1,i  ,2)) -
+            stress0(j-1,i  ,2,1) * (cord(j  ,i  ,1)-cord(j-1,i  ,1));
+        fcx = fcx - 0.25*fx;
+        fcy = fcy - 0.25*fy;
+        blx = blx + 0.25*fabs(fx);
+        bly = bly + 0.25*fabs(fy);
+        // side 2-3
+        fx = stress0(j-1,i  ,1,1) * (cord(j-1,i+1,2)-cord(j  ,i  ,2)) -
+            stress0(j-1,i  ,3,1) * (cord(j-1,i+1,1)-cord(j  ,i  ,1));
+        fy = stress0(j-1,i  ,3,1) * (cord(j-1,i+1,2)-cord(j  ,i  ,2)) -
+            stress0(j-1,i  ,2,1) * (cord(j-1,i+1,1)-cord(j  ,i  ,1));
+        fcx = fcx - 0.25*fx;
+        fcy = fcy - 0.25*fy;
+        blx = blx + 0.25*fabs(fx);
+        bly = bly + 0.25*fabs(fy);
+
+        // triangle B
+        // side 1-2
+        fx = stress0(j-1,i  ,1,2) * (cord(j  ,i  ,2)-cord(j-1,i+1,2)) -
+            stress0(j-1,i  ,3,2) * (cord(j  ,i  ,1)-cord(j-1,i+1,1));
+        fy = stress0(j-1,i  ,3,2) * (cord(j  ,i  ,2)-cord(j-1,i+1,2)) -
+            stress0(j-1,i  ,2,2) * (cord(j  ,i  ,1)-cord(j-1,i+1,1));
+        fcx = fcx - 0.25*fx;
+        fcy = fcy - 0.25*fy;
+        blx = blx + 0.25*fabs(fx);
+        bly = bly + 0.25*fabs(fy);
+        // side 2-3
+        fx = stress0(j-1,i  ,1,2) * (cord(j  ,i+1,2)-cord(j  ,i  ,2)) -
+            stress0(j-1,i  ,3,2) * (cord(j  ,i+1,1)-cord(j  ,i  ,1));
+        fy = stress0(j-1,i  ,3,2) * (cord(j  ,i+1,2)-cord(j  ,i  ,2)) -
+            stress0(j-1,i  ,2,2) * (cord(j  ,i+1,1)-cord(j  ,i  ,1));
+        fcx = fcx - 0.25*fx;
+        fcy = fcy - 0.25*fy;
+        blx = blx + 0.25*fabs(fx);
+        bly = bly + 0.25*fabs(fy);
+
+        // triangle C
+        // side 1-2
+        fx = stress0(j-1,i  ,1,3) * (cord(j  ,i  ,2)-cord(j-1,i  ,2)) -
+            stress0(j-1,i  ,3,3) * (cord(j  ,i  ,1)-cord(j-1,i  ,1));
+        fy = stress0(j-1,i  ,3,3) * (cord(j  ,i  ,2)-cord(j-1,i  ,2)) -
+            stress0(j-1,i  ,2,3) * (cord(j  ,i  ,1)-cord(j-1,i  ,1));
+        fcx = fcx - 0.25*fx;
+        fcy = fcy - 0.25*fy;
+        blx = blx + 0.25*fabs(fx);
+        bly = bly + 0.25*fabs(fy);
+        // side 2-3
+        fx = stress0(j-1,i  ,1,3) * (cord(j  ,i+1,2)-cord(j  ,i  ,2)) -
+            stress0(j-1,i  ,3,3) * (cord(j  ,i+1,1)-cord(j  ,i  ,1));
+        fy = stress0(j-1,i  ,3,3) * (cord(j  ,i+1,2)-cord(j  ,i  ,2)) -
+            stress0(j-1,i  ,2,3) * (cord(j  ,i+1,1)-cord(j  ,i  ,1));
+        fcx = fcx - 0.25*fx;
+        fcy = fcy - 0.25*fy;
+        blx = blx + 0.25*fabs(fx);
+        bly = bly + 0.25*fabs(fy);
+    }
+
+    // Element (j,i-1). Triangles A,B,D
+    if (j<nz && i>1) {
+
+        // triangle A
+        // side 2-3
+        fx = stress0(j  ,i-1,1,1) * (cord(j  ,i  ,2)-cord(j+1,i-1,2)) -
+            stress0(j  ,i-1,3,1) * (cord(j  ,i  ,1)-cord(j+1,i-1,1));
+        fy = stress0(j  ,i-1,3,1) * (cord(j  ,i  ,2)-cord(j+1,i-1,2)) -
+            stress0(j  ,i-1,2,1) * (cord(j  ,i  ,1)-cord(j+1,i-1,1));
+        fcx = fcx - 0.25*fx;
+        fcy = fcy - 0.25*fy;
+        blx = blx + 0.25*fabs(fx);
+        bly = bly + 0.25*fabs(fy);
+        // side 3-1
+        fx = stress0(j  ,i-1,1,1) * (cord(j  ,i-1,2)-cord(j  ,i  ,2)) -
+            stress0(j  ,i-1,3,1) * (cord(j  ,i-1,1)-cord(j  ,i  ,1));
+        fy = stress0(j  ,i-1,3,1) * (cord(j  ,i-1,2)-cord(j  ,i  ,2)) -
+            stress0(j  ,i-1,2,1) * (cord(j  ,i-1,1)-cord(j  ,i  ,1));
+        fcx = fcx - 0.25*fx;
+        fcy = fcy - 0.25*fy;
+        blx = blx + 0.25*fabs(fx);
+        bly = bly + 0.25*fabs(fy);
+
+        // triangle B
+        // side 1-2
+        fx = stress0(j  ,i-1,1,2) * (cord(j+1,i-1,2)-cord(j  ,i  ,2)) -
+            stress0(j  ,i-1,3,2) * (cord(j+1,i-1,1)-cord(j  ,i  ,1));
+        fy = stress0(j  ,i-1,3,2) * (cord(j+1,i-1,2)-cord(j  ,i  ,2)) -
+            stress0(j  ,i-1,2,2) * (cord(j+1,i-1,1)-cord(j  ,i  ,1));
+        fcx = fcx - 0.25*fx;
+        fcy = fcy - 0.25*fy;
+        blx = blx + 0.25*fabs(fx);
+        bly = bly + 0.25*fabs(fy);
+        // side 3-1
+        fx = stress0(j  ,i-1,1,2) * (cord(j  ,i  ,2)-cord(j+1,i  ,2)) -
+            stress0(j  ,i-1,3,2) * (cord(j  ,i  ,1)-cord(j+1,i  ,1));
+        fy = stress0(j  ,i-1,3,2) * (cord(j  ,i  ,2)-cord(j+1,i  ,2)) -
+            stress0(j  ,i-1,2,2) * (cord(j  ,i  ,1)-cord(j+1,i  ,1));
+        fcx = fcx - 0.25*fx;
+        fcy = fcy - 0.25*fy;
+        blx = blx + 0.25*fabs(fx);
+        bly = bly + 0.25*fabs(fy);
+
+        // triangle D
+        // side 2-3
+        fx = stress0(j  ,i-1,1,4) * (cord(j  ,i  ,2)-cord(j+1,i  ,2)) -
+            stress0(j  ,i-1,3,4) * (cord(j  ,i  ,1)-cord(j+1,i  ,1));
+        fy = stress0(j  ,i-1,3,4) * (cord(j  ,i  ,2)-cord(j+1,i  ,2)) -
+            stress0(j  ,i-1,2,4) * (cord(j  ,i  ,1)-cord(j+1,i  ,1));
+        fcx = fcx - 0.25*fx;
+        fcy = fcy - 0.25*fy;
+        blx = blx + 0.25*fabs(fx);
+        bly = bly + 0.25*fabs(fy);
+        // side 3-1
+        fx = stress0(j  ,i-1,1,4) * (cord(j  ,i-1,2)-cord(j  ,i  ,2)) -
+            stress0(j  ,i-1,3,4) * (cord(j  ,i-1,1)-cord(j  ,i  ,1));
+        fy = stress0(j  ,i-1,3,4) * (cord(j  ,i-1,2)-cord(j  ,i  ,2)) -
+            stress0(j  ,i-1,2,4) * (cord(j  ,i-1,1)-cord(j  ,i  ,1));
+        fcx = fcx - 0.25*fx;
+        fcy = fcy - 0.25*fy;
+        blx = blx + 0.25*fabs(fx);
+        bly = bly + 0.25*fabs(fy);
+    }
+
+    // Element (j,i). Triangles A,C,D
+    if (j<nz && i<nx ) {
+
+        // triangle A
+        // side 1-2
+        fx = stress0(j  ,i  ,1,1) * (cord(j+1,i  ,2)-cord(j  ,i  ,2)) -
+            stress0(j  ,i  ,3,1) * (cord(j+1,i  ,1)-cord(j  ,i  ,1));
+        fy = stress0(j  ,i  ,3,1) * (cord(j+1,i  ,2)-cord(j  ,i  ,2)) -
+            stress0(j  ,i  ,2,1) * (cord(j+1,i  ,1)-cord(j  ,i  ,1));
+        fcx = fcx - 0.25*fx;
+        fcy = fcy - 0.25*fy;
+        blx = blx + 0.25*fabs(fx);
+        bly = bly + 0.25*fabs(fy);
+        // side 3-1
+        fx = stress0(j  ,i  ,1,1) * (cord(j  ,i  ,2)-cord(j  ,i+1,2)) -
+            stress0(j  ,i  ,3,1) * (cord(j  ,i  ,1)-cord(j  ,i+1,1));
+        fy = stress0(j  ,i  ,3,1) * (cord(j  ,i  ,2)-cord(j  ,i+1,2)) -
+            stress0(j  ,i  ,2,1) * (cord(j  ,i  ,1)-cord(j  ,i+1,1));
+        fcx = fcx - 0.25*fx;
+        fcy = fcy - 0.25*fy;
+        blx = blx + 0.25*fabs(fx);
+        bly = bly + 0.25*fabs(fy);
+
+        // triangle C
+        // side 1-2
+        fx = stress0(j  ,i  ,1,3) * (cord(j+1,i  ,2)-cord(j  ,i  ,2)) -
+            stress0(j  ,i  ,3,3) * (cord(j+1,i  ,1)-cord(j  ,i  ,1));
+        fy = stress0(j  ,i  ,3,3) * (cord(j+1,i  ,2)-cord(j  ,i  ,2)) -
+            stress0(j  ,i  ,2,3) * (cord(j+1,i  ,1)-cord(j  ,i  ,1));
+        fcx = fcx - 0.25*fx;
+        fcy = fcy - 0.25*fy;
+        blx = blx + 0.25*fabs(fx);
+        bly = bly + 0.25*fabs(fy);
+        // side 3-1
+        fx = stress0(j  ,i  ,1,3) * (cord(j  ,i  ,2)-cord(j+1,i+1,2)) -
+            stress0(j  ,i  ,3,3) * (cord(j  ,i  ,1)-cord(j+1,i+1,1));
+        fy = stress0(j  ,i  ,3,3) * (cord(j  ,i  ,2)-cord(j+1,i+1,2)) -
+            stress0(j  ,i  ,2,3) * (cord(j  ,i  ,1)-cord(j+1,i+1,1));
+        fcx = fcx - 0.25*fx;
+        fcy = fcy - 0.25*fy;
+        blx = blx + 0.25*fabs(fx);
+        bly = bly + 0.25*fabs(fy);
+
+        // triangle D
+        // side 1-2
+        fx = stress0(j  ,i  ,1,4) * (cord(j+1,i+1,2)-cord(j  ,i  ,2)) -
+            stress0(j  ,i  ,3,4) * (cord(j+1,i+1,1)-cord(j  ,i  ,1));
+        fy = stress0(j  ,i  ,3,4) * (cord(j+1,i+1,2)-cord(j  ,i  ,2)) -
+            stress0(j  ,i  ,2,4) * (cord(j+1,i+1,1)-cord(j  ,i  ,1));
+        fcx = fcx - 0.25*fx;
+        fcy = fcy - 0.25*fy;
+        blx = blx + 0.25*fabs(fx);
+        bly = bly + 0.25*fabs(fy);
+        // side 3-1
+        fx = stress0(j  ,i  ,1,4) * (cord(j  ,i  ,2)-cord(j  ,i+1,2)) -
+            stress0(j  ,i  ,3,4) * (cord(j  ,i  ,1)-cord(j  ,i+1,1));
+        fy = stress0(j  ,i  ,3,4) * (cord(j  ,i  ,2)-cord(j  ,i+1,2)) -
+            stress0(j  ,i  ,2,4) * (cord(j  ,i  ,1)-cord(j  ,i+1,1));
+        fcx = fcx - 0.25*fx;
+        fcy = fcy - 0.25*fy;
+        blx = blx + 0.25*fabs(fx);
+        bly = bly + 0.25*fabs(fy);
+    }
+
+    // GRAVITY FORCE
+    fcy = fcy - rmass(j,i)*PAR.g;
+    bly = bly + fabs(rmass(j,i)*PAR.g);
+
+
+    if(PAR.nyhydro>0) {
+        const int lneighbor = (i > 1) ? (i-1) : i;
+        const int rneighbor = (i < nx) ? (i+1) : i;
+        double dlx_l, dly_l, dlx_r, dly_r;
+        double press_norm_l, press_norm_r;
+        double p_est, rosubg;
+        if((j == 1)) {
+            // BOUNDARY CONDITIONS
+
+            // pressure from water sea on top
+            double rho_water = -10300.;
+            double water_depth = 0.5*(cord(j,rneighbor,2)+cord(j,i,2));
+            if (water_depth<0.) { // No water (above sea level)
+                press_norm_l = rho_water*((cord(j,lneighbor,2)+cord(j,i,2))/2.);
+                dlx_l = cord(j,i  ,1)-cord(j,lneighbor,1);
+                dly_l = cord(j,i  ,2)-cord(j,lneighbor,2);
+
+                press_norm_r = rho_water*((cord(j,rneighbor,2)+cord(j,i,2))/2.);
+                dlx_r = cord(j,i+1,1)-cord(j,rneighbor,1);
+                dly_r = cord(j,i+1,2)-cord(j,rneighbor,2);
+
+                fcx = fcx - 0.5*press_norm_l*dly_l-0.5*press_norm_r*dly_r;
+                fcy = fcy + 0.5*press_norm_l*dlx_l+0.5*press_norm_r*dlx_r;
+
+                blx = 1.e+17;
+            }
+        }
+
+        // bottom support - Archimed force (normal to the surface, shear component = 0)
+        //write(*,*) force(nz,i,1),force(nz,i,2)
+        if(j == nz) {
+            p_est = PAR.pisos + 0.5*(den(PAR.iphsub)+PAR.drosub)*PAR.g*(cord(j,i,2)-PAR.rzbo);
+            rosubg = PAR.g * (den(PAR.iphsub)+PAR.drosub) * (1-alfa(PAR.iphsub)*temp(j,i)+beta(PAR.iphsub)*p_est);
+
+            press_norm_l = PAR.pisos-rosubg*((cord(j,lneighbor,2)+cord(j,i,2))/2-PAR.rzbo);
+            dlx_l = cord(j,i  ,1)-cord(j,lneighbor,1);
+            dly_l = cord(j,i  ,2)-cord(j,lneighbor,2);
+
+            press_norm_r = PAR.pisos-rosubg*((cord(j,rneighbor,2)+cord(j,i,2))/2-PAR.rzbo);
+            dlx_r = cord(j,rneighbor,1)-cord(j,i  ,1);
+            dly_r = cord(j,rneighbor,2)-cord(j,i  ,2);
+            fcx = fcx - 0.5*press_norm_l*dly_l-0.5*press_norm_r*dly_r;
+            fcy = fcy + 0.5*press_norm_l*dlx_l+0.5*press_norm_r*dlx_r;
+
+            blx = 1.e+17;
+            //write(*,*) i,pisos,force(nz,i,1),force(nz,i,2),press_norm_l,press_norm_r,dlx_l,dlx_r,dly_l,dly_r
+        }
+    }
+
+    const int ncodx = ncod(j,i,1);
+    const int ncody = ncod(j,i,2);
+
+    // BALANCE-OFF
+    if( (ncodx & 1) || j<=PAR.n_boff_cutoff )
+        blx = 0;
+    else
+        blx = fabs(fcx) / (blx + 1.e-9);
+
+
+    if( (ncody & 2) || j<=PAR.n_boff_cutoff )
+        bly = 0;
+    else
+        bly = fabs(fcy) / (bly + 1.e-9);
+
+
+    // DAMPING
+    double vx, vy;
+    vx = vel(j,i,1);
+    vy = vel(j,i,2);
+    if( !(ncodx & 1) && fabs(vx)>1.e-13 ) {
+        fcx = fcx - PAR.demf*copysign(fcx, vx);
+    }
+
+    if( !(ncody & 2) && fabs(vy)>1.e-13 ) {
+        fcy = fcy - PAR.demf*copysign(fcy, vy);
+    }
+
+    // VELOCITIES FROM FORCES
+    const int iunknown = 0;
+    if( ncodx == 1 ) {
+        vx = bc(j,i,1) ;
+        //            vx = 0.0;
+
+        //        write(*,*) i,j,vx
+    }
+    else {
+        vx = vx + dt*fcx/(amass(j,i)*drat*drat);
+    }
+    if( ncody == 1 ) {
+        vy = bc(j,i,2);
+        if(iunknown==1) {
+            vy = bc(j,i,2)* sin(time*3.14159/(2*PAR.sec_year));
+            //write(*,*) bc(j,i,2), sin(time*3.14159/(2*sec_year));
+        }
+        //        write(*,*) i,j,vy
+    }
+    else {
+        vy = vy + dt*fcy/(amass(j,i)*drat*drat);
+    }
+
+    // Prestress to form the topo when density differences are present WITHOUT PUSHING OR PULLING!
+    if (PAR.i_prestress && (time < 200000.*PAR.sec_year)) {
+        // node is on bottom/left/right boundary?
+        if(j==nz || i==1 || i==nx) {
+            vx = 0.0;
+            vy = 0.0;
+        }
+    }
+
+    // Storing the result
+    force(j,i,1) = fcx;
+    force(j,i,2) = fcy;
+    balance(j,i,1) = blx;
+    balance(j,i,2) = bly;
+    vel(j,i,1) = vx;
+    vel(j,i,2) = vy;
+    return;
+}
+
+
 /*
  * Copying Fortran variables to C and CUDA
  */
@@ -48,7 +462,7 @@ void cu_copy_param_(int *irheol, double *visc,
                     double *dt_scale, double *frac, double *fracm,
                     double *strain_inert, double *vbc,
                     int *lphase,
-                    int *nx, int *nz, int *nyhydro, int *iphsub,
+                    int *nyhydro, int *iphsub,
                     int *n_boff_cutoff, int *i_prestress,
                     int *iint_marker, int *nphasl, int *idt_scale)
 {
@@ -91,8 +505,6 @@ void cu_copy_param_(int *irheol, double *visc,
     param.vbc = *vbc;
 
 
-    param.nx = *nx;
-    param.nz = *nz;
     param.nyhydro = *nyhydro;
     param.iphsub = *iphsub;
     param.n_boff_cutoff = *n_boff_cutoff;
