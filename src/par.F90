@@ -1,3 +1,5 @@
+! -*- F90 -*-
+
 program DREZINA
 use arrays
 include 'precision.inc'
@@ -69,7 +71,7 @@ call cu_copy_param( &
      dt_scale, frac, fracm, &
      strain_inert, vbc, &
      lphase, &
-     nyhydro, iphsub, &
+     nx, nz, nyhydro, iphsub, &
      n_boff_cutoff, i_prestress, &
      iint_marker, nphasl, idt_scale &
      )
@@ -91,7 +93,7 @@ if(.false.) then
          dt_scale, frac, fracm, &
          strain_inert, vbc, &
          lphase, &
-         nyhydro, iphsub, &
+         nx, nz, nyhydro, iphsub, &
          n_boff_cutoff, i_prestress, &
          iint_marker, nphasl, idt_scale
 endif
