@@ -59,6 +59,7 @@ end
 
 
 subroutine MakeIntrusions()
+use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'

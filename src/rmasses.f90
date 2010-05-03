@@ -2,6 +2,7 @@
 !  Distribution of real masses in nodes
 
 subroutine rmasses
+use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'

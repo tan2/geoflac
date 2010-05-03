@@ -5,15 +5,21 @@ module arrays
   implicit none
 
   ! fortran array pointer
-  real*8, pointer, save :: cord(:,:,:), vel(:,:,:), stress0(:,:,:,:), &
-       force(:,:,:), balance(:,:,:)
+  real*8, pointer, save :: cord(:,:,:), temp(:,:), vel(:,:,:), stress0(:,:,:,:), &
+       force(:,:,:), balance(:,:,:), amass(:,:), rmass(:,:), &
+       bc(:,:,:)
+
+  integer, pointer, save :: ncod(:,:,:)
 
 
 #ifdef USE_CUDA
 
   ! mirror pointer for C
-  type(c_ptr), target, save :: pcord, pvel, pstress0, &
-       pforce, pbalance
+  type(c_ptr), target, save :: pcord, ptemp, pvel, pstress0, &
+       pforce, pbalance, pamass, prmass, &
+       pbc, &
+       pncod
+
 
   !-----------------------------------
   ! functions from external library
@@ -49,15 +55,23 @@ contains
 #ifndef USE_CUDA
 
     allocate(cord(nz, nx, 2))
+    allocate(temp(nz, nx))
     allocate(vel(nz, nx, 2))
     allocate(stress0(nz, nx, 4, 4))
     allocate(force(nz, nx, 2))
     allocate(balance(nz, nx, 2))
+    allocate(amass(nz, nx))
+    allocate(rmass(nz, nx))
+    allocate(bc(nz, nx, 2))
+
+    allocate(ncod(nz, nx, 2))
 
 #else
 
 
     real*8, pointer :: tmp1d(:)
+    integer, pointer :: itmp1d(:)
+
 
     ! allocate as 1D array, then reshape the dimension
     call allocate_double(pcord, tmp1d, nz*nx*2)
@@ -65,6 +79,9 @@ contains
 
     call allocate_double(pvel, tmp1d, nz*nx*2)
     call c_f_pointer(pvel, vel, [nz, nx, 2])
+
+    call allocate_double(ptemp, tmp1d, nz*nx)
+    call c_f_pointer(ptemp, temp, [nz, nx])
 
     call allocate_double(pstress0, tmp1d, nz*nx*4*4)
     call c_f_pointer(pstress0, stress0, [nz, nx, 4, 4])
@@ -74,6 +91,20 @@ contains
 
     call allocate_double(pbalance, tmp1d, nz*nx*2)
     call c_f_pointer(pbalance, balance, [nz, nx, 2])
+
+    call allocate_double(pvel, tmp1d, nz*nx*2)
+    call c_f_pointer(pvel, vel, [nz, nx, 2])
+
+    call allocate_double(pamass, tmp1d, nz*nx)
+    call c_f_pointer(pamass, amass, [nz, nx])
+
+    call allocate_double(prmass, tmp1d, nz*nx)
+    call c_f_pointer(prmass, rmass, [nz, nx])
+
+
+    call allocate_int(pncod, itmp1d, nz*nx*2)
+    call c_f_pointer(pncod, ncod, [nz, nx, 2])
+
 
   contains
 

@@ -246,6 +246,7 @@ end
 ! Prepare plastic properties depending on softening or randomness
 
 subroutine pre_plast (i,j,coh,phi,psi,jran,hardn)
+use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
