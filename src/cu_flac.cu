@@ -48,7 +48,7 @@ void cu_copy_param_(int *irheol, double *visc,
                     double *dt_scale, double *frac, double *fracm,
                     double *strain_inert, double *vbc,
                     int *lphase,
-                    int *nyhydro, int *iphsub,
+                    int *nx, int *nz, int *nyhydro, int *iphsub,
                     int *n_boff_cutoff, int *i_prestress,
                     int *iint_marker, int *nphasl, int *idt_scale)
 {
@@ -91,6 +91,8 @@ void cu_copy_param_(int *irheol, double *visc,
     param.vbc = *vbc;
 
 
+    param.nx = *nx;
+    param.nz = *nz;
     param.nyhydro = *nyhydro;
     param.iphsub = *iphsub;
     param.n_boff_cutoff = *n_boff_cutoff;

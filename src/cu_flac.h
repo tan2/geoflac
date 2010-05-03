@@ -67,6 +67,8 @@ typedef struct _flac_param {
     int irheol[20];
     int lphase[20];
 
+    int nx;
+    int nz;
     int nyhydro;
     int iphsub;
     int n_boff_cutoff;
