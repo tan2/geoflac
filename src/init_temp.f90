@@ -54,8 +54,11 @@ do i = 1,nx-1
 
 ! E-fold depends on x (correction due to lateral change in geotherm)
 
-       if(yc.ge.geoth) temp(j,i)=t_top+((te0-t_top)/geoth)*yc
-       if(yc.lt.geoth) temp(j,i)=te0 + ((te0-t_top)/(0.5*geoth))*(yc-geoth)
+       if(yc.ge.geoth) then
+           temp(j,i)=t_top+((te0-t_top)/geoth)*yc
+       else
+           temp(j,i)=te0 + ((te0-t_top)/(0.5*geoth))*(yc-geoth)
+       endif
        if(temp(j,i).gt.t_bot) temp(j,i) = t_bot
 enddo
 enddo
@@ -123,7 +126,9 @@ n=1
 !   write(*,*) rzbo, tr, hs, hr, hc(n), q_m, tm
    age_init = age_1(n)*3.14*1.e+7*1.e+6 + time 
    diff_m = cond_m/1000./dens_m
-   tau_d = 200.e3*200.e3/(pi*pi*diff_m) 
+   tau_d = 200.e3*200.e3/(pi*pi*diff_m)
+   !XXX: temp(:,6:nx) not initialized
+   write(*,*) 'Warning: iynts=20 -- temp(:,6:nx) not initialized'
    do i = 1, 5 
       do j = 1,nz
 ! depth in km
