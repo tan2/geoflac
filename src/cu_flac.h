@@ -4,6 +4,58 @@
 #define __cu_flac_h__
 
 
+#define mnx     50      // max # of elements in x
+#define mnz     10      // max # of elements in z
+#define ntriag  4       // # of triangles per element
+#define nstr    4       // # of stress components
+#define ndim    2       // # of spatial dimension
+
+
+// Macros to wrap index access to Fortran arrays
+// See 'arrays.F90' for the dimension extent of each array
+
+#define amass(j,i) (                    \
+        amass_d[ ((i)-1)*nz + (j)-1 ]   \
+	)
+
+#define balance(j,i,d) (                                \
+        balance_d[ ((d)-1)*nx*nz + ((i)-1)*nz + (j)-1 ] \
+	)
+
+#define bc(j,i,d) (                                     \
+        bc_d[ ((d)-1)*nx*nz + ((i)-1)*nz + (j)-1 ]      \
+	)
+
+#define cord(j,i,d) (                                   \
+        cord_d[ ((d)-1)*nx*nz + ((i)-1)*nz + (j)-1 ]    \
+	)
+
+#define force(j,i,d) (                                  \
+        force_d[ ((d)-1)*nx*nz + ((i)-1)*nz + (j)-1 ]   \
+	)
+
+#define ncod(j,i,d) (                                   \
+        ncod_d[ ((d)-1)*nx*nz + ((i)-1)*nz + (j)-1 ]    \
+	)
+
+#define rmass(j,i) (                    \
+        rmass_d[ ((i)-1)*nz + (j)-1 ]   \
+	)
+
+#define stress0(j,i,d,k) (                              \
+        stress0_d[ ((k)-1)*nstr*nx*nz +                 \
+                   ((d)-1)*nx*nz + ((i)-1)*nz + (j)-1 ] \
+	)
+
+#define temp(j,i) (                     \
+        temp_d[ ((i)-1)*nz + (j)-1 ]    \
+	)
+
+#define vel(j,i,d) (                                    \
+        vel_d[ ((d)-1)*nx*nz + ((i)-1)*nz + (j)-1 ]     \
+	)
+
+
 #define irheol(i) (PAR.irheol[(i)-1])
 #define visc(i) (PAR.visc[(i)-1])
 #define den(i) (PAR.den[(i)-1])
@@ -67,8 +119,6 @@ typedef struct _flac_param {
     int irheol[20];
     int lphase[20];
 
-    int nx;
-    int nz;
     int nyhydro;
     int iphsub;
     int n_boff_cutoff;
