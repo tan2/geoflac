@@ -106,7 +106,8 @@ MODULE_SRCS = \
 
 # f90 source code with preprocessor directives (#if ... #endif)
 CPP_SRCS = \
-	arrays.F90
+	arrays.F90 \
+	par.F90
 
 # f90 source code without preprocessor directives
 SRCS =	\
@@ -139,7 +140,6 @@ SRCS =	\
 	outflac.f90 \
 	outmarker.f90 \
 	outtracer.f90 \
-	par.f90 \
 	read_more.f90 \
 	read_params.f90 \
 	rem_cord.f90 \
