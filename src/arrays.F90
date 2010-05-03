@@ -101,6 +101,9 @@ contains
     call allocate_double(prmass, tmp1d, nz*nx)
     call c_f_pointer(prmass, rmass, [nz, nx])
 
+    call allocate_double(pbc, tmp1d, nz*nx*2)
+    call c_f_pointer(pbc, bc, [nz, nx, 2])
+
 
     call allocate_int(pncod, itmp1d, nz*nx*2)
     call c_f_pointer(pncod, ncod, [nz, nx, 2])
