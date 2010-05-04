@@ -107,6 +107,7 @@ MODULE_SRCS = \
 # f90 source code with preprocessor directives (#if ... #endif)
 CPP_SRCS = \
 	arrays.F90 \
+	flac.F90 \
 	par.F90
 
 # f90 source code without preprocessor directives
@@ -117,7 +118,6 @@ SRCS =	\
 	dt_mass.f90 \
 	elem2marker.f90 \
 	euler2bar.f90 \
-	flac.f90 \
 	fl_move.f90 \
 	fl_node.f90 \
 	fl_rheol.f90 \
