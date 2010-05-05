@@ -476,6 +476,7 @@ void cu_flac(double *force, double *balance, double *vel,
 
     if(first) {
         first = 0;
+        //fprintf(stderr, "addr: %d %d %d %d\n", cord, temp, vel, stress0);
 
         cudaMalloc((void **) &cord_d, nx*nz*2*sizeof(double));
         cudaMalloc((void **) &stress0_d, nx*nz*ntriag*nstr*sizeof(double));
