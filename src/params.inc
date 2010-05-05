@@ -42,7 +42,7 @@ common /therm/ t_top,t_bot,hs,hr,temp_per,bot_bc,time_t,dt_therm, &
 
 common /stress/ g,pisos,drosub,damp_vis,nyhydro,iphsub
 
-common /process/ sec_year,time,dt,nloop,irestart,time_max,ifreq_avgsr,ireset
+common /process/ sec_year,time,dt,time_max,nloop_restarted,nloop,irestart,ifreq_avgsr,ireset
 
 common /hooks/ if_intrus,if_hydro
 

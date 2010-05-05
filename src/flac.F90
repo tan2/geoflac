@@ -77,5 +77,45 @@ call cu_flac(pforce, pbalance, pvel, &
 
 #endif
 
+
+#if 1
+
+! write the first three iterations of arrays to file
+! the file is used to compared f90 and cuda results
+irec = nloop - nloop_restarted + 1
+open(111, file='force.rr',action='write',access='direct',recl=8*nz*nx*2)
+write(111, rec=irec) force
+close(111)
+open(111, file='balance.rr',action='write',access='direct',recl=8*nz*nx*2)
+write(111, rec=irec) balance
+close(111)
+open(111, file='vel.rr',action='write',access='direct',recl=8*nz*nx*2)
+write(111, rec=irec) vel
+close(111)
+open(111, file='stress0.rr',action='write',access='direct',recl=8*nz*nx*4*4)
+write(111, rec=irec) stress0
+close(111)
+open(111, file='cord.rr',action='write',access='direct',recl=8*nz*nx*2)
+write(111, rec=irec) cord
+close(111)
+open(111, file='rmass.rr',action='write',access='direct',recl=8*nz*nx)
+write(111, rec=irec) rmass
+close(111)
+open(111, file='area.rr',action='write',access='direct',recl=8*(nz-1)*(nx-1)*4)
+write(111, rec=irec) area
+close(111)
+open(111, file='dvol.rr',action='write',access='direct',recl=8*(nz-1)*(nx-1)*4)
+write(111, rec=irec) dvol
+close(111)
+open(111, file='strain.rr',action='write',access='direct',recl=8*(nz-1)*(nx-1)*3)
+write(111, rec=irec) strain
+close(111)
+write(*,*) 'nloop:', nloop, irec
+
+if(irec .ge. 1) stop 111
+
+#endif
+
+
 return
 end subroutine flac
