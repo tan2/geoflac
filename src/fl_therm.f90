@@ -83,12 +83,12 @@ do i = 1,nx-1
         add_source(j,i) = ( source(j,i) + dissip/den(iph) - 600.*cp_eff*Eff_melt(iph,tmpr)) / cp_eff
 
         ! (1) A element:
-        flux(j,i,1,1) = -diff * ( t1*(y2-y3)+t2*(y3-y1)+t3*(y1-y2) ) * area(1,j,i)
-        flux(j,i,1,2) = -diff * ( t1*(x3-x2)+t2*(x1-x3)+t3*(x2-x1) ) * area(1,j,i)
+        flux(j,i,1,1) = -diff * ( t1*(y2-y3)+t2*(y3-y1)+t3*(y1-y2) ) * area(j,i,1)
+        flux(j,i,1,2) = -diff * ( t1*(x3-x2)+t2*(x1-x3)+t3*(x2-x1) ) * area(j,i,1)
  
         ! (2) B element: Interchange of numeration: (1 -> 3,  3 -> 4)
-        flux(j,i,2,1) = -diff * ( t3*(y2-y4)+t2*(y4-y3)+t4*(y3-y2) ) * area(2,j,i)
-        flux(j,i,2,2) = -diff * ( t3*(x4-x2)+t2*(x3-x4)+t4*(x2-x3) ) * area(2,j,i)
+        flux(j,i,2,1) = -diff * ( t3*(y2-y4)+t2*(y4-y3)+t4*(y3-y2) ) * area(j,i,2)
+        flux(j,i,2,2) = -diff * ( t3*(x4-x2)+t2*(x3-x4)+t4*(x2-x3) ) * area(j,i,2)
 
     end do
 end do    
@@ -115,7 +115,7 @@ do i = 1,nx
                  flux(j-1,i-1,2,2) * (cord(j-1,i  ,1)-cord(j  ,i  ,1))
             rhs(j,i) = rhs(j,i) + 0.5*qs
 
-            real_area13 = 0.5/area(2,j-1,i-1)/3.
+            real_area13 = 0.5/area(j-1,i-1,2)/3.
             area_n(j,i) = area_n(j,i) + real_area13
             rhs(j,i) = rhs(j,i) + add_source(j-1,i-1)*real_area13
 
@@ -135,7 +135,7 @@ do i = 1,nx
                  flux(j-1,i  ,1,2) * (cord(j-1,i+1,1)-cord(j  ,i  ,1))
             rhs(j,i) = rhs(j,i) + 0.5*qs
 
-            real_area13 = 0.5/area(1,j-1,i  )/3.
+            real_area13 = 0.5/area(j-1,i  ,1)/3.
             area_n(j,i) = area_n(j,i) + real_area13
             rhs(j,i) = rhs(j,i) + add_source(j-1,i  )*real_area13
 
@@ -150,7 +150,7 @@ do i = 1,nx
                  flux(j-1,i  ,2,2) * (cord(j  ,i+1,1)-cord(j  ,i  ,1))
             rhs(j,i) = rhs(j,i) + 0.5*qs
 
-            real_area13 = 0.5/area(2,j-1,i  )/3.
+            real_area13 = 0.5/area(j-1,i  ,2)/3.
             area_n(j,i) = area_n(j,i) + real_area13
             rhs(j,i) = rhs(j,i) + add_source(j-1,i  )*real_area13
 
@@ -170,7 +170,7 @@ do i = 1,nx
                  flux(j  ,i-1,1,2) * (cord(j  ,i-1,1)-cord(j  ,i  ,1))
             rhs(j,i) = rhs(j,i) + 0.5*qs
 
-            real_area13 = 0.5/area(1,j  ,i-1)/3.
+            real_area13 = 0.5/area(j  ,i-1,1)/3.
             area_n(j,i) = area_n(j,i) + real_area13
             rhs(j,i) = rhs(j,i) + add_source(j  ,i-1)*real_area13
 
@@ -185,7 +185,7 @@ do i = 1,nx
                  flux(j  ,i-1,2,2) * (cord(j  ,i  ,1)-cord(j+1,i  ,1))
             rhs(j,i) = rhs(j,i) + 0.5*qs
 
-            real_area13 = 0.5/area(2,j  ,i-1)/3.
+            real_area13 = 0.5/area(j  ,i-1,2)/3.
             area_n(j,i) = area_n(j,i) + real_area13
             rhs(j,i) = rhs(j,i) + add_source(j  ,i-1)*real_area13
 
@@ -204,7 +204,7 @@ do i = 1,nx
                  flux(j  ,i  ,1,2) * (cord(j  ,i  ,1)-cord(j  ,i+1,1))
             rhs(j,i) = rhs(j,i) + 0.5*qs
 
-            real_area13 = 0.5/area(1,j  ,i  )/3.
+            real_area13 = 0.5/area(j  ,i  ,1)/3.
             area_n(j,i) = area_n(j,i) + real_area13
             rhs(j,i) = rhs(j,i) + add_source(j  ,i  )*real_area13
 

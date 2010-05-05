@@ -62,24 +62,24 @@ do 2  i = 1,nx-1
         ! b: [d/dx],   c: [d/dy]
  
         ! (1) A element:
-        strainr(1,1,j,i) = (vx1*(y2-y3)+vx2*(y3-y1)+vx3*(y1-y2)) * area(1,j,i)
-        strainr(2,1,j,i) = (vy1*(x3-x2)+vy2*(x1-x3)+vy3*(x2-x1)) * area(1,j,i)
-        strainr(3,1,j,i) = 0.5*(vx1*(x3-x2)+vx2*(x1-x3)+vx3*(x2-x1)+vy1*(y2-y3)+vy2*(y3-y1)+vy3*(y1-y2)) * area(1,j,i)
+        strainr(1,1,j,i) = (vx1*(y2-y3)+vx2*(y3-y1)+vx3*(y1-y2)) * area(j,i,1)
+        strainr(2,1,j,i) = (vy1*(x3-x2)+vy2*(x1-x3)+vy3*(x2-x1)) * area(j,i,1)
+        strainr(3,1,j,i) = 0.5*(vx1*(x3-x2)+vx2*(x1-x3)+vx3*(x2-x1)+vy1*(y2-y3)+vy2*(y3-y1)+vy3*(y1-y2)) * area(j,i,1)
  
         !(2) B element: Interchange of numeration: (1 -> 3,  3 -> 4)
-        strainr(1,2,j,i) = (vx3*(y2-y4)+vx2*(y4-y3)+vx4*(y3-y2)) * area(2,j,i)
-        strainr(2,2,j,i) = (vy3*(x4-x2)+vy2*(x3-x4)+vy4*(x2-x3)) * area(2,j,i)
-        strainr(3,2,j,i) = 0.5*(vx3*(x4-x2)+vx2*(x3-x4)+vx4*(x2-x3)+vy3*(y2-y4)+vy2*(y4-y3)+vy4*(y3-y2)) * area(2,j,i)
+        strainr(1,2,j,i) = (vx3*(y2-y4)+vx2*(y4-y3)+vx4*(y3-y2)) * area(j,i,2)
+        strainr(2,2,j,i) = (vy3*(x4-x2)+vy2*(x3-x4)+vy4*(x2-x3)) * area(j,i,2)
+        strainr(3,2,j,i) = 0.5*(vx3*(x4-x2)+vx2*(x3-x4)+vx4*(x2-x3)+vy3*(y2-y4)+vy2*(y4-y3)+vy4*(y3-y2)) * area(j,i,2)
  
         ! (3) C element: ( 3 -> 4 )
-        strainr(1,3,j,i) = (vx1*(y2-y4)+vx2*(y4-y1)+vx4*(y1-y2)) * area(3,j,i)
-        strainr(2,3,j,i) = (vy1*(x4-x2)+vy2*(x1-x4)+vy4*(x2-x1)) * area(3,j,i)
-        strainr(3,3,j,i) = 0.5*(vx1*(x4-x2)+vx2*(x1-x4)+vx4*(x2-x1)+vy1*(y2-y4)+vy2*(y4-y1)+vy4*(y1-y2)) * area(3,j,i)
+        strainr(1,3,j,i) = (vx1*(y2-y4)+vx2*(y4-y1)+vx4*(y1-y2)) * area(j,i,3)
+        strainr(2,3,j,i) = (vy1*(x4-x2)+vy2*(x1-x4)+vy4*(x2-x1)) * area(j,i,3)
+        strainr(3,3,j,i) = 0.5*(vx1*(x4-x2)+vx2*(x1-x4)+vx4*(x2-x1)+vy1*(y2-y4)+vy2*(y4-y1)+vy4*(y1-y2)) * area(j,i,3)
 
         ! (4) D element: (2 -> 4 )
-        strainr(1,4,j,i) = (vx1*(y4-y3)+vx4*(y3-y1)+vx3*(y1-y4)) * area(4,j,i)
-        strainr(2,4,j,i) = (vy1*(x3-x4)+vy4*(x1-x3)+vy3*(x4-x1)) * area(4,j,i)
-        strainr(3,4,j,i) = 0.5*(vx1*(x3-x4)+vx4*(x1-x3)+vx3*(x4-x1)+vy1*(y4-y3)+vy4*(y3-y1)+vy3*(y1-y4)) * area(4,j,i)
+        strainr(1,4,j,i) = (vx1*(y4-y3)+vx4*(y3-y1)+vx3*(y1-y4)) * area(j,i,4)
+        strainr(2,4,j,i) = (vy1*(x3-x4)+vy4*(x1-x3)+vy3*(x4-x1)) * area(j,i,4)
+        strainr(3,4,j,i) = 0.5*(vx1*(x3-x4)+vx4*(x1-x3)+vx3*(x4-x1)+vy1*(y4-y3)+vy4*(y3-y1)+vy3*(y1-y4)) * area(j,i,4)
 
         
         !  Mixed discretization of Cundall
