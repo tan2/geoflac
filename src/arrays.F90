@@ -77,11 +77,11 @@ contains
     call allocate_double(pcord, tmp1d, nz*nx*2)
     call c_f_pointer(pcord, cord, [nz, nx, 2])
 
-    call allocate_double(pvel, tmp1d, nz*nx*2)
-    call c_f_pointer(pvel, vel, [nz, nx, 2])
-
     call allocate_double(ptemp, tmp1d, nz*nx)
     call c_f_pointer(ptemp, temp, [nz, nx])
+
+    call allocate_double(pvel, tmp1d, nz*nx*2)
+    call c_f_pointer(pvel, vel, [nz, nx, 2])
 
     call allocate_double(pstress0, tmp1d, nz*nx*4*4)
     call c_f_pointer(pstress0, stress0, [nz, nx, 4, 4])
@@ -91,9 +91,6 @@ contains
 
     call allocate_double(pbalance, tmp1d, nz*nx*2)
     call c_f_pointer(pbalance, balance, [nz, nx, 2])
-
-    call allocate_double(pvel, tmp1d, nz*nx*2)
-    call c_f_pointer(pvel, vel, [nz, nx, 2])
 
     call allocate_double(pamass, tmp1d, nz*nx)
     call c_f_pointer(pamass, amass, [nz, nx])
