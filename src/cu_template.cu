@@ -17,9 +17,9 @@ enum reduction_op {
   Output-- result: pointer to a scalar
   Must be launched with block=1, blockDim.x is power of 2
  */
-template <class T, int M, enum reduction_op op>
+template <class T, enum reduction_op op>
 __global__
-void reduction_kernel(T *data, T *result)
+void reduction_kernel(T *data, int M, T *result)
 {
     extern __shared__ T smem[];
     unsigned const int tid = threadIdx.x;
@@ -71,15 +71,15 @@ void reduction_kernel(T *data, T *result)
 /*
   Input -- data: array T[M]
  */
-template <class T, int M, enum reduction_op op>
+template <class T, enum reduction_op op>
 __host__
-T reduction(T *data_d)
+T reduction(T *data_d, int M, cudaStream_t stream=0)
 {
     T *res_d, result;
     const int nb = (M > 512) ? 512 : M;
     cudaMalloc((void **) &res_d, sizeof(T));
  
-    reduction_kernel<T,M,op><<<1,nb,nb*sizeof(T)>>>(data_d, res_d);
+    reduction_kernel<T,op><<<1,nb,nb*sizeof(T),stream>>>(data_d, M, res_d);
     cudaMemcpy(&result, res_d, sizeof(T), cudaMemcpyDeviceToHost);
 
     cudaFree(res_d);
@@ -105,7 +105,7 @@ void test_reduction()
     fprintf(stderr, "4\n");
 
     const enum reduction_op op = ADD;
-    double result = reduction<double,n,op>(d);
+    double result = reduction<double,op>(d,n);
     
     cudaThreadSynchronize();
     fprintf(stderr, "5\n");
