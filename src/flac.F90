@@ -49,31 +49,33 @@ interface
    subroutine cu_flac(pforce, pbalance, pvel, &
      pcord, pstress0, ptemp, &
      prmass, pamass, &
+     parea, pdvol, pstrain, &
      boff, &
      pbc, pncod, &
      time, time_t, &
      dtmax_therm, dt, &
-     nloop, itherm, &
+     nloop, itherm, movegrid, &
      ifreq_rmasses, ifreq_imasses, &
      nx, nz) bind(c)
      use iso_c_binding
      implicit none
      type(c_ptr), value :: pforce, pbalance, pvel, pcord, pstress0, ptemp, &
-          prmass, pamass, pbc, pncod
+          prmass, pamass, parea, pdvol, pstrain, pbc, pncod
 
      real*8 boff, time, time_t, dtmax_therm, dt
-     integer nloop, itherm, ifreq_rmasses, ifreq_imasses, nx, nz
+     integer nloop, itherm, movegrid, ifreq_rmasses, ifreq_imasses, nx, nz
    end subroutine cu_flac
 end interface
 
 call cu_flac(pforce, pbalance, pvel, &
      pcord, pstress0, ptemp, &
      prmass, pamass, &
+     parea, pdvol, pstrain, &
      boff, &
      pbc, pncod, &
      time, time_t, &
      dtmax_therm, dt, &
-     nloop, itherm, &
+     nloop, itherm, movegrid, &
      ifreq_rmasses, ifreq_imasses, &
      nx, nz)
 
