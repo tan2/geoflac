@@ -620,7 +620,7 @@ void cu_flac(double *force, double *balance, double *vel,
     static int *ncod_d;
     static int first = 1;
 
-    static cudaStream_t stream1, stream2;
+    static cudaStream_t stream1, stream2, stream3, stream4, streambg;
     const int nx = *pnx;
     const int nz = *pnz;
 
@@ -633,6 +633,9 @@ void cu_flac(double *force, double *balance, double *vel,
 
         cudaStreamCreate(&stream1);
         cudaStreamCreate(&stream2);
+        cudaStreamCreate(&stream3);
+        cudaStreamCreate(&stream4);
+        cudaStreamCreate(&streambg);
 
         //fprintf(stderr, "addr: %d %d %d %d\n", cord, temp, vel, stress0);
 
@@ -660,6 +663,8 @@ void cu_flac(double *force, double *balance, double *vel,
                         cudaMemcpyHostToDevice, stream1);
         cudaMemcpyAsync(vel_d, vel, nx*nz*2*sizeof(double),
                         cudaMemcpyHostToDevice, stream1);
+        cudaMemcpyAsync(temp_d, temp, nx*nz*sizeof(double),
+                        cudaMemcpyHostToDevice, stream1);
         cudaMemcpyAsync(rmass_d, rmass, nx*nz*sizeof(double),
                         cudaMemcpyHostToDevice, stream1);
         cudaMemcpyAsync(amass_d, amass, nx*nz*sizeof(double),
@@ -671,16 +676,20 @@ void cu_flac(double *force, double *balance, double *vel,
     }
 
 
-    if(*time - *time_t > *dtmax_therm/10) fl_therm_();
+    if(*time - *time_t > *dtmax_therm/10) {
+        fl_therm_();
+        cudaMemcpyAsync(temp_d, temp, nx*nz*sizeof(double),
+                        cudaMemcpyHostToDevice, stream1);
+    }
     if(*itherm == 2) return;
-
-    cudaMemcpyAsync(temp_d, temp, nx*nz*sizeof(double),
-                    cudaMemcpyHostToDevice, stream1);
 
     fl_srate_();
 
+    cudaStreamSynchronize(stream4);
     fl_rheol_();
     cudaMemcpyAsync(stress0_d, stress0, nx*nz*ntriag*nstr*sizeof(double),
+                    cudaMemcpyHostToDevice, stream1);
+    cudaMemcpyAsync(strain_d, strain, (nx-1)*(nz-1)*3*sizeof(double),
                     cudaMemcpyHostToDevice, stream1);
 
     if(param.ynstressbc == 1) {
@@ -699,29 +708,35 @@ void cu_flac(double *force, double *balance, double *vel,
                                                bc_d, ncod_d,
                                                *dt, drat, *time,
                                                nx, nz);
+    cudaStreamSynchronize(stream1);
+
     cudaMemcpyAsync(vel, vel_d, nx*nz*2*sizeof(double),
-                    cudaMemcpyDeviceToHost, stream1);
-    *boff = reduction<double,MAX>(balance_d, nx*nz*ndim, stream1);
+                    cudaMemcpyDeviceToHost, stream2);
+    *boff = reduction<double,MAX>(balance_d, nx*nz*ndim, streambg);
 
     // force and balance arrays are not used in f90 code,
     // TODO: remove memcpy of force/balance after debugging
     cudaMemcpyAsync(force, force_d, nx*nz*2*sizeof(double),
-                    cudaMemcpyDeviceToHost, stream2);
+                    cudaMemcpyDeviceToHost, streambg);
     cudaMemcpyAsync(balance, balance_d, nx*nz*2*sizeof(double),
-                    cudaMemcpyDeviceToHost, stream2);
+                    cudaMemcpyDeviceToHost, streambg);
 
     if(*movegrid) {
         cu_fl_move1<<<dimGrid, dimBlock, stream1>>>(cord_d, vel_d, *dt, nx, nz);
         //TODO
         //cu_fl_move2<<<1,1>>>();
+        cudaStreamSynchronize(stream1);
+        cudaMemcpyAsync(cord, cord_d, nx*nz*2*sizeof(double),
+                        cudaMemcpyDeviceToHost, stream3);
         cu_fl_move3<<<dimGrid2, dimBlock, stream1>>>(area_d, dvol_d,
                                                      stress0_d, strain_d,
                                                      cord_d, vel_d,
                                                      *dt, nx, nz);
+        cudaStreamSynchronize(stream1);
         cudaMemcpyAsync(area, area_d, (nx-1)*(nz-1)*4*sizeof(double),
-                        cudaMemcpyDeviceToHost, stream1);
+                        cudaMemcpyDeviceToHost, stream3);
         cudaMemcpyAsync(dvol, dvol_d, (nx-1)*(nz-1)*4*sizeof(double),
-                        cudaMemcpyDeviceToHost, stream1);
+                        cudaMemcpyDeviceToHost, stream4);
         cudaMemcpyAsync(strain, strain_d, (nx-1)*(nz-1)*3*sizeof(double),
                         cudaMemcpyDeviceToHost, stream1);
         cudaMemcpyAsync(stress0, stress0_d, nx*nz*nstr*ntriag*sizeof(double),
@@ -729,12 +744,14 @@ void cu_flac(double *force, double *balance, double *vel,
     }
 
     if( (*nloop % *ifreq_rmasses) == 0 ) {
+        cudaStreamSynchronize(stream3);
         rmasses_();
         cudaMemcpyAsync(rmass_d, rmass, nx*nz*sizeof(double),
                         cudaMemcpyHostToDevice, stream1);
     }
 
     if( (*nloop % *ifreq_imasses) == 0 ) {
+        cudaStreamSynchronize(stream2);
         dt_mass_();
         cudaMemcpyAsync(amass_d, amass, nx*nz*sizeof(double),
                         cudaMemcpyHostToDevice, stream1);
@@ -742,10 +759,8 @@ void cu_flac(double *force, double *balance, double *vel,
 
     dt_adjust_();
 
-    if( (*nloop % *ifreq_rmasses) == 0 )
-        cudaMemcpy(rmass, rmass_d, nx*nz*sizeof(double),
-                   cudaMemcpyDeviceToHost);
-
+    cudaStreamSynchronize(stream4);
+    cudaStreamSynchronize(streambg);
     checkCUDAError("cu_flac: end");
 
     return;
