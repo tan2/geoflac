@@ -51,7 +51,7 @@ enddo
 do k = 1,3
 do i= 1,iinj-2
    do j= 1,nz
-      strain(k,j,i) = strain(k,j,i+1)
+      strain(j,i,k) = strain(j,i+1,k)
 enddo
 enddo
 enddo
@@ -75,7 +75,7 @@ enddo
 do k = 1,3
 do i= nx-1,iinj+2,-1
    do j= 1,nz
-      strain(k,j,i) = strain(k,j,i-1)
+      strain(j,i,k) = strain(j,i-1,k)
 enddo
 enddo
 enddo
@@ -142,9 +142,9 @@ if( mode_rem .eq. 5 ) call rem_stress_alt()
 
 ! Interpolate strains
 do k = 1, 3
-    dummy(1:nzt,1:nxt) = strain(k,1:nzt,1:nxt)
+    dummy(1:nzt,1:nxt) = strain(1:nzt,1:nxt,k)
     call rem_interpolate( dummy )
-    strain(k,1:nzt,1:nxt) = dummy(1:nzt,1:nxt)
+    strain(1:nzt,1:nxt,k) = dummy(1:nzt,1:nxt)
 end do
 
 
@@ -429,7 +429,7 @@ do 522 i = iinj-1,iinj+1
         rogh = rogh + dP
         aps(j,i) = 0.
         do k = 1,3
-            strain(k,j,i) = 0.
+            strain(j,i,k) = 0.
         enddo
 522  continue
 endif

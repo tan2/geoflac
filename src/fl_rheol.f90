@@ -246,9 +246,9 @@ do 3 i = 1,nx-1
             aps (j,i) = aps (j,i)/(1.+dt/tau_heal) 
         if (ny_inject.gt.0.and.i.eq.iinj) aps (j,i) = 0.
         ! TOTAL FINITE STRAIN  
-        strain (1,j,i) = strain(1,j,i) + 0.25*dt*(strainr(1,1,j,i)+strainr(1,2,j,i)+strainr(1,3,j,i)+strainr(1,4,j,i))
-        strain (2,j,i) = strain(2,j,i) + 0.25*dt*(strainr(2,1,j,i)+strainr(2,2,j,i)+strainr(2,3,j,i)+strainr(2,4,j,i))
-        strain (3,j,i) = strain(3,j,i) + 0.25*dt*(strainr(3,1,j,i)+strainr(3,2,j,i)+strainr(3,3,j,i)+strainr(3,4,j,i))
+        strain(j,i,1) = strain(j,i,1) + 0.25*dt*(strainr(1,1,j,i)+strainr(1,2,j,i)+strainr(1,3,j,i)+strainr(1,4,j,i))
+        strain(j,i,2) = strain(j,i,2) + 0.25*dt*(strainr(2,1,j,i)+strainr(2,2,j,i)+strainr(2,3,j,i)+strainr(2,4,j,i))
+        strain(j,i,3) = strain(j,i,3) + 0.25*dt*(strainr(3,1,j,i)+strainr(3,2,j,i)+strainr(3,3,j,i)+strainr(3,4,j,i))
 
 3 continue
 !$OMP end do

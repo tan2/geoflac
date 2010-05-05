@@ -76,12 +76,12 @@ do  i = 1,nx-1
         stress0(j,i,3,1) = s12 + dw12*(s22-s11)
 
         ! rotate strains 
-        s11 = strain (1,j,i)
-        s22 = strain (2,j,i)
-        s12 = strain (3,j,i)
-        strain (1,j,i) = s11 + s12*2.*dw12
-        strain (2,j,i) = s22 - s12*2.*dw12
-        strain (3,j,i) = s12 + dw12*(s22-s11)
+        s11 = strain(j,i,1)
+        s22 = strain(j,i,2)
+        s12 = strain(j,i,3)
+        strain(j,i,1) = s11 + s12*2.*dw12
+        strain(j,i,2) = s22 - s12*2.*dw12
+        strain(j,i,3) = s12 + dw12*(s22-s11)
 
         ! (2) Element B:
         oldvol = 1./2/area(2,j,i)

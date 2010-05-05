@@ -627,7 +627,7 @@ isoft = 0
 !end do
  
 if (isoft.eq.0 ) then
-    write( msg, * ) 'Pre_plast: No segment for current plastic strain (iph,j,i,pls_curr): ', iph,j,i,pls_curr
+    write( msg, * ) 'Pre_plast: No segment for current plastic strain(j,i,pls_curr,iph): ', iph,j,i,pls_curr
     call SysMsg( msg )
     stop 25
 endif

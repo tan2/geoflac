@@ -65,7 +65,7 @@ allocate( dum3(3,nz-1,nx-1) )
 
 nwords = 3*(nz-1)*(nx-1)
 
-dum3(1:3,1:nz-1,1:nx-1) = strain(1:3,1:nz-1,1:nx-1)
+dum3(1:3,1:nz-1,1:nx-1) = strain(1:nz-1,1:nx-1,1:3)
 open (1,file='strain.rs',access='direct',recl=nwords*kindr) 
 write (1,rec=nrec) dum3
 close (1)

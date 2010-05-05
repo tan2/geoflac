@@ -73,14 +73,14 @@ vel(1:nz,1:nx,1:2) = dum3(1:nz,1:nx,1:2)
 deallocate( dum3 )
 
 ! Strain
-allocate( dum3(3,nz-1,nx-1) )
+allocate( dum3(nz-1,nx-1,3) )
 
 nwords = 3*(nz-1)*(nx-1)
 
 open (1,file='strain.rs',access='direct',recl=nwords*kindr) 
 read (1,rec=nrec) dum3
 close (1)
-strain(1:3,1:nz-1,1:nx-1) = dum3(1:3,1:nz-1,1:nx-1)
+strain(1:nz-1,1:nx-1,1:3) = dum3
 
 deallocate( dum3 )
 
