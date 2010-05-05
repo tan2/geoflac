@@ -343,8 +343,8 @@ void cu_fl_node(double *force_d, double *balance_d, double *vel_d,
                 dly_l = cord(j,i  ,2)-cord(j,lneighbor,2);
 
                 press_norm_r = rho_water*((cord(j,rneighbor,2)+cord(j,i,2))/2.);
-                dlx_r = cord(j,i+1,1)-cord(j,rneighbor,1);
-                dly_r = cord(j,i+1,2)-cord(j,rneighbor,2);
+                dlx_r = cord(j,rneighbor,1)-cord(j,i,1);
+                dly_r = cord(j,rneighbor,2)-cord(j,i,2);
 
                 fcx = fcx - 0.5*press_norm_l*dly_l-0.5*press_norm_r*dly_r;
                 fcy = fcy + 0.5*press_norm_l*dlx_l+0.5*press_norm_r*dlx_r;
