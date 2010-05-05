@@ -345,7 +345,7 @@ do i = 1,nx
                 endif
                 force(1,i,1) = force(1,i,1)-0.5*press_norm_l*dly_l-0.5*press_norm_r*dly_r
                 force(1,i,2) = force(1,i,2)+0.5*press_norm_l*dlx_l+0.5*press_norm_r*dlx_r
-                balance(1,i,1) = 1.e+17
+                balance(1,i,1) = 1.0d+17
             endif
         endif
             
@@ -392,7 +392,7 @@ if(nyhydro.gt.0) then
         force(nz,i,1) = force(nz,i,1)-0.5*press_norm_l*dly_l-0.5*press_norm_r*dly_r
         force(nz,i,2) = force(nz,i,2)+0.5*press_norm_l*dlx_l+0.5*press_norm_r*dlx_r
 
-        balance(nz,i,1) = 1.e+17
+        balance(nz,i,1) = 1.0d+17
         !write(*,*) i,pisos,force(nz,i,1),force(nz,i,2),press_norm_l,press_norm_r,dlx_l,dlx_r,dly_l,dly_r
 
     enddo
@@ -401,26 +401,26 @@ endif
 !$OMP do reduction(max:boff)
 do i=1,nx
     do j=1,nz
-        
+
         ! BALANCE-OFF
         if( iand(ncod(j,i,1),1).eq.1 .or. j.le.n_boff_cutoff ) then
             balance(j,i,1) = 0
         else
-            balance(j,i,1) = abs(force(j,i,1)) / (balance(j,i,1) + 1.e-9)
+            balance(j,i,1) = abs(force(j,i,1)) / (balance(j,i,1) + 1.0d-9)
         endif
 
         if( iand(ncod(j,i,2),2).eq.2 .or. j.le.n_boff_cutoff ) then
             balance(j,i,2) = 0
         else
-            balance(j,i,2) = abs(force(j,i,2)) / (balance(j,i,2) + 1.e-9)
+            balance(j,i,2) = abs(force(j,i,2)) / (balance(j,i,2) + 1.0d-9)
         endif
 
         ! DAMPING
-        if( iand(ncod(j,i,1),1).ne.1 .and. abs(vel(j,i,1)).gt.1.e-13 ) then
+        if( iand(ncod(j,i,1),1).ne.1 .and. abs(vel(j,i,1)).gt.1.0d-13 ) then
             force(j,i,1) = force(j,i,1) - demf*sign(force(j,i,1),vel(j,i,1))
         endif
 
-        if( iand(ncod(j,i,2),2).ne.2 .and. abs(vel(j,i,2)).gt.1.e-13 ) then
+        if( iand(ncod(j,i,2),2).ne.2 .and. abs(vel(j,i,2)).gt.1.0d-13 ) then
             force(j,i,2) = force(j,i,2) - demf*sign(force(j,i,2),vel(j,i,2))
         endif
 
