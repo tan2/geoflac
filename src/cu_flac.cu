@@ -5,6 +5,7 @@
 #include <cuda.h>
 
 #include "cu_flac.h"
+#include "cu_template.cu"
 
 // size of thread block
 // requirement: nthz is multiple of 8, nthx*nthz is multiple of 32
@@ -449,6 +450,7 @@ extern "C"
 void cu_flac(double *force, double *balance, double *vel,
              double *cord, double *stress0, double *temp,
              double *rmass, double *amass,
+             double *boff,
              const double *bc, const int *ncod,
              const double *time, const double *time_t,
              const double *dtmax_therm, const double *dt,
@@ -541,6 +543,7 @@ void cu_flac(double *force, double *balance, double *vel,
     cudaStreamSynchronize(stream1);
     cudaMemcpy(vel, vel_d, nx*nz*2*sizeof(double),
                cudaMemcpyDeviceToHost);
+    *boff = reduction<double,mnx*mnz*ndim,MAX>(balance_d);
 
     cudaMemcpyAsync(force, force_d, nx*nz*2*sizeof(double),
                     cudaMemcpyDeviceToHost, stream1);
