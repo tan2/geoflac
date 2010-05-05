@@ -49,6 +49,7 @@ interface
    subroutine cu_flac(pforce, pbalance, pvel, &
      pcord, pstress0, ptemp, &
      prmass, pamass, &
+     boff, &
      pbc, pncod, &
      time, time_t, &
      dtmax_therm, dt, &
@@ -60,7 +61,7 @@ interface
      type(c_ptr), value :: pforce, pbalance, pvel, pcord, pstress0, ptemp, &
           prmass, pamass, pbc, pncod
 
-     real*8 time, time_t, dtmax_therm, dt
+     real*8 boff, time, time_t, dtmax_therm, dt
      integer nloop, itherm, ifreq_rmasses, ifreq_imasses, nx, nz
    end subroutine cu_flac
 end interface
@@ -68,6 +69,7 @@ end interface
 call cu_flac(pforce, pbalance, pvel, &
      pcord, pstress0, ptemp, &
      prmass, pamass, &
+     boff, &
      pbc, pncod, &
      time, time_t, &
      dtmax_therm, dt, &
