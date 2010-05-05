@@ -647,7 +647,7 @@ void cu_flac(double *force, double *balance, double *vel,
         cudaMalloc((void **) &vel_d, nx*nz*2*sizeof(double));
         cudaMalloc((void **) &area_d, (nx-1)*(nz-1)*4*sizeof(double));
         cudaMalloc((void **) &dvol_d, (nx-1)*(nz-1)*4*sizeof(double));
-        cudaMalloc((void **) &strain_d, (nx-1)*(nz-1)*4*sizeof(double));
+        cudaMalloc((void **) &strain_d, (nx-1)*(nz-1)*3*sizeof(double));
         cudaMalloc((void **) &ncod_d, nx*nz*2*sizeof(int));
 
         cudaMemcpyAsync(bc_d, bc, nx*nz*2*sizeof(double),
