@@ -5,7 +5,7 @@ include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 
-strainI = 0.5 * ( strain(1,iz,ix) + strain(2,iz,ix) )
+strainI = 0.5 * ( strain(iz,ix,1) + strain(iz,ix,2) )
 
 return
 end function strainI
@@ -18,7 +18,7 @@ include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 
-strainII = 0.5 * sqrt((strain(1,iz,ix)-strain(2,iz,ix))**2 + 4*strain(3,iz,ix)**2)
+strainII = 0.5 * sqrt((strain(iz,ix,1)-strain(iz,ix,2))**2 + 4*strain(iz,ix,3)**2)
 
 return
 end function strainII
