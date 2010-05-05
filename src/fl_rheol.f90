@@ -209,20 +209,20 @@ do 3 i = 1,nx-1
         
             ! For A and B couple:
             ! area(n,it) is INVERSE of "real" DOUBLE area (=1./det)
-            quad_area = 1./(area(1,j,i)+area(2,j,i))
+            quad_area = 1./(area(j,i,1)+area(j,i,2))
             s0a=0.5*(stress0(j,i,1,1)+stress0(j,i,2,1))
             s0b=0.5*(stress0(j,i,1,2)+stress0(j,i,2,2))
-            s0=(s0a*area(2,j,i)+s0b*area(1,j,i))*quad_area
+            s0=(s0a*area(j,i,2)+s0b*area(j,i,1))*quad_area
             stress0(j,i,1,1) = stress0(j,i,1,1) - s0a + s0
             stress0(j,i,2,1) = stress0(j,i,2,1) - s0a + s0
             stress0(j,i,1,2) = stress0(j,i,1,2) - s0b + s0
             stress0(j,i,2,2) = stress0(j,i,2,2) - s0b + s0
 
             ! For C and D couple:
-            quad_area = 1./(area(3,j,i)+area(4,j,i))
+            quad_area = 1./(area(j,i,3)+area(j,i,4))
             s0a=0.5*(stress0(j,i,1,3)+stress0(j,i,2,3))
             s0b=0.5*(stress0(j,i,1,4)+stress0(j,i,2,4))
-            s0=(s0a*area(4,j,i)+s0b*area(3,j,i))*quad_area
+            s0=(s0a*area(j,i,4)+s0b*area(j,i,3))*quad_area
             stress0(j,i,1,3) = stress0(j,i,1,3) - s0a + s0
             stress0(j,i,2,3) = stress0(j,i,2,3) - s0a + s0
             stress0(j,i,1,4) = stress0(j,i,1,4) - s0b + s0
@@ -233,11 +233,11 @@ do 3 i = 1,nx-1
         ! Average the strain for pair of the triangles
         ! Note that area (n,it) is inverse of double area !!!!!
         aps(j,i) = aps(j,i) &
-            + 0.5*( depl(1)*area(2,j,i)+depl(2)*area(1,j,i) ) / (area(1,j,i)+area(2,j,i)) &
-            + 0.5*( depl(3)*area(4,j,i)+depl(4)*area(3,j,i) ) / (area(3,j,i)+area(4,j,i))
+            + 0.5*( depl(1)*area(j,i,2)+depl(2)*area(j,i,1) ) / (area(j,i,1)+area(j,i,2)) &
+            + 0.5*( depl(3)*area(j,i,4)+depl(4)*area(j,i,3) ) / (area(j,i,3)+area(j,i,4))
         if( aps(j,i) .lt. 0. ) aps(j,i) = 0.
 
-!	write(*,*) depl(1),depl(2),depl(3),depl(4),area(1,j,i),area(2,j,i),area(3,j,i),area(4,j,i)
+!	write(*,*) depl(1),depl(2),depl(3),depl(4),area(j,i,1),area(j,i,2),area(j,i,3),area(j,i,4)
 
         ! LINEAR HEALING OF THE PLASTIC STRAIN
            tau_heal = 1.e15

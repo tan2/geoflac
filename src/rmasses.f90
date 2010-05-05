@@ -32,23 +32,23 @@ do 1 i = 1, nx-1
         ! *0.5 - becuase 1/area is double of real area; *0.5 - 2 grids
 
         ! (1) Element A:
-        rmass(j  ,i  )=rmass(j  ,i  )+c1d12/area(1,j,i)*dens
-        rmass(j+1,i  )=rmass(j+1,i  )+c1d12/area(1,j,i)*dens 
-        rmass(j  ,i+1)=rmass(j  ,i+1)+c1d12/area(1,j,i)*dens 
+        rmass(j  ,i  )=rmass(j  ,i  )+c1d12/area(j,i,1)*dens
+        rmass(j+1,i  )=rmass(j+1,i  )+c1d12/area(j,i,1)*dens 
+        rmass(j  ,i+1)=rmass(j  ,i+1)+c1d12/area(j,i,1)*dens 
         ! (2) Element B:
-        rmass(j+1,i+1)=rmass(j+1,i+1)+c1d12/area(2,j,i)*dens 
-        rmass(j+1,i  )=rmass(j+1,i  )+c1d12/area(2,j,i)*dens 
-        rmass(j  ,i+1)=rmass(j  ,i+1)+c1d12/area(2,j,i)*dens 
+        rmass(j+1,i+1)=rmass(j+1,i+1)+c1d12/area(j,i,2)*dens 
+        rmass(j+1,i  )=rmass(j+1,i  )+c1d12/area(j,i,2)*dens 
+        rmass(j  ,i+1)=rmass(j  ,i+1)+c1d12/area(j,i,2)*dens 
 
         ! (3) Element C:
-        rmass(j  ,i  )=rmass(j  ,i  )+c1d12/area(3,j,i)*dens
-        rmass(j+1,i  )=rmass(j+1,i  )+c1d12/area(3,j,i)*dens 
-        rmass(j+1,i+1)=rmass(j+1,i+1)+c1d12/area(3,j,i)*dens 
+        rmass(j  ,i  )=rmass(j  ,i  )+c1d12/area(j,i,3)*dens
+        rmass(j+1,i  )=rmass(j+1,i  )+c1d12/area(j,i,3)*dens 
+        rmass(j+1,i+1)=rmass(j+1,i+1)+c1d12/area(j,i,3)*dens 
 
         ! (4) Element D:
-        rmass(j  ,i  )=rmass(j  ,i  )+c1d12/area(4,j,i)*dens
-        rmass(j+1,i+1)=rmass(j+1,i+1)+c1d12/area(4,j,i)*dens 
-        rmass(j  ,i+1)=rmass(j  ,i+1)+c1d12/area(4,j,i)*dens 
+        rmass(j  ,i  )=rmass(j  ,i  )+c1d12/area(j,i,4)*dens
+        rmass(j+1,i+1)=rmass(j+1,i+1)+c1d12/area(j,i,4)*dens 
+        rmass(j  ,i+1)=rmass(j  ,i+1)+c1d12/area(j,i,4)*dens 
 1 continue
 
 return

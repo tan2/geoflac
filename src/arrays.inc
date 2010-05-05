@@ -3,7 +3,7 @@
 !!! maximum number of ELEMENTS !!!
 parameter(mnz=10, mnx=50 )
 
-common /geom_arrays/ area(4,mnz,mnx),phasez(mnz,mnx), &
+common /geom_arrays/ area(mnz,mnx,4),phasez(mnz,mnx), &
     dvol(4,mnz,mnx),o_phasez(mnz,mnx)
 
 common /all_arrays/ strainr(3,4,mnz,mnx),strain(mnz,mnx,3)
