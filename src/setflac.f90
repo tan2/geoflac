@@ -19,6 +19,9 @@ aps = 0
 ! Initial velocity
 vel = 0
 
+dvol = 0
+strain = 0
+
 ! Phases in the mesh
 call init_phase
 
