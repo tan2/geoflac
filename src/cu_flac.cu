@@ -543,7 +543,7 @@ void cu_flac(double *force, double *balance, double *vel,
     cudaStreamSynchronize(stream1);
     cudaMemcpy(vel, vel_d, nx*nz*2*sizeof(double),
                cudaMemcpyDeviceToHost);
-    *boff = reduction<double,mnx*mnz*ndim,MAX>(balance_d);
+    *boff = reduction<double,nx*nz*ndim,MAX>(balance_d);
 
     cudaMemcpyAsync(force, force_d, nx*nz*2*sizeof(double),
                     cudaMemcpyDeviceToHost, stream1);
