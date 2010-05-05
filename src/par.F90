@@ -19,6 +19,9 @@ time0 = secnds(0.0)
 ! seconds in a year
 sec_year = 3.1558e+7
 
+nloop = 0
+nloop_restarted = 0
+
 ! Read task parameters
 call read_params()
 call allocate_arrays(nz, nx)
@@ -36,8 +39,9 @@ goto 20
 
 if ( irestart .eq. 1 ) then  !file exists - restart
     call rsflac
+    nloop_restared = nloop + 1
     if( dtout_screen .ne. 0 ) then
-        write(6,*) 'you CONTINUE from  ', nloop+1, ' step'
+        write(6,*) 'you CONTINUE from  ', nloop_restarted, ' step'
     else
         call SysMsg('you CONTINUE the execution')
     endif
