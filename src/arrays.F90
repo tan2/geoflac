@@ -119,10 +119,10 @@ contains
       real*8 dummy
 
       m = n * c_sizeof(dummy)
-      write(*,*) m, n
 
       call cudaMallocHost(p, m)
       call c_f_pointer(p, x, [n])
+      !write(*,*) m, n, p
     end subroutine allocate_double
 
 
@@ -137,10 +137,10 @@ contains
       integer dummy
 
       m = n * c_sizeof(dummy)
-      write(*,*) m, n
 
       call cudaMallocHost(p, m)
       call c_f_pointer(p, x, [n])
+      !write(*,*) m, n, p
     end subroutine allocate_int
 
 #endif
