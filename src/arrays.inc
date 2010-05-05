@@ -4,7 +4,7 @@
 parameter(mnz=10, mnx=50 )
 
 common /geom_arrays/ area(mnz,mnx,4),phasez(mnz,mnx), &
-    dvol(4,mnz,mnx),o_phasez(mnz,mnx)
+    dvol(mnz,mnx,4),o_phasez(mnz,mnx)
 
 common /all_arrays/ strainr(3,4,mnz,mnx),strain(mnz,mnx,3)
 

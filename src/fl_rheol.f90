@@ -103,7 +103,7 @@ do 3 i = 1,nx-1
             de22 = strainr(2,k,j,i)*dt
             de12 = strainr(3,k,j,i)*dt
             de33 = 0.
-            dv = dvol(k,j,i)
+            dv = dvol(j,i,k)
             s11p(k) = stress0(j,i,1,k) + stherm 
             s22p(k) = stress0(j,i,2,k) + stherm 
             if(ny_inject.gt.0.and.j.le.nelem_inject) then

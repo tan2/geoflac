@@ -63,7 +63,7 @@ do  i = 1,nx-1
         oldvol = 1./2/area(j,i,1)
         det=((x2*y3-y2*x3)-(x1*y3-y1*x3)+(x1*y2-y1*x2))
         area(j,i,1) = 1./det
-        dvol(1,j,i) = det/2/oldvol - 1
+        dvol(j,i,1) = det/2/oldvol - 1
 
         ! Adjusting stresses due to rotation
         dw12 = 0.5*(vx1*(x3-x2)+vx2*(x1-x3)+vx3*(x2-x1) - &
@@ -87,7 +87,7 @@ do  i = 1,nx-1
         oldvol = 1./2/area(j,i,2)
         det=((x2*y4-y2*x4)-(x3*y4-y3*x4)+(x3*y2-y3*x2))
         area(j,i,2) = 1./det
-        dvol(2,j,i) = det/2/oldvol - 1
+        dvol(j,i,2) = det/2/oldvol - 1
 
         ! Adjusting stresses due to rotation
         dw12 = 0.5*(vx3*(x4-x2)+vx2*(x3-x4)+vx4*(x2-x3) - &
@@ -103,7 +103,7 @@ do  i = 1,nx-1
         oldvol = 1./2/area(j,i,3)
         det=((x2*y4-y2*x4)-(x1*y4-y1*x4)+(x1*y2-y1*x2))
         area(j,i,3) = 1./det
-        dvol(3,j,i) = det/2/oldvol - 1
+        dvol(j,i,3) = det/2/oldvol - 1
 
         ! Adjusting stresses due to rotation
         dw12 = 0.5*(vx1*(x4-x2)+vx2*(x1-x4)+vx4*(x2-x1) - &
@@ -119,7 +119,7 @@ do  i = 1,nx-1
         oldvol = 1./2/area(j,i,4)
         det=((x4*y3-y4*x3)-(x1*y3-y1*x3)+(x1*y4-y1*x4))
         area(j,i,4) = 1./det
-        dvol(4,j,i) = det/2/oldvol - 1
+        dvol(j,i,4) = det/2/oldvol - 1
 
         ! Adjusting stresses due to rotation
         dw12 = 0.5*(vx1*(x3-x4)+vx4*(x1-x3)+vx3*(x4-x1) - &
