@@ -1,6 +1,7 @@
 !================================
 ! First invariant of strain
 function strainI(iz,ix)
+use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
@@ -14,6 +15,7 @@ end function strainI
 !================================
 ! Second invariant of strain
 function strainII(iz,ix)
+use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
