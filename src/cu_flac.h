@@ -18,6 +18,10 @@
         amass_d[ ((i)-1)*nz + (j)-1 ]   \
 	)
 
+#define area(j,i,d) (                                                   \
+        area_d[ ((d)-1)*(nx-1)*(nz-1) + ((i)-1)*(nz-1) + (j)-1 ]        \
+	)
+
 #define balance(j,i,d) (                                \
         balance_d[ ((d)-1)*nx*nz + ((i)-1)*nz + (j)-1 ] \
 	)
@@ -30,6 +34,10 @@
         cord_d[ ((d)-1)*nx*nz + ((i)-1)*nz + (j)-1 ]    \
 	)
 
+#define dvol(j,i,d) (                                                   \
+        dvol_d[ ((d)-1)*(nx-1)*(nz-1) + ((i)-1)*(nz-1) + (j)-1 ]        \
+	)
+
 #define force(j,i,d) (                                  \
         force_d[ ((d)-1)*nx*nz + ((i)-1)*nz + (j)-1 ]   \
 	)
@@ -40,6 +48,10 @@
 
 #define rmass(j,i) (                    \
         rmass_d[ ((i)-1)*nz + (j)-1 ]   \
+	)
+
+#define strain(j,i,d) (                                                 \
+        strain_d[ ((d)-1)*(nx-1)*(nz-1) + ((i)-1)*(nz-1) + (j)-1 ]      \
 	)
 
 #define stress0(j,i,d,k) (                              \

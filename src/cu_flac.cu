@@ -446,15 +446,164 @@ void cu_fl_node(double *force_d, double *balance_d, double *vel_d,
 }
 
 
+__global__ static
+void cu_fl_move1(double *cord_d, const double *vel_d,
+                 double dt, int nx, int nz)
+{
+    // i and j are indices to fortran arrays
+    const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x + 1;
+    const unsigned int j = blockIdx.y * blockDim.y + threadIdx.y + 1;
+
+    if((i > nx) || (j > nz)) return;
+
+    // UPDATING COORDINATES
+    cord(j,i,1) = cord(j,i,1) + vel(j,i,1)*dt;
+    cord(j,i,2) = cord(j,i,2) + vel(j,i,2)*dt;
+
+    return;
+}
+
+
+__global__ static
+void cu_fl_move2()
+{
+    // i and j are indices to fortran arrays
+    const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x + 1;
+    const unsigned int j = blockIdx.y * blockDim.y + threadIdx.y + 1;
+
+    // TODO: cuda'ize diff_topo()
+    // Diffuse topography
+    //if( topo_kappa > 0. || bottom_kappa > 0. ) diff_topo();
+    return;
+}
+
+
+__global__ static
+void cu_fl_move3(double *area_d, double *dvol_d,
+                 double *stress0_d, double *strain_d,
+                 const double *cord_d, const double *vel_d,
+                 double dt, int nx, int nz)
+{
+    // i and j are indices to fortran arrays
+    const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x + 1;
+    const unsigned int j = blockIdx.y * blockDim.y + threadIdx.y + 1;
+    double x1, x2, x3, x4;
+    double y1, y2, y3, y4;
+    double vx1, vx2, vx3, vx4;
+    double vy1, vy2, vy3, vy4;
+    double oldvol, det;
+    double dw12, s11, s22, s12;
+
+    if((i >= nx) || (j >= nz)) return;
+
+    //--- Adjusting Stresses And Updating Areas Of Elements
+
+    // Coordinates
+    x1 = cord (j  ,i  ,1);
+    y1 = cord (j  ,i  ,2);
+    x2 = cord (j+1,i  ,1);
+    y2 = cord (j+1,i  ,2);
+    x3 = cord (j  ,i+1,1);
+    y3 = cord (j  ,i+1,2);
+    x4 = cord (j+1,i+1,1);
+    y4 = cord (j+1,i+1,2);
+
+    // Velocities
+    vx1 = vel (j  ,i  ,1);
+    vy1 = vel (j  ,i  ,2);
+    vx2 = vel (j+1,i  ,1);
+    vy2 = vel (j+1,i  ,2);
+    vx3 = vel (j  ,i+1,1);
+    vy3 = vel (j  ,i+1,2);
+    vx4 = vel (j+1,i+1,1);
+    vy4 = vel (j+1,i+1,2);
+
+    // (1) Element A:
+    oldvol = 1./2/area(j,i,1);
+    det = ((x2*y3-y2*x3)-(x1*y3-y1*x3)+(x1*y2-y1*x2));
+    area(j,i,1) = 1./det;
+    dvol(j,i,1) = det/2/oldvol - 1;
+
+    // Adjusting stresses due to rotation
+    dw12 = 0.5*(vx1*(x3-x2)+vx2*(x1-x3)+vx3*(x2-x1) -
+                vy1*(y2-y3)-vy2*(y3-y1)-vy3*(y1-y2))/det*dt;
+    s11 = stress0(j,i,1,1);
+    s22 = stress0(j,i,2,1);
+    s12 = stress0(j,i,3,1);
+    stress0(j,i,1,1) = s11 + s12*2.*dw12;
+    stress0(j,i,2,1) = s22 - s12*2.*dw12;
+    stress0(j,i,3,1) = s12 + dw12*(s22-s11);
+
+    // rotate strains
+    s11 = strain(j,i,1);
+    s22 = strain(j,i,2);
+    s12 = strain(j,i,3);
+    strain(j,i,1) = s11 + s12*2.*dw12;
+    strain(j,i,2) = s22 - s12*2.*dw12;
+    strain(j,i,3) = s12 + dw12*(s22-s11);
+
+    // (2) Element B:
+    oldvol = 1./2/area(j,i,2);
+    det = ((x2*y4-y2*x4)-(x3*y4-y3*x4)+(x3*y2-y3*x2));
+    area(j,i,2) = 1./det;
+    dvol(j,i,2) = det/2/oldvol - 1;
+
+    // Adjusting stresses due to rotation
+    dw12 = 0.5*(vx3*(x4-x2)+vx2*(x3-x4)+vx4*(x2-x3) -
+                vy3*(y2-y4)-vy2*(y4-y3)-vy4*(y3-y2))/det*dt;
+    s11 = stress0(j,i,1,2);
+    s22 = stress0(j,i,2,2);
+    s12 = stress0(j,i,3,2);
+    stress0(j,i,1,2) = s11 + s12*2.*dw12;
+    stress0(j,i,2,2) = s22 - s12*2.*dw12;
+    stress0(j,i,3,2) = s12 + dw12*(s22-s11);
+
+    // (3) Element C:
+    oldvol = 1./2/area(j,i,3);
+    det = ((x2*y4-y2*x4)-(x1*y4-y1*x4)+(x1*y2-y1*x2));
+    area(j,i,3) = 1./det;
+    dvol(j,i,3) = det/2/oldvol - 1;
+
+    // Adjusting stresses due to rotation
+    dw12 = 0.5*(vx1*(x4-x2)+vx2*(x1-x4)+vx4*(x2-x1) -
+                vy1*(y2-y4)-vy2*(y4-y1)-vy4*(y1-y2))/det*dt;
+    s11 = stress0(j,i,1,3);
+    s22 = stress0(j,i,2,3);
+    s12 = stress0(j,i,3,3);
+    stress0(j,i,1,3) = s11 + s12*2.*dw12;
+    stress0(j,i,2,3) = s22 - s12*2.*dw12;
+    stress0(j,i,3,3) = s12 + dw12*(s22-s11);
+
+    // (4) Element D:
+    oldvol = 1./2/area(j,i,4);
+    det = ((x4*y3-y4*x3)-(x1*y3-y1*x3)+(x1*y4-y1*x4));
+    area(j,i,4) = 1./det;
+    dvol(j,i,4) = det/2/oldvol - 1;
+
+    // Adjusting stresses due to rotation
+    dw12 = 0.5*(vx1*(x3-x4)+vx4*(x1-x3)+vx3*(x4-x1) -
+                vy1*(y4-y3)-vy4*(y3-y1)-vy3*(y1-y4))/det*dt;
+    s11 = stress0(j,i,1,4);
+    s22 = stress0(j,i,2,4);
+    s12 = stress0(j,i,3,4);
+    stress0(j,i,1,4) = s11 + s12*2.*dw12;
+    stress0(j,i,2,4) = s22 - s12*2.*dw12;
+    stress0(j,i,3,4) = s12 + dw12*(s22-s11);
+
+    return;
+}
+
+
 extern "C"
 void cu_flac(double *force, double *balance, double *vel,
              double *cord, double *stress0, double *temp,
              double *rmass, double *amass,
+             double *area, double *dvol, double *strain,
              double *boff,
              const double *bc, const int *ncod,
              const double *time, const double *time_t,
              const double *dtmax_therm, const double *dt,
-             const int *nloop, const int *itherm,
+             const int *nloop, const int *itherm, const int *movegrid,
              const int *ifreq_rmasses, const int *ifreq_imasses,
              const int *pnx, const int *pnz)
 {
@@ -462,22 +611,29 @@ void cu_flac(double *force, double *balance, double *vel,
     extern void fl_srate_(void);
     extern void fl_rheol_(void);
     extern void bc_update_(void);
-    extern void fl_move_(void);
     extern void rmasses_(void);
     extern void dt_mass_(void);
     extern void dt_adjust_(void);
 
-    static double *cord_d, *stress0_d, *temp_d, *rmass_d, *force_d, *balance_d, *amass_d, *bc_d, *vel_d;
+    static double *cord_d, *stress0_d, *temp_d, *rmass_d, *force_d, *balance_d,
+        *amass_d, *bc_d, *vel_d, *area_d, *dvol_d, *strain_d;
     static int *ncod_d;
     static int first = 1;
 
-    static cudaStream_t stream1;
+    static cudaStream_t stream1, stream2;
     const int nx = *pnx;
     const int nz = *pnz;
 
+    const dim3 dimBlock(nthx,nthz);
+    const dim3 dimGrid(nx/nthx+1, nz/nthz+1);
+    const dim3 dimGrid2((nx-1)/nthx+1, (nz-1)/nthz+1);
 
     if(first) {
         first = 0;
+
+        cudaStreamCreate(&stream1);
+        cudaStreamCreate(&stream2);
+
         //fprintf(stderr, "addr: %d %d %d %d\n", cord, temp, vel, stress0);
 
         cudaMalloc((void **) &cord_d, nx*nz*2*sizeof(double));
@@ -489,6 +645,9 @@ void cu_flac(double *force, double *balance, double *vel,
         cudaMalloc((void **) &force_d, nx*nz*2*sizeof(double));
         cudaMalloc((void **) &balance_d, nx*nz*2*sizeof(double));
         cudaMalloc((void **) &vel_d, nx*nz*2*sizeof(double));
+        cudaMalloc((void **) &area_d, (nx-1)*(nz-1)*4*sizeof(double));
+        cudaMalloc((void **) &dvol_d, (nx-1)*(nz-1)*4*sizeof(double));
+        cudaMalloc((void **) &strain_d, (nx-1)*(nz-1)*4*sizeof(double));
         cudaMalloc((void **) &ncod_d, nx*nz*2*sizeof(int));
 
         cudaMemcpyAsync(bc_d, bc, nx*nz*2*sizeof(double),
@@ -530,8 +689,6 @@ void cu_flac(double *force, double *balance, double *vel,
                         cudaMemcpyHostToDevice, stream1);
     }
 
-    dim3 dimBlock(nthx,nthz);
-    dim3 dimGrid(nx/nthx+1, nz/nthz+1);
     const double drat = 1.0;//(*dt < *dt_elastic) ? 1.0 : (*dt / *dt_elastic);
 
     cu_fl_node<<<dimGrid, dimBlock, stream1>>>(force_d, balance_d, vel_d,
@@ -540,20 +697,33 @@ void cu_flac(double *force, double *balance, double *vel,
                                                bc_d, ncod_d,
                                                *dt, drat, *time,
                                                nx, nz);
-    cudaStreamSynchronize(stream1);
-    cudaMemcpy(vel, vel_d, nx*nz*2*sizeof(double),
-               cudaMemcpyDeviceToHost);
+    cudaMemcpyAsync(vel, vel_d, nx*nz*2*sizeof(double),
+                    cudaMemcpyDeviceToHost, stream1);
     *boff = reduction<double,MAX>(balance_d, nx*nz*ndim, stream1);
 
+    // force and balance arrays are not used in f90 code,
+    // TODO: remove memcpy of force/balance after debugging
     cudaMemcpyAsync(force, force_d, nx*nz*2*sizeof(double),
-                    cudaMemcpyDeviceToHost, stream1);
+                    cudaMemcpyDeviceToHost, stream2);
     cudaMemcpyAsync(balance, balance_d, nx*nz*2*sizeof(double),
-                    cudaMemcpyDeviceToHost, stream1);
+                    cudaMemcpyDeviceToHost, stream2);
 
-    if(1) {
-        fl_move_();
-        cudaMemcpyAsync(cord_d, cord, nx*nz*2*sizeof(double),
-                        cudaMemcpyHostToDevice, stream1);
+    if(*movegrid) {
+        cu_fl_move1<<<dimGrid, dimBlock, stream1>>>(cord_d, vel_d, *dt, nx, nz);
+        //TODO
+        //cu_fl_move2<<<1,1>>>();
+        cu_fl_move3<<<dimGrid2, dimBlock, stream1>>>(area_d, dvol_d,
+                                                     stress0_d, strain_d,
+                                                     cord_d, vel_d,
+                                                     *dt, nx, nz);
+        cudaMemcpyAsync(area, area_d, (nx-1)*(nz-1)*4*sizeof(double),
+                        cudaMemcpyDeviceToHost, stream1);
+        cudaMemcpyAsync(dvol, dvol_d, (nx-1)*(nz-1)*4*sizeof(double),
+                        cudaMemcpyDeviceToHost, stream1);
+        cudaMemcpyAsync(strain, strain_d, (nx-1)*(nz-1)*3*sizeof(double),
+                        cudaMemcpyDeviceToHost, stream1);
+        cudaMemcpyAsync(stress0, stress0_d, nx*nz*nstr*ntriag*sizeof(double),
+                        cudaMemcpyDeviceToHost, stream1);
     }
 
     if( (*nloop % *ifreq_rmasses) == 0 ) {
