@@ -7,7 +7,7 @@ module arrays
   ! fortran array pointer
   real*8, pointer, save :: cord(:,:,:), temp(:,:), vel(:,:,:), stress0(:,:,:,:), &
        force(:,:,:), balance(:,:,:), amass(:,:), rmass(:,:), &
-       bc(:,:,:)
+       area(:,:,:), dvol(:,:,:), strain(:,:,:), bc(:,:,:)
 
   integer, pointer, save :: ncod(:,:,:)
 
@@ -17,7 +17,7 @@ module arrays
   ! mirror pointer for C
   type(c_ptr), target, save :: pcord, ptemp, pvel, pstress0, &
        pforce, pbalance, pamass, prmass, &
-       pbc, &
+       parea, pdvol, pstrain, pbc, &
        pncod
 
 
@@ -62,6 +62,9 @@ contains
     allocate(balance(nz, nx, 2))
     allocate(amass(nz, nx))
     allocate(rmass(nz, nx))
+    allocate(area(nz-1, nx-1, 4))
+    allocate(dvol(nz-1, nx-1, 4))
+    allocate(strain(nz-1, nx-1, 3))
     allocate(bc(nz, nx, 2))
 
     allocate(ncod(nz, nx, 2))
@@ -97,6 +100,15 @@ contains
 
     call allocate_double(prmass, tmp1d, nz*nx)
     call c_f_pointer(prmass, rmass, [nz, nx])
+
+    call allocate_double(parea, tmp1d, (nz-1)*(nx-1)*4)
+    call c_f_pointer(parea, area, [nz-1, nx-1, 4])
+
+    call allocate_double(pdvol, tmp1d, (nz-1)*(nx-1)*4)
+    call c_f_pointer(pdvol, dvol, [nz-1, nx-1, 4])
+
+    call allocate_double(pstrain, tmp1d, (nz-1)*(nx-1)*3)
+    call c_f_pointer(pstrain, strain, [nz-1, nx-1, 3])
 
     call allocate_double(pbc, tmp1d, nz*nx*2)
     call c_f_pointer(pbc, bc, [nz, nx, 2])

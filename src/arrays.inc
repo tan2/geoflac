@@ -3,10 +3,9 @@
 !!! maximum number of ELEMENTS !!!
 parameter(mnz=10, mnx=50 )
 
-common /geom_arrays/ area(mnz,mnx,4),phasez(mnz,mnx), &
-    dvol(mnz,mnx,4),o_phasez(mnz,mnx)
+common /geom_arrays/ phasez(mnz,mnx), o_phasez(mnz,mnx)
 
-common /all_arrays/ strainr(3,4,mnz,mnx),strain(mnz,mnx,3)
+common /all_arrays/ strainr(3,4,mnz,mnx)
 
 common /rheol_arrays/ aps(mnz,mnx),visn(mnz,mnx),e2sr(mnz,mnx),phase_ratio(mnz,mnx,20), ophase_ratio(mnz,mnx,20),irheol_fl(mnz,mnx)
 
