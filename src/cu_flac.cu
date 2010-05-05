@@ -664,6 +664,8 @@ void cu_flac(double *force, double *balance, double *vel,
                         cudaMemcpyHostToDevice, stream1);
         cudaMemcpyAsync(amass_d, amass, nx*nz*sizeof(double),
                         cudaMemcpyHostToDevice, stream1);
+        cudaMemcpyAsync(area_d, area, (nx-1)*(nz-1)*4*sizeof(double),
+                        cudaMemcpyHostToDevice, stream1);
 
         checkCUDAError("cu_flac: Allocating memory");
     }
