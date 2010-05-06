@@ -96,7 +96,7 @@ close(111)
 open(111, file='vel.rr',action='write',access='direct',recl=8*nz*nx*2)
 write(111, rec=irec) vel
 close(111)
-open(111, file='stress0.rr',action='write',access='direct',recl=8*nz*nx*4*4)
+open(111, file='stress0.rr',action='write',access='direct',recl=8*(nz-1)*(nx-1)*4*4)
 write(111, rec=irec) stress0
 close(111)
 open(111, file='cord.rr',action='write',access='direct',recl=8*nz*nx*2)
