@@ -62,7 +62,7 @@ close (1)
 
 
 ! Stress
-nwords = 4*4*nz*nx
+nwords = 4*4*(nx-1)*(nz-1)
 open (1,file='stress.rs',access='direct',recl=nwords*kindr) 
 write (1,rec=nrec) stress0
 close (1)

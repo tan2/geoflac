@@ -57,7 +57,7 @@ contains
     allocate(cord(nz, nx, 2))
     allocate(temp(nz, nx))
     allocate(vel(nz, nx, 2))
-    allocate(stress0(nz, nx, 4, 4))
+    allocate(stress0(nz-1, nx-1, 4, 4))
     allocate(force(nz, nx, 2))
     allocate(balance(nz, nx, 2))
     allocate(amass(nz, nx))
@@ -86,8 +86,8 @@ contains
     call allocate_double(pvel, tmp1d, nz*nx*2)
     call c_f_pointer(pvel, vel, [nz, nx, 2])
 
-    call allocate_double(pstress0, tmp1d, nz*nx*4*4)
-    call c_f_pointer(pstress0, stress0, [nz, nx, 4, 4])
+    call allocate_double(pstress0, tmp1d, (nz-1)*(nx-1)*4*4)
+    call c_f_pointer(pstress0, stress0, [nz-1, nx-1, 4, 4])
 
     call allocate_double(pforce, tmp1d, nz*nx*2)
     call c_f_pointer(pforce, force, [nz, nx, 2])

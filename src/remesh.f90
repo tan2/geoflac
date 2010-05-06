@@ -42,7 +42,7 @@ enddo
 do k = 1,4
 do l = 1,4
 do i= 1,iinj-2
-   do j= 1,nz
+   do j= 1,nz-1
       stress0(j,i,k,l) = stress0(j,i+1,k,l)
 enddo
 enddo
@@ -50,13 +50,13 @@ enddo
 enddo
 do k = 1,3
 do i= 1,iinj-2
-   do j= 1,nz
+   do j= 1,nz-1
       strain(j,i,k) = strain(j,i+1,k)
 enddo
 enddo
 enddo
    do i= 1,iinj-2
-   do j= 1,nz
+   do j= 1,nz-1
       visn(j,i)= visn(j,i+1)
       aps(j,i) = aps(j,i+1)
       source(j,i) = source(j,i+1)
@@ -66,7 +66,7 @@ enddo
 do k = 1,4
 do l = 1,4
 do i= nx-1,iinj+2,-1
-   do j= 1,nz
+   do j= 1,nz-1
       stress0(j,i,k,l) = stress0(j,i-1,k,l)
 enddo
 enddo
@@ -74,13 +74,13 @@ enddo
 enddo
 do k = 1,3
 do i= nx-1,iinj+2,-1
-   do j= 1,nz
+   do j= 1,nz-1
       strain(j,i,k) = strain(j,i-1,k)
 enddo
 enddo
 enddo
    do i= nx-1,iinj+2,-1
-   do j= 1,nz
+   do j= 1,nz-1
       visn(j,i)= visn(j,i-1)
       aps(j,i) = aps(j,i-1)
       source(j,i) = source(j,i-1)
