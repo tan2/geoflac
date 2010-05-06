@@ -71,18 +71,18 @@ void cu_fl_node(double *force_d, double *balance_d, double *vel_d,
 
         // triangle B
         // side 2-3
-        fx = stress0(j-1,i-1,1,2) * (cord(j  ,i  ,2)-cord(j  ,i-1,2)) -
+        fx= stress0(j-1,i-1,1,2) * (cord(j  ,i  ,2)-cord(j  ,i-1,2)) -
             stress0(j-1,i-1,3,2) * (cord(j  ,i  ,1)-cord(j  ,i-1,1));
-        fy = stress0(j-1,i-1,3,2) * (cord(j  ,i  ,2)-cord(j  ,i-1,2)) -
+        fy= stress0(j-1,i-1,3,2) * (cord(j  ,i  ,2)-cord(j  ,i-1,2)) -
             stress0(j-1,i-1,2,2) * (cord(j  ,i  ,1)-cord(j  ,i-1,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
         bly = bly + 0.25*fabs(fy);
         // side 3-1
-        fx = stress0(j-1,i-1,1,2) * (cord(j-1,i  ,2)-cord(j  ,i  ,2)) -
+        fx= stress0(j-1,i-1,1,2) * (cord(j-1,i  ,2)-cord(j  ,i  ,2)) -
             stress0(j-1,i-1,3,2) * (cord(j-1,i  ,1)-cord(j  ,i  ,1));
-        fy = stress0(j-1,i-1,3,2) * (cord(j-1,i  ,2)-cord(j  ,i  ,2)) -
+        fy= stress0(j-1,i-1,3,2) * (cord(j-1,i  ,2)-cord(j  ,i  ,2)) -
             stress0(j-1,i-1,2,2) * (cord(j-1,i  ,1)-cord(j  ,i  ,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
@@ -91,18 +91,18 @@ void cu_fl_node(double *force_d, double *balance_d, double *vel_d,
 
         // triangle C
         // side 2-3
-        fx = stress0(j-1,i-1,1,3) * (cord(j  ,i  ,2)-cord(j  ,i-1,2)) -
+        fx= stress0(j-1,i-1,1,3) * (cord(j  ,i  ,2)-cord(j  ,i-1,2)) -
             stress0(j-1,i-1,3,3) * (cord(j  ,i  ,1)-cord(j  ,i-1,1));
-        fy = stress0(j-1,i-1,3,3) * (cord(j  ,i  ,2)-cord(j  ,i-1,2)) -
+        fy= stress0(j-1,i-1,3,3) * (cord(j  ,i  ,2)-cord(j  ,i-1,2)) -
             stress0(j-1,i-1,2,3) * (cord(j  ,i  ,1)-cord(j  ,i-1,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
         bly = bly + 0.25*fabs(fy);
         // side 3-1
-        fx = stress0(j-1,i-1,1,3) * (cord(j-1,i-1,2)-cord(j  ,i  ,2)) -
-         stress0(j-1,i-1,3,3) * (cord(j-1,i-1,1)-cord(j  ,i  ,1));
-        fy = stress0(j-1,i-1,3,3) * (cord(j-1,i-1,2)-cord(j  ,i  ,2)) -
+        fx= stress0(j-1,i-1,1,3) * (cord(j-1,i-1,2)-cord(j  ,i  ,2)) -
+            stress0(j-1,i-1,3,3) * (cord(j-1,i-1,1)-cord(j  ,i  ,1));
+        fy= stress0(j-1,i-1,3,3) * (cord(j-1,i-1,2)-cord(j  ,i  ,2)) -
             stress0(j-1,i-1,2,3) * (cord(j-1,i-1,1)-cord(j  ,i  ,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
@@ -111,18 +111,18 @@ void cu_fl_node(double *force_d, double *balance_d, double *vel_d,
 
         // triangle D
         // side 1-2
-        fx = stress0(j-1,i-1,1,4) * (cord(j  ,i  ,2)-cord(j-1,i-1,2)) -
+        fx= stress0(j-1,i-1,1,4) * (cord(j  ,i  ,2)-cord(j-1,i-1,2)) -
             stress0(j-1,i-1,3,4) * (cord(j  ,i  ,1)-cord(j-1,i-1,1));
-        fy = stress0(j-1,i-1,3,4) * (cord(j  ,i  ,2)-cord(j-1,i-1,2)) -
+        fy= stress0(j-1,i-1,3,4) * (cord(j  ,i  ,2)-cord(j-1,i-1,2)) -
             stress0(j-1,i-1,2,4) * (cord(j  ,i  ,1)-cord(j-1,i-1,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
         bly = bly + 0.25*fabs(fy);
         // side 2-3
-        fx = stress0(j-1,i-1,1,4) * (cord(j-1,i  ,2)-cord(j  ,i  ,2)) -
+        fx= stress0(j-1,i-1,1,4) * (cord(j-1,i  ,2)-cord(j  ,i  ,2)) -
             stress0(j-1,i-1,3,4) * (cord(j-1,i  ,1)-cord(j  ,i  ,1));
-        fy = stress0(j-1,i-1,3,4) * (cord(j-1,i  ,2)-cord(j  ,i  ,2)) -
+        fy= stress0(j-1,i-1,3,4) * (cord(j-1,i  ,2)-cord(j  ,i  ,2)) -
             stress0(j-1,i-1,2,4) * (cord(j-1,i  ,1)-cord(j  ,i  ,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
@@ -135,18 +135,18 @@ void cu_fl_node(double *force_d, double *balance_d, double *vel_d,
 
         // triangle A
         // side 1-2
-        fx = stress0(j-1,i  ,1,1) * (cord(j  ,i  ,2)-cord(j-1,i  ,2)) -
+        fx= stress0(j-1,i  ,1,1) * (cord(j  ,i  ,2)-cord(j-1,i  ,2)) -
             stress0(j-1,i  ,3,1) * (cord(j  ,i  ,1)-cord(j-1,i  ,1));
-        fy = stress0(j-1,i  ,3,1) * (cord(j  ,i  ,2)-cord(j-1,i  ,2)) -
+        fy= stress0(j-1,i  ,3,1) * (cord(j  ,i  ,2)-cord(j-1,i  ,2)) -
             stress0(j-1,i  ,2,1) * (cord(j  ,i  ,1)-cord(j-1,i  ,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
         bly = bly + 0.25*fabs(fy);
         // side 2-3
-        fx = stress0(j-1,i  ,1,1) * (cord(j-1,i+1,2)-cord(j  ,i  ,2)) -
+        fx= stress0(j-1,i  ,1,1) * (cord(j-1,i+1,2)-cord(j  ,i  ,2)) -
             stress0(j-1,i  ,3,1) * (cord(j-1,i+1,1)-cord(j  ,i  ,1));
-        fy = stress0(j-1,i  ,3,1) * (cord(j-1,i+1,2)-cord(j  ,i  ,2)) -
+        fy= stress0(j-1,i  ,3,1) * (cord(j-1,i+1,2)-cord(j  ,i  ,2)) -
             stress0(j-1,i  ,2,1) * (cord(j-1,i+1,1)-cord(j  ,i  ,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
@@ -155,18 +155,18 @@ void cu_fl_node(double *force_d, double *balance_d, double *vel_d,
 
         // triangle B
         // side 1-2
-        fx = stress0(j-1,i  ,1,2) * (cord(j  ,i  ,2)-cord(j-1,i+1,2)) -
+        fx= stress0(j-1,i  ,1,2) * (cord(j  ,i  ,2)-cord(j-1,i+1,2)) -
             stress0(j-1,i  ,3,2) * (cord(j  ,i  ,1)-cord(j-1,i+1,1));
-        fy = stress0(j-1,i  ,3,2) * (cord(j  ,i  ,2)-cord(j-1,i+1,2)) -
+        fy= stress0(j-1,i  ,3,2) * (cord(j  ,i  ,2)-cord(j-1,i+1,2)) -
             stress0(j-1,i  ,2,2) * (cord(j  ,i  ,1)-cord(j-1,i+1,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
         bly = bly + 0.25*fabs(fy);
         // side 2-3
-        fx = stress0(j-1,i  ,1,2) * (cord(j  ,i+1,2)-cord(j  ,i  ,2)) -
+        fx= stress0(j-1,i  ,1,2) * (cord(j  ,i+1,2)-cord(j  ,i  ,2)) -
             stress0(j-1,i  ,3,2) * (cord(j  ,i+1,1)-cord(j  ,i  ,1));
-        fy = stress0(j-1,i  ,3,2) * (cord(j  ,i+1,2)-cord(j  ,i  ,2)) -
+        fy= stress0(j-1,i  ,3,2) * (cord(j  ,i+1,2)-cord(j  ,i  ,2)) -
             stress0(j-1,i  ,2,2) * (cord(j  ,i+1,1)-cord(j  ,i  ,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
@@ -175,18 +175,18 @@ void cu_fl_node(double *force_d, double *balance_d, double *vel_d,
 
         // triangle C
         // side 1-2
-        fx = stress0(j-1,i  ,1,3) * (cord(j  ,i  ,2)-cord(j-1,i  ,2)) -
+        fx= stress0(j-1,i  ,1,3) * (cord(j  ,i  ,2)-cord(j-1,i  ,2)) -
             stress0(j-1,i  ,3,3) * (cord(j  ,i  ,1)-cord(j-1,i  ,1));
-        fy = stress0(j-1,i  ,3,3) * (cord(j  ,i  ,2)-cord(j-1,i  ,2)) -
+        fy= stress0(j-1,i  ,3,3) * (cord(j  ,i  ,2)-cord(j-1,i  ,2)) -
             stress0(j-1,i  ,2,3) * (cord(j  ,i  ,1)-cord(j-1,i  ,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
         bly = bly + 0.25*fabs(fy);
         // side 2-3
-        fx = stress0(j-1,i  ,1,3) * (cord(j  ,i+1,2)-cord(j  ,i  ,2)) -
+        fx= stress0(j-1,i  ,1,3) * (cord(j  ,i+1,2)-cord(j  ,i  ,2)) -
             stress0(j-1,i  ,3,3) * (cord(j  ,i+1,1)-cord(j  ,i  ,1));
-        fy = stress0(j-1,i  ,3,3) * (cord(j  ,i+1,2)-cord(j  ,i  ,2)) -
+        fy= stress0(j-1,i  ,3,3) * (cord(j  ,i+1,2)-cord(j  ,i  ,2)) -
             stress0(j-1,i  ,2,3) * (cord(j  ,i+1,1)-cord(j  ,i  ,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
@@ -199,18 +199,18 @@ void cu_fl_node(double *force_d, double *balance_d, double *vel_d,
 
         // triangle A
         // side 2-3
-        fx = stress0(j  ,i-1,1,1) * (cord(j  ,i  ,2)-cord(j+1,i-1,2)) -
+        fx= stress0(j  ,i-1,1,1) * (cord(j  ,i  ,2)-cord(j+1,i-1,2)) -
             stress0(j  ,i-1,3,1) * (cord(j  ,i  ,1)-cord(j+1,i-1,1));
-        fy = stress0(j  ,i-1,3,1) * (cord(j  ,i  ,2)-cord(j+1,i-1,2)) -
+        fy= stress0(j  ,i-1,3,1) * (cord(j  ,i  ,2)-cord(j+1,i-1,2)) -
             stress0(j  ,i-1,2,1) * (cord(j  ,i  ,1)-cord(j+1,i-1,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
         bly = bly + 0.25*fabs(fy);
         // side 3-1
-        fx = stress0(j  ,i-1,1,1) * (cord(j  ,i-1,2)-cord(j  ,i  ,2)) -
+        fx= stress0(j  ,i-1,1,1) * (cord(j  ,i-1,2)-cord(j  ,i  ,2)) -
             stress0(j  ,i-1,3,1) * (cord(j  ,i-1,1)-cord(j  ,i  ,1));
-        fy = stress0(j  ,i-1,3,1) * (cord(j  ,i-1,2)-cord(j  ,i  ,2)) -
+        fy= stress0(j  ,i-1,3,1) * (cord(j  ,i-1,2)-cord(j  ,i  ,2)) -
             stress0(j  ,i-1,2,1) * (cord(j  ,i-1,1)-cord(j  ,i  ,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
@@ -219,18 +219,18 @@ void cu_fl_node(double *force_d, double *balance_d, double *vel_d,
 
         // triangle B
         // side 1-2
-        fx = stress0(j  ,i-1,1,2) * (cord(j+1,i-1,2)-cord(j  ,i  ,2)) -
+        fx= stress0(j  ,i-1,1,2) * (cord(j+1,i-1,2)-cord(j  ,i  ,2)) -
             stress0(j  ,i-1,3,2) * (cord(j+1,i-1,1)-cord(j  ,i  ,1));
-        fy = stress0(j  ,i-1,3,2) * (cord(j+1,i-1,2)-cord(j  ,i  ,2)) -
+        fy= stress0(j  ,i-1,3,2) * (cord(j+1,i-1,2)-cord(j  ,i  ,2)) -
             stress0(j  ,i-1,2,2) * (cord(j+1,i-1,1)-cord(j  ,i  ,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
         bly = bly + 0.25*fabs(fy);
         // side 3-1
-        fx = stress0(j  ,i-1,1,2) * (cord(j  ,i  ,2)-cord(j+1,i  ,2)) -
+        fx= stress0(j  ,i-1,1,2) * (cord(j  ,i  ,2)-cord(j+1,i  ,2)) -
             stress0(j  ,i-1,3,2) * (cord(j  ,i  ,1)-cord(j+1,i  ,1));
-        fy = stress0(j  ,i-1,3,2) * (cord(j  ,i  ,2)-cord(j+1,i  ,2)) -
+        fy= stress0(j  ,i-1,3,2) * (cord(j  ,i  ,2)-cord(j+1,i  ,2)) -
             stress0(j  ,i-1,2,2) * (cord(j  ,i  ,1)-cord(j+1,i  ,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
@@ -239,18 +239,18 @@ void cu_fl_node(double *force_d, double *balance_d, double *vel_d,
 
         // triangle D
         // side 2-3
-        fx = stress0(j  ,i-1,1,4) * (cord(j  ,i  ,2)-cord(j+1,i  ,2)) -
+        fx= stress0(j  ,i-1,1,4) * (cord(j  ,i  ,2)-cord(j+1,i  ,2)) -
             stress0(j  ,i-1,3,4) * (cord(j  ,i  ,1)-cord(j+1,i  ,1));
-        fy = stress0(j  ,i-1,3,4) * (cord(j  ,i  ,2)-cord(j+1,i  ,2)) -
+        fy= stress0(j  ,i-1,3,4) * (cord(j  ,i  ,2)-cord(j+1,i  ,2)) -
             stress0(j  ,i-1,2,4) * (cord(j  ,i  ,1)-cord(j+1,i  ,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
         bly = bly + 0.25*fabs(fy);
         // side 3-1
-        fx = stress0(j  ,i-1,1,4) * (cord(j  ,i-1,2)-cord(j  ,i  ,2)) -
+        fx= stress0(j  ,i-1,1,4) * (cord(j  ,i-1,2)-cord(j  ,i  ,2)) -
             stress0(j  ,i-1,3,4) * (cord(j  ,i-1,1)-cord(j  ,i  ,1));
-        fy = stress0(j  ,i-1,3,4) * (cord(j  ,i-1,2)-cord(j  ,i  ,2)) -
+        fy= stress0(j  ,i-1,3,4) * (cord(j  ,i-1,2)-cord(j  ,i  ,2)) -
             stress0(j  ,i-1,2,4) * (cord(j  ,i-1,1)-cord(j  ,i  ,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
@@ -263,18 +263,18 @@ void cu_fl_node(double *force_d, double *balance_d, double *vel_d,
 
         // triangle A
         // side 1-2
-        fx = stress0(j  ,i  ,1,1) * (cord(j+1,i  ,2)-cord(j  ,i  ,2)) -
+        fx= stress0(j  ,i  ,1,1) * (cord(j+1,i  ,2)-cord(j  ,i  ,2)) -
             stress0(j  ,i  ,3,1) * (cord(j+1,i  ,1)-cord(j  ,i  ,1));
-        fy = stress0(j  ,i  ,3,1) * (cord(j+1,i  ,2)-cord(j  ,i  ,2)) -
+        fy= stress0(j  ,i  ,3,1) * (cord(j+1,i  ,2)-cord(j  ,i  ,2)) -
             stress0(j  ,i  ,2,1) * (cord(j+1,i  ,1)-cord(j  ,i  ,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
         bly = bly + 0.25*fabs(fy);
         // side 3-1
-        fx = stress0(j  ,i  ,1,1) * (cord(j  ,i  ,2)-cord(j  ,i+1,2)) -
+        fx= stress0(j  ,i  ,1,1) * (cord(j  ,i  ,2)-cord(j  ,i+1,2)) -
             stress0(j  ,i  ,3,1) * (cord(j  ,i  ,1)-cord(j  ,i+1,1));
-        fy = stress0(j  ,i  ,3,1) * (cord(j  ,i  ,2)-cord(j  ,i+1,2)) -
+        fy= stress0(j  ,i  ,3,1) * (cord(j  ,i  ,2)-cord(j  ,i+1,2)) -
             stress0(j  ,i  ,2,1) * (cord(j  ,i  ,1)-cord(j  ,i+1,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
@@ -283,18 +283,18 @@ void cu_fl_node(double *force_d, double *balance_d, double *vel_d,
 
         // triangle C
         // side 1-2
-        fx = stress0(j  ,i  ,1,3) * (cord(j+1,i  ,2)-cord(j  ,i  ,2)) -
+        fx= stress0(j  ,i  ,1,3) * (cord(j+1,i  ,2)-cord(j  ,i  ,2)) -
             stress0(j  ,i  ,3,3) * (cord(j+1,i  ,1)-cord(j  ,i  ,1));
-        fy = stress0(j  ,i  ,3,3) * (cord(j+1,i  ,2)-cord(j  ,i  ,2)) -
+        fy= stress0(j  ,i  ,3,3) * (cord(j+1,i  ,2)-cord(j  ,i  ,2)) -
             stress0(j  ,i  ,2,3) * (cord(j+1,i  ,1)-cord(j  ,i  ,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
         bly = bly + 0.25*fabs(fy);
         // side 3-1
-        fx = stress0(j  ,i  ,1,3) * (cord(j  ,i  ,2)-cord(j+1,i+1,2)) -
+        fx= stress0(j  ,i  ,1,3) * (cord(j  ,i  ,2)-cord(j+1,i+1,2)) -
             stress0(j  ,i  ,3,3) * (cord(j  ,i  ,1)-cord(j+1,i+1,1));
-        fy = stress0(j  ,i  ,3,3) * (cord(j  ,i  ,2)-cord(j+1,i+1,2)) -
+        fy= stress0(j  ,i  ,3,3) * (cord(j  ,i  ,2)-cord(j+1,i+1,2)) -
             stress0(j  ,i  ,2,3) * (cord(j  ,i  ,1)-cord(j+1,i+1,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
@@ -303,18 +303,18 @@ void cu_fl_node(double *force_d, double *balance_d, double *vel_d,
 
         // triangle D
         // side 1-2
-        fx = stress0(j  ,i  ,1,4) * (cord(j+1,i+1,2)-cord(j  ,i  ,2)) -
+        fx= stress0(j  ,i  ,1,4) * (cord(j+1,i+1,2)-cord(j  ,i  ,2)) -
             stress0(j  ,i  ,3,4) * (cord(j+1,i+1,1)-cord(j  ,i  ,1));
-        fy = stress0(j  ,i  ,3,4) * (cord(j+1,i+1,2)-cord(j  ,i  ,2)) -
+        fy= stress0(j  ,i  ,3,4) * (cord(j+1,i+1,2)-cord(j  ,i  ,2)) -
             stress0(j  ,i  ,2,4) * (cord(j+1,i+1,1)-cord(j  ,i  ,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
         bly = bly + 0.25*fabs(fy);
         // side 3-1
-        fx = stress0(j  ,i  ,1,4) * (cord(j  ,i  ,2)-cord(j  ,i+1,2)) -
+        fx= stress0(j  ,i  ,1,4) * (cord(j  ,i  ,2)-cord(j  ,i+1,2)) -
             stress0(j  ,i  ,3,4) * (cord(j  ,i  ,1)-cord(j  ,i+1,1));
-        fy = stress0(j  ,i  ,3,4) * (cord(j  ,i  ,2)-cord(j  ,i+1,2)) -
+        fy= stress0(j  ,i  ,3,4) * (cord(j  ,i  ,2)-cord(j  ,i+1,2)) -
             stress0(j  ,i  ,2,4) * (cord(j  ,i  ,1)-cord(j  ,i+1,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
@@ -341,8 +341,8 @@ void cu_fl_node(double *force_d, double *balance_d, double *vel_d,
             double water_depth = 0.5*(cord(j,rneighbor,2)+cord(j,i,2));
             if (water_depth<0.) { // No water (above sea level)
                 press_norm_l = rho_water*((cord(j,lneighbor,2)+cord(j,i,2))/2.);
-                dlx_l = cord(j,i  ,1)-cord(j,lneighbor,1);
-                dly_l = cord(j,i  ,2)-cord(j,lneighbor,2);
+                dlx_l = cord(j,i,1)-cord(j,lneighbor,1);
+                dly_l = cord(j,i,2)-cord(j,lneighbor,2);
 
                 press_norm_r = rho_water*((cord(j,rneighbor,2)+cord(j,i,2))/2.);
                 dlx_r = cord(j,rneighbor,1)-cord(j,i,1);
@@ -362,12 +362,12 @@ void cu_fl_node(double *force_d, double *balance_d, double *vel_d,
             rosubg = PAR.g * (den(PAR.iphsub)+PAR.drosub) * (1-alfa(PAR.iphsub)*temp(j,i)+beta(PAR.iphsub)*p_est);
 
             press_norm_l = PAR.pisos-rosubg*((cord(j,lneighbor,2)+cord(j,i,2))/2-PAR.rzbo);
-            dlx_l = cord(j,i  ,1)-cord(j,lneighbor,1);
-            dly_l = cord(j,i  ,2)-cord(j,lneighbor,2);
+            dlx_l = cord(j,i,1)-cord(j,lneighbor,1);
+            dly_l = cord(j,i,2)-cord(j,lneighbor,2);
 
             press_norm_r = PAR.pisos-rosubg*((cord(j,rneighbor,2)+cord(j,i,2))/2-PAR.rzbo);
-            dlx_r = cord(j,rneighbor,1)-cord(j,i  ,1);
-            dly_r = cord(j,rneighbor,2)-cord(j,i  ,2);
+            dlx_r = cord(j,rneighbor,1)-cord(j,i,1);
+            dly_r = cord(j,rneighbor,2)-cord(j,i,2);
             fcx = fcx - 0.5*press_norm_l*dly_l-0.5*press_norm_r*dly_r;
             fcy = fcy + 0.5*press_norm_l*dlx_l+0.5*press_norm_r*dlx_r;
 
