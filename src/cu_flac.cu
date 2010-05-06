@@ -9,7 +9,7 @@
 
 // size of thread block
 // requirement: nthz is multiple of 8, nthx*nthz is multiple of 32
-static const int nthx = 16;
+static const int nthx = 4;
 static const int nthz = 16;
 
 // global variable holding constant model parameters
@@ -27,6 +27,7 @@ void checkCUDAError(const char *msg)
     // uncomment the following line to debug cuda calls ...
     //cudaThreadSynchronize();
 
+    cudaThreadSynchronize();
     err = cudaGetLastError();
     if(cudaSuccess != err) {
         fprintf(stderr, "CUDA error: %s: %s.\n", msg,
@@ -686,6 +687,7 @@ void cu_flac(double *force, double *balance, double *vel,
     fl_srate_();
 
     cudaStreamSynchronize(stream4);
+    checkCUDAError("cu_flac: before fl_rheol");
     fl_rheol_();
     cudaMemcpyAsync(stress0_d, stress0, nx*nz*ntriag*nstr*sizeof(double),
                     cudaMemcpyHostToDevice, stream1);
@@ -709,6 +711,7 @@ void cu_flac(double *force, double *balance, double *vel,
                                                *dt, drat, *time,
                                                nx, nz);
     cudaStreamSynchronize(stream1);
+    checkCUDAError("cu_flac: after cu_fl_node");
 
     cudaMemcpyAsync(vel, vel_d, nx*nz*2*sizeof(double),
                     cudaMemcpyDeviceToHost, stream2);
@@ -726,6 +729,7 @@ void cu_flac(double *force, double *balance, double *vel,
         //TODO
         //cu_fl_move2<<<1,1>>>();
         cudaStreamSynchronize(stream1);
+        checkCUDAError("cu_flac: after cu_fl_move1");
         cudaMemcpyAsync(cord, cord_d, nx*nz*2*sizeof(double),
                         cudaMemcpyDeviceToHost, stream3);
         cu_fl_move3<<<dimGrid2, dimBlock, stream1>>>(area_d, dvol_d,
@@ -745,6 +749,7 @@ void cu_flac(double *force, double *balance, double *vel,
 
     if( (*nloop % *ifreq_rmasses) == 0 ) {
         cudaStreamSynchronize(stream3);
+        checkCUDAError("cu_flac: before rmasses");
         rmasses_();
         cudaMemcpyAsync(rmass_d, rmass, nx*nz*sizeof(double),
                         cudaMemcpyHostToDevice, stream1);
@@ -752,6 +757,7 @@ void cu_flac(double *force, double *balance, double *vel,
 
     if( (*nloop % *ifreq_imasses) == 0 ) {
         cudaStreamSynchronize(stream2);
+        checkCUDAError("cu_flac: before dt_mass");
         dt_mass_();
         cudaMemcpyAsync(amass_d, amass, nx*nz*sizeof(double),
                         cudaMemcpyHostToDevice, stream1);
