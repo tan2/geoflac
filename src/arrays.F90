@@ -130,7 +130,7 @@ contains
       integer(c_size_t) :: m
       real*8 dummy
 
-      m = n * c_sizeof(dummy)
+      m = n * sizeof(dummy)
 
       call cudaMallocHost(p, m)
       call c_f_pointer(p, x, [n])
@@ -148,7 +148,7 @@ contains
       integer(c_size_t) :: m
       integer dummy
 
-      m = n * c_sizeof(dummy)
+      m = n * sizeof(dummy)
 
       call cudaMallocHost(p, m)
       call c_f_pointer(p, x, [n])
