@@ -9,8 +9,8 @@ include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 
-parameter( kindr=4, kindi=4 )
-real(kindr), allocatable :: dum1(:),dum2(:,:),dum3(:,:,:),dum4(:,:,:,:)
+parameter( kindr=8, kindi=4 )
+real(kindr), allocatable :: dum1(:),dum2(:,:)
 integer(kindi), allocatable :: dum11(:)
 real*8 rtime, rdt
 
@@ -43,60 +43,38 @@ close (1)
 
 
 ! Coordinates and velocities
-allocate( dum3(nz,nx,2) )
-
 nwords = nz*nx*2
 
-dum3(1:nz,1:nx,1:2) = cord(1:nz,1:nx,1:2)
 open (1,file='cord.rs',access='direct',recl=nwords*kindr) 
-write (1,rec=nrec) dum3
+write (1,rec=nrec) cord
 close (1)
 
-dum3(1:nz,1:nx,1:2) = vel(1:nz,1:nx,1:2)
 open (1,file='vel.rs',access='direct',recl=nwords*kindr) 
-write (1,rec=nrec) dum3
+write (1,rec=nrec) vel
 close (1)
-
-deallocate( dum3 )
 
 
 ! Strain
-allocate( dum3(3,nz-1,nx-1) )
-
 nwords = 3*(nz-1)*(nx-1)
-
-dum3(1:3,1:nz-1,1:nx-1) = strain(1:nz-1,1:nx-1,1:3)
 open (1,file='strain.rs',access='direct',recl=nwords*kindr) 
-write (1,rec=nrec) dum3
+write (1,rec=nrec) strain
 close (1)
-
-deallocate( dum3 )
 
 
 ! Stress
-allocate( dum4(4,4,nz-1,nx-1) )
-
-nwords = 4*4*(nz-1)*(nx-1)
-dum4(1:4,1:4,1:nz-1,1:nx-1) = stress0(1:nz-1,1:nx-1,1:4,1:4)
+nwords = 4*4*nz*nx
 open (1,file='stress.rs',access='direct',recl=nwords*kindr) 
-write (1,rec=nrec) dum4
+write (1,rec=nrec) stress0
 close (1)
-
-deallocate( dum4 )
 
 
 ! 2-D (nx*nz) arrays - nodes defined
-allocate( dum2(nz,nx) )
-
 nwords = nz*nx
 
 ! Temperature
-dum2(1:nz,1:nx) = temp(1:nz,1:nx)
 open (1,file='temp.rs',access='direct',recl=nwords*kindr) 
-write (1,rec=nrec) dum2
+write (1,rec=nrec) temp
 close (1)
-
-deallocate( dum2 )
 
 
 ! 2-D (nx-1)*(nz-1) arrays - elements defined
