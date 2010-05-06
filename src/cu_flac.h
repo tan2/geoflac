@@ -54,9 +54,9 @@
         strain_d[ ((d)-1)*(nx-1)*(nz-1) + ((i)-1)*(nz-1) + (j)-1 ]      \
 	)
 
-#define stress0(j,i,d,k) (                              \
-        stress0_d[ ((k)-1)*nstr*nx*nz +                 \
-                   ((d)-1)*nx*nz + ((i)-1)*nz + (j)-1 ] \
+#define stress0(j,i,d,k) (                                              \
+        stress0_d[ ((k)-1)*nstr*(nx-1)*(nz-1) +                         \
+                   ((d)-1)*(nx-1)*(nz-1) + ((i)-1)*(nz-1) + (j)-1 ]     \
 	)
 
 #define temp(j,i) (                     \
