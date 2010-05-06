@@ -43,7 +43,10 @@ void cu_fl_node(double *force_d, double *balance_d, double *vel_d,
                 const double *cord_d, const double *stress0_d, const double *temp_d,
                 const double *rmass_d, const double *amass_d,
                 const double *bc_d, const int *ncod_d,
-                const double dt, const double drat, const double time,
+                double dt, double drat, double time,
+                double ynstressbc, double g, double pisos,
+                double drosub, double rzbo,
+                int nyhydro,
                 int nx, int nz)
 {
     // i and j are indices to fortran arrays
@@ -55,7 +58,7 @@ void cu_fl_node(double *force_d, double *balance_d, double *vel_d,
 
     if(j > nz || i > nx) return;
 
-    if(PAR.ynstressbc) {
+    if(ynstressbc) {
         fcx = force(j,i,1);
         fcy = force(j,i,2);
         blx = balance(j,i,1);
@@ -323,11 +326,10 @@ void cu_fl_node(double *force_d, double *balance_d, double *vel_d,
     }
 
     // GRAVITY FORCE
-    fcy = fcy - rmass(j,i)*PAR.g;
-    bly = bly + fabs(rmass(j,i)*PAR.g);
+    fcy = fcy - rmass(j,i)*g;
+    bly = bly + fabs(rmass(j,i)*g);
 
-
-    if(PAR.nyhydro>0) {
+    if(nyhydro>0) {
         const int lneighbor = (i > 1) ? (i-1) : i;
         const int rneighbor = (i < nx) ? (i+1) : i;
         double dlx_l, dly_l, dlx_r, dly_r;
@@ -358,14 +360,14 @@ void cu_fl_node(double *force_d, double *balance_d, double *vel_d,
         // bottom support - Archimed force (normal to the surface, shear component = 0)
         //write(*,*) force(nz,i,1),force(nz,i,2)
         if(j == nz) {
-            p_est = PAR.pisos + 0.5*(den(PAR.iphsub)+PAR.drosub)*PAR.g*(cord(j,i,2)-PAR.rzbo);
-            rosubg = PAR.g * (den(PAR.iphsub)+PAR.drosub) * (1-alfa(PAR.iphsub)*temp(j,i)+beta(PAR.iphsub)*p_est);
+            p_est = pisos + 0.5*(den(PAR.iphsub)+drosub)*g*(cord(j,i,2)-rzbo);
+            rosubg = g * (den(PAR.iphsub)+drosub) * (1-alfa(PAR.iphsub)*temp(j,i)+beta(PAR.iphsub)*p_est);
 
-            press_norm_l = PAR.pisos-rosubg*((cord(j,lneighbor,2)+cord(j,i,2))/2-PAR.rzbo);
+            press_norm_l = pisos-rosubg*((cord(j,lneighbor,2)+cord(j,i,2))/2-rzbo);
             dlx_l = cord(j,i,1)-cord(j,lneighbor,1);
             dly_l = cord(j,i,2)-cord(j,lneighbor,2);
 
-            press_norm_r = PAR.pisos-rosubg*((cord(j,rneighbor,2)+cord(j,i,2))/2-PAR.rzbo);
+            press_norm_r = pisos-rosubg*((cord(j,rneighbor,2)+cord(j,i,2))/2-rzbo);
             dlx_r = cord(j,rneighbor,1)-cord(j,i,1);
             dly_r = cord(j,rneighbor,2)-cord(j,i,2);
             fcx = fcx - 0.5*press_norm_l*dly_l-0.5*press_norm_r*dly_r;
@@ -709,6 +711,9 @@ void cu_flac(double *force, double *balance, double *vel,
                                                rmass_d, amass_d,
                                                bc_d, ncod_d,
                                                *dt, drat, *time,
+                                               param.ynstressbc, param.g, param.pisos,
+                                               param.drosub, param.rzbo,
+                                               param.nyhydro,
                                                nx, nz);
     cudaStreamSynchronize(stream1);
     checkCUDAError("cu_flac: after cu_fl_node");
