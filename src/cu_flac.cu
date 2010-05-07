@@ -641,7 +641,7 @@ void cu_flac(double *force, double *balance, double *vel,
         //fprintf(stderr, "addr: %d %d %d %d\n", cord, temp, vel, stress0);
 
         cudaMalloc((void **) &cord_d, nx*nz*2*sizeof(double));
-        cudaMalloc((void **) &stress0_d, nx*nz*ntriag*nstr*sizeof(double));
+        cudaMalloc((void **) &stress0_d, (nx-1)*(nz-1)*ntriag*nstr*sizeof(double));
         cudaMalloc((void **) &temp_d, nx*nz*sizeof(double));
         cudaMalloc((void **) &rmass_d, nx*nz*sizeof(double));
         cudaMalloc((void **) &amass_d, nx*nz*sizeof(double));
@@ -689,7 +689,7 @@ void cu_flac(double *force, double *balance, double *vel,
     cudaStreamSynchronize(stream4);
     checkCUDAError("cu_flac: before fl_rheol");
     fl_rheol_();
-    cudaMemcpyAsync(stress0_d, stress0, nx*nz*ntriag*nstr*sizeof(double),
+    cudaMemcpyAsync(stress0_d, stress0, (nx-1)*(nz-1)*ntriag*nstr*sizeof(double),
                     cudaMemcpyHostToDevice, stream1);
     cudaMemcpyAsync(strain_d, strain, (nx-1)*(nz-1)*3*sizeof(double),
                     cudaMemcpyHostToDevice, stream1);
@@ -743,7 +743,7 @@ void cu_flac(double *force, double *balance, double *vel,
                         cudaMemcpyDeviceToHost, stream4);
         cudaMemcpyAsync(strain, strain_d, (nx-1)*(nz-1)*3*sizeof(double),
                         cudaMemcpyDeviceToHost, stream1);
-        cudaMemcpyAsync(stress0, stress0_d, nx*nz*nstr*ntriag*sizeof(double),
+        cudaMemcpyAsync(stress0, stress0_d, (nx-1)*(nz-1)*nstr*ntriag*sizeof(double),
                         cudaMemcpyDeviceToHost, stream1);
     }
 
