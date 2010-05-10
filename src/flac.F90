@@ -59,7 +59,7 @@ interface
      nx, nz) bind(c)
      use iso_c_binding
      implicit none
-     type(c_ptr), value :: pforce, pbalance, pvel, pcord, pstress0, ptemp, &
+     type(c_ptr), target, value :: pforce, pbalance, pvel, pcord, pstress0, ptemp, &
           prmass, pamass, parea, pdvol, pstrain, pbc, pncod
 
      real*8 boff, time, time_t, dtmax_therm, dt
