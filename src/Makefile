@@ -11,6 +11,7 @@
 ## cuda = 0:f90 only; 1: cuda runtime; 2: cuda emulation
 debug = 1
 coverage = 0
+gprof = 0
 cuda = 2
 
 
@@ -42,6 +43,11 @@ endif
 ifeq ($(coverage), 1)
 	CFLAGS += -fprofile-arcs -ftest-coverage
 	LDFLAGS += -fprofile-arcs -ftest-coverage
+endif
+
+ifeq ($(gprof), 1)
+	CFLAGS += -pg -g
+	LDFLAGS += -pg -g
 endif
 
 ## for Intel v11.1
