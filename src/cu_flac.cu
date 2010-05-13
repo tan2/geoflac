@@ -49,28 +49,14 @@ void cu_fl_node(double *force_d, double *balance_d, double *vel_d,
                 int nyhydro,
                 int nx, int nz)
 {
-    __shared__ double x_s[(nthx+2)*(nthz+2)];
-    __shared__ double z_s[(nthx+2)*(nthz+2)];
-
-    // need only 3 components of the stress0 array
-    __shared__ double str_s[ntriag][3][nthx+1][nthz+1];
-
-#define x(jj,ii)        x_s[((ii)+1)*(nthz+2) + (jj)+1]
-#define z(jj,ii)        z_s[((ii)+1)*(nthz+2) + (jj)+1]
-#define str(jj,ii,d,k)  str_s[k-1][d-1][ii+1][jj+1]
-
     // i and j are indices to fortran arrays
     const int i = blockIdx.x * blockDim.x + threadIdx.x + 1;
     const int j = blockIdx.y * blockDim.y + threadIdx.y + 1;
 
-    // ii and jj are indices to shared memory arrays
-    const int ii = threadIdx.x;
-    const int jj = threadIdx.y;
-
     double fx, fy;
     double fcx, fcy, blx, bly;
 
-    if(j > nz || i > nx) goto skip1;
+    if(j > nz || i > nx) return;
 
     if(ynstressbc) {
         fcx = force(j,i,1);
@@ -81,59 +67,26 @@ void cu_fl_node(double *force_d, double *balance_d, double *vel_d,
         fcx = fcy = blx = bly = 0.0;
     }
 
-    x(jj,ii) = cord(j,i,1);
-    z(jj,ii) = cord(j,i,2);
-    for(int k=1; k<=ntriag; k++)
-        for(int kk=1; kk<=3; kk++)
-            str(jj,ii,kk,k) = stress0(j,i,kk,k);
-
     // REGULAR PART - forces from stresses
 
     // Element (j-1,i-1). Triangles B,C,D
-    if(ii == 0 && blockIdx.x != 0) {
-        x(jj,ii-1) = cord(j,i-1,1);
-        z(jj,ii-1) = cord(j,i-1,2);
-        for(int k=1; k<=ntriag; k++)
-            for(int kk=1; kk<=3; kk++)
-                str(jj,ii-1,kk,k) = stress0(j,i-1,kk,k);
-    }
-
-    if(jj == 0 && blockIdx.y != 0) {
-        x(jj-1,ii) = cord(j-1,i,1);
-        z(jj-1,ii) = cord(j-1,i,2);
-        for(int k=1; k<=ntriag; k++)
-            for(int kk=1; kk<=3; kk++)
-                str(jj-1,ii,kk,k) = stress0(j-1,i,kk,k);
-
-        if(ii == 0 && blockIdx.x != 0) {
-            x(jj-1,ii-1) = cord(j-1,i-1,1);
-            z(jj-1,ii-1) = cord(j-1,i-1,2);
-            for(int k=1; k<=ntriag; k++)
-                for(int kk=1; kk<=3; kk++)
-                    str(jj-1,ii-1,kk,k) = stress0(j-1,i-1,kk,k);
-        }
-    }
- skip1:
-    __syncthreads();
-    if(j > nz || i > nx) goto skip2;
-
-    if (j>1 && i>1) {
+    if (j>1 && i>1 ) {
 
         // triangle B
         // side 2-3
-        fx= str(jj-1,ii-1,1,2) * (z(jj  ,ii  )-z(jj  ,ii-1)) -
-            str(jj-1,ii-1,3,2) * (x(jj  ,ii  )-x(jj  ,ii-1));
-        fy= str(jj-1,ii-1,3,2) * (z(jj  ,ii  )-z(jj  ,ii-1)) -
-            str(jj-1,ii-1,2,2) * (x(jj  ,ii  )-x(jj  ,ii-1));
+        fx= stress0(j-1,i-1,1,2) * (cord(j  ,i  ,2)-cord(j  ,i-1,2)) -
+            stress0(j-1,i-1,3,2) * (cord(j  ,i  ,1)-cord(j  ,i-1,1));
+        fy= stress0(j-1,i-1,3,2) * (cord(j  ,i  ,2)-cord(j  ,i-1,2)) -
+            stress0(j-1,i-1,2,2) * (cord(j  ,i  ,1)-cord(j  ,i-1,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
         bly = bly + 0.25*fabs(fy);
         // side 3-1
-        fx= str(jj-1,ii-1,1,2) * (z(jj-1,ii  )-z(jj  ,ii  )) -
-            str(jj-1,ii-1,3,2) * (x(jj-1,ii  )-x(jj  ,ii  ));
-        fy= str(jj-1,ii-1,3,2) * (z(jj-1,ii  )-z(jj  ,ii  )) -
-            str(jj-1,ii-1,2,2) * (x(jj-1,ii  )-x(jj  ,ii  ));
+        fx= stress0(j-1,i-1,1,2) * (cord(j-1,i  ,2)-cord(j  ,i  ,2)) -
+            stress0(j-1,i-1,3,2) * (cord(j-1,i  ,1)-cord(j  ,i  ,1));
+        fy= stress0(j-1,i-1,3,2) * (cord(j-1,i  ,2)-cord(j  ,i  ,2)) -
+            stress0(j-1,i-1,2,2) * (cord(j-1,i  ,1)-cord(j  ,i  ,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
@@ -141,19 +94,19 @@ void cu_fl_node(double *force_d, double *balance_d, double *vel_d,
 
         // triangle C
         // side 2-3
-        fx= str(jj-1,ii-1,1,3) * (z(jj  ,ii  )-z(jj  ,ii-1)) -
-            str(jj-1,ii-1,3,3) * (x(jj  ,ii  )-x(jj  ,ii-1));
-        fy= str(jj-1,ii-1,3,3) * (z(jj  ,ii  )-z(jj  ,ii-1)) -
-            str(jj-1,ii-1,2,3) * (x(jj  ,ii  )-x(jj  ,ii-1));
+        fx= stress0(j-1,i-1,1,3) * (cord(j  ,i  ,2)-cord(j  ,i-1,2)) -
+            stress0(j-1,i-1,3,3) * (cord(j  ,i  ,1)-cord(j  ,i-1,1));
+        fy= stress0(j-1,i-1,3,3) * (cord(j  ,i  ,2)-cord(j  ,i-1,2)) -
+            stress0(j-1,i-1,2,3) * (cord(j  ,i  ,1)-cord(j  ,i-1,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
         bly = bly + 0.25*fabs(fy);
         // side 3-1
-        fx= str(jj-1,ii-1,1,3) * (z(jj-1,ii-1)-z(jj  ,ii  )) -
-            str(jj-1,ii-1,3,3) * (x(jj-1,ii-1)-x(jj  ,ii  ));
-        fy= str(jj-1,ii-1,3,3) * (z(jj-1,ii-1)-z(jj  ,ii  )) -
-            str(jj-1,ii-1,2,3) * (x(jj-1,ii-1)-x(jj  ,ii  ));
+        fx= stress0(j-1,i-1,1,3) * (cord(j-1,i-1,2)-cord(j  ,i  ,2)) -
+            stress0(j-1,i-1,3,3) * (cord(j-1,i-1,1)-cord(j  ,i  ,1));
+        fy= stress0(j-1,i-1,3,3) * (cord(j-1,i-1,2)-cord(j  ,i  ,2)) -
+            stress0(j-1,i-1,2,3) * (cord(j-1,i-1,1)-cord(j  ,i  ,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
@@ -161,19 +114,19 @@ void cu_fl_node(double *force_d, double *balance_d, double *vel_d,
 
         // triangle D
         // side 1-2
-        fx= str(jj-1,ii-1,1,4) * (z(jj  ,ii  )-z(jj-1,ii-1)) -
-            str(jj-1,ii-1,3,4) * (x(jj  ,ii  )-x(jj-1,ii-1));
-        fy= str(jj-1,ii-1,3,4) * (z(jj  ,ii  )-z(jj-1,ii-1)) -
-            str(jj-1,ii-1,2,4) * (x(jj  ,ii  )-x(jj-1,ii-1));
+        fx= stress0(j-1,i-1,1,4) * (cord(j  ,i  ,2)-cord(j-1,i-1,2)) -
+            stress0(j-1,i-1,3,4) * (cord(j  ,i  ,1)-cord(j-1,i-1,1));
+        fy= stress0(j-1,i-1,3,4) * (cord(j  ,i  ,2)-cord(j-1,i-1,2)) -
+            stress0(j-1,i-1,2,4) * (cord(j  ,i  ,1)-cord(j-1,i-1,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
         bly = bly + 0.25*fabs(fy);
         // side 2-3
-        fx= str(jj-1,ii-1,1,4) * (z(jj-1,ii  )-z(jj  ,ii  )) -
-            str(jj-1,ii-1,3,4) * (x(jj-1,ii  )-x(jj  ,ii  ));
-        fy= str(jj-1,ii-1,3,4) * (z(jj-1,ii  )-z(jj  ,ii  )) -
-            str(jj-1,ii-1,2,4) * (x(jj-1,ii  )-x(jj  ,ii  ));
+        fx= stress0(j-1,i-1,1,4) * (cord(j-1,i  ,2)-cord(j  ,i  ,2)) -
+            stress0(j-1,i-1,3,4) * (cord(j-1,i  ,1)-cord(j  ,i  ,1));
+        fy= stress0(j-1,i-1,3,4) * (cord(j-1,i  ,2)-cord(j  ,i  ,2)) -
+            stress0(j-1,i-1,2,4) * (cord(j-1,i  ,1)-cord(j  ,i  ,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
@@ -181,36 +134,23 @@ void cu_fl_node(double *force_d, double *balance_d, double *vel_d,
     }
 
     // Element (j-1,i). Triangles A,B,C.
-    if(ii == blockDim.x-1 && blockIdx.x != gridDim.x-1) {
-        x(jj,ii+1) = cord(j,i+1,1);
-        z(jj,ii+1) = cord(j,i+1,2);
-
-        if(jj == 0 && blockIdx.y != 0) {
-            x(jj-1,ii+1) = cord(j-1,i+1,1);
-            z(jj-1,ii+1) = cord(j-1,i+1,2);
-        }
-    }
- skip2:
-    __syncthreads();
-    if(j > nz || i > nx) goto skip3;
-
     if (j>1 && i<nx) {
 
         // triangle A
         // side 1-2
-        fx= str(jj-1,ii  ,1,1) * (z(jj  ,ii  )-z(jj-1,ii  )) -
-            str(jj-1,ii  ,3,1) * (x(jj  ,ii  )-x(jj-1,ii  ));
-        fy= str(jj-1,ii  ,3,1) * (z(jj  ,ii  )-z(jj-1,ii  )) -
-            str(jj-1,ii  ,2,1) * (x(jj  ,ii  )-x(jj-1,ii  ));
+        fx= stress0(j-1,i  ,1,1) * (cord(j  ,i  ,2)-cord(j-1,i  ,2)) -
+            stress0(j-1,i  ,3,1) * (cord(j  ,i  ,1)-cord(j-1,i  ,1));
+        fy= stress0(j-1,i  ,3,1) * (cord(j  ,i  ,2)-cord(j-1,i  ,2)) -
+            stress0(j-1,i  ,2,1) * (cord(j  ,i  ,1)-cord(j-1,i  ,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
         bly = bly + 0.25*fabs(fy);
         // side 2-3
-        fx= str(jj-1,ii  ,1,1) * (z(jj-1,ii+1)-z(jj  ,ii  )) -
-            str(jj-1,ii  ,3,1) * (x(jj-1,ii+1)-x(jj  ,ii  ));
-        fy= str(jj-1,ii  ,3,1) * (z(jj-1,ii+1)-z(jj  ,ii  )) -
-            str(jj-1,ii  ,2,1) * (x(jj-1,ii+1)-x(jj  ,ii  ));
+        fx= stress0(j-1,i  ,1,1) * (cord(j-1,i+1,2)-cord(j  ,i  ,2)) -
+            stress0(j-1,i  ,3,1) * (cord(j-1,i+1,1)-cord(j  ,i  ,1));
+        fy= stress0(j-1,i  ,3,1) * (cord(j-1,i+1,2)-cord(j  ,i  ,2)) -
+            stress0(j-1,i  ,2,1) * (cord(j-1,i+1,1)-cord(j  ,i  ,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
@@ -218,19 +158,19 @@ void cu_fl_node(double *force_d, double *balance_d, double *vel_d,
 
         // triangle B
         // side 1-2
-        fx= str(jj-1,ii  ,1,2) * (z(jj  ,ii  )-z(jj-1,ii+1)) -
-            str(jj-1,ii  ,3,2) * (x(jj  ,ii  )-x(jj-1,ii+1));
-        fy= str(jj-1,ii  ,3,2) * (z(jj  ,ii  )-z(jj-1,ii+1)) -
-            str(jj-1,ii  ,2,2) * (x(jj  ,ii  )-x(jj-1,ii+1));
+        fx= stress0(j-1,i  ,1,2) * (cord(j  ,i  ,2)-cord(j-1,i+1,2)) -
+            stress0(j-1,i  ,3,2) * (cord(j  ,i  ,1)-cord(j-1,i+1,1));
+        fy= stress0(j-1,i  ,3,2) * (cord(j  ,i  ,2)-cord(j-1,i+1,2)) -
+            stress0(j-1,i  ,2,2) * (cord(j  ,i  ,1)-cord(j-1,i+1,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
         bly = bly + 0.25*fabs(fy);
         // side 2-3
-        fx= str(jj-1,ii  ,1,2) * (z(jj  ,ii+1)-z(jj  ,ii  )) -
-            str(jj-1,ii  ,3,2) * (x(jj  ,ii+1)-x(jj  ,ii  ));
-        fy= str(jj-1,ii  ,3,2) * (z(jj  ,ii+1)-z(jj  ,ii  )) -
-            str(jj-1,ii  ,2,2) * (x(jj  ,ii+1)-x(jj  ,ii  ));
+        fx= stress0(j-1,i  ,1,2) * (cord(j  ,i+1,2)-cord(j  ,i  ,2)) -
+            stress0(j-1,i  ,3,2) * (cord(j  ,i+1,1)-cord(j  ,i  ,1));
+        fy= stress0(j-1,i  ,3,2) * (cord(j  ,i+1,2)-cord(j  ,i  ,2)) -
+            stress0(j-1,i  ,2,2) * (cord(j  ,i+1,1)-cord(j  ,i  ,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
@@ -238,19 +178,19 @@ void cu_fl_node(double *force_d, double *balance_d, double *vel_d,
 
         // triangle C
         // side 1-2
-        fx= str(jj-1,ii  ,1,3) * (z(jj  ,ii  )-z(jj-1,ii  )) -
-            str(jj-1,ii  ,3,3) * (x(jj  ,ii  )-x(jj-1,ii  ));
-        fy= str(jj-1,ii  ,3,3) * (z(jj  ,ii  )-z(jj-1,ii  )) -
-            str(jj-1,ii  ,2,3) * (x(jj  ,ii  )-x(jj-1,ii  ));
+        fx= stress0(j-1,i  ,1,3) * (cord(j  ,i  ,2)-cord(j-1,i  ,2)) -
+            stress0(j-1,i  ,3,3) * (cord(j  ,i  ,1)-cord(j-1,i  ,1));
+        fy= stress0(j-1,i  ,3,3) * (cord(j  ,i  ,2)-cord(j-1,i  ,2)) -
+            stress0(j-1,i  ,2,3) * (cord(j  ,i  ,1)-cord(j-1,i  ,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
         bly = bly + 0.25*fabs(fy);
         // side 2-3
-        fx= str(jj-1,ii  ,1,3) * (z(jj  ,ii+1)-z(jj  ,ii  )) -
-            str(jj-1,ii  ,3,3) * (x(jj  ,ii+1)-x(jj  ,ii  ));
-        fy= str(jj-1,ii  ,3,3) * (z(jj  ,ii+1)-z(jj  ,ii  )) -
-            str(jj-1,ii  ,2,3) * (x(jj  ,ii+1)-x(jj  ,ii  ));
+        fx= stress0(j-1,i  ,1,3) * (cord(j  ,i+1,2)-cord(j  ,i  ,2)) -
+            stress0(j-1,i  ,3,3) * (cord(j  ,i+1,1)-cord(j  ,i  ,1));
+        fy= stress0(j-1,i  ,3,3) * (cord(j  ,i+1,2)-cord(j  ,i  ,2)) -
+            stress0(j-1,i  ,2,3) * (cord(j  ,i+1,1)-cord(j  ,i  ,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
@@ -258,36 +198,23 @@ void cu_fl_node(double *force_d, double *balance_d, double *vel_d,
     }
 
     // Element (j,i-1). Triangles A,B,D
-    if(jj == blockDim.y-1 && blockIdx.y != gridDim.y-1) {
-        x(jj+1,ii) = cord(j+1,i,1);
-        z(jj+1,ii) = cord(j+1,i,2);
-
-        if(ii == 0 && blockIdx.x != 0) {
-            x(jj+1,ii-1) = cord(j+1,i-1,1);
-            z(jj+1,ii-1) = cord(j+1,i-1,2);
-        }
-    }
- skip3:
-    __syncthreads();
-    if(j > nz || i > nx) goto skip4;
-
     if (j<nz && i>1) {
 
         // triangle A
         // side 2-3
-        fx= str(jj  ,ii-1,1,1) * (z(jj  ,ii  )-z(jj+1,ii-1)) -
-            str(jj  ,ii-1,3,1) * (x(jj  ,ii  )-x(jj+1,ii-1));
-        fy= str(jj  ,ii-1,3,1) * (z(jj  ,ii  )-z(jj+1,ii-1)) -
-            str(jj  ,ii-1,2,1) * (x(jj  ,ii  )-x(jj+1,ii-1));
+        fx= stress0(j  ,i-1,1,1) * (cord(j  ,i  ,2)-cord(j+1,i-1,2)) -
+            stress0(j  ,i-1,3,1) * (cord(j  ,i  ,1)-cord(j+1,i-1,1));
+        fy= stress0(j  ,i-1,3,1) * (cord(j  ,i  ,2)-cord(j+1,i-1,2)) -
+            stress0(j  ,i-1,2,1) * (cord(j  ,i  ,1)-cord(j+1,i-1,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
         bly = bly + 0.25*fabs(fy);
         // side 3-1
-        fx= str(jj  ,ii-1,1,1) * (z(jj  ,ii-1)-z(jj  ,ii  )) -
-            str(jj  ,ii-1,3,1) * (x(jj  ,ii-1)-x(jj  ,ii  ));
-        fy= str(jj  ,ii-1,3,1) * (z(jj  ,ii-1)-z(jj  ,ii  )) -
-            str(jj  ,ii-1,2,1) * (x(jj  ,ii-1)-x(jj  ,ii  ));
+        fx= stress0(j  ,i-1,1,1) * (cord(j  ,i-1,2)-cord(j  ,i  ,2)) -
+            stress0(j  ,i-1,3,1) * (cord(j  ,i-1,1)-cord(j  ,i  ,1));
+        fy= stress0(j  ,i-1,3,1) * (cord(j  ,i-1,2)-cord(j  ,i  ,2)) -
+            stress0(j  ,i-1,2,1) * (cord(j  ,i-1,1)-cord(j  ,i  ,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
@@ -295,19 +222,19 @@ void cu_fl_node(double *force_d, double *balance_d, double *vel_d,
 
         // triangle B
         // side 1-2
-        fx= str(jj  ,ii-1,1,2) * (z(jj+1,ii-1)-z(jj  ,ii  )) -
-            str(jj  ,ii-1,3,2) * (x(jj+1,ii-1)-x(jj  ,ii  ));
-        fy= str(jj  ,ii-1,3,2) * (z(jj+1,ii-1)-z(jj  ,ii  )) -
-            str(jj  ,ii-1,2,2) * (x(jj+1,ii-1)-x(jj  ,ii  ));
+        fx= stress0(j  ,i-1,1,2) * (cord(j+1,i-1,2)-cord(j  ,i  ,2)) -
+            stress0(j  ,i-1,3,2) * (cord(j+1,i-1,1)-cord(j  ,i  ,1));
+        fy= stress0(j  ,i-1,3,2) * (cord(j+1,i-1,2)-cord(j  ,i  ,2)) -
+            stress0(j  ,i-1,2,2) * (cord(j+1,i-1,1)-cord(j  ,i  ,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
         bly = bly + 0.25*fabs(fy);
         // side 3-1
-        fx= str(jj  ,ii-1,1,2) * (z(jj  ,ii  )-z(jj+1,ii  )) -
-            str(jj  ,ii-1,3,2) * (x(jj  ,ii  )-x(jj+1,ii  ));
-        fy= str(jj  ,ii-1,3,2) * (z(jj  ,ii  )-z(jj+1,ii  )) -
-            str(jj  ,ii-1,2,2) * (x(jj  ,ii  )-x(jj+1,ii  ));
+        fx= stress0(j  ,i-1,1,2) * (cord(j  ,i  ,2)-cord(j+1,i  ,2)) -
+            stress0(j  ,i-1,3,2) * (cord(j  ,i  ,1)-cord(j+1,i  ,1));
+        fy= stress0(j  ,i-1,3,2) * (cord(j  ,i  ,2)-cord(j+1,i  ,2)) -
+            stress0(j  ,i-1,2,2) * (cord(j  ,i  ,1)-cord(j+1,i  ,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
@@ -315,67 +242,43 @@ void cu_fl_node(double *force_d, double *balance_d, double *vel_d,
 
         // triangle D
         // side 2-3
-        fx= str(jj  ,ii-1,1,4) * (z(jj  ,ii  )-z(jj+1,ii  )) -
-            str(jj  ,ii-1,3,4) * (x(jj  ,ii  )-x(jj+1,ii  ));
-        fy= str(jj  ,ii-1,3,4) * (z(jj  ,ii  )-z(jj+1,ii  )) -
-            str(jj  ,ii-1,2,4) * (x(jj  ,ii  )-x(jj+1,ii  ));
+        fx= stress0(j  ,i-1,1,4) * (cord(j  ,i  ,2)-cord(j+1,i  ,2)) -
+            stress0(j  ,i-1,3,4) * (cord(j  ,i  ,1)-cord(j+1,i  ,1));
+        fy= stress0(j  ,i-1,3,4) * (cord(j  ,i  ,2)-cord(j+1,i  ,2)) -
+            stress0(j  ,i-1,2,4) * (cord(j  ,i  ,1)-cord(j+1,i  ,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
         bly = bly + 0.25*fabs(fy);
         // side 3-1
-        fx= str(jj  ,ii-1,1,4) * (z(jj  ,ii-1)-z(jj  ,ii  )) -
-            str(jj  ,ii-1,3,4) * (x(jj  ,ii-1)-x(jj  ,ii  ));
-        fy= str(jj  ,ii-1,3,4) * (z(jj  ,ii-1)-z(jj  ,ii  )) -
-            str(jj  ,ii-1,2,4) * (x(jj  ,ii-1)-x(jj  ,ii  ));
+        fx= stress0(j  ,i-1,1,4) * (cord(j  ,i-1,2)-cord(j  ,i  ,2)) -
+            stress0(j  ,i-1,3,4) * (cord(j  ,i-1,1)-cord(j  ,i  ,1));
+        fy= stress0(j  ,i-1,3,4) * (cord(j  ,i-1,2)-cord(j  ,i  ,2)) -
+            stress0(j  ,i-1,2,4) * (cord(j  ,i-1,1)-cord(j  ,i  ,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
         bly = bly + 0.25*fabs(fy);
     }
-
-    if(ii == blockDim.x-1 && blockIdx.x != gridDim.x-1) {
-        if(jj == blockDim.y-1 && blockIdx.y != gridDim.y-1) {
-            x(jj+1,ii+1) = cord(j+1,i+1,1);
-            z(jj+1,ii+1) = cord(j+1,i+1,2);
-        }
-    }
- skip4:
-    __syncthreads();
-    if(j > nz || i > nx) return;
-
-#ifdef __DEVICE_EMULATION__
-    // check the content of x_s[] and z_s[]
-    if(ii==0 && jj==0) {
-        fprintf(stderr, "block(%2d, %2d)\n", blockIdx.x, blockIdx.y);
-        int d=0;
-        for(int k=0; k<=nthx+1; ++k)
-            for(int kk=0; kk<=nthz+1; ++kk) {
-                fprintf(stderr, "(%3d %3d)  %.15e  %.15e\n", k, kk,
-                        x_s[d], z_s[d]);
-                d++;
-            }
-    }
-#endif
 
     // Element (j,i). Triangles A,C,D
     if (j<nz && i<nx ) {
 
         // triangle A
         // side 1-2
-        fx= str(jj  ,ii  ,1,1) * (z(jj+1,ii  )-z(jj  ,ii  )) -
-            str(jj  ,ii  ,3,1) * (x(jj+1,ii  )-x(jj  ,ii  ));
-        fy= str(jj  ,ii  ,3,1) * (z(jj+1,ii  )-z(jj  ,ii  )) -
-            str(jj  ,ii  ,2,1) * (x(jj+1,ii  )-x(jj  ,ii  ));
+        fx= stress0(j  ,i  ,1,1) * (cord(j+1,i  ,2)-cord(j  ,i  ,2)) -
+            stress0(j  ,i  ,3,1) * (cord(j+1,i  ,1)-cord(j  ,i  ,1));
+        fy= stress0(j  ,i  ,3,1) * (cord(j+1,i  ,2)-cord(j  ,i  ,2)) -
+            stress0(j  ,i  ,2,1) * (cord(j+1,i  ,1)-cord(j  ,i  ,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
         bly = bly + 0.25*fabs(fy);
         // side 3-1
-        fx= str(jj  ,ii  ,1,1) * (z(jj  ,ii  )-z(jj  ,ii+1)) -
-            str(jj  ,ii  ,3,1) * (x(jj  ,ii  )-x(jj  ,ii+1));
-        fy= str(jj  ,ii  ,3,1) * (z(jj  ,ii  )-z(jj  ,ii+1)) -
-            str(jj  ,ii  ,2,1) * (x(jj  ,ii  )-x(jj  ,ii+1));
+        fx= stress0(j  ,i  ,1,1) * (cord(j  ,i  ,2)-cord(j  ,i+1,2)) -
+            stress0(j  ,i  ,3,1) * (cord(j  ,i  ,1)-cord(j  ,i+1,1));
+        fy= stress0(j  ,i  ,3,1) * (cord(j  ,i  ,2)-cord(j  ,i+1,2)) -
+            stress0(j  ,i  ,2,1) * (cord(j  ,i  ,1)-cord(j  ,i+1,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
@@ -383,19 +286,19 @@ void cu_fl_node(double *force_d, double *balance_d, double *vel_d,
 
         // triangle C
         // side 1-2
-        fx= str(jj  ,ii  ,1,3) * (z(jj+1,ii  )-z(jj  ,ii  )) -
-            str(jj  ,ii  ,3,3) * (x(jj+1,ii  )-x(jj  ,ii  ));
-        fy= str(jj  ,ii  ,3,3) * (z(jj+1,ii  )-z(jj  ,ii  )) -
-            str(jj  ,ii  ,2,3) * (x(jj+1,ii  )-x(jj  ,ii  ));
+        fx= stress0(j  ,i  ,1,3) * (cord(j+1,i  ,2)-cord(j  ,i  ,2)) -
+            stress0(j  ,i  ,3,3) * (cord(j+1,i  ,1)-cord(j  ,i  ,1));
+        fy= stress0(j  ,i  ,3,3) * (cord(j+1,i  ,2)-cord(j  ,i  ,2)) -
+            stress0(j  ,i  ,2,3) * (cord(j+1,i  ,1)-cord(j  ,i  ,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
         bly = bly + 0.25*fabs(fy);
         // side 3-1
-        fx= str(jj  ,ii  ,1,3) * (z(jj  ,ii  )-z(jj+1,ii+1)) -
-            str(jj  ,ii  ,3,3) * (x(jj  ,ii  )-x(jj+1,ii+1));
-        fy= str(jj  ,ii  ,3,3) * (z(jj  ,ii  )-z(jj+1,ii+1)) -
-            str(jj  ,ii  ,2,3) * (x(jj  ,ii  )-x(jj+1,ii+1));
+        fx= stress0(j  ,i  ,1,3) * (cord(j  ,i  ,2)-cord(j+1,i+1,2)) -
+            stress0(j  ,i  ,3,3) * (cord(j  ,i  ,1)-cord(j+1,i+1,1));
+        fy= stress0(j  ,i  ,3,3) * (cord(j  ,i  ,2)-cord(j+1,i+1,2)) -
+            stress0(j  ,i  ,2,3) * (cord(j  ,i  ,1)-cord(j+1,i+1,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
@@ -403,19 +306,19 @@ void cu_fl_node(double *force_d, double *balance_d, double *vel_d,
 
         // triangle D
         // side 1-2
-        fx= str(jj  ,ii  ,1,4) * (z(jj+1,ii+1)-z(jj  ,ii  )) -
-            str(jj  ,ii  ,3,4) * (x(jj+1,ii+1)-x(jj  ,ii  ));
-        fy= str(jj  ,ii  ,3,4) * (z(jj+1,ii+1)-z(jj  ,ii  )) -
-            str(jj  ,ii  ,2,4) * (x(jj+1,ii+1)-x(jj  ,ii  ));
+        fx= stress0(j  ,i  ,1,4) * (cord(j+1,i+1,2)-cord(j  ,i  ,2)) -
+            stress0(j  ,i  ,3,4) * (cord(j+1,i+1,1)-cord(j  ,i  ,1));
+        fy= stress0(j  ,i  ,3,4) * (cord(j+1,i+1,2)-cord(j  ,i  ,2)) -
+            stress0(j  ,i  ,2,4) * (cord(j+1,i+1,1)-cord(j  ,i  ,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
         bly = bly + 0.25*fabs(fy);
         // side 3-1
-        fx= str(jj  ,ii  ,1,4) * (z(jj  ,ii  )-z(jj  ,ii+1)) -
-            str(jj  ,ii  ,3,4) * (x(jj  ,ii  )-x(jj  ,ii+1));
-        fy= str(jj  ,ii  ,3,4) * (z(jj  ,ii  )-z(jj  ,ii+1)) -
-            str(jj  ,ii  ,2,4) * (x(jj  ,ii  )-x(jj  ,ii+1));
+        fx= stress0(j  ,i  ,1,4) * (cord(j  ,i  ,2)-cord(j  ,i+1,2)) -
+            stress0(j  ,i  ,3,4) * (cord(j  ,i  ,1)-cord(j  ,i+1,1));
+        fy= stress0(j  ,i  ,3,4) * (cord(j  ,i  ,2)-cord(j  ,i+1,2)) -
+            stress0(j  ,i  ,2,4) * (cord(j  ,i  ,1)-cord(j  ,i+1,1));
         fcx = fcx - 0.25*fx;
         fcy = fcy - 0.25*fy;
         blx = blx + 0.25*fabs(fx);
@@ -542,12 +445,7 @@ void cu_fl_node(double *force_d, double *balance_d, double *vel_d,
     balance(j,i,2) = bly;
     vel(j,i,1) = vx;
     vel(j,i,2) = vy;
-
     return;
-
-#undef x
-#undef z
-#undef str
 }
 
 
@@ -562,8 +460,8 @@ void cu_fl_move1(double *cord_d, const double *vel_d,
     if((i > nx) || (j > nz)) return;
 
     // UPDATING COORDINATES
-    cord(j,i,1) += vel(j,i,1)*dt;
-    cord(j,i,2) += vel(j,i,2)*dt;
+    cord(j,i,1) = cord(j,i,1) + vel(j,i,1)*dt;
+    cord(j,i,2) = cord(j,i,2) + vel(j,i,2)*dt;
 
     return;
 }
@@ -589,24 +487,9 @@ void cu_fl_move3(double *area_d, double *dvol_d,
                  const double *cord_d, const double *vel_d,
                  double dt, int nx, int nz)
 {
-    __shared__ double x_s[(nthx+1)*(nthz+1)];
-    __shared__ double z_s[(nthx+1)*(nthz+1)];
-    __shared__ double vx_s[(nthx+1)*(nthz+1)];
-    __shared__ double vz_s[(nthx+1)*(nthz+1)];
-
-#define x(jj,ii)        x_s[(ii)*(nthz+1) + (jj)]
-#define z(jj,ii)        z_s[(ii)*(nthz+1) + (jj)]
-#define vx(jj,ii)       vx_s[(ii)*(nthz+1) + (jj)]
-#define vz(jj,ii)       vz_s[(ii)*(nthz+1) + (jj)]
-
     // i and j are indices to fortran arrays
     const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x + 1;
     const unsigned int j = blockIdx.y * blockDim.y + threadIdx.y + 1;
-
-    // ii and jj are indices to shared memory arrays
-    const int ii = threadIdx.x;
-    const int jj = threadIdx.y;
-
     double x1, x2, x3, x4;
     double y1, y2, y3, y4;
     double vx1, vx2, vx3, vx4;
@@ -614,72 +497,29 @@ void cu_fl_move3(double *area_d, double *dvol_d,
     double oldvol, det;
     double dw12, s11, s22, s12;
 
-    if((i >= nx) || (j >= nz)) goto skip1;
-
-    x(jj,ii) = cord(j,i,1);
-    z(jj,ii) = cord(j,i,2);
-    vx(jj,ii) = vel(j,i,1);
-    vz(jj,ii) = vel(j,i,2);
-    if(jj == blockDim.y-1 || j == nz-1) {
-        x(jj+1,ii) = cord(j+1,i,1);
-        z(jj+1,ii) = cord(j+1,i,2);
-        vx(jj+1,ii) = vel(j+1,i,1);
-        vz(jj+1,ii) = vel(j+1,i,2);
-    }
-    if(ii == blockDim.x-1 || i == nx-1) {
-        x(jj,ii+1) = cord(j,i+1,1);
-        z(jj,ii+1) = cord(j,i+1,2);
-        vx(jj,ii+1) = vel(j,i+1,1);
-        vz(jj,ii+1) = vel(j,i+1,2);
-        if(jj == blockDim.y-1 || j == nz-1) {
-            x(jj+1,ii+1) = cord(j+1,i+1,1);
-            z(jj+1,ii+1) = cord(j+1,i+1,2);
-            vx(jj+1,ii+1) = vel(j+1,i+1,1);
-            vz(jj+1,ii+1) = vel(j+1,i+1,2);
-        }
-    }
-
- skip1:
-    __syncthreads();
-
-#ifdef __DEVICE_EMULATION__
-    // check the content of x_s[] and z_s[]
-    if(ii==0 && jj==0) {
-        fprintf(stderr, "block(%2d, %2d)\n", blockIdx.x, blockIdx.y);
-        int d=0;
-        for(int k=0; k<nthx+1; ++k)
-            for(int kk=0; kk<nthz+1; ++kk) {
-                fprintf(stderr, "(%3d %3d)  %.15e  %.15e  %.15e  %.15e\n", k, kk,
-                        x_s[d], z_s[d], vx_s[d], vz_s[d]);
-                d++;
-            }
-    }
-#endif
-
-
-    if((i >= nx) || (j >= nz)) goto end;
+    if((i >= nx) || (j >= nz)) return;
 
     //--- Adjusting Stresses And Updating Areas Of Elements
 
     // Coordinates
-    x1 = x(jj  ,ii  );
-    y1 = z(jj  ,ii  );
-    x2 = x(jj+1,ii  );
-    y2 = z(jj+1,ii  );
-    x3 = x(jj  ,ii+1);
-    y3 = z(jj  ,ii+1);
-    x4 = x(jj+1,ii+1);
-    y4 = z(jj+1,ii+1);
+    x1 = cord (j  ,i  ,1);
+    y1 = cord (j  ,i  ,2);
+    x2 = cord (j+1,i  ,1);
+    y2 = cord (j+1,i  ,2);
+    x3 = cord (j  ,i+1,1);
+    y3 = cord (j  ,i+1,2);
+    x4 = cord (j+1,i+1,1);
+    y4 = cord (j+1,i+1,2);
 
     // Velocities
-    vx1 = vx(jj  ,ii  );
-    vy1 = vz(jj  ,ii  );
-    vx2 = vx(jj+1,ii  );
-    vy2 = vz(jj+1,ii  );
-    vx3 = vx(jj  ,ii+1);
-    vy3 = vz(jj  ,ii+1);
-    vx4 = vx(jj+1,ii+1);
-    vy4 = vz(jj+1,ii+1);
+    vx1 = vel (j  ,i  ,1);
+    vy1 = vel (j  ,i  ,2);
+    vx2 = vel (j+1,i  ,1);
+    vy2 = vel (j+1,i  ,2);
+    vx3 = vel (j  ,i+1,1);
+    vy3 = vel (j  ,i+1,2);
+    vx4 = vel (j+1,i+1,1);
+    vy4 = vel (j+1,i+1,2);
 
     // (1) Element A:
     oldvol = 1./2/area(j,i,1);
@@ -753,13 +593,7 @@ void cu_fl_move3(double *area_d, double *dvol_d,
     stress0(j,i,2,4) = s22 - s12*2.*dw12;
     stress0(j,i,3,4) = s12 + dw12*(s22-s11);
 
- end:
     return;
-
-#undef x
-#undef z
-#undef vx
-#undef vz
 }
 
 
