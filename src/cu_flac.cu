@@ -562,8 +562,8 @@ void cu_fl_move1(double *cord_d, const double *vel_d,
     if((i > nx) || (j > nz)) return;
 
     // UPDATING COORDINATES
-    cord(j,i,1) = cord(j,i,1) + vel(j,i,1)*dt;
-    cord(j,i,2) = cord(j,i,2) + vel(j,i,2)*dt;
+    cord(j,i,1) += vel(j,i,1)*dt;
+    cord(j,i,2) += vel(j,i,2)*dt;
 
     return;
 }
@@ -589,9 +589,24 @@ void cu_fl_move3(double *area_d, double *dvol_d,
                  const double *cord_d, const double *vel_d,
                  double dt, int nx, int nz)
 {
+    __shared__ double x_s[(nthx+1)*(nthz+1)];
+    __shared__ double z_s[(nthx+1)*(nthz+1)];
+    __shared__ double vx_s[(nthx+1)*(nthz+1)];
+    __shared__ double vz_s[(nthx+1)*(nthz+1)];
+
+#define x(jj,ii)        x_s[(ii)*(nthz+1) + (jj)]
+#define z(jj,ii)        z_s[(ii)*(nthz+1) + (jj)]
+#define vx(jj,ii)       vx_s[(ii)*(nthz+1) + (jj)]
+#define vz(jj,ii)       vz_s[(ii)*(nthz+1) + (jj)]
+
     // i and j are indices to fortran arrays
     const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x + 1;
     const unsigned int j = blockIdx.y * blockDim.y + threadIdx.y + 1;
+
+    // ii and jj are indices to shared memory arrays
+    const int ii = threadIdx.x;
+    const int jj = threadIdx.y;
+
     double x1, x2, x3, x4;
     double y1, y2, y3, y4;
     double vx1, vx2, vx3, vx4;
@@ -599,29 +614,72 @@ void cu_fl_move3(double *area_d, double *dvol_d,
     double oldvol, det;
     double dw12, s11, s22, s12;
 
-    if((i >= nx) || (j >= nz)) return;
+    if((i >= nx) || (j >= nz)) goto skip1;
+
+    x(jj,ii) = cord(j,i,1);
+    z(jj,ii) = cord(j,i,2);
+    vx(jj,ii) = vel(j,i,1);
+    vz(jj,ii) = vel(j,i,2);
+    if(jj == blockDim.y-1 || j == nz-1) {
+        x(jj+1,ii) = cord(j+1,i,1);
+        z(jj+1,ii) = cord(j+1,i,2);
+        vx(jj+1,ii) = vel(j+1,i,1);
+        vz(jj+1,ii) = vel(j+1,i,2);
+    }
+    if(ii == blockDim.x-1 || i == nx-1) {
+        x(jj,ii+1) = cord(j,i+1,1);
+        z(jj,ii+1) = cord(j,i+1,2);
+        vx(jj,ii+1) = vel(j,i+1,1);
+        vz(jj,ii+1) = vel(j,i+1,2);
+        if(jj == blockDim.y-1 || j == nz-1) {
+            x(jj+1,ii+1) = cord(j+1,i+1,1);
+            z(jj+1,ii+1) = cord(j+1,i+1,2);
+            vx(jj+1,ii+1) = vel(j+1,i+1,1);
+            vz(jj+1,ii+1) = vel(j+1,i+1,2);
+        }
+    }
+
+ skip1:
+    __syncthreads();
+
+#ifdef __DEVICE_EMULATION__
+    // check the content of x_s[] and z_s[]
+    if(ii==0 && jj==0) {
+        fprintf(stderr, "block(%2d, %2d)\n", blockIdx.x, blockIdx.y);
+        int d=0;
+        for(int k=0; k<nthx+1; ++k)
+            for(int kk=0; kk<nthz+1; ++kk) {
+                fprintf(stderr, "(%3d %3d)  %.15e  %.15e  %.15e  %.15e\n", k, kk,
+                        x_s[d], z_s[d], vx_s[d], vz_s[d]);
+                d++;
+            }
+    }
+#endif
+
+
+    if((i >= nx) || (j >= nz)) goto end;
 
     //--- Adjusting Stresses And Updating Areas Of Elements
 
     // Coordinates
-    x1 = cord (j  ,i  ,1);
-    y1 = cord (j  ,i  ,2);
-    x2 = cord (j+1,i  ,1);
-    y2 = cord (j+1,i  ,2);
-    x3 = cord (j  ,i+1,1);
-    y3 = cord (j  ,i+1,2);
-    x4 = cord (j+1,i+1,1);
-    y4 = cord (j+1,i+1,2);
+    x1 = x(jj  ,ii  );
+    y1 = z(jj  ,ii  );
+    x2 = x(jj+1,ii  );
+    y2 = z(jj+1,ii  );
+    x3 = x(jj  ,ii+1);
+    y3 = z(jj  ,ii+1);
+    x4 = x(jj+1,ii+1);
+    y4 = z(jj+1,ii+1);
 
     // Velocities
-    vx1 = vel (j  ,i  ,1);
-    vy1 = vel (j  ,i  ,2);
-    vx2 = vel (j+1,i  ,1);
-    vy2 = vel (j+1,i  ,2);
-    vx3 = vel (j  ,i+1,1);
-    vy3 = vel (j  ,i+1,2);
-    vx4 = vel (j+1,i+1,1);
-    vy4 = vel (j+1,i+1,2);
+    vx1 = vx(jj  ,ii  );
+    vy1 = vz(jj  ,ii  );
+    vx2 = vx(jj+1,ii  );
+    vy2 = vz(jj+1,ii  );
+    vx3 = vx(jj  ,ii+1);
+    vy3 = vz(jj  ,ii+1);
+    vx4 = vx(jj+1,ii+1);
+    vy4 = vz(jj+1,ii+1);
 
     // (1) Element A:
     oldvol = 1./2/area(j,i,1);
@@ -695,7 +753,13 @@ void cu_fl_move3(double *area_d, double *dvol_d,
     stress0(j,i,2,4) = s22 - s12*2.*dw12;
     stress0(j,i,3,4) = s12 + dw12*(s22-s11);
 
+ end:
     return;
+
+#undef x
+#undef z
+#undef vx
+#undef vz
 }
 
 
