@@ -123,7 +123,7 @@ do 3 i = 1,nx-1
 !!            if(abs(sarc11).gt.0.) write(*,*) i,j,sarc11,sarc22
             if (irh.eq.1) then
                 ! elastic
-                call elastic(bulkm,rmu,s11p(k),s22p(k),s33p(k),s12p(k),de11,de22,de12,iph)
+                call elastic(bulkm,rmu,s11p(k),s22p(k),s33p(k),s12p(k),de11,de22,de12)
                 irheol_fl(j,i) = 0  
                 stress0(j,i,1,k) = s11p(k)
                 stress0(j,i,2,k) = s22p(k)
