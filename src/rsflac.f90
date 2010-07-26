@@ -13,7 +13,7 @@ include 'arrays.inc'
 parameter( kindr=8, kindi=4 )
 
 real(kindr), allocatable :: dum1(:),dum2(:,:)
-integer(kindi), allocatable :: dum11(:)
+integer(kindi), allocatable :: dum11(:), idum2(:,:)
 real*8 rtime, rdt
 
 ! Try to open 'restart.rec'. 
@@ -97,18 +97,18 @@ allocate( dum2(nz-1,nx-1) )
 nwords = (nz-1)*(nx-1)
 
 ! Phases
-open (1,file='phasez.rs',access='direct',recl=nwords*kindr) 
-read (1,rec=nrec) dum2
+allocate( idum2(nz-1,nx-1) )
+open (1,file='phasez.rs',access='direct',recl=nwords*kindr)
+read (1,rec=nrec) idum2
 close (1)
-phasez(1:nz-1,1:nx-1) = dum2(1:nz-1,1:nx-1)
-!    call SysMsg('INIT_PHASE: Read phases from file: Option not ready yet!')
-!    stop 21
+iphase(1:nz-1,1:nx-1) = idum2(1:nz-1,1:nx-1)
+deallocate( idum2 )
 
 ! Check if viscous rheology present
 ivis_present = 0
 do i = 1,nx-1
     do j = 1, nz-1
-        iph = iphase(phasez(j,i))
+        iph = iphase(j,i)
         if( irheol(iph).eq.3 .or. irheol(iph).ge.11 ) ivis_present = 1
     end do
 end do
@@ -251,7 +251,7 @@ if( nyhydro .eq. 2 ) then
     close (1)
 endif
 
-! Calculate AREAS (Important: phasez is needed to calculate area!)
+! Calculate AREAS (Important: iphase is needed to calculate area!)
 call init_areas
 
 ! Distribution of REAL masses to nodes

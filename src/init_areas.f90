@@ -85,7 +85,7 @@ do i = 1,nx-1
     do j = 1,nz-1
 
         if( iph .ne. 0 ) then
-            if( iphase(phasez(j,i)) .ne. iph ) cycle
+            if( iphase(j,i) .ne. iph ) cycle
         endif
         x1 = cord (j  ,i  ,1)
         y1 = cord (j  ,i  ,2)

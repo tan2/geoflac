@@ -255,7 +255,7 @@ character*200 msg
 
 nab = 0
 kabove = 0
-iph = iphase(phasez(j,i))
+iph = iphase(j,i)
 do kphase = 1, nphasl
    if (lphase(kphase).eq.3) kocean1 = kphase
   if (lphase(kphase).eq.7) kocean2 = kphase
@@ -273,7 +273,7 @@ do nab = 1,3
    if (tmpr.gt.1000.) cycle
    if(kabove .le. 0) exit
    if(phase_ratio(j,i,kocean1).gt.0.8.and.phase_ratio(kabove,i,kcont1).gt.0.8) then
-      phasez(kabove,i) = 12. 
+      iphase(kabove,i) = 12
       do k = 1,2
          ! Calculate triangle number in which the markers belong
          ntriang = 2 * ( (nz-1)*(i-1)+kabove-1) + k
@@ -289,7 +289,7 @@ do nab = 1,3
       enddo
    endif
    if(phase_ratio(j,i,karc1).gt.0.8.and.phase_ratio(kabove,i,kcont1).gt.0.8) then
-      phasez(kabove,i) = 12. 
+      iphase(kabove,i) = 12
       do k = 1,2
          ! Calculate triangle number in which the markers belong
          ntriang = 2 * ( (nz-1)*(i-1)+kabove-1) + k
@@ -305,7 +305,7 @@ do nab = 1,3
       enddo
    endif
    if(phase_ratio(j,i,ksed1).gt.0.8.and.phase_ratio(kabove,i,kcont1).gt.0.8) then
-      phasez(kabove,i) = 12. 
+      iphase(kabove,i) = 12
       do k = 1,2
          ! Calculate triangle number in which the markers belong
          ntriang = 2 * ( (nz-1)*(i-1)+kabove-1) + k
@@ -321,7 +321,7 @@ do nab = 1,3
       enddo
    endif
    if(phase_ratio(j,i,kocean2).gt.0.8.and.phase_ratio(kabove,i,kcont1).gt.0.8) then
-      phasez(kabove,i) = 12. 
+      iphase(kabove,i) = 12
       do k = 1,2
          ! Calculate triangle number in which the markers belong
          ntriang = 2 * ( (nz-1)*(i-1)+kabove-1) + k
@@ -337,7 +337,7 @@ do nab = 1,3
       enddo
    endif
    if(phase_ratio(j,i,kocean1).gt.0.8.and.phase_ratio(kabove,i,kcont2).gt.0.8) then
-      phasez(kabove,i) = 12. 
+      iphase(kabove,i) = 12
       do k = 1,2
          ! Calculate triangle number in which the markers belong
          ntriang = 2 * ( (nz-1)*(i-1)+kabove-1) + k
@@ -353,7 +353,7 @@ do nab = 1,3
       enddo
    endif
    if(phase_ratio(j,i,karc1).gt.0.8.and.phase_ratio(kabove,i,kcont2).gt.0.8) then
-      phasez(kabove,i) = 12. 
+      iphase(kabove,i) = 12
       do k = 1,2
          ! Calculate triangle number in which the markers belong
          ntriang = 2 * ( (nz-1)*(i-1)+kabove-1) + k
@@ -369,7 +369,7 @@ do nab = 1,3
       enddo
    endif
    if(phase_ratio(j,i,kocean2).gt.0.8.and.phase_ratio(kabove,i,kcont2).gt.0.8) then
-      phasez(kabove,i) = 12. 
+      iphase(kabove,i) = 12
       do k = 1,2
          ! Calculate triangle number in which the markers belong
          ntriang = 2 * ( (nz-1)*(i-1)+kabove-1) + k
@@ -385,7 +385,7 @@ do nab = 1,3
       enddo
    endif
    if(phase_ratio(j,i,kocean1).gt.0.8.and.phase_ratio(kabove,i,kmant1).gt.0.8) then
-      phasez(kabove,i) = 9. 
+      iphase(kabove,i) = 9
       do k = 1,2
          ! Calculate triangle number in which the markers belong
          ntriang = 2 * ( (nz-1)*(i-1)+kabove-1) + k
@@ -401,7 +401,7 @@ do nab = 1,3
       enddo
    endif
    if(phase_ratio(j,i,ksed1).gt.0.8.and.phase_ratio(kabove,i,kmant1).gt.0.8) then
-      phasez(kabove,i) = 9. 
+      iphase(kabove,i) = 9
       do k = 1,2
          ! Calculate triangle number in which the markers belong
          ntriang = 2 * ( (nz-1)*(i-1)+kabove-1) + k
@@ -417,7 +417,7 @@ do nab = 1,3
       enddo
    endif
    if(phase_ratio(j,i,kocean2).gt.0.8.and.phase_ratio(kabove,i,kmant1).gt.0.8) then
-      phasez(kabove,i) = 9. 
+      iphase(kabove,i) = 9
       do k = 1,2
          ! Calculate triangle number in which the markers belong
          ntriang = 2 * ( (nz-1)*(i-1)+kabove-1) + k
@@ -503,7 +503,7 @@ isoft = 0
      if(phase_ratio(j,i,kcont2).gt.0.8.and.tmpr.gt.300..and.tmpr.lt.400. &
           .and.stressII(j,i)*strainII(j,i).gt.4.e6) then
   !      ! write(*,*) i,j,strainII(j,i)
-       phasez(j,i) = 15. 
+       iphase(j,i) = 15
          do k = 1,2
          ! Calculate triangle number in which the markers belong
          ntriang = 2 * ( (nz-1)*(i-1)+j-1) + k
@@ -545,7 +545,7 @@ isoft = 0
      if(phase_ratio(j,i,kcont2).gt.0.8.and.tmpr.gt.300..and.tmpr.lt.400. &
           .and.stressII(j,i)*strainII(j,i).gt.4.e6) then
   !      ! write(*,*) i,j,strainII(j,i)
-       phasez(j,i) = 15. 
+       iphase(j,i) = 15
          do k = 1,2
          ! Calculate triangle number in which the markers belong
          ntriang = 2 * ( (nz-1)*(i-1)+j-1) + k
@@ -587,7 +587,7 @@ isoft = 0
      if(phase_ratio(j,i,kcont2).gt.0.8.and.tmpr.gt.300..and.tmpr.lt.400. &
           .and.stressII(j,i)*strainII(j,i).gt.4.e6) then
   !      ! write(*,*) i,j,strainII(j,i)
-       phasez(j,i) = 15. 
+       iphase(j,i) = 15
          do k = 1,2
          ! Calculate triangle number in which the markers belong
          ntriang = 2 * ( (nz-1)*(i-1)+j-1) + k

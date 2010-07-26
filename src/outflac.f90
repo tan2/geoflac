@@ -223,7 +223,7 @@ endif
 
 ! Melt 
 if( io_melt.eq.1 ) then
-    De(1:nz-1,1:nx-1) = phasez(1:nz-1,1:nx-1)
+    De(1:nz-1,1:nx-1) = iphase(1:nz-1,1:nx-1)
     open (1,file='melt.0',access='direct',recl=nwords*kindr) 
     write (1,rec=nrec) De
     close (1)
@@ -253,7 +253,7 @@ endif
 if( io_diss.eq.1 ) then
     do i = 1, nx-1
         do j = 1, nz-1
-            iph = iphase(phasez(j,i))
+            iph = iphase(j,i)
             De(j,i) = shrheat(j,i)/den(iph)/hs
         enddo
     enddo

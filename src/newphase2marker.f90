@@ -20,10 +20,10 @@ do i = 1 , nmarkers
             mark(i)%mpres = stressI(j,ik)
             tmpr = 0.25*(temp(j,ik)+temp(j+1,ik)+temp(j,ik+1)+temp(j+1,ik+1))
             mark(i)%mtemp = tmpr
-     if (phasez(j,ik).eq.5..or.phasez(j,ik).eq.8..or.phasez(j,ik).eq.9. &
-          .or.phasez(j,ik).eq.1..or.phasez(j,ik).eq.7. &
-           .or.phasez(j,ik).eq.12.or.phasez(j,ik).eq.15. ) then
-                mark(i)%phase = phasez(j,ik)
+     if (iphase(j,ik).eq.5..or.iphase(j,ik).eq.8..or.iphase(j,ik).eq.9. &
+          .or.iphase(j,ik).eq.1..or.iphase(j,ik).eq.7. &
+           .or.iphase(j,ik).eq.12.or.iphase(j,ik).eq.15. ) then
+                mark(i)%phase = iphase(j,ik)
             endif
 enddo
 

@@ -166,14 +166,12 @@ end do
 dummy(1:nzt,1:nxt) = visn(1:nzt,1:nxt)
 call rem_interpolate( dummy )
 visn(1:nzt,1:nxt) = dummy(1:nzt,1:nxt)
+
 ! phases
-!iph_int = 1 
-!dummy(1:nzt,1:nxt) = phasez(1:nzt,1:nxt)
-!call rem_interpolate( dummy )
-!phasez(1:nzt,4:nxt) = dummy(1:nzt,4:nxt)
+!XXX: hard-coded phase for incoming material
 do jj = 1,4
    do ii = 1,3
-        phasez(jj,ii) = 11.  !7 is ocean coming from the left!
+        iphase(jj,ii) = 11  !7 is ocean coming from the left!
         aps(jj,ii) = 0.0
         do kk = 1,2
         ! Calculate triangle number in which the markers belong
@@ -193,7 +191,7 @@ do jj = 1,4
 enddo
 do jj = 5,6
    do ii = 1,3
-        phasez(jj,ii) = 12.  !7 is ocean coming from the left!
+        iphase(jj,ii) = 12  !7 is ocean coming from the left!
         aps(jj,ii) = 0.0
         do kk = 1,2
         ! Calculate triangle number in which the markers belong
@@ -213,7 +211,7 @@ do jj = 5,6
 enddo
 do jj = 7,10
    do ii = 1,3
-        phasez(jj,ii) = 6.  !7 is ocean coming from the left!
+        iphase(jj,ii) = 6  !7 is ocean coming from the left!
         aps(jj,ii) = 0.0
         do kk = 1,2
         ! Calculate triangle number in which the markers belong
@@ -233,7 +231,7 @@ do jj = 7,10
 enddo
 do jj = 11,12 
    do ii = 1,3
-        phasez(jj,ii) = 9.  !7 is ocean coming from the left!
+        iphase(jj,ii) = 9  !7 is ocean coming from the left!
         aps(jj,ii) = 0.0
         do kk = 1,2
         ! Calculate triangle number in which the markers belong
@@ -253,7 +251,7 @@ do jj = 11,12
 enddo
 do jj = 13,nz-3 
    do ii = 1,3
-        phasez(jj,ii) = 8.  !7 is ocean coming from the left!
+        iphase(jj,ii) = 8  !7 is ocean coming from the left!
         aps(jj,ii) = 0.0
         do kk = 1,2
         ! Calculate triangle number in which the markers belong
@@ -279,7 +277,7 @@ enddo
 !      else
 !         icon = 8.
 !      endif
-!      phasez(jj,ii) = 8.
+!      iphase(jj,ii) = 8
 !      aps(jj,ii) = 0.0
 !      do kk = 1,2
          ! Calculate triangle number in which the markers belong
@@ -298,7 +296,7 @@ enddo
 !enddo
 !do jj = 11,87 
 !   do ii = 1,3
-!        phasez(jj,ii) = 8.
+!        iphase(jj,ii) = 8
 !        aps(jj,ii) = 0.0
 !        do kk = 1,2
 !        ! Calculate triangle number in which the markers belong
@@ -320,7 +318,7 @@ enddo
 
 do jj = nz-2,nz-1 
    do ii = 1,nx-1
-        phasez(jj,ii) = 8.
+        iphase(jj,ii) = 8
         aps(jj,ii) = 0.0
         do kk = 1,2
         ! Calculate triangle number in which the markers belong
@@ -339,13 +337,7 @@ do jj = nz-2,nz-1
 enddo
 enddo
 
-!do i = 1, nxt
-!    do j = 1, nzt
-!        iph = iphase(phasez(j,i) )
-!        phasez(j,i) = float(iph)
-!    end do
-!end do
-!iph_int = 0
+
 ! sources
 dummy(1:nzt,1:nxt) = source(1:nzt,1:nxt)
 call rem_interpolate( dummy )
@@ -391,10 +383,10 @@ iynts = 20
 call init_temp
 !do i = 1,4 
  !  do j = 1, 8 
-!	phasez(j,i) = 2. 
+!	iphase(j,i) = 2
 ! enddo
 !   do j = 9, nz-1 
-!	phasez(j,i) = 4. 
+!	iphase(j,i) = 4
 ! enddo
 !enddo
 ! AFTER INTERPOLATIONS - RECALCULATE SOME DEPENDENT VARIABLES
@@ -408,7 +400,7 @@ if (iac_rem.eq.1) then
 do 522 i = iinj-1,iinj+1
      rogh = 0.
    do 522 j = 1,nz-1
-     iph = iphase(phasez (j,i))
+     iph = iphase(j,i)
      if (iph.eq.0) goto 522
         tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
         densT = den(iph) * ( 1 - alfa(iph)*tmpr )

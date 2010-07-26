@@ -48,7 +48,7 @@ dt_therm = dt
 do i = 1,nx-1
     do j = 1,nz-1
 
-        iph = iphase(phasez(j,i))
+        iph = iphase(j,i)
 
         ! Calculating effective material properties
         cp_eff = Eff_cp( j,i )

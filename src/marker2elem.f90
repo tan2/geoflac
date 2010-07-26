@@ -14,10 +14,10 @@ subroutine marker2elem
   ! Interpolate marker properties into elements 
   ! Find the triangle in which each marker belongs
   !old_aps = aps
-  o_phasez = phasez
+  iphase_old = iphase
   ophase_ratio = phase_ratio
   !aps = 0.
-  phasez = 0.
+  iphase = 0.
   phase_ratio = 0.
   do j = 1 , nz-1
       do i = 1 , nx-1
@@ -34,7 +34,7 @@ subroutine marker2elem
                   else
                       kinc = kinc + 1
 
-                      phasez(j,i) = phasez(j,i)+ mark(l)%phase
+                      iphase(j,i) = iphase(j,i)+ mark(l)%phase
                       meml = l
                       ! To linearly interpolate for density, conductivities, viscosities calculate phases ratios
                       do m = 1,nphasl
@@ -78,25 +78,25 @@ subroutine marker2elem
               ! assign phase to the new marker
               if(kinc.gt.1) then
                   mark(nmarkers)%phase = mark(meml)%phase 
-                  phasez(j,i) = phasez(j,i)+mark(nmarkers)%phase
+                  iphase(j,i) = iphase(j,i)+mark(nmarkers)%phase
                   !           write(*,*) i,j,xiph,n,ntr,xiph,kinc,mark(nmarkers)%phase
                   ! if there were no more markers in the new element
               else 
-                  !          xiph = 0.20*(o_phasez(j,i)+o_phasez(j,i-1)+o_phasez(j,i+1)+o_phasez(j-1,i)+o_phasez(j+1,i))
-                  xiph = o_phasez(j,i)
-                  !	if (i.eq.1) xiph = (o_phasez(j-1,i)+o_phasez(j+1,i))/2.
-                  !	if (i.eq.nx-1) xiph = (o_phasez(j-1,i)+o_phasez(j+1,i))/2.
-                  !	if (j.eq.1) xiph = (o_phasez(j,i+1)+o_phasez(j,i-1))/2.
-                  !	if (j.eq.nz-1) xiph = (o_phasez(j,i-1)+o_phasez(j,i+1))/2.
-                  !	if (j.eq.1.and.i.eq.1) xiph = (o_phasez(j,i+1)+o_phasez(j+1,i)+o_phasez(j+1,i+1))/3.
-                  !	if (j.eq.nz-1.and.i.eq.nx-1) xiph = (o_phasez(j,i-1)+o_phasez(j-1,i)+o_phasez(j-1,i-1))/3.
-                  !	if (j.eq.1.and.i.eq.nx-1) xiph = (o_phasez(j,i-1)+o_phasez(j+1,i)+o_phasez(j+1,i-1))/3.
-                  !	if (j.eq.nz-1.and.i.eq.1) xiph = (o_phasez(j,i+1)+o_phasez(j-1,i)+o_phasez(j-1,i+1))/3.
-                  !	if (i.eq.1) xiph = o_phasez(j,5)
-                  mark(nmarkers)%phase = iphase(xiph)
-                  phasez(j,i) = phasez(j,i)+mark(nmarkers)%phase
-                  !write(*,*) xiph,o_phasez(j,i-1),o_phasez(j,i+1),o_phasez(j-1,i),o_phasez(j+1,i)
-                  !write(333,*) xiph,o_phasez(j,i-1),o_phasez(j,i+1),o_phasez(j-1,i),o_phasez(j+1,i)
+                  !          xiph = 0.20*(iphase_old(j,i)+iphase_old(j,i-1)+iphase_old(j,i+1)+iphase_old(j-1,i)+iphase_old(j+1,i))
+                  xiph = iphase_old(j,i)
+                  !	if (i.eq.1) xiph = (iphase_old(j-1,i)+iphase_old(j+1,i))/2.
+                  !	if (i.eq.nx-1) xiph = (iphase_old(j-1,i)+iphase_old(j+1,i))/2.
+                  !	if (j.eq.1) xiph = (iphase_old(j,i+1)+iphase_old(j,i-1))/2.
+                  !	if (j.eq.nz-1) xiph = (iphase_old(j,i-1)+iphase_old(j,i+1))/2.
+                  !	if (j.eq.1.and.i.eq.1) xiph = (iphase_old(j,i+1)+iphase_old(j+1,i)+iphase_old(j+1,i+1))/3.
+                  !	if (j.eq.nz-1.and.i.eq.nx-1) xiph = (iphase_old(j,i-1)+iphase_old(j-1,i)+iphase_old(j-1,i-1))/3.
+                  !	if (j.eq.1.and.i.eq.nx-1) xiph = (iphase_old(j,i-1)+iphase_old(j+1,i)+iphase_old(j+1,i-1))/3.
+                  !	if (j.eq.nz-1.and.i.eq.1) xiph = (iphase_old(j,i+1)+iphase_old(j-1,i)+iphase_old(j-1,i+1))/3.
+                  !	if (i.eq.1) xiph = iphase_old(j,5)
+                  mark(nmarkers)%phase = iphase(j,i)
+                  iphase(j,i) = iphase(j,i)+mark(nmarkers)%phase
+                  !write(*,*) xiph,iphase_old(j,i-1),iphase_old(j,i+1),iphase_old(j-1,i),iphase_old(j+1,i)
+                  !write(333,*) xiph,iphase_old(j,i-1),iphase_old(j,i+1),iphase_old(j-1,i),iphase_old(j+1,i)
               endif
               do m = 1,nphasl
                   if(mark(nmarkers)%phase.eq.lphase(m)) phase_counter(m) = phase_counter(m) + 1
@@ -105,7 +105,7 @@ subroutine marker2elem
           do kn = 1 , nphasl
               phase_ratio (j,i,kn) = phase_counter(kn)/kinc     
           enddo
-          phasez(j,i) = phasez(j,i)/kinc
+          iphase(j,i) = iphase(j,i)/kinc
 
       enddo
   enddo
