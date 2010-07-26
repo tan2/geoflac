@@ -42,7 +42,7 @@ if (ny_inject.gt.0) then
          !average dx for injection:
          dxinj = 0.
          do jinj = 1,nelem_inject
-            iph=iphase(phasez(jinj,iinj))
+            iph=iphase(jinj,iinj)
             dxinj=dxinj+cord(jinj,iinj+1,1)-cord(jinj,iinj,1)
          enddo
          dxinj = dxinj/nelem_inject 
@@ -66,8 +66,8 @@ irh_mark = 0
 !$OMP do
 do 3 i = 1,nx-1
     do 3 j = 1,nz-1
-        ! phasez (j,i) is number of a phase NOT a rheology 
-        iph = iphase(phasez(j,i))
+        ! iphase (j,i) is number of a phase NOT a rheology
+        iph = iphase(j,i)
         irh = irheol(iph)
 !        if(ny_inject.gt.0.and.j.le.nelem_inject) then
 !        if(i.eq.iinj.or.i.eq.iinj-1) irh_mark = 1

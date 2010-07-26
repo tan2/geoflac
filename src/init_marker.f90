@@ -80,7 +80,7 @@ do j = 1 , nz-1
             mark(kk)%a2 = bar2
 !            write(*,*) i,j,k,kk,xx,yy,mark(kk)%a1,mark(kk)%a2 
             mark(kk)%ntriag = ntr 
-            mark(kk)%phase = phasez(j,i)
+            mark(kk)%phase = iphase(j,i)
 
 ! XXX: hard-coded marker phase
 ! Special case of TAiwan thin layer of sediment accross the box until marge

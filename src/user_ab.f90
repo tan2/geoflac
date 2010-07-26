@@ -111,7 +111,7 @@ if( xrand .lt. elems ) then
         do kz = 0, intr%nelz-1
             i = il + kx
             j = jt + kz
-            phasez(j,i) = intr%iph
+            iphase(j,i) = intr%iph
             temp(j  ,i  ) = intr%T
             temp(j+1,i  ) = intr%T
             temp(j  ,i+1) = intr%T

@@ -22,7 +22,7 @@ subroutine bc_update
   if (ydrsides.eq. 1.) then
       rogh = 0.      
       do j=1,nz-1
-          iph = iphase(phasez(j,1))
+          iph = iphase(j,1)
           densT = Eff_dens(j,1)
           dh1 = cord (j,1,2) - cord (j+1,1,2)
           dh2 = cord (j,2,2) - cord (j+1,2,2)
@@ -57,7 +57,7 @@ subroutine bc_update
       ! -------------------------------------------------------------
       rogh = 0.
       do j=1,nz-1
-          iph = iphase(phasez(j,nx-1))
+          iph = iphase(j,nx-1)
           densT = Eff_dens(j,nx-1)
           dh1 = cord (j,nx-1,2) - cord (j+1,nx-1,2)
           dh2 = cord (j,nx,2) - cord (j+1,nx,2)

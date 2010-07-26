@@ -16,7 +16,7 @@ function Eff_dens( j, i)
   press = press / 12
 
   if (iint_marker.ne.1) then
-      iph = iphase(phasez(j,i))
+      iph = iphase(j,i)
       dens = den(iph) * ( 1 - alfa(iph)*tmpr + beta(iph)*press )
 
       ! Effect of melt
@@ -115,7 +115,7 @@ include 'arrays.inc'
 
 HeatLatent = 420000.
 
-iph = iphase(phasez(j,i))
+iph = iphase(j,i)
 !Eff_cp = cp(iph)
 
 
@@ -160,7 +160,7 @@ include 'params.inc'
 include 'arrays.inc'
 Eff_conduct = 0.
 
-iph = iphase(phasez(j,i))
+iph = iphase(j,i)
 cond = conduct(iph)
 
 !if( den(iph) .lt. 3000. ) then  ! for crustal material
@@ -218,7 +218,7 @@ include 'params.inc'
 include 'arrays.inc'
 Eff_visc = 0.
 r=8.31448e0
-iph = iphase(phasez(j,i))
+iph = iphase(j,i)
 tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
 srat = e2sr(j,i)
 if( srat .eq. 0 ) srat = vbc/rxbo
