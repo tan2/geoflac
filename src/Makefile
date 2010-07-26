@@ -12,7 +12,7 @@
 debug = 1
 coverage = 0
 gprof = 0
-cuda = 2
+cuda = 0
 
 
 #### fortran 90 compiler, compiler flags, linker flags

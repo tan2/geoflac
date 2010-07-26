@@ -82,7 +82,7 @@ call cu_flac(pforce, pbalance, pvel, &
 #endif
 
 
-#if 1
+#if 0
 
 ! write the first three iterations of arrays to file
 ! the file is used to compared f90 and cuda results
