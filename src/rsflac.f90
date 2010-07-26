@@ -98,7 +98,7 @@ nwords = (nz-1)*(nx-1)
 
 ! Phases
 allocate( idum2(nz-1,nx-1) )
-open (1,file='phasez.rs',access='direct',recl=nwords*kindr)
+open (1,file='phase.rs',access='direct',recl=nwords*kindr)
 read (1,rec=nrec) idum2
 close (1)
 iphase(1:nz-1,1:nx-1) = idum2(1:nz-1,1:nx-1)
