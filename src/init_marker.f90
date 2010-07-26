@@ -9,8 +9,9 @@ include 'arrays.inc'
 
 common /markers/ nfreemarkers,ndeadmarkers,xmpt(mnz*mnx*2,2,3)
 real(8), dimension(9) :: x_tr,y_tr
-parameter( min_elmarkers = 0, max_elmarkers = 12 ) 
+parameter( min_elmarkers = 0, max_elmarkers = 12 )
 
+nphase_counter = 0
 max_markers = 9*(nz-1)*(nx-1)
 
 nelemts  = (nx-1)*(nz-1)
@@ -90,6 +91,8 @@ do j = 1 , nz-1
             mark(kk)%meII   = 0. 
             mark(kk)%mpres  = 0.
             mark(kk)%mtemp  = 0.
+
+            nphase_counter(j,i,mark(kk)%phase) = nphase_counter(j,i,mark(kk)%phase) + 1
         enddo
     enddo
 enddo
