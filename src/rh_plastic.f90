@@ -256,16 +256,16 @@ character*200 msg
 nab = 0
 kabove = 0
 iph = iphase(j,i)
-do kphase = 1, nphasl
-   if (lphase(kphase).eq.3) kocean1 = kphase
-  if (lphase(kphase).eq.7) kocean2 = kphase
-  if (lphase(kphase).eq.2) kcont1 = kphase
-  if (lphase(kphase).eq.6) kcont2 = kphase
-  if (lphase(kphase).eq.4) kmant1 = kphase
-  if (lphase(kphase).eq.8) kmant2 = kphase
-  if (lphase(kphase).eq.10) ksed1 = kphase
-  if (lphase(kphase).eq.14) karc1 = kphase
-enddo        
+
+kocean1 = 3
+kocean2 = 7
+kcont1 = 2
+kcont2 = 6
+kmant1 = 4
+kmant2 = 8
+ksed1 = 10
+karc1 = 14
+
 pls_curr = aps(j,i)
 tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
 do nab = 1,3
@@ -538,7 +538,7 @@ isoft = 0
 if (isoft.eq.0 ) then
     write( msg, * ) 'Pre_plast: No segment for current plastic strain(j,i,pls_curr,iph): ', iph,j,i,pls_curr
     call SysMsg( msg )
-    stop 25
+    !stop 25
 endif
 
 724 continue

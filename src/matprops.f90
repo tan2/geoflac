@@ -25,20 +25,19 @@ function Eff_dens( j, i)
       Eff_dens = dens
   else
       Eff_dens = 0.
-      do k = 1, nphasl
+      do k = 1, nphase
           ratio = phase_ratio(j,i,k)
           ! when ratio is small, it won't affect the density
           if(ratio .lt. 1e-9) cycle
 
-          iph = lphase(k)
-          dens = den(iph) * ( 1 - alfa(iph)*tmpr + beta(iph)*press )
+          dens = den(k) * ( 1 - alfa(k)*tmpr + beta(k)*press )
 
           !press = 0
           !press = stressI(j,i)
           press = dens*g*zcord
 
           delta_rho = 0.
-          !if (iph.eq.1.or.iph.eq.3.or.iph.eq.7.or.iph.eq.2.or.iph.eq.6) then
+          !if (k.eq.1.or.k.eq.3.or.k.eq.7.or.k.eq.2.or.k.eq.6) then
           !if(tmpr.gt.110.) then
           !            trpres = 1.3e9
           !           if ((-1.0*press).ge.trpres) then
@@ -52,20 +51,20 @@ function Eff_dens( j, i)
           !	endif
           !        endif
           !     endif
-          dens = (den(iph)+delta_rho) * ( 1 - alfa(iph)*tmpr + beta(iph)*press )
+          dens = (den(k)+delta_rho) * ( 1 - alfa(k)*tmpr + beta(k)*press )
 
-          if(iph.eq.11) then
+          if(k.eq.11) then
               delta_den = 400.
               zefold = 6000.
-              !dens = (den(iph) - delta_den*exp(zcord/zefold)) * ( 1 - alfa(iph)*tmpr + beta(iph)*press )
-              dens = (den(iph) - delta_den*exp((zcord-0.5*(cord(1,i,2)+cord(1,i+1,2)))/zefold)) &
-                   * ( 1 - alfa(iph)*tmpr + beta(iph)*press )
-              if (j.eq.1.and.cord(j,i,2).gt.0.) dens = (2750.*(1.-alfa(iph)*tmpr))        
+              !dens = (den(k) - delta_den*exp(zcord/zefold)) * ( 1 - alfa(k)*tmpr + beta(k)*press )
+              dens = (den(k) - delta_den*exp((zcord-0.5*(cord(1,i,2)+cord(1,i+1,2)))/zefold)) &
+                   * ( 1 - alfa(k)*tmpr + beta(k)*press )
+              if (j.eq.1.and.cord(j,i,2).gt.0.) dens = (2750.*(1.-alfa(k)*tmpr))        
               if (dens.lt.2400.) dens = 2400.
           endif
 
           ! Effect of melt
-          !fmelt = Eff_melt(iph, tmpr)
+          !fmelt = Eff_melt(k, tmpr)
           !dens = dens * ( 1.-0.1*fmelt )
 
           Eff_dens = Eff_dens + ratio*dens
@@ -178,12 +177,11 @@ endif
 
 if (iint_marker.eq.1) then
 Eff_conduct = 0.
-do k = 1 , nphasl
+do k = 1 , nphase
 
-iph = lphase(k) 
-cond = conduct(iph)
+cond = conduct(k)
 
-!if( den(iph) .lt. 3000. ) then  ! for crustal material
+!if( den(k) .lt. 3000. ) then  ! for crustal material
 !    tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
 !    if( tmpr.lt.25 ) tmpr = 25.
 !    Eff_conduct = -0.38*dlog(tmpr) + 4.06
@@ -192,7 +190,7 @@ cond = conduct(iph)
 ! HOOK
 ! Hydrothermal alteration of thermal diffusivity  - see user_luc.f90
 if( if_hydro .eq. 1 ) then
-    cond = HydroDiff(j,i)*den(iph)*cp(iph)
+    cond = HydroDiff(j,i)*den(k)*cp(k)
 endif
 Eff_conduct = Eff_conduct + phase_ratio(j,i,k)*cond
 enddo
@@ -256,15 +254,14 @@ Eff_visc = vis
 
 if (iint_marker.eq.1) then
 Eff_visc = 0.
-do k = 1, nphasl
+do k = 1, nphase
 
-iph = lphase(k) 
 tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
 srat = e2sr(j,i)
 press = stressI(j,i)
 
-xeactiv = eactiv(iph)
-    if (iph.eq.20.or.iph.eq.30) then
+xeactiv = eactiv(k)
+    if (k.eq.20.or.k.eq.30) then
        if (tmpr.gt.550) then
            trpres = -0.3e9 + 2.2e6*tmpr
            if ((-1.0*press).ge.trpres) then
@@ -276,19 +273,19 @@ xeactiv = eactiv(iph)
 
 if( srat .eq. 0 ) srat = vbc/rxbo
 
-pow  =  1./pln(iph) - 1.
-pow1 = -1./pln(iph) 
+pow  =  1./pln(k) - 1.
+pow1 = -1./pln(k) 
 
-vis = 0.25 * srat**pow*(0.75*acoef(iph))**pow1* &
-        exp(xeactiv/(pln(iph)*r*(tmpr+273.)))*1.e+6
+vis = 0.25 * srat**pow*(0.75*acoef(k))**pow1* &
+        exp(xeactiv/(pln(k)*r*(tmpr+273.)))*1.e+6
 
 !increase continental mantle viscosity (one order of magnitude)
-if (iph.eq.5) vis = 10*vis
+if (k.eq.5) vis = 10*vis
 !!!!!!!!!!!!!!!!
 
 ! Effect of melt
 !fmelt_crit = 0.05
-!fmelt = Eff_melt(iph, tmpr)
+!fmelt = Eff_melt(k, tmpr)
 !if( fmelt .gt. 0. ) then
 !    if( fmelt .lt. fmelt_crit ) then
 !        vislog = fmelt/fmelt_crit*dlog10(v_min/vis) + dlog10(vis)
@@ -304,12 +301,12 @@ if (iph.eq.5) vis = 10*vis
 !vis_peierls = sIImax / srat / 2
 !if( vis .gt. vis_peierls ) vis = vis_peierls
 
-!write(*,*) vis,srat,pln(iph),xeactiv
+!write(*,*) vis,srat,pln(k),xeactiv
 ! Final cut-off
 if (vis .lt. v_min) vis = v_min
 if (vis .gt. v_max) vis = v_max
-if(iph.eq.8.and.vis.le.1.e19)  vis = 1.e19     
-if(iph.eq.4.and.vis.le.1.e19)  vis = 1.e19     
+if(k.eq.8.and.vis.le.1.e19)  vis = 1.e19     
+if(k.eq.4.and.vis.le.1.e19)  vis = 1.e19     
 Eff_visc = Eff_visc + phase_ratio(j,i,k)*vis
 !write(*,*) i,j, Eff_visc, vis, tmpr,phase_ratio(j,i,k)
 enddo

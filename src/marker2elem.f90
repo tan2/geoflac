@@ -15,7 +15,7 @@ subroutine marker2elem
 
   do j = 1 , nz-1
       do i = 1 , nx-1
-          kinc = sum(nphase_counter(j,i,1:nphasl))
+          kinc = sum(nphase_counter(j,i,1:nphase))
 
           !  if there are too few markers in the elmenent, create a new one
           do while (kinc.le.2)
