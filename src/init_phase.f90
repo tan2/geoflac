@@ -46,6 +46,7 @@ endif
 
 ! Case with iynts = 2 for continental and collision
 if (iynts.eq.10) then
+    ! XXX: nphasl is changed!
     nphasl = 2
     lphase(nphasl-1) = iph_col1(1)
     lphase(nphasl) = iph_col2(1)
