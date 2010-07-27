@@ -1,7 +1,7 @@
 ! -*- F90 -*-
 
 !!! maximum number of ELEMENTS !!!
-parameter(mnz=10, mnx=50 )
+parameter(mnz=80, mnx=400)
 
 common /geom_arrays/ iphase(mnz,mnx), nphase_counter(mnz,mnx,20)
 
