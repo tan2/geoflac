@@ -18,14 +18,13 @@ if( lastout .eq. 1 ) then
     nrec = 1
     open (1,file='_contents.0')
 else
-    open (1,file='_contents.0',status='old',err=5)
-    do while (.TRUE.)
-        read( 1, *, end=10 ) nrec
-    end do
-    5 continue
-    open (1,file='_contents.0',position='append')
     nrec = 0
-    10 continue
+    open (1,file='_contents.0',status='old',err=5)
+    read( 1, *, end=10 ) nrec
+    close(1)
+5   continue
+10  continue
+    open (1,file='_contents.0')
     nrec = nrec + 1
 endif
 write( 1, '(i4,1x,i8,1x,f6.2)' ) nrec, nloop, time/sec_year/1.e6
@@ -37,6 +36,8 @@ rtime = time
 write (1,rec=nrec) rtime
 close (1) 
 
+
+write(*,*) nloop, nrec
 
 ! Coordinates in [km]
 allocate( Dn2(nz,nx,2) )
