@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <math.h>
 
 #include <limits.h>
 #ifndef PATH_MAX
@@ -73,6 +74,7 @@ const unsigned	numStressComponentsPerElement = 6; /* 6 averaged components per e
 int main( int argc, char* argv[]) 
 {
     char		tmpBuf[PATH_MAX];
+    FILE*		nxnzIn;
     FILE*		timeStepIn;
     FILE*		meshInfoIn;
     unsigned int	rank;
@@ -86,8 +88,8 @@ int main( int argc, char* argv[])
     unsigned int	rankI,rankJ,rankK;
     unsigned int	nrec=0, step=0,stepMin=0,stepMax=0,stepNum=0;
 	
-    if( argc != 4 ) {
-		fprintf(stderr,"snac2vtk path-to-output-directory nx nz\n");
+    if( argc != 2 ) {
+		fprintf(stderr,"flac2vtk path-to-output-directory\n");
 		exit(1);
     }
 
@@ -96,10 +98,16 @@ int main( int argc, char* argv[])
      */
 	sprintf( path, "%s", argv[1] );
 
-	nodeNumber[0] = atoi(argv[2]);
-	nodeNumber[1] = atoi(argv[3]);
-	elementNumber[0] = nodeNumber[0]-1;
-	elementNumber[1] = nodeNumber[1]-1;
+	sprintf( tmpBuf, "%s/nxnz.0", path );
+	if( (nxnzIn = fopen( tmpBuf, "r" )) == NULL ) {
+		fprintf(stderr, "\"%s\" not found\n", tmpBuf );
+		exit(1);
+	}
+	fscanf( nxnzIn, "%d %d", &elementNumber[0], &elementNumber[1] );
+	fclose( nxnzIn );
+
+	nodeNumber[0] = elementNumber[0] + 1;
+	nodeNumber[1] = elementNumber[1] + 1;
 	globalNodeNumber = nodeNumber[0]*nodeNumber[1];
 	globalElementNumber = elementNumber[0]*elementNumber[1];
 
