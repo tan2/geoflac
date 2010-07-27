@@ -126,6 +126,8 @@ close (1)
 source(1:nz-1,1:nx-1) = dum2(1:nz-1,1:nx-1)
 
 deallocate( dum2 )
+
+!XXX: restoring nphasl and lphase
 nphasl =11
 lphase(1) = 2
 lphase(2) = 3
