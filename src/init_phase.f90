@@ -25,81 +25,30 @@ do k = 1,nphasl
     do i = 1,nx-1
         do j = ltop(k),lbottom(k)
             iphase(j,i) = lphase(k)
-            !XXX: hard-coded weak zone layer? remove?
-            if(i.ge.170) iphase(j,i) = 8
-!making everything west of the continent oceanic mantle....
-!!! THAT IS THE LINES FOR THE CONTINENT ON THE RIGHT!!!
-!if (i.le.218) iphase(j,i) = 4
-!tapering off the continental crust at teh boundary.....
-!if (i.ge.219.and.i.le.223.and.j.ge.6) iphase(j,i) = 4
-!if (i.ge.224.and.i.le.229.and.j.ge.6) iphase(j,i) = 4
-!if (i.ge.230.and.i.le.234.and.j.ge.6) iphase(j,i) = 4
-!if (i.ge.235.and.i.le.220.and.j.ge.6) iphase(j,i) = 4
-
-!if (i.ge.241.and.i.le.220.and.j.ge.6) iphase(j,i) = 4
-!if (i.ge.221.and.i.le.230.and.j.ge.9) iphase(j,i) = 4
-!if (i.ge.231.and.i.le.240.and.j.ge.11) iphase(j,i) = 4
-!if (i.ge.241.and.i.le.250.and.j.ge.13) iphase(j,i) = 4
-!if (i.ge.188.and.i.le.193.and.j.ge.10) iphase(j,i) = 4
-!if (i.ge.194.and.i.le.199.and.j.ge.12) iphase(j,i) = 4
-!if (i.ge.200.and.i.le.205.and.j.ge.14) iphase(j,i) = 4
-!if (i.ge.206.and.i.le.210.and.j.ge.16) iphase(j,i) = 4
-
-!if (i.le.168.and.j.le.1) iphase(j,i) = 3
-
-!if (i.le.169.and.j.eq.2) iphase(j,i) = 3
-!if (i.ge.168.and.j.le.2) iphase(j,i) = 10
-!if (i.ge.168.and.i.le.170.and.j.eq.3) iphase(j,i) = 6
-!if (i.ge.171.and.i.le.173.and.j.le.4.and.j.ge.3) iphase(j,i) = 6
-!if (i.ge.174.and.i.le.218.and.j.le.5.and.j.ge.3) iphase(j,i) = 6
-
         end do
     end do
 end do
 
-!XXX: hard-coded phase layers
-nphasl = 12
-lphase(1) = 2
-lphase(2) = 3
-lphase(3) = 4 
-lphase(4) = 6
-lphase(5) = 7 
-lphase(6) = 8 
-lphase(7) = 9 
-lphase(8) = 10 
-lphase(9) = 11 
-lphase(10) = 12 
-lphase(11) = 14
-lphase(12) = 15
-
 !  Read distribution of the phases from the dat file
 if (irphase .gt. 0) then
-open(12,file='phasedat.inp')
-read(12,*) nphasl
-do 333 k=1,nphasl
-read(12,*) lphase(k)
-333 continue
-do 332 i=1,nx-1
-do 332 j=1,nz-1
-!write(*,*) nx,nz
-read(12,*) ii,jj,iphase(j,i)
-!XXX: hard-coded phase; remove?
-if (j.eq.1.and.i.gt.65) iphase(j,i) = 3
-if (j.eq.2.and.i.gt.64) iphase(j,i) = 3
-if (j.eq.3.and.i.gt.63) iphase(j,i) = 3
-332  continue
-!XXX: hard-coded phase number; remove?
-nphasl = 3
-lphase(3) = 3
-close(12)
-
-endif                        
+    open(12,file='phasedat.inp')
+    read(12,*) nphasl
+    do k=1,nphasl
+        read(12,*) lphase(k)
+    enddo
+    do i=1,nx-1
+        do j=1,nz-1
+            read(12,*) ii,jj,iphase(j,i)
+        enddo
+    enddo
+    close(12)
+endif
 
 ! Case with iynts = 2 for continental and collision
 if (iynts.eq.10) then
-nphasl = 2 
-lphase(nphasl-1) = iph_col1(1)
-lphase(nphasl) = iph_col2(1)
+    nphasl = 2
+    lphase(nphasl-1) = iph_col1(1)
+    lphase(nphasl) = iph_col2(1)
     do n = 1, nzone_age
        if(n.gt.1) ixtb1(n) = ixtb1(n)-1
        do i = ixtb1(n),ixtb2(n)-1
@@ -121,10 +70,12 @@ lphase(nphasl) = iph_col2(1)
 !       endif
     enddo
 endif
+
+write(333,*) 'Phases of horizontal layers:'
 do i = 1,nphasl
-   write(*,*) i,lphase(i)
    write(333,*) i,lphase(i)
 enddo
+
 !   Put different rheologies for inclusions 
 do i = 1,inhom
     ! Rectangular shape:
