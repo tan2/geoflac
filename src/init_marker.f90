@@ -24,8 +24,7 @@ kk = 0
 ! calculate the id (element number) of the zones of high res
 
 !call random_seed
-!write(*,*) 'Call to random_seed(), result may be stochastic'
-open(200,file='marker_init.asc')
+!write(333,*) 'Call to random_seed(), result may be stochastic'
 
 do j = 1 , nz-1
     do i = 1 , nx-1
@@ -58,7 +57,6 @@ do j = 1 , nz-1
         do l = 1 , 9 
             nmarkers = nmarkers + 1
             call random_number(rx)
-            write(200,*) rx
             rx = 0.5 - rx
             ddx = dx*rx/5.
             ddy = dy*rx/5.
@@ -96,9 +94,7 @@ do j = 1 , nz-1
         enddo
     enddo
 enddo
-close (200)
-write(*,*) nmarkers
-write(333,*) nmarkers
+write(333,*) '# of markers', nmarkers
 return
 end subroutine init_marker
 
