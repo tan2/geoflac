@@ -171,57 +171,32 @@ visn(1:nzt,1:nxt) = dummy(1:nzt,1:nxt)
 !XXX: hard-coded phase for incoming material
 do jj = 1,4
    do ii = 1,3
-        iphase(jj,ii) = 11  !7 is ocean coming from the left!
-        aps(jj,ii) = 0.0
-        do kk = 1,2
-        ! Calculate triangle number in which the markers belong
-         ntriang = 2 * ( (nz-1)*(ii-1)+jj-1) + kk
-         call newphase2marker(ii,jj,ntriang)
-         enddo
+       aps(jj,ii) = 0.0
+       call newphase2marker(jj,ii,11)
    enddo
 enddo
 do jj = 5,6
    do ii = 1,3
-        iphase(jj,ii) = 12  !7 is ocean coming from the left!
-        aps(jj,ii) = 0.0
-        do kk = 1,2
-        ! Calculate triangle number in which the markers belong
-         ntriang = 2 * ( (nz-1)*(ii-1)+jj-1) + kk
-         call newphase2marker(ii,jj,ntriang)
-         enddo
+       aps(jj,ii) = 0.0
+       call newphase2marker(jj,ii,12)
    enddo
 enddo
 do jj = 7,10
    do ii = 1,3
-        iphase(jj,ii) = 6  !7 is ocean coming from the left!
-        aps(jj,ii) = 0.0
-        do kk = 1,2
-        ! Calculate triangle number in which the markers belong
-         ntriang = 2 * ( (nz-1)*(ii-1)+jj-1) + kk
-         call newphase2marker(ii,jj,ntriang)
-         enddo
+       aps(jj,ii) = 0.0
+       call newphase2marker(jj,ii,6)
    enddo
 enddo
 do jj = 11,12 
    do ii = 1,3
-        iphase(jj,ii) = 9  !7 is ocean coming from the left!
-        aps(jj,ii) = 0.0
-        do kk = 1,2
-        ! Calculate triangle number in which the markers belong
-         ntriang = 2 * ( (nz-1)*(ii-1)+jj-1) + kk
-         call newphase2marker(ii,jj,ntriang)
-         enddo
+       aps(jj,ii) = 0.0
+       call newphase2marker(jj,ii,9)
    enddo
 enddo
 do jj = 13,nz-3 
    do ii = 1,3
-        iphase(jj,ii) = 8  !7 is ocean coming from the left!
-        aps(jj,ii) = 0.0
-        do kk = 1,2
-        ! Calculate triangle number in which the markers belong
-         ntriang = 2 * ( (nz-1)*(ii-1)+jj-1) + kk
-         call newphase2marker(ii,jj,ntriang)
-         enddo
+       aps(jj,ii) = 0.0
+       call newphase2marker(jj,ii,8)
    enddo
 enddo
 
@@ -232,38 +207,23 @@ enddo
 !      else
 !         icon = 8.
 !      endif
-!      iphase(jj,ii) = 8
 !      aps(jj,ii) = 0.0
-!      do kk = 1,2
-         ! Calculate triangle number in which the markers belong
-!         ntriang = 2 * ( (nz-1)*(ii-1)+jj-1) + kk
-!         call newphase2marker(i,j,ntriang)
-!      enddo
+!      call newphase2marker(jj,ii,8)
 !1   enddo
 !enddo
 !do jj = 11,87 
 !   do ii = 1,3
-!        iphase(jj,ii) = 8
-!        aps(jj,ii) = 0.0
-!        do kk = 1,2
-!        ! Calculate triangle number in which the markers belong
-!         ntriang = 2 * ( (nz-1)*(ii-1)+jj-1) + kk
-!         call newphase2marker(ii,jj,ntriang)
-!         enddo
+!      aps(jj,ii) = 0.0
+!      call newphase2marker(jj,ii,8)
 !enddo
 !enddo
 !
 
 do jj = nz-2,nz-1 
    do ii = 1,nx-1
-        iphase(jj,ii) = 8
-        aps(jj,ii) = 0.0
-        do kk = 1,2
-        ! Calculate triangle number in which the markers belong
-         ntriang = 2 * ( (nz-1)*(ii-1)+jj-1) + kk
-         call newphase2marker(ii,jj,ntriang)
-         enddo
-enddo
+       aps(jj,ii) = 0.0
+      call newphase2marker(jj,ii,8)
+   enddo
 enddo
 
 
