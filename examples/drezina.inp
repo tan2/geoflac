@@ -124,9 +124,9 @@ proftemp.dat   temperature profile dat.file
 ;11- visco-elasto-plastic (Mohr-Coulomb,Fixed Maxwell,Newtonian) with softening
 ;12- visco-elasto-plastic (Mohr-Coulomb,Maxwell,Non-Newtonian) with softening
 ;
-15  Number of Different Rheologies (<20)
+15  ;Number of Different Phases (<20)
 ;
-; Rheol,den, alfa,   beta,    n,     A,       E,     Lame:rl, Lame:rm, coh,disp, phi,disp, psi, cond, cp,    Ts,    Tl,
+; Rheol,visc,den,alfa,   beta,    n,     A,       E,     Lame:rl, Lame:rm, coh,disp, phi,disp, psi, cond, cp,    Ts,    Tl,
 ;(1) basalt 
 12,1., 3000., 3.0e-5, 0.0e-12, 3.05, 1.25e-1, 3.76e+5, 3.0e+10, 3.0e+10, 44.e+6,0., 30.,0.,  0.,  3.3, 1000., 13000., 16000., 16000., 1.
 ;(2) crust (not so weakenable)
