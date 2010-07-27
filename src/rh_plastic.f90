@@ -280,13 +280,6 @@ do nab = 1,3
          
          call newphase2marker(i,kabove,ntriang)
       enddo
-      do kl = 1, nphasl
-         if (lphase(kl).eq.12) then
-            phase_ratio(kabove,i,kl) = 1.0
-         else
-            phase_ratio(kabove,i,kl) = 0.0
-         endif
-      enddo
    endif
    if(phase_ratio(j,i,karc1).gt.0.8.and.phase_ratio(kabove,i,kcont1).gt.0.8) then
       iphase(kabove,i) = 12
@@ -295,13 +288,6 @@ do nab = 1,3
          ntriang = 2 * ( (nz-1)*(i-1)+kabove-1) + k
          
          call newphase2marker(i,kabove,ntriang)
-      enddo
-      do kl = 1, nphasl
-         if (lphase(kl).eq.12) then
-            phase_ratio(kabove,i,kl) = 1.0
-         else
-            phase_ratio(kabove,i,kl) = 0.0
-         endif
       enddo
    endif
    if(phase_ratio(j,i,ksed1).gt.0.8.and.phase_ratio(kabove,i,kcont1).gt.0.8) then
@@ -312,13 +298,6 @@ do nab = 1,3
          
          call newphase2marker(i,kabove,ntriang)
       enddo
-      do kl = 1, nphasl
-         if (lphase(kl).eq.12) then
-            phase_ratio(kabove,i,kl) = 1.0
-         else
-            phase_ratio(kabove,i,kl) = 0.0
-         endif
-      enddo
    endif
    if(phase_ratio(j,i,kocean2).gt.0.8.and.phase_ratio(kabove,i,kcont1).gt.0.8) then
       iphase(kabove,i) = 12
@@ -327,13 +306,6 @@ do nab = 1,3
          ntriang = 2 * ( (nz-1)*(i-1)+kabove-1) + k
          
          call newphase2marker(i,kabove,ntriang)
-      enddo
-      do kl = 1, nphasl
-         if (lphase(kl).eq.12) then
-            phase_ratio(kabove,i,kl) = 1.0
-         else
-            phase_ratio(kabove,i,kl) = 0.0
-         endif
       enddo
    endif
    if(phase_ratio(j,i,kocean1).gt.0.8.and.phase_ratio(kabove,i,kcont2).gt.0.8) then
@@ -344,13 +316,6 @@ do nab = 1,3
          
          call newphase2marker(i,kabove,ntriang)
       enddo
-      do kl = 1, nphasl
-         if (lphase(kl).eq.12) then
-            phase_ratio(kabove,i,kl) = 1.0
-         else
-            phase_ratio(kabove,i,kl) = 0.0
-         endif
-      enddo
    endif
    if(phase_ratio(j,i,karc1).gt.0.8.and.phase_ratio(kabove,i,kcont2).gt.0.8) then
       iphase(kabove,i) = 12
@@ -359,13 +324,6 @@ do nab = 1,3
          ntriang = 2 * ( (nz-1)*(i-1)+kabove-1) + k
          
          call newphase2marker(i,kabove,ntriang)
-      enddo
-      do kl = 1, nphasl
-         if (lphase(kl).eq.12) then
-            phase_ratio(kabove,i,kl) = 1.0
-         else
-            phase_ratio(kabove,i,kl) = 0.0
-         endif
       enddo
    endif
    if(phase_ratio(j,i,kocean2).gt.0.8.and.phase_ratio(kabove,i,kcont2).gt.0.8) then
@@ -376,13 +334,6 @@ do nab = 1,3
          
          call newphase2marker(i,kabove,ntriang)
       enddo
-      do kl = 1, nphasl
-         if (lphase(kl).eq.12) then
-            phase_ratio(kabove,i,kl) = 1.0
-         else
-            phase_ratio(kabove,i,kl) = 0.0
-         endif
-      enddo
    endif
    if(phase_ratio(j,i,kocean1).gt.0.8.and.phase_ratio(kabove,i,kmant1).gt.0.8) then
       iphase(kabove,i) = 9
@@ -391,13 +342,6 @@ do nab = 1,3
          ntriang = 2 * ( (nz-1)*(i-1)+kabove-1) + k
          
          call newphase2marker(i,kabove,ntriang)
-      enddo
-      do kl = 1, nphasl
-         if (lphase(kl).eq.9) then
-            phase_ratio(kabove,i,kl) = 1.0
-         else
-            phase_ratio(kabove,i,kl) = 0.0
-         endif
       enddo
    endif
    if(phase_ratio(j,i,ksed1).gt.0.8.and.phase_ratio(kabove,i,kmant1).gt.0.8) then
@@ -408,13 +352,6 @@ do nab = 1,3
          
          call newphase2marker(i,kabove,ntriang)
       enddo
-      do kl = 1, nphasl
-         if (lphase(kl).eq.9) then
-            phase_ratio(kabove,i,kl) = 1.0
-         else
-            phase_ratio(kabove,i,kl) = 0.0
-         endif
-      enddo
    endif
    if(phase_ratio(j,i,kocean2).gt.0.8.and.phase_ratio(kabove,i,kmant1).gt.0.8) then
       iphase(kabove,i) = 9
@@ -423,13 +360,6 @@ do nab = 1,3
          ntriang = 2 * ( (nz-1)*(i-1)+kabove-1) + k
          
          call newphase2marker(i,kabove,ntriang)
-      enddo
-      do kl = 1, nphasl
-         if (lphase(kl).eq.9) then
-            phase_ratio(kabove,i,kl) = 1.0
-         else
-            phase_ratio(kabove,i,kl) = 0.0
-         endif
       enddo
    endif
 enddo
@@ -510,13 +440,6 @@ isoft = 0
  
         call newphase2marker(i,j,ntriang)
          enddo
-         do kl = 1, nphasl
-              if (lphase(kl).eq.15) then
-                  phase_ratio(j,i,kl) = 1.0
-              else
-                  phase_ratio(j,i,kl) = 0.0
-             endif
-         enddo
       endif
 
     pl1 = plstrain1
@@ -552,13 +475,6 @@ isoft = 0
  
         call newphase2marker(i,j,ntriang)
          enddo
-         do kl = 1, nphasl
-              if (lphase(kl).eq.15) then
-                  phase_ratio(j,i,kl) = 1.0
-              else
-                  phase_ratio(j,i,kl) = 0.0
-             endif
-         enddo
       endif
 
     pl1 = plstrain2
@@ -593,13 +509,6 @@ isoft = 0
          ntriang = 2 * ( (nz-1)*(i-1)+j-1) + k
  
         call newphase2marker(i,j,ntriang)
-         enddo
-         do kl = 1, nphasl
-              if (lphase(kl).eq.15) then
-                  phase_ratio(j,i,kl) = 1.0
-              else
-                  phase_ratio(j,i,kl) = 0.0
-             endif
          enddo
       endif
 

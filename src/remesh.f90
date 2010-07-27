@@ -176,16 +176,7 @@ do jj = 1,4
         do kk = 1,2
         ! Calculate triangle number in which the markers belong
          ntriang = 2 * ( (nz-1)*(ii-1)+jj-1) + kk
-
-                                                                                
          call newphase2marker(ii,jj,ntriang)
-         enddo
-         do kll = 1, nphasl
-              if (lphase(kll).eq.11) then
-                  phase_ratio(jj,ii,kll) = 1.0
-              else
-                  phase_ratio(jj,ii,kll) = 0.0
-              endif
          enddo
    enddo
 enddo
@@ -196,16 +187,7 @@ do jj = 5,6
         do kk = 1,2
         ! Calculate triangle number in which the markers belong
          ntriang = 2 * ( (nz-1)*(ii-1)+jj-1) + kk
-
-                                                                                
          call newphase2marker(ii,jj,ntriang)
-         enddo
-         do kll = 1, nphasl
-              if (lphase(kll).eq.12) then
-                  phase_ratio(jj,ii,kll) = 1.0
-              else
-                  phase_ratio(jj,ii,kll) = 0.0
-              endif
          enddo
    enddo
 enddo
@@ -216,16 +198,7 @@ do jj = 7,10
         do kk = 1,2
         ! Calculate triangle number in which the markers belong
          ntriang = 2 * ( (nz-1)*(ii-1)+jj-1) + kk
-
-                                                                                
          call newphase2marker(ii,jj,ntriang)
-         enddo
-         do kll = 1, nphasl
-              if (lphase(kll).eq.6) then
-                  phase_ratio(jj,ii,kll) = 1.0
-              else
-                  phase_ratio(jj,ii,kll) = 0.0
-              endif
          enddo
    enddo
 enddo
@@ -236,16 +209,7 @@ do jj = 11,12
         do kk = 1,2
         ! Calculate triangle number in which the markers belong
          ntriang = 2 * ( (nz-1)*(ii-1)+jj-1) + kk
-
-                                                                                
          call newphase2marker(ii,jj,ntriang)
-         enddo
-         do kll = 1, nphasl
-              if (lphase(kll).eq.9) then
-                  phase_ratio(jj,ii,kll) = 1.0
-              else
-                  phase_ratio(jj,ii,kll) = 0.0
-              endif
          enddo
    enddo
 enddo
@@ -256,16 +220,7 @@ do jj = 13,nz-3
         do kk = 1,2
         ! Calculate triangle number in which the markers belong
          ntriang = 2 * ( (nz-1)*(ii-1)+jj-1) + kk
-
-                                                                                
          call newphase2marker(ii,jj,ntriang)
-         enddo
-         do kll = 1, nphasl
-              if (lphase(kll).eq.8) then
-                  phase_ratio(jj,ii,kll) = 1.0
-              else
-                  phase_ratio(jj,ii,kll) = 0.0
-              endif
          enddo
    enddo
 enddo
@@ -282,15 +237,7 @@ enddo
 !      do kk = 1,2
          ! Calculate triangle number in which the markers belong
 !         ntriang = 2 * ( (nz-1)*(ii-1)+jj-1) + kk
-!                                                                                 
 !         call newphase2marker(i,j,ntriang)
-!      enddo
-!      do kl = 1, nphasl
-!         if (lphase(kl).eq.8) then
-!            phase_ratio(jj,ii,kl) = 1.0
-!         else
-!            phase_ratio(jj,ii,kl) = 0.0
-!         endif
 !      enddo
 !1   enddo
 !enddo
@@ -301,16 +248,7 @@ enddo
 !        do kk = 1,2
 !        ! Calculate triangle number in which the markers belong
 !         ntriang = 2 * ( (nz-1)*(ii-1)+jj-1) + kk
-!
-!                                                                                
 !         call newphase2marker(ii,jj,ntriang)
-!         enddo
-!         do kll = 1, nphasl
-!              if (lphase(kll).eq.8) then
-!                  phase_ratio(jj,ii,kll) = 1.0
-!              else
-!                  phase_ratio(jj,ii,kll) = 0.0
-!              endif
 !         enddo
 !enddo
 !enddo
@@ -323,16 +261,7 @@ do jj = nz-2,nz-1
         do kk = 1,2
         ! Calculate triangle number in which the markers belong
          ntriang = 2 * ( (nz-1)*(ii-1)+jj-1) + kk
-
-                                                                                
          call newphase2marker(ii,jj,ntriang)
-         enddo
-         do kll = 1, nphasl
-              if (lphase(kll).eq.8) then
-                  phase_ratio(jj,ii,kll) = 1.0
-              else
-                  phase_ratio(jj,ii,kll) = 0.0
-              endif
          enddo
 enddo
 enddo

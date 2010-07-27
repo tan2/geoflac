@@ -56,7 +56,7 @@ subroutine marker2elem
               nphase_counter(j,i,mark(nmarkers)%phase) = nphase_counter(j,i,mark(nmarkers)%phase) + 1
           enddo
 
-          phase_ratio (j,i,1:nphasl) = nphase_counter(j,i,1:nphasl) / float(kinc)
+          phase_ratio(j,i,1:nphase) = nphase_counter(j,i,1:nphase) / float(kinc)
 
       enddo
   enddo

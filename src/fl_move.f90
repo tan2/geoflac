@@ -162,13 +162,6 @@ if (mod(nloop,10000).eq.0) then
       
       call newphase2marker(ii,jj,ntriang)
     enddo
-    do kll = 1, nphasl
-      if (lphase(kll).eq.11) then
-        phase_ratio(jj,ii,kll) = 1.0
-      else
-        phase_ratio(jj,ii,kll) = 0.0
-      endif
-    enddo
   enddo
 endif
 !EROSION PROCESSES
