@@ -154,14 +154,7 @@ dimension dh(mnx+1),xtgt(mnx)
 
 if (mod(nloop,10000).eq.0) then
   do ii = 1,nx-1
-    iphase(1,ii) = 11
-    do kk = 1,2
-      ! Calculate triangle number in which the markers belong
-      ntriang = 2 * ( (nz-1)*(ii-1)+jj-1) + kk
-
-      
-      call newphase2marker(ii,jj,ntriang)
-    enddo
+      call newphase2marker(1,ii,11)
   enddo
 endif
 !EROSION PROCESSES

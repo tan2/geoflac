@@ -273,94 +273,34 @@ do nab = 1,3
    if (tmpr.gt.1000.) cycle
    if(kabove .le. 0) exit
    if(phase_ratio(j,i,kocean1).gt.0.8.and.phase_ratio(kabove,i,kcont1).gt.0.8) then
-      iphase(kabove,i) = 12
-      do k = 1,2
-         ! Calculate triangle number in which the markers belong
-         ntriang = 2 * ( (nz-1)*(i-1)+kabove-1) + k
-         
-         call newphase2marker(i,kabove,ntriang)
-      enddo
+       call newphase2marker(kabove,i,12)
    endif
    if(phase_ratio(j,i,karc1).gt.0.8.and.phase_ratio(kabove,i,kcont1).gt.0.8) then
-      iphase(kabove,i) = 12
-      do k = 1,2
-         ! Calculate triangle number in which the markers belong
-         ntriang = 2 * ( (nz-1)*(i-1)+kabove-1) + k
-         
-         call newphase2marker(i,kabove,ntriang)
-      enddo
+       call newphase2marker(kabove,i,12)
    endif
    if(phase_ratio(j,i,ksed1).gt.0.8.and.phase_ratio(kabove,i,kcont1).gt.0.8) then
-      iphase(kabove,i) = 12
-      do k = 1,2
-         ! Calculate triangle number in which the markers belong
-         ntriang = 2 * ( (nz-1)*(i-1)+kabove-1) + k
-         
-         call newphase2marker(i,kabove,ntriang)
-      enddo
+       call newphase2marker(kabove,i,12)
    endif
    if(phase_ratio(j,i,kocean2).gt.0.8.and.phase_ratio(kabove,i,kcont1).gt.0.8) then
-      iphase(kabove,i) = 12
-      do k = 1,2
-         ! Calculate triangle number in which the markers belong
-         ntriang = 2 * ( (nz-1)*(i-1)+kabove-1) + k
-         
-         call newphase2marker(i,kabove,ntriang)
-      enddo
+       call newphase2marker(kabove,i,12)
    endif
    if(phase_ratio(j,i,kocean1).gt.0.8.and.phase_ratio(kabove,i,kcont2).gt.0.8) then
-      iphase(kabove,i) = 12
-      do k = 1,2
-         ! Calculate triangle number in which the markers belong
-         ntriang = 2 * ( (nz-1)*(i-1)+kabove-1) + k
-         
-         call newphase2marker(i,kabove,ntriang)
-      enddo
+       call newphase2marker(kabove,i,12)
    endif
    if(phase_ratio(j,i,karc1).gt.0.8.and.phase_ratio(kabove,i,kcont2).gt.0.8) then
-      iphase(kabove,i) = 12
-      do k = 1,2
-         ! Calculate triangle number in which the markers belong
-         ntriang = 2 * ( (nz-1)*(i-1)+kabove-1) + k
-         
-         call newphase2marker(i,kabove,ntriang)
-      enddo
+       call newphase2marker(kabove,i,12)
    endif
    if(phase_ratio(j,i,kocean2).gt.0.8.and.phase_ratio(kabove,i,kcont2).gt.0.8) then
-      iphase(kabove,i) = 12
-      do k = 1,2
-         ! Calculate triangle number in which the markers belong
-         ntriang = 2 * ( (nz-1)*(i-1)+kabove-1) + k
-         
-         call newphase2marker(i,kabove,ntriang)
-      enddo
+       call newphase2marker(kabove,i,12)
    endif
    if(phase_ratio(j,i,kocean1).gt.0.8.and.phase_ratio(kabove,i,kmant1).gt.0.8) then
-      iphase(kabove,i) = 9
-      do k = 1,2
-         ! Calculate triangle number in which the markers belong
-         ntriang = 2 * ( (nz-1)*(i-1)+kabove-1) + k
-         
-         call newphase2marker(i,kabove,ntriang)
-      enddo
+       call newphase2marker(kabove,i,9)
    endif
    if(phase_ratio(j,i,ksed1).gt.0.8.and.phase_ratio(kabove,i,kmant1).gt.0.8) then
-      iphase(kabove,i) = 9
-      do k = 1,2
-         ! Calculate triangle number in which the markers belong
-         ntriang = 2 * ( (nz-1)*(i-1)+kabove-1) + k
-         
-         call newphase2marker(i,kabove,ntriang)
-      enddo
+       call newphase2marker(kabove,i,9)
    endif
    if(phase_ratio(j,i,kocean2).gt.0.8.and.phase_ratio(kabove,i,kmant1).gt.0.8) then
-      iphase(kabove,i) = 9
-      do k = 1,2
-         ! Calculate triangle number in which the markers belong
-         ntriang = 2 * ( (nz-1)*(i-1)+kabove-1) + k
-         
-         call newphase2marker(i,kabove,ntriang)
-      enddo
+       call newphase2marker(kabove,i,9)
    endif
 enddo
 if (iynocean.eq.1.and.iph.eq.3.or.iph.eq.7.or.iph.eq.2.or.iph.eq.14) then
@@ -432,14 +372,7 @@ isoft = 0
 !is=1        do is = 1,nsegments-1
      if(phase_ratio(j,i,kcont2).gt.0.8.and.tmpr.gt.300..and.tmpr.lt.400. &
           .and.stressII(j,i)*strainII(j,i).gt.4.e6) then
-  !      ! write(*,*) i,j,strainII(j,i)
-       iphase(j,i) = 15
-         do k = 1,2
-         ! Calculate triangle number in which the markers belong
-         ntriang = 2 * ( (nz-1)*(i-1)+j-1) + k
- 
-        call newphase2marker(i,j,ntriang)
-         enddo
+         call newphase2marker(j,i,15)
       endif
 
     pl1 = plstrain1
@@ -467,14 +400,7 @@ isoft = 0
 !is=2         do is = 1,nsegments-1
      if(phase_ratio(j,i,kcont2).gt.0.8.and.tmpr.gt.300..and.tmpr.lt.400. &
           .and.stressII(j,i)*strainII(j,i).gt.4.e6) then
-  !      ! write(*,*) i,j,strainII(j,i)
-       iphase(j,i) = 15
-         do k = 1,2
-         ! Calculate triangle number in which the markers belong
-         ntriang = 2 * ( (nz-1)*(i-1)+j-1) + k
- 
-        call newphase2marker(i,j,ntriang)
-         enddo
+         call newphase2marker(j,i,15)
       endif
 
     pl1 = plstrain2
@@ -502,14 +428,7 @@ isoft = 0
 !is=3         do is = 1,nsegments-1
      if(phase_ratio(j,i,kcont2).gt.0.8.and.tmpr.gt.300..and.tmpr.lt.400. &
           .and.stressII(j,i)*strainII(j,i).gt.4.e6) then
-  !      ! write(*,*) i,j,strainII(j,i)
-       iphase(j,i) = 15
-         do k = 1,2
-         ! Calculate triangle number in which the markers belong
-         ntriang = 2 * ( (nz-1)*(i-1)+j-1) + k
- 
-        call newphase2marker(i,j,ntriang)
-         enddo
+         call newphase2marker(j,i,15)
       endif
 
     pl1 = plstrain3
