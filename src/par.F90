@@ -39,7 +39,7 @@ goto 20
 
 if ( irestart .eq. 1 ) then  !file exists - restart
     call rsflac
-    nloop_restared = nloop + 1
+    nloop_restarted = nloop + 1
     if( dtout_screen .ne. 0 ) then
         write(6,*) 'you CONTINUE from  ', nloop_restarted, ' step'
     else
