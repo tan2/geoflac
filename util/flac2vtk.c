@@ -37,6 +37,7 @@ void writeNodeScalarDouble(unsigned int dumpIteration, char* varName, FILE* file
 void writeNodeScalarFloat(unsigned int dumpIteration, char* varName, FILE* file, FILE* vtkFile);
 void writeElementScalarDouble(unsigned int dumpIteration, char* varName, FILE* file, FILE* vtkFile);
 void writeElementScalarFloat(unsigned int dumpIteration, char* varName, FILE* file, FILE* vtkFile);
+void writeElementScalarInt(unsigned int dumpIteration, char* varName, FILE* file, FILE* vtkFile);
 
 char		path[PATH_MAX];
 FILE*		coordIn;
@@ -53,7 +54,7 @@ FILE*		szzIn;
 FILE*		sxzIn;
 FILE*		pressureIn;
 FILE*		tempIn;
-FILE*		meltIn;
+FILE*		densIn;
 FILE*		viscIn;
 FILE*		srcIn;
 FILE*		dissIn;
@@ -126,7 +127,7 @@ int main( int argc, char* argv[])
 
 	/* Print out some information */
 	fprintf(stderr, "Time step range:  %u <-> %u, # of steps=%d\n", stepMin, stepMax, stepMax-stepMin+1 );
-	fprintf(stderr, "nnode:%u nelem:%u nx:%u nz:%u ex:%u ey:%u\n", 
+	fprintf(stderr, "nnode:%u nelem:%u nx:%u nz:%u ex:%u ez:%u\n",
 			globalNodeNumber, globalElementNumber, nodeNumber[0], nodeNumber[1],
 			elementNumber[0], elementNumber[1]);
 
@@ -163,7 +164,7 @@ int main( int argc, char* argv[])
 		fprintf(stderr, "\"%s\" not found\n", tmpBuf );
 		exit(1);
 	}
-	sprintf( tmpBuf, "%s/phas.%u", path, rank );
+	sprintf( tmpBuf, "%s/phase.%u", path, rank );
 	if( (phaseIn = fopen( tmpBuf, "r" )) == NULL ) {
 		fprintf(stderr, "\"%s\" not found\n", tmpBuf );
 		exit(1);
@@ -208,8 +209,8 @@ int main( int argc, char* argv[])
 		fprintf(stderr, "\"%s\" not found\n", tmpBuf );
 		exit(1);
 	}
-	sprintf( tmpBuf, "%s/melt.%u", path, rank );
-	if( (meltIn = fopen( tmpBuf, "r" )) == NULL ) {
+	sprintf( tmpBuf, "%s/density.%u", path, rank );
+	if( (densIn = fopen( tmpBuf, "r" )) == NULL ) {
 		fprintf(stderr, "\"%s\" not found\n", tmpBuf );
 		exit(1);
 	}
@@ -252,7 +253,7 @@ int main( int argc, char* argv[])
 	fclose( sxzIn );
 	fclose( tempIn );
 	fclose( viscIn );
-	fclose( meltIn );
+	fclose( densIn );
 	fclose( srcIn );
 	fclose( dissIn );
 	
@@ -322,60 +323,60 @@ void ConvertTimeStep(
      *  			Start the ---element--- section 
      *
      */
-    fprintf( vtkOut, "      <CellData Scalars=\"Plastic strain\">\n");
+    fprintf( vtkOut, "      <CellData Scalars=\"Phase\">\n");
 
     /*
      * Write out the velocity.
      */
-	writeElementVectorFloat(dumpIteration, "Velocity", velXIn, velZIn, vtkOut);
+      	writeElementVectorFloat(dumpIteration, "Velocity", velXIn, velZIn, vtkOut);
 
     /*
      * Write out the phase information 
      */
-	writeElementScalarFloat(dumpIteration, "Phase", phaseIn, vtkOut);
+        writeElementScalarInt(dumpIteration, "Phase", phaseIn, vtkOut);
 
     /*
      * Write out the plastic strain information 
      */
-	writeElementScalarFloat(dumpIteration, "Plastic strain", apsIn, vtkOut);
+      	writeElementScalarFloat(dumpIteration, "Plastic strain", apsIn, vtkOut);
 
 	/*
      * Write out the total strain information 
      */	
-	writeElementScalarFloat(dumpIteration, "eI", eIIn, vtkOut);
-	writeElementScalarFloat(dumpIteration, "eII", eIIIn, vtkOut);
+      	writeElementScalarFloat(dumpIteration, "eI", eIIn, vtkOut);
+      	writeElementScalarFloat(dumpIteration, "eII", eIIIn, vtkOut);
 
     /*
      * Write out the strain rate information 
      */
-	writeElementScalarFloat(dumpIteration, "Strain rate", strainRateIn, vtkOut);
+      	writeElementScalarFloat(dumpIteration, "Strain rate", strainRateIn, vtkOut);
 	
 
     /*
      * Write out the stress (second inv. of dev. stress) information 
      */
-	writeElementScalarFloat(dumpIteration, "Stress", stressIn, vtkOut);
+      	writeElementScalarFloat(dumpIteration, "Stress", stressIn, vtkOut);
 
     /*
      * Write out the xx,yy,xy components of stress
      */
-	writeElementScalarFloat(dumpIteration, "Sxx", sxxIn, vtkOut);
-	writeElementScalarFloat(dumpIteration, "Szz", szzIn, vtkOut);
-	writeElementScalarFloat(dumpIteration, "Sxz", sxzIn, vtkOut);
+      	writeElementScalarFloat(dumpIteration, "Sxx", sxxIn, vtkOut);
+      	writeElementScalarFloat(dumpIteration, "Szz", szzIn, vtkOut);
+      	writeElementScalarFloat(dumpIteration, "Sxz", sxzIn, vtkOut);
 
     /*
      * Write out the pressure information 
      */
-	writeElementScalarFloat(dumpIteration, "Pressure", pressureIn, vtkOut);
+      	writeElementScalarFloat(dumpIteration, "Pressure", pressureIn, vtkOut);
 
     /*
      * Write out the thermal information 
      */
-	writeElementScalarFloat(dumpIteration, "Temperature", tempIn, vtkOut );
-	writeElementScalarFloat(dumpIteration, "Viscosity", viscIn, vtkOut);
-	writeElementScalarFloat(dumpIteration, "Melting", meltIn, vtkOut );
-	writeElementScalarFloat(dumpIteration, "HeatSource", srcIn, vtkOut );
-	writeElementScalarFloat(dumpIteration, "Dissipation", dissIn, vtkOut );
+      	writeElementScalarFloat(dumpIteration, "Temperature", tempIn, vtkOut );
+      	writeElementScalarFloat(dumpIteration, "Viscosity", viscIn, vtkOut);
+        writeElementScalarFloat(dumpIteration, "Density", densIn, vtkOut );
+      	writeElementScalarFloat(dumpIteration, "HeatSource", srcIn, vtkOut );
+        writeElementScalarFloat(dumpIteration, "Dissipation", dissIn, vtkOut );
 
     fprintf( vtkOut, "      </CellData>\n");
 
@@ -386,15 +387,15 @@ void ConvertTimeStep(
      */
     fprintf( vtkOut, "      <Points>\n");
     fprintf( vtkOut, "        <DataArray type=\"Float32\" NumberOfComponents=\"3\" format=\"ascii\">\n");
-    if (fseek( coordIn, dumpIteration * globalNodeNumber * sizeof(double) * 2, SEEK_SET )!=0) {
+    if (fseek( coordIn, dumpIteration * globalNodeNumber * sizeof(float) * 2, SEEK_SET )!=0) {
 		fprintf(stderr, "Cannot find read required portion of GeoFlac coordinates output file:  dump iteration=%d, node count=%d\n", dumpIteration, globalNodeNumber );
 		exit(1);
     }
 	{
-		double		coord[globalNodeNumber][2];
+		float		coord[globalNodeNumber][2];
 		for( dimI=0; dimI<2; dimI++ )
 			for( node_gI = 0; node_gI < globalNodeNumber; node_gI++ ) {
-				if (fread( &coord[node_gI][dimI], sizeof(double), 1, coordIn )==0)  {
+				if (fread( &coord[node_gI][dimI], sizeof(float), 1, coordIn )==0)  {
 					if (feof(coordIn)) {
 						fprintf(stderr, "Error (reached EOF prematurely) while reading GeoFLAC coordinates output file:  dump iteration=%d, node=%d/%d\n", dumpIteration, node_gI, globalNodeNumber );
 						exit(1);
@@ -676,6 +677,38 @@ void writeElementScalarFloat(unsigned int dumpIteration, char* varName, FILE* fi
 		for( element_gI = 0; element_gI < elementNumber[0]; element_gI++ ) {
 			unsigned int id=element_gJ + element_gI*elementNumber[1];
 	    fprintf( vtkFile, "%g\n", ((fabs(elementScalar[id])<1.0e-32)?0.0:elementScalar[id]));
+	}
+	fprintf( vtkFile, "        </DataArray>\n");
+ }
+
+
+void writeElementScalarInt(unsigned int dumpIteration, char* varName, FILE* file, FILE* vtkFile) {
+	unsigned int element_gI,element_gJ;
+	int		elementScalar[globalElementNumber];
+
+	fprintf( vtkFile, "        <DataArray type=\"Int32\" Name=\"%s\" format=\"ascii\">\n", varName);
+	if (fseek( file, dumpIteration * globalElementNumber * sizeof(int), SEEK_SET )!=0) {
+		fprintf(stderr, "Cannot find read required portion of GeoFLAC %s output file:  dump iteration=%d, element count=%d\n", varName, dumpIteration, globalElementNumber );
+		exit(1);
+	}
+	for( element_gI = 0; element_gI < globalElementNumber; element_gI++ ) {
+	    if (fread( &elementScalar[element_gI], sizeof(int), 1, file )==0)  {
+			if (feof(file)) {
+				fprintf(stderr, "In %s: Error (reached EOF prematurely) while reading GeoFLAC %s output file:  dump iteration=%d, element=%d/%d\n", 
+						__func__, varName, dumpIteration, element_gI, globalElementNumber );
+				exit(1);
+			}
+			else if(ferror(file)) {
+				fprintf(stderr, "In %s: Error while reading GeoFLAC %s output file:  dump iteration=%d, element=%d/%d\n", 
+						__func__, varName, dumpIteration, element_gI, globalElementNumber );
+				exit(1);
+			}
+	    }
+	}
+	for( element_gJ = 0; element_gJ < elementNumber[1]; element_gJ++ )
+		for( element_gI = 0; element_gI < elementNumber[0]; element_gI++ ) {
+			unsigned int id=element_gJ + element_gI*elementNumber[1];
+	    fprintf( vtkFile, "%d\n", elementScalar[id]);
 	}
 	fprintf( vtkFile, "        </DataArray>\n");
  }
