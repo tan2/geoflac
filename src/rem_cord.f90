@@ -4,7 +4,8 @@ include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 
-dimension cordo(mnz+1,mnx+1,2),rmesh1(mnx+1)
+dimension cordo(nz,nx,2)
+dimension rmesh1(mnx+1)
 
 logical do_volcorrection
 

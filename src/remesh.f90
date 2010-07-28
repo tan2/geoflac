@@ -8,10 +8,9 @@ include 'arrays.inc'
 
 common /remesh/ pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
 cold(mnz+1,mnx+1,2),cnew(mnz+1,mnx+1,2),numtr(mnz+1,mnx+1),nzt,nxt
-dimension cordo(mnz+1,mnx+1,2)
-allocatable :: dummy(:,:)
+allocatable :: dummy(:,:), cordo(:,:,:)
 
-
+allocate(cordo(1:nz,1:nx,1:2))
 
 ! Save old mesh for interpolations
 cordo = cord
@@ -243,11 +242,11 @@ nzt = nz
 allocate( dummy(nzt,nxt) )
 
 ! Old mesh - old coordinates points
-cold = cordo
-temp0 = temp
+cold(1:nz,1:nx,1:2) = cordo(1:nz,1:nx,1:2)
+temp0(1:nz,1:nx) = temp(1:nz,1:nx)
 ! New mesh - new coordinates points
-cnew = cord
-if (iac_rem.eq.1) cold = cnew
+cnew(1:nz,1:nx,1:2) = cord(1:nz,1:nx,1:2)
+if (iac_rem.eq.1) cold(1:nz,1:nx,1:2) = cnew(1:nz,1:nx,1:2)
 ! Calculate parameters of triangles of this mesh
 call rem_trpars
 
@@ -325,6 +324,7 @@ call dt_mass
 ! drop the time step to the smallest one
 dt = min(dt_elastic, dt_maxwell)
 
+deallocate(cordo)
 
 return 
 end
