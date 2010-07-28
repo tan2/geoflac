@@ -16,20 +16,8 @@ real*8 rtime, rdt
 
 ! define record number and write it to contents
 
-if( lastsave .eq. 1 ) then
-    nrec = 1
-    open (1,file='_contents.rs')
-else
-    open (1,file='_contents.rs',status='old',err=5)
-    do while (.TRUE.)
-        read( 1, *, end=10 ) nrec
-    end do
-    5 continue
-    open (1,file='_contents.rs',position='append')
-    nrec = 0
-    10 continue
-    nrec = nrec + 1
-endif
+open (1,file='_contents.rs')
+nrec = 1
 write( 1, '(i4,1x,i8,1x,f6.2,1x,i9,1x,i9)' ) nrec, nloop, time/sec_year/1.e6, &
      nmarkers,nmtracers
 close(1)

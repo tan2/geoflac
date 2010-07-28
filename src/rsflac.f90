@@ -16,37 +16,10 @@ real(kindr), allocatable :: dum1(:),dum2(:,:)
 integer(kindi), allocatable :: dum11(:), idum2(:,:)
 real*8 rtime, rdt
 
-! Try to open 'restart.rec'. 
-! If file does not exist - restart from last record in '_contents.rs'
-! If exists - read nrec from it.
-open(1,file='restart.rec', status='old', err=10)
-read(1,*) nrec
+open( 1, file='_contents.rs', status='old' )
+read( 1, * ) nrec, nloop, time_my, nmarkers, nmtracers
 close(1)
-goto 20
 
-10 continue
-open( 1, file='_contents.rs', status='old' )
-do while (.TRUE.)
-    read( 1, *, end=30 ) nrec, nloop, time_my,nmarkers,nmtracers
-!    write(*,*) nrec, nloop,time_my,nmarkers,nmtracers
-end do
-30 close(1)
-goto 40
-
-20 continue
-open( 1, file='_contents.rs', status='old' )
-do while (.TRUE.)
-    read( 1, *, end=60 ) nrecf, nloop, time_my
-    if( nrecf .eq. nrec ) goto 50
-end do
-60 call SysMsg('RESTART: could not find record number given in RESTART.REC in _CONTENTS.RS')
-stop
-
-50 endfile(1)
-goto 30
-
-
-40 continue
 
 ! Read time and dt
 open (1,file='time.rs',access='direct',recl=2*8) 
