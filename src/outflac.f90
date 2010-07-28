@@ -8,7 +8,7 @@ include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 
-parameter( kindr=8 )
+parameter( kindr=8, kindi=4 )
 
 real(kindr), allocatable :: D1d(:),De(:,:),Dn2(:,:,:)
 real(kindr) rtime
@@ -126,7 +126,7 @@ if( io_mark.eq.1 ) then
           De(j,i) = Eff_dens(j,i)
    enddo
    enddo
-    open (1,file='phas.0',access='direct',recl=nwords*kindr)
+    open (1,file='density.0',access='direct',recl=nwords*kindr)
     write (1,rec=nrec) De
     close (1)
 endif
@@ -222,11 +222,10 @@ if( io_temp.eq.1 ) then
 endif
 
 
-! Melt 
+! Phase
 if( io_melt.eq.1 ) then
-    De(1:nz-1,1:nx-1) = iphase(1:nz-1,1:nx-1)
-    open (1,file='melt.0',access='direct',recl=nwords*kindr) 
-    write (1,rec=nrec) De
+    open (1,file='phase.0',access='direct',recl=nwords*kindi)
+    write (1,rec=nrec) iphase(1:nz-1,1:nx-1)
     close (1)
 endif
 
