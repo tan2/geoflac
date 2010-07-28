@@ -8,7 +8,7 @@ include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 
-parameter( kindr=8, kindi=4 )
+parameter( kindr=4, kindi=4 )
 
 real(kindr), allocatable :: D1d(:),De(:,:),Dn2(:,:,:)
 real(kindr) rtime
