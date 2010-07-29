@@ -79,14 +79,8 @@ do j = 1 , nz-1
             if(ntr.eq.0) write(*,*) ii,jj,xx,yy
             mark(kk)%a1 = bar1
             mark(kk)%a2 = bar2
-!            write(*,*) i,j,k,kk,xx,yy,mark(kk)%a1,mark(kk)%a2 
-            mark(kk)%ntriag = ntr 
+            mark(kk)%ntriag = ntr
             mark(kk)%phase = iphase(j,i)
-
-! XXX: hard-coded marker phase
-! Special case of TAiwan thin layer of sediment accross the box until marge
-            if (j.eq.1.and.l.le.3) mark(kk)%phase = 10.
-
             mark(kk)%maps   = aps(j,i)
             mark(kk)%meII   = 0. 
             mark(kk)%mpres  = 0.
