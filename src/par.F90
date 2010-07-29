@@ -188,7 +188,7 @@ do while( time .lt. time_max )
       dtacc_tracer = 0
     endif
   endif
-  ! SAVING
+  ! SAVING the restart information
   if( dtsave_file .ne. 0 ) then 
     if( dtacc_save .gt. dtsave_file ) then
       call saveflac
@@ -213,7 +213,9 @@ do while( time .lt. time_max )
   dtacc_tracer = dtacc_tracer + dt 
 end do
 
-! Area
+! SAVING the restart information of last step
+call saveflac
+
 close(33)
 close(333)
 
