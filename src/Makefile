@@ -9,7 +9,8 @@
 ## execute "make debug=0 cuda=1" if making production run
 ## debug = 0: optimized build; 1: debugging build
 ## cuda = 0:f90 only; 1: cuda runtime; 2: cuda emulation
-debug = 1
+debug = 0
+omp = 1
 coverage = 0
 gprof = 0
 cuda = 0
@@ -33,8 +34,11 @@ LDFLAGS =
 F90 = gfortran
 
 ifeq ($(debug), 0)
-	CFLAGS += -O3 -fopenmp -ffast-math
-	LDFLAGS += -fopenmp
+	CFLAGS += -O3 -ffast-math
+	ifeq ($(omp), 1)
+		CFLAGS += -fopenmp
+		LDFLAGS += -fopenmp
+	endif
 else
 	CFLAGS += -O0 -g -Wall -fbounds-check -ftrapv -fbacktrace -fdump-core
 	LDFLAGS += -g
@@ -54,8 +58,11 @@ endif
 #F90 = ifort
 #CFLAGS += -assume byterecl
 #ifeq ($(debug), 0)
-#       CFLAGS += -fast -openmp
-#       LDFLAGS += -openmp
+#       CFLAGS += -fast
+#	ifeq ($(omp), 1)
+#		CFLAGS += -fopenmp
+#		LDFLAGS += -fopenmp
+#	endif
 #else
 #       CFLAGS += -O0 -g -no-opt-subscript-in-range -ftrapuv -check all -traceback
 #       LDFLAGS +=
@@ -64,7 +71,11 @@ endif
 ## for Solaris
 #F90 = f90
 #ifeq ($(debug), 0)
-#	CFLAGS += -O3 -xopenmp=parallel -r8const -fast -xloopinfo -xtarget=generic64 -s -xipo
+#	CFLAGS += -O3 -r8const -fast -xloopinfo -xtarget=generic64 -s -xipo
+#	ifeq ($(omp), 1)
+#		CFLAGS += -xopenmp=parallel
+#		LDFLAGS += -xopenmp
+#	endif
 #else
 #	# -r8const: Promote single precision const to double precision.
 #	# -C: Enable runtime subscript range checking
@@ -72,7 +83,6 @@ endif
 #	# -xcheck=%all: Enable all run-time check
 #	CFLAGS += -g -w3 -r8const -C -fpover=yes -xcheck=%all
 #endif
-#LDFLAGS += -xopenmp
 
 
 #### CUDA C compiler, compiler flags, linker flags
