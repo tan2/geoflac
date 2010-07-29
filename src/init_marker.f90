@@ -10,6 +10,8 @@ include 'arrays.inc'
 common /markers/ nfreemarkers,ndeadmarkers,xmpt(mnz*mnx*2,2,3)
 real(8), dimension(9) :: x_tr,y_tr
 parameter( min_elmarkers = 0, max_elmarkers = 12 )
+parameter( onesixth = 0.1666666666666666666666)
+parameter( fivesixth = 0.8333333333333333333333)
 
 nphase_counter = 0
 max_markers = 9*(nz-1)*(nx-1)
@@ -31,26 +33,26 @@ do j = 1 , nz-1
         dx = cord(j,i+1,1)-cord(j,i,1)
         dy = cord(j+1,i,2)-cord(j,i,2)
 
-        x_tr(1) = cord(j,i,1) + dx*0.25
-        y_tr(1) = cord(j,i,2) + dy*0.25
+        x_tr(1) = cord(j,i,1) + dx*onesixth
+        y_tr(1) = cord(j,i,2) + dy*onesixth
         x_tr(2) = cord(j,i,1) + dx*0.5
-        y_tr(2) = cord(j,i,2) + dy*0.25
-        x_tr(3) = cord(j,i,1) + dx*0.75
-        y_tr(3) = cord(j,i,2) + dy*0.25
+        y_tr(2) = cord(j,i,2) + dy*onesixth
+        x_tr(3) = cord(j,i,1) + dx*fivesixth
+        y_tr(3) = cord(j,i,2) + dy*onesixth
 
-        x_tr(4) = cord(j,i,1) + dx*0.25
+        x_tr(4) = cord(j,i,1) + dx*onesixth
         y_tr(4) = cord(j,i,2) + dy*0.5
         x_tr(5) = cord(j,i,1) + dx*0.5
         y_tr(5) = cord(j,i,2) + dy*0.5
-        x_tr(6) = cord(j,i,1) + dx*0.75
+        x_tr(6) = cord(j,i,1) + dx*fivesixth
         y_tr(6) = cord(j,i,2) + dy*0.5
 
-        x_tr(7) = cord(j,i,1) + dx*0.25
-        y_tr(7) = cord(j,i,2) + dy*0.75
+        x_tr(7) = cord(j,i,1) + dx*onesixth
+        y_tr(7) = cord(j,i,2) + dy*fivesixth
         x_tr(8) = cord(j,i,1) + dx*0.5
-        y_tr(8) = cord(j,i,2) + dy*0.75
-        x_tr(9) = cord(j,i,1) + dx*0.75
-        y_tr(9) = cord(j,i,2) + dy*0.75
+        y_tr(8) = cord(j,i,2) + dy*fivesixth
+        x_tr(9) = cord(j,i,1) + dx*fivesixth
+        y_tr(9) = cord(j,i,2) + dy*fivesixth
 
 
 ! randomize the new coordinates inside the element
