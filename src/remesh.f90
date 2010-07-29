@@ -167,63 +167,18 @@ call rem_interpolate( dummy )
 visn(1:nzt,1:nxt) = dummy(1:nzt,1:nxt)
 
 ! phases
-!XXX: hard-coded phase for incoming material
-do jj = 1,4
-   do ii = 1,3
-       aps(jj,ii) = 0.0
-       call newphase2marker(jj,ii,11)
-   enddo
-enddo
-do jj = 5,6
-   do ii = 1,3
-       aps(jj,ii) = 0.0
-       call newphase2marker(jj,ii,12)
-   enddo
-enddo
-do jj = 7,10
-   do ii = 1,3
-       aps(jj,ii) = 0.0
-       call newphase2marker(jj,ii,6)
-   enddo
-enddo
-do jj = 11,12 
-   do ii = 1,3
-       aps(jj,ii) = 0.0
-       call newphase2marker(jj,ii,9)
-   enddo
-enddo
-do jj = 13,nz-3 
-   do ii = 1,3
-       aps(jj,ii) = 0.0
-       call newphase2marker(jj,ii,8)
-   enddo
-enddo
+! XXX: Assuming material is coming from the left boundary
+! and is within 3-element distance from the left boundary
+! and has the same layered structure as the initial setup.
 
-!do jj = 4,10
-!   do ii = 1,3
-!      if (time/sec_year/1.e6.gt.1000..and.time/sec_year/1.e6.lt.1030.) then
-!         icon = 1.
-!      else
-!         icon = 8.
-!      endif
-!      aps(jj,ii) = 0.0
-!      call newphase2marker(jj,ii,8)
-!1   enddo
-!enddo
-!do jj = 11,87 
-!   do ii = 1,3
-!      aps(jj,ii) = 0.0
-!      call newphase2marker(jj,ii,8)
-!enddo
-!enddo
-!
-
-do jj = nz-2,nz-1 
-   do ii = 1,nx-1
-       aps(jj,ii) = 0.0
-      call newphase2marker(jj,ii,8)
-   enddo
-enddo
+do k = 1,nphasl
+    do ii = 1,3
+        do jj = ltop(k),lbottom(k)
+            aps(jj,ii) = 0.0
+            call newphase2marker(jj,ii,lphase(k))
+        end do
+    end do
+end do
 
 
 ! sources
