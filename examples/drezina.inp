@@ -20,8 +20,8 @@
 ; 
 ;;  iint_marker, iint_tracer
 1, 1            marker(1-yes,0-no),tracer(1-yes,0-no)
-1     number of rectangular zones with 9 markers (other areas with 1 marker only).
-; upper left and lower right corners of the elements
+1     number of rectangular zones with 9 markers (other areas with 1 marker only). (not used)
+; upper left and lower right corners of the elements (not used)
 1 1 200 40          i1,j1,i2,j2 
 ;
 1, 100.   number of rectangular zones with tracers (stores x,y,P,T), frequency of storage in 1000yrs.
