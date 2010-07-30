@@ -16,7 +16,7 @@ real*8 rtime, rdt
 
 ! define record number and write it to contents
 
-open (1,file='_contents.rs')
+open (1,file='_contents.save')
 nrec = 1
 write( 1, '(i4,1x,i8,1x,f6.2,1x,i9,1x,i9)' ) nrec, nloop, time/sec_year/1.e6, &
      nmarkers,nmtracers
