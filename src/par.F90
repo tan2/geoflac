@@ -119,10 +119,10 @@ do while( time .lt. time_max )
 !write(*,*) dt
   if( dtout_screen .ne. 0 ) then
     if( dtacc_screen .gt. dtout_screen ) then
-       write(*,'(I7,A,F6.3,A,F6.2,A,F6.1,A)') nloop,'''s step. Time[My]=', time/sec_year/1.e+6, &
-                ', dt=', dt/sec_year, ',  elapsed-', secnds(time0)/60, ' min'
-       write(333,'(I7,A,F6.3,A,F6.2,A,F6.1,A)') nloop,'''s step. Time[My]=', time/sec_year/1.e+6, &
-                ', dt=', dt/sec_year, ',  elapsed-', secnds(time0)/60, ' min'
+       write(*,'(I9,A,F7.3,A,F6.3,A,F8.1,A)') nloop,'''s step. Time[My]=', time/sec_year/1.e+6, &
+                ', dt=', dt/sec_year, ',  elapsed sec-', secnds(time0)
+       write(333,'(I9,A,F7.3,A,F6.3,A,F8.1,A)') nloop,'''s step. Time[My]=', time/sec_year/1.e+6, &
+                ', dt=', dt/sec_year, ',  elapsed sec-', secnds(time0)
 
        ! Forces at the boundaries
        if( io_forc.eq.1 ) then
