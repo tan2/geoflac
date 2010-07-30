@@ -27,13 +27,11 @@ else
     10 continue
     nrec = nrec + 1
 endif
-write(*,*) nmtracers
 write( 1, '(i4,1x,i8,1x,i8,1x,f6.2)' ) nrec, nmtracers,nloop,  time/sec_year/1.e6
 close(1)
 ! Coordinates  [km]
 nwords = nmtracers
-  call bar2euler
-write(*,*) nmtracers,nmarkers
+call bar2euler
 do i = 1,nmtracers
 do j = 1,nmarkers
 if (tracerid(i).eq.mark(j)%ID) then
