@@ -7,6 +7,7 @@ subroutine marker2elem
   include 'arrays.inc'
   common /markers/ nfreemarkers,ndeadmarkers,xmpt(mnz*mnx*2,2,3)
   parameter( min_elmarkers = 0, max_elmarkers = 12 )
+  integer kph(1)
   !type(marker):: mark(nmarkers)
 
   ! Interpolate marker properties into elements
@@ -15,7 +16,7 @@ subroutine marker2elem
 
   do j = 1 , nz-1
       do i = 1 , nx-1
-          kinc = sum(nphase_counter(j,i,1:nphase))
+          kinc = sum(nphase_counter(j,i,:))
 
           !  if there are too few markers in the elmenent, create a new one
           do while (kinc.le.2)
@@ -57,6 +58,19 @@ subroutine marker2elem
           enddo
 
           phase_ratio(j,i,1:nphase) = nphase_counter(j,i,1:nphase) / float(kinc)
+
+          ! the phase of this element is the most abundant marker phase
+          kph = maxloc(nphase_counter(j,i,:))
+          iphase(j,i) = kph(1)
+
+          ! sometimes there are more than one phases that are equally abundant
+          maxphase = maxval(nphase_counter(j,i,:))
+          nmax = count(nphase_counter(j,i,:) == maxphase)
+          if(nmax .gt. 1) then
+              write(*,*) 'elem has equally abundant marker phases:', i,j,nmax,nphase_counter(j,i,:)
+              write(*,*) 'choosing the 1st maxloc as the phase'
+          endif
+
 
       enddo
   enddo
