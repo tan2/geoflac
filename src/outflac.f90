@@ -37,8 +37,6 @@ write (1,rec=nrec) rtime
 close (1) 
 
 
-write(*,*) nloop, nrec
-
 ! Coordinates in [km]
 allocate( Dn2(nz,nx,2) )
 
