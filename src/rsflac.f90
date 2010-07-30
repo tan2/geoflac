@@ -100,21 +100,6 @@ source(1:nz-1,1:nx-1) = dum2(1:nz-1,1:nx-1)
 
 deallocate( dum2 )
 
-!XXX: restoring nphasl and lphase
-nphasl =11
-lphase(1) = 2
-lphase(2) = 3
-lphase(3) = 4
-lphase(4) = 6
-lphase(5) = 7
-lphase(6) = 8
-lphase(7) = 9
-lphase(8) = 10 
-lphase(9) = 11 
-lphase(10) = 12 
-lphase(11) = 14 
-
-
 
 if (iint_marker.eq.1) then
 

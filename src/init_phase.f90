@@ -46,10 +46,6 @@ endif
 
 ! Case with iynts = 2 for continental and collision
 if (iynts.eq.10) then
-    ! XXX: nphasl is changed!
-    nphasl = 2
-    lphase(nphasl-1) = iph_col1(1)
-    lphase(nphasl) = iph_col2(1)
     do n = 1, nzone_age
        if(n.gt.1) ixtb1(n) = ixtb1(n)-1
        do i = ixtb1(n),ixtb2(n)-1
@@ -59,16 +55,6 @@ if (iynts.eq.10) then
           if (y.ge.hc(n)) iphase(j,i) = iph_col2(n)   
        enddo
        enddo
-!   smooth zone in between
-!
-!       if(iph_col1(n).ne.iph_col1(n-1)) then
-!       nphasl = nphasl +1
-!       lphase(nphasl) = iph_col1(n)
-!       endif
-!       if(iph_col2(n).ne.iph_col2(n-1)) then
-!       nphasl = nphasl +1
-!       lphase(nphasl) = iph_col2(n)
-!       endif
     enddo
 endif
 
