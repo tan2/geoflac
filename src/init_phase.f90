@@ -70,7 +70,7 @@ do i = 1,inhom
         do j = ix1(i),ix2(i)
             do k = iy1(i),iy2(i)
                 iphase(k,j) = inphase(i)
-                aps(k,j)=xinitaps
+                aps(k,j)=xinitaps(i)
             end do
         end do
     endif
@@ -110,7 +110,7 @@ do i = 1,inhom
     if (igeom (i).eq.4) then
         do j =ix1(i),ix2(i)
             k = int(float(iy2(i)-iy1(i))/float(ix2(i)-ix1(i))*(j-ix1(i))) + iy1(i)
-            aps(k,j)=xinitaps
+            aps(k,j)=xinitaps(i)
             iphase(k,j) = inphase(i)
             !this do loop allows for a less dense Luzon arc by using phase 4
             do ii=1,k-1

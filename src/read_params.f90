@@ -173,13 +173,13 @@ end do
 ! inclusions
 call AdvanceToNextInputLine( 4 )
 read(4,*) inhom
-if( inhom .gt. 9 ) then
+if( inhom .gt. 20 ) then
     call SysMsg('Read_params: Increase arrays for inhomogenities')
     stop 26
 endif
 do i = 1, inhom
     call AdvanceToNextInputLine( 4 )
-    read(4,*) ix1(i), ix2(i), iy1(i), iy2(i), inphase(i), igeom(i), xinitaps
+    read(4,*) ix1(i), ix2(i), iy1(i), iy2(i), inphase(i), igeom(i), xinitaps(i)
 end do
 ! Tension cut-off
 call AdvanceToNextInputLine( 4 )
