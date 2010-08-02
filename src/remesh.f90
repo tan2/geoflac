@@ -18,78 +18,6 @@ cordo = cord
 ! Create The New grid (cord) using cordo(nz,i,2) for the bottom and cordo(1,i,2) for the surface
 call rem_cord(cordo)
 
-! REMESHING FOR ACCRETION
-if(iac_rem.eq.1) then
-!  NODE WISE
-do i= 1,iinj-1
-   do j= 1,nz
-      vel(j,i,1) = vel(j,i+1,1)
-      vel(j,i,2) = vel(j,i+1,2)
-enddo
-enddo
-do i = nx,iinj+2,-1
-   do j =1,nz
-      vel(j,i,1) = vel(j,i-1,1)
-      vel(j,i,2) = vel(j,i-1,2)
-enddo
-enddo
-!do j= 1,nz
-!      vel(j,iinj+1,1) = vel(j,iinj,1)
-!      vel(j,iinj+1,2) = vel(j,iinj,2)
-!enddo
-! ELEMENT WISE
-do k = 1,4
-do l = 1,4
-do i= 1,iinj-2
-   do j= 1,nz-1
-      stress0(j,i,k,l) = stress0(j,i+1,k,l)
-enddo
-enddo
-enddo
-enddo
-do k = 1,3
-do i= 1,iinj-2
-   do j= 1,nz-1
-      strain(j,i,k) = strain(j,i+1,k)
-enddo
-enddo
-enddo
-   do i= 1,iinj-2
-   do j= 1,nz-1
-      visn(j,i)= visn(j,i+1)
-      aps(j,i) = aps(j,i+1)
-      source(j,i) = source(j,i+1)
-enddo
-enddo
-
-do k = 1,4
-do l = 1,4
-do i= nx-1,iinj+2,-1
-   do j= 1,nz-1
-      stress0(j,i,k,l) = stress0(j,i-1,k,l)
-enddo
-enddo
-enddo
-enddo
-do k = 1,3
-do i= nx-1,iinj+2,-1
-   do j= 1,nz-1
-      strain(j,i,k) = strain(j,i-1,k)
-enddo
-enddo
-enddo
-   do i= nx-1,iinj+2,-1
-   do j= 1,nz-1
-      visn(j,i)= visn(j,i-1)
-      aps(j,i) = aps(j,i-1)
-      source(j,i) = source(j,i-1)
-enddo
-enddo
-
-
-goto 1017
-endif
-
 ! REMESHING FOR ELEMENT-WISE PROPERTIES
 ! Linear interpolation in baricentric coordinates defined as centers of old mesh
 nxt = nx-1
@@ -124,19 +52,10 @@ do k = 1,4
         stress0(1:nzt,1:nxt,k,l) = dummy(1:nzt,1:nxt)
     end do
 end do
-!do k = 1,4
-!do l = 1,4
-!do j = 1, nz
-!   do i = 1,  3
-!	stress0(j,i,k,l) = stress0(j,4,k,l)
-!enddo
-!enddo
-!enddo
-!enddo
 
 ! HOOK
 ! Remeshing mode 3 - see user_luc.f90
-if( mode_rem .eq. 5 ) call rem_stress_alt()
+!if( mode_rem .eq. 3 ) call rem_stress_alt()
 
 
 ! Interpolate strains
@@ -222,22 +141,16 @@ dummy(1:nzt,1:nxt) = temp(1:nzt,1:nxt)
 call rem_interpolate( dummy )
 temp(1:nzt,1:nxt) = dummy(1:nzt,1:nxt)
 deallocate( dummy )
-iynts = 20
-call init_temp
-!do i = 1,4 
- !  do j = 1, 8 
-!	iphase(j,i) = 2
-! enddo
-!   do j = 9, nz-1 
-!	iphase(j,i) = 4
-! enddo
-!enddo
+
+
 ! AFTER INTERPOLATIONS - RECALCULATE SOME DEPENDENT VARIABLES
-1017 continue
+
 ! Calculation of areas of triangle
 call init_areas
-if (iac_rem.eq.1) call init_phase
-if (iac_rem.eq.1) call init_temp
+
+!if (iac_rem.eq.1) call init_phase
+!if (iac_rem.eq.1) call init_temp
+
 ! reinitialize the stress in the 3 middle element if iac_rem 1
 if (iac_rem.eq.1) then
 do 522 i = iinj-1,iinj+1
