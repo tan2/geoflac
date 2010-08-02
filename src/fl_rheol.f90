@@ -15,9 +15,6 @@ logical rh_sel
 c1d3 = 1./3.
 c1d6 = 1./6.
 
-! initialization of random generators
-jran = 13
-
 !XXX: hard-code constant
 if( mod(nloop,10).eq.0 .OR. ireset.eq.1 ) then
     rh_sel = .true.
@@ -86,7 +83,7 @@ do 3 i = 1,nx-1
 
 
         ! Preparation of plastic properties
-        if (irh.eq.6 .or. irh.ge.11) call pre_plast(i,j,coh,phi,psi,jran,hardn)
+        if (irh.eq.6 .or. irh.ge.11) call pre_plast(i,j,coh,phi,psi,hardn)
               
         ! Re-evaluate viscosity
         if (irh.eq.3 .or. irh.eq.12) then 
