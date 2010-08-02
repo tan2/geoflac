@@ -49,15 +49,12 @@ do i = 1,nx-1
        endif
 
 ! Temperatures
-       te0 = tbos
-       efold = efoldc
-
 ! E-fold depends on x (correction due to lateral change in geotherm)
 
        if(yc.ge.geoth) then
-           temp(j,i)=t_top+((te0-t_top)/geoth)*yc
+           temp(j,i)=t_top+((tbos-t_top)/geoth)*yc
        else
-           temp(j,i)=te0 + ((te0-t_top)/(0.5*geoth))*(yc-geoth)
+           temp(j,i)=tbos + ((tbos-t_top)/(0.5*geoth))*(yc-geoth)
        endif
        if(temp(j,i).gt.t_bot) temp(j,i) = t_bot
 enddo
