@@ -112,12 +112,6 @@ do i = 1,inhom
             k = int(float(iy2(i)-iy1(i))/float(ix2(i)-ix1(i))*(j-ix1(i))) + iy1(i)
             aps(k,j)=xinitaps(i)
             iphase(k,j) = inphase(i)
-            !this do loop allows for a less dense Luzon arc by using phase 4
-            do ii=1,k-1
-              if(iphase(ii,j).eq.8)then
-                iphase(ii,j) = 4
-              endif
-            enddo
         end do
     endif
 end do
