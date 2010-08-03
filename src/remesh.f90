@@ -99,6 +99,15 @@ do k = 1,nphasl
     end do
 end do
 
+! XXX: the bottom elements must be mantle material, otherwise
+! too much deformation can occur(?)
+do ii = 1,nx-1
+    do jj = nz-3,nz-1
+        aps(jj,ii) = 0.0
+        call newphase2marker(jj,ii,8)
+    end do
+end do
+
 
 ! sources
 dummy(1:nzt,1:nxt) = source(1:nzt,1:nxt)
