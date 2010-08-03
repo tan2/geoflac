@@ -79,7 +79,7 @@ do 3 i = 1,nx-1
 
         ! Thermal stresses (alfa_v = 3.e-5 1/K)
         stherm = 0.
-!        if (istress_therm.gt.0) stherm = -alfa(iph)*bulkm*(temp(j,i)-temp0(j,i))
+        if (istress_therm.gt.0) stherm = -alfa(iph)*bulkm*(temp(j,i)-temp0(j,i))
 
 
         ! Preparation of plastic properties
