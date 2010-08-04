@@ -8,27 +8,25 @@ include 'params.inc'
 include 'arrays.inc'
 include 'omp_lib.h'
 
-      
+
 ! Move Grid
 if (movegrid .eq. 0) return
 
 ! UPDATING COORDINATES
 
-!$OMP parallel 
+!$OMP parallel
 !$OMP do
 do i = 1,nx
-  do j = 1,nz
 !    write(*,*) cord(j,i,1),cord(j,i,2),vel(j,i,1),vel(j,i,2),dt
-    cord(j,i,1) = cord(j,i,1) + vel(j,i,1)*dt
-    cord(j,i,2) = cord(j,i,2) + vel(j,i,2)*dt
+    cord(:,i,1) = cord(:,i,1) + vel(:,i,1)*dt
+    cord(:,i,2) = cord(:,i,2) + vel(:,i,2)*dt
 !    write(*,*) cord(j,i,1),cord(j,i,2)
-  enddo
 enddo
 !$OMP end do
 !$OMP end parallel
 
 ! Diffuse topography
-if( topo_kappa.gt.0. .OR. bottom_kappa.gt.0. ) call diff_topo    
+if( topo_kappa.gt.0. .OR. bottom_kappa.gt.0. ) call diff_topo
 
 
 !$OMP parallel private(i,j,x1,y1,x2,y2,x3,y3,x4,y4, &
@@ -135,7 +133,7 @@ enddo
 !$OMP end do
 !$OMP end parallel
 return
-end
+end subroutine fl_move
 
 
 !============================================================
@@ -234,7 +232,7 @@ if( bottom_kappa .gt. 0. ) then
 endif
        
 return
-end
+end subroutine diff_topo
 
 
 subroutine diff_topo_old
@@ -288,4 +286,4 @@ if( bottom_kappa .ne. 0. ) then
 endif
        
 return
-end
+end subroutine diff_topo_old
