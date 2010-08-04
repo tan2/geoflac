@@ -214,103 +214,90 @@ use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
+
 Eff_visc = 0.
 r=8.31448e0
-iph = iphase(j,i)
 tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
 srat = e2sr(j,i)
 if( srat .eq. 0 ) srat = vbc/rxbo
 
-pow  =  1./pln(iph) - 1.
-pow1 = -1./pln(iph) 
+if (iint_marker.ne.1) then
+    iph = iphase(j,i)
 
-vis = 0.25 * srat**pow*(0.75*acoef(iph))**pow1* &
-        exp(eactiv(iph)/(pln(iph)*r*(tmpr+273.)))*1.e+6
+    pow  =  1./pln(iph) - 1.
+    pow1 = -1./pln(iph)
 
-! Effect of melt
-fmelt_crit = 0.05
-fmelt = Eff_melt(iph, tmpr)
-if( fmelt .gt. 0. ) then
-    if( fmelt .lt. fmelt_crit ) then
-        vislog = fmelt/fmelt_crit*dlog10(v_min/vis) + dlog10(vis)
-        vis = 10.**vislog
-    else
-        vis = v_min
-    endif
-endif
+    vis = 0.25 * srat**pow*(0.75*acoef(iph))**pow1* &
+         exp(eactiv(iph)/(pln(iph)*r*(tmpr+273.)))*1.e+6
 
-
-! limiting from above (quasi-Peierls)
-!sIImax = 5.e+8
-!vis_peierls = sIImax / srat / 2
-!if( vis .gt. vis_peierls ) vis = vis_peierls
-
-
-! Final cut-off
-if (vis .lt. v_min) vis = v_min
-if (vis .gt. v_max) vis = v_max
-
-Eff_visc = vis
-
-if (iint_marker.eq.1) then
-Eff_visc = 0.
-do k = 1, nphase
-
-tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
-srat = e2sr(j,i)
-press = stressI(j,i)
-
-xeactiv = eactiv(k)
-    if (k.eq.20.or.k.eq.30) then
-       if (tmpr.gt.550) then
-           trpres = -0.3e9 + 2.2e6*tmpr
-           if ((-1.0*press).ge.trpres) then
-               xeactiv  = 3.5e5
-           endif
+    ! Effect of melt
+    fmelt_crit = 0.05
+    fmelt = Eff_melt(iph, tmpr)
+    if( fmelt .gt. 0. ) then
+        if( fmelt .lt. fmelt_crit ) then
+            vislog = fmelt/fmelt_crit*dlog10(v_min/vis) + dlog10(vis)
+            vis = 10.**vislog
+        else
+            vis = v_min
         endif
-     endif
+    endif
 
 
-if( srat .eq. 0 ) srat = vbc/rxbo
-
-pow  =  1./pln(k) - 1.
-pow1 = -1./pln(k) 
-
-vis = 0.25 * srat**pow*(0.75*acoef(k))**pow1* &
-        exp(xeactiv/(pln(k)*r*(tmpr+273.)))*1.e+6
-
-!increase continental mantle viscosity (one order of magnitude)
-if (k.eq.5) vis = 10*vis
-!!!!!!!!!!!!!!!!
-
-! Effect of melt
-!fmelt_crit = 0.05
-!fmelt = Eff_melt(k, tmpr)
-!if( fmelt .gt. 0. ) then
-!    if( fmelt .lt. fmelt_crit ) then
-!        vislog = fmelt/fmelt_crit*dlog10(v_min/vis) + dlog10(vis)
-!        vis = 10.**vislog
-!    else
-!        vis = v_min
-    !endif
-!endif
+    ! limiting from above (quasi-Peierls)
+    !sIImax = 5.e+8
+    !vis_peierls = sIImax / srat / 2
+    !if( vis .gt. vis_peierls ) vis = vis_peierls
 
 
-! limiting from above (quasi-Peierls)
-!sIImax = 5.e+8
-!vis_peierls = sIImax / srat / 2
-!if( vis .gt. vis_peierls ) vis = vis_peierls
+    ! Final cut-off
+    if (vis .lt. v_min) vis = v_min
+    if (vis .gt. v_max) vis = v_max
 
-!write(*,*) vis,srat,pln(k),xeactiv
-! Final cut-off
-if (vis .lt. v_min) vis = v_min
-if (vis .gt. v_max) vis = v_max
-if(k.eq.8.and.vis.le.1.e19)  vis = 1.e19     
-if(k.eq.4.and.vis.le.1.e19)  vis = 1.e19     
-Eff_visc = Eff_visc + phase_ratio(j,i,k)*vis
-!write(*,*) i,j, Eff_visc, vis, tmpr,phase_ratio(j,i,k)
-enddo
-if(vis.eq.0.) write(*,*) e2sr(j,i),phase_ratio(j,i,k),Eff_visc,vis
+    Eff_visc = vis
+
+else
+
+    do k = 1, nphase
+        if(phase_ratio(j,i,k) .lt. 0.01) cycle
+
+        pow  =  1./pln(k) - 1.
+        pow1 = -1./pln(k)
+
+        vis = 0.25 * srat**pow*(0.75*acoef(k))**pow1* &
+             exp(eactiv(k)/(pln(k)*r*(tmpr+273.)))*1.e+6
+
+        ! Effect of melt
+        !fmelt_crit = 0.05
+        !fmelt = Eff_melt(k, tmpr)
+        !if( fmelt .gt. 0. ) then
+        !    if( fmelt .lt. fmelt_crit ) then
+        !        vislog = fmelt/fmelt_crit*dlog10(v_min/vis) + dlog10(vis)
+        !        vis = 10.**vislog
+        !    else
+        !        vis = v_min
+        !    endif
+        !endif
+
+
+        ! limiting from above (quasi-Peierls)
+        !sIImax = 5.e+8
+        !vis_peierls = sIImax / srat / 2
+        !if( vis .gt. vis_peierls ) vis = vis_peierls
+
+        !write(*,*) vis,srat,pln(k),eactiv(k)
+
+        ! Final cut-off
+        if (vis .lt. v_min) vis = v_min
+        if (vis .gt. v_max) vis = v_max
+
+        if(k.eq.8.and.vis.le.1.e19)  vis = 1.e19
+        if(k.eq.4.and.vis.le.1.e19)  vis = 1.e19
+
+        Eff_visc = Eff_visc + phase_ratio(j,i,k)*vis
+        !write(*,*) i,j, Eff_visc, vis, tmpr,phase_ratio(j,i,k)
+    enddo
+    if(vis.eq.0.) write(*,*) 'eff_visc:', e2sr(j,i),phase_ratio(j,i,k),Eff_visc,vis
 endif
+
 return
 end function Eff_visc
