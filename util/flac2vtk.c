@@ -30,9 +30,7 @@
 
 
 void ConvertTimeStep( int rank, unsigned int dumpIteration, unsigned int simTimeStep, unsigned int nrec, double time, unsigned int gnode, unsigned int gelement, unsigned int nodeNumber[2], unsigned int elementNumber[2] );
-void writeNodeVectorDouble(unsigned int dumpIteration, char* varName, FILE* fileX, FILE* fileZ, FILE* vtkFile);
-void writeNodeVectorFloat(unsigned int dumpIteration, char* varName, FILE* fileX, FILE* fileZ, FILE* vtkFile);
-void writeElementVectorFloat(unsigned int dumpIteration, char* varName, FILE* fileX, FILE* fileZ, FILE* vtkFile);
+void writeNodeVectorFloat(unsigned int dumpIteration, char* varName, FILE* file, FILE* vtkFile);
 void writeNodeScalarDouble(unsigned int dumpIteration, char* varName, FILE* file, FILE* vtkFile);
 void writeNodeScalarFloat(unsigned int dumpIteration, char* varName, FILE* file, FILE* vtkFile);
 void writeElementScalarDouble(unsigned int dumpIteration, char* varName, FILE* file, FILE* vtkFile);
@@ -41,8 +39,7 @@ void writeElementScalarInt(unsigned int dumpIteration, char* varName, FILE* file
 
 char		path[PATH_MAX];
 FILE*		coordIn;
-FILE*		velXIn;
-FILE*		velZIn;
+FILE*		velIn;
 FILE*		phaseIn;
 FILE*		apsIn;
 FILE*		eIIn;
@@ -69,6 +66,7 @@ int 		doForce = 1;
 int 		doAps = 1;
 int 		doHPr = 1;
 int 		doVisc = 1;
+const unsigned	numVelocityVectorComponent = 2; /* 2 components in stress vector */
 const unsigned	numStressVectorComponent = 6; /* 6 components in stress vector */
 const unsigned	numStressComponentsPerElement = 6; /* 6 averaged components per element */
 
@@ -139,13 +137,8 @@ int main( int argc, char* argv[])
 		fprintf(stderr, "\"%s\" not found\n", tmpBuf );
 		exit(1);
 	}
-	sprintf( tmpBuf, "%s/vx.%u", path, rank );
-	if( (velXIn = fopen( tmpBuf, "r" )) == NULL ) {
-		fprintf(stderr, "\"%s\" not found\n", tmpBuf );
-		exit(1);
-	}
-	sprintf( tmpBuf, "%s/vz.%u", path, rank );
-	if( (velZIn = fopen( tmpBuf, "r" )) == NULL ) {
+	sprintf( tmpBuf, "%s/vel.%u", path, rank );
+	if( (velIn = fopen( tmpBuf, "r" )) == NULL ) {
 		fprintf(stderr, "\"%s\" not found\n", tmpBuf );
 		exit(1);
 	}
@@ -239,8 +232,7 @@ int main( int argc, char* argv[])
 	 * Close the input files 
 	 */
 	fclose( coordIn );
-	fclose( velXIn );
-	fclose( velZIn );
+	fclose( velIn );
 	fclose( apsIn );
 	fclose( phaseIn );
 	fclose( eIIn );
@@ -302,8 +294,7 @@ void ConvertTimeStep(
     fprintf( vtkOut, "    <Piece Extent=\"%d %d %d %d 0 0\">\n",
 			 0,elementNumber[0],0,elementNumber[1]);
 	
-#if 0
-    /* 
+    /*
      *
      *  			Start the ---node--- section 
      *
@@ -313,10 +304,9 @@ void ConvertTimeStep(
     /*
      * Write out the velocity information 
      */
-	writeNodeVectorFloat(dumpIteration, "Velocity", velXIn, velZIn, vtkOut );
+	writeNodeVectorFloat(dumpIteration, "Velocity", velIn, vtkOut );
 	
     fprintf( vtkOut, "      </PointData>\n");
-#endif
 
     /* 
      *
@@ -324,11 +314,6 @@ void ConvertTimeStep(
      *
      */
     fprintf( vtkOut, "      <CellData Scalars=\"Phase\">\n");
-
-    /*
-     * Write out the velocity.
-     */
-      	writeElementVectorFloat(dumpIteration, "Velocity", velXIn, velZIn, vtkOut);
 
     /*
      * Write out the phase information 
@@ -427,80 +412,44 @@ void ConvertTimeStep(
     fclose( topoOut );
 }
  
-void writeNodeVectorDouble(unsigned int dumpIteration, char* varName, FILE* fileX, FILE* fileZ, FILE* vtkFile) {
-	unsigned int node_gI,node_gJ,dimI;
-	double		nodeArray[globalNodeNumber][2];
-	
-	fprintf( vtkFile, "        <DataArray type=\"Float32\" Name=\"%s\" NumberOfComponents=\"3\" format=\"ascii\">\n", varName);
-	if( (fseek( fileX, dumpIteration * globalNodeNumber * sizeof(double), SEEK_SET )!=0) ||
-		(fseek( fileZ, dumpIteration * globalNodeNumber * sizeof(double), SEEK_SET )!=0) ) {
-		fprintf(stderr, "Cannot find read required portion of GeoFLAC %s output file:  dump iteration=%d, node count=%d\n", varName, dumpIteration, globalNodeNumber );
-		exit(1);
-	}
-	for( node_gI = 0; node_gI < globalNodeNumber; node_gI++ ) {
-		if( (fread( &nodeArray[node_gI][0], sizeof(double), 1, fileX )==0) ||
-			(fread( &nodeArray[node_gI][1], sizeof(double), 1, fileZ )==0) )	{
-			if( feof(fileX) || feof(fileZ) ) {
-				fprintf(stderr, "Error (reached EOF prematurely) while reading %s output file:  dump iteration=%d, node=%d/%d\n", varName, dumpIteration, node_gI, globalNodeNumber );
-				exit(1);
-			} 
-			else if( ferror(fileX) || ferror(fileZ) ) {
-				fprintf(stderr, "Error while reading GeoFLAC %s output file:  dump iteration=%d, node=%d/%d\n", 
-						varName, dumpIteration, node_gI, globalNodeNumber );
-				exit(1);
-			}
-		}
-	}
-	for( node_gJ = 0; node_gJ < nodeNumber[1]; node_gJ++ ) 
-		for( node_gI = 0; node_gI < nodeNumber[0]; node_gI++ ) {
-			unsigned int id=node_gJ + node_gI*nodeNumber[1];
-			fprintf( vtkFile, "%g %g 0\n", nodeArray[id][0], nodeArray[id][1] );
-		}
-	fprintf( vtkFile, "        </DataArray>\n");
-}
- 
-void writeNodeVectorFloat(unsigned int dumpIteration, char* varName, FILE* fileX, FILE* fileZ, FILE* vtkFile) {
+void writeNodeVectorFloat(unsigned int dumpIteration, char* varName, FILE* file, FILE* vtkFile) {
 	unsigned int node_gI,node_gJ,dimI;
 	float		nodeArray[globalNodeNumber][2];
 	
 	fprintf( vtkFile, "        <DataArray type=\"Float32\" Name=\"%s\" NumberOfComponents=\"3\" format=\"ascii\">\n", varName);
-	if( fseek( fileX, dumpIteration * globalNodeNumber * sizeof(float), SEEK_SET )!=0 ) {
-		fprintf(stderr, "Cannot find read required portion of GeoFLAC %s X output file:  dump iteration=%d, node count=%d\n", varName, dumpIteration, globalNodeNumber );
+	if( fseek( file, dumpIteration * globalNodeNumber * numVelocityVectorComponent * sizeof(float), SEEK_SET )!=0 ) {
+		fprintf(stderr, "Cannot find read required portion of GeoFLAC %s output file:  dump iteration=%d, node count=%d\n", varName, dumpIteration, globalNodeNumber );
 		exit(1);
 	}
 	for( node_gI = 0; node_gI < globalNodeNumber; node_gI++ ) {
-		if( fread( &nodeArray[node_gI][0], sizeof(float), 1, fileX )==0 ) {
-			if( feof(fileX) ) {
-				fprintf(stderr, "In %s: Error (reached EOF prematurely) while reading %s X output file:  dump iteration=%d, node=%d/%d\n", 
+		if( fread( &nodeArray[node_gI][0], sizeof(float), 1, file )==0 ) {
+			if( feof(file) ) {
+				fprintf(stderr, "In %s: Error (reached EOF prematurely) while reading %s output file:  dump iteration=%d, node=%d/%d\n",
 						__func__, varName, dumpIteration, node_gI, globalNodeNumber );
 				exit(1);
 			} 
-			else if( ferror(fileX) ) {
-				fprintf(stderr, "Error while reading GeoFLAC %s X output file:  dump iteration=%d, node=%d/%d\n", 
+			else if( ferror(file) ) {
+				fprintf(stderr, "Error while reading GeoFLAC %s output file:  dump iteration=%d, node=%d/%d\n",
 						varName, dumpIteration, node_gI, globalNodeNumber );
 				exit(1);
 			}
 		}
 	}
-	if( fseek( fileZ, dumpIteration * globalNodeNumber * sizeof(float), SEEK_SET )!=0 ) {
-		fprintf(stderr, "Cannot find read required portion of GeoFLAC %s Z output file:  dump iteration=%d, node count=%d\n", varName, dumpIteration, globalNodeNumber );
-		exit(1);
-	}
 	for( node_gI = 0; node_gI < globalNodeNumber; node_gI++ ) {
-		if( fread( &nodeArray[node_gI][1], sizeof(float), 1, fileZ )==0 ) {
-			if( feof(fileZ) ) {
-				fprintf(stderr, "In %s: Error (reached EOF prematurely) while reading %s Z output file:  dump iteration=%d, node=%d/%d\n", 
+		if( fread( &nodeArray[node_gI][1], sizeof(float), 1, file )==0 ) {
+			if( feof(file) ) {
+				fprintf(stderr, "In %s: Error (reached EOF prematurely) while reading %s output file:  dump iteration=%d, node=%d/%d\n",
 						__func__, varName, dumpIteration, node_gI, globalNodeNumber );
 				exit(1);
 			} 
-			else if( ferror(fileZ) ) {
-				fprintf(stderr, "Error while reading GeoFLAC %s Z output file:  dump iteration=%d, node=%d/%d\n", 
+			else if( ferror(file) ) {
+				fprintf(stderr, "Error while reading GeoFLAC %s output file:  dump iteration=%d, node=%d/%d\n",
 						varName, dumpIteration, node_gI, globalNodeNumber );
 				exit(1);
 			}
 		}
 	}
-	for( node_gJ = 0; node_gJ < nodeNumber[1]; node_gJ++ ) 
+	for( node_gJ = 0; node_gJ < nodeNumber[1]; node_gJ++ )
 		for( node_gI = 0; node_gI < nodeNumber[0]; node_gI++ ) {
 			unsigned int id=node_gJ + node_gI*nodeNumber[1];
 			fprintf( vtkFile, "%g %g 0\n", nodeArray[id][0], nodeArray[id][1] );
@@ -566,55 +515,6 @@ void writeNodeScalarFloat(unsigned int dumpIteration, char* varName, FILE* file,
 		for( node_gI = 0; node_gI < nodeNumber[0]; node_gI++ ) {
 			unsigned int id=node_gJ + node_gI*nodeNumber[1];
 			fprintf( vtkFile, "%g\n", nodeScalar[id]);
-		}
-	fprintf( vtkFile, "        </DataArray>\n");
-}
-
-void writeElementVectorFloat(unsigned int dumpIteration, char* varName, FILE* fileX, FILE* fileZ, FILE* vtkFile) {
-	unsigned int element_gI,element_gJ;
-	float		elementArray[globalElementNumber][2];
-	
-	fprintf( vtkFile, "        <DataArray type=\"Float32\" Name=\"%s\" NumberOfComponents=\"3\" format=\"ascii\">\n", varName);
-	if( fseek( fileX, dumpIteration * globalElementNumber * sizeof(float), SEEK_SET )!=0 ) {
-		fprintf(stderr, "Cannot find read required portion of GeoFLAC %s X output file:  dump iteration=%d, node count=%d\n", varName, dumpIteration, globalNodeNumber );
-		exit(1);
-	}
-	for( element_gI = 0; element_gI < globalElementNumber; element_gI++ ) {
-		if( fread( &elementArray[element_gI][0], sizeof(float), 1, fileX )==0 ) {
-			if( feof(fileX) ) {
-				fprintf(stderr, "In %s: Error (reached EOF prematurely) while reading %s X output file:  dump iteration=%d, node=%d/%d\n", 
-						__func__, varName, dumpIteration, element_gI, globalElementNumber );
-				exit(1);
-			} 
-			else if( ferror(fileX) ) {
-				fprintf(stderr, "Error while reading GeoFLAC %s X output file:  dump iteration=%d, node=%d/%d\n", 
-						varName, dumpIteration, element_gI, globalElementNumber );
-				exit(1);
-			}
-		}
-	}
-	if( fseek( fileZ, dumpIteration * globalElementNumber * sizeof(float), SEEK_SET )!=0 ) {
-		fprintf(stderr, "Cannot find read required portion of GeoFLAC %s Z output file:  dump iteration=%d, node count=%d\n", varName, dumpIteration, globalNodeNumber );
-		exit(1);
-	}
-	for( element_gI = 0; element_gI < globalElementNumber; element_gI++ ) {
-		if( fread( &elementArray[element_gI][1], sizeof(float), 1, fileZ )==0 ) {
-			if( feof(fileZ) ) {
-				fprintf(stderr, "In %s: Error (reached EOF prematurely) while reading %s Z output file:  dump iteration=%d, node=%d/%d\n", 
-						__func__, varName, dumpIteration, element_gI, globalElementNumber );
-				exit(1);
-			} 
-			else if( ferror(fileZ) ) {
-				fprintf(stderr, "Error while reading GeoFLAC %s Z output file:  dump iteration=%d, node=%d/%d\n", 
-						varName, dumpIteration, element_gI, globalElementNumber );
-				exit(1);
-			}
-		}
-	}
-	for( element_gJ = 0; element_gJ < elementNumber[1]; element_gJ++ ) 
-		for( element_gI = 0; element_gI < elementNumber[0]; element_gI++ ) {
-			unsigned int id=element_gJ + element_gI*elementNumber[1];
-			fprintf( vtkFile, "%g %g 0\n", elementArray[id][0], elementArray[id][1] );
 		}
 	fprintf( vtkFile, "        </DataArray>\n");
 }
