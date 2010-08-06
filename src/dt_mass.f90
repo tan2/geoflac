@@ -37,7 +37,7 @@ elseif (idt_scale.eq.2) then
     ! choosing dt_elastic from tolerance conditions (automatic)
     if( vbc .eq. 0 ) then
         ! let it be 1 cm/year
-        dt_elastic = dlmin*frac*strain_inert/(50./sec_year/100)
+        dt_elastic = dlmin*frac*strain_inert/(1./sec_year/100)
     else
 !write(*,'(5F45.20)')dt_elastic,dlmin,frac,strain_inert,vbc
         dt_elastic = dlmin*frac*strain_inert/vbc
