@@ -44,8 +44,8 @@ if (irphase .gt. 0) then
     close(12)
 endif
 
-! Case with iynts = 2 for continental and collision
-if (iynts.eq.10) then
+! Case with iynts = 2 or 10 for continental and collision
+if (iynts.eq.2 .or. iynts.eq.10) then
     do n = 1, nzone_age
        if(n.gt.1) ixtb1(n) = ixtb1(n)-1
        do i = ixtb1(n),ixtb2(n)-1
