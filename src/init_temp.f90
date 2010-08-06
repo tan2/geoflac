@@ -102,7 +102,6 @@ do n = 1, nzone_age
       temp(j,i) = tss +2./pi*(t_boot-t_top)*tt
         if(temp(j,i).gt.1330.or.y.gt.200.) temp(j,i)= 1330.
         if (j.eq.1) temp(j,i) = t_top
-        t_bot = temp(nz,i)
 !       write(*,*) tss,tm,q_m,cond_m,hc(n),y,tt
       enddo
     enddo
