@@ -7,7 +7,7 @@ include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 
-dimension rhs(mnz+1,mnx+1), flux(mnz,mnx,2,2), area_n(mnz+1,mnx+1), add_source(mnz,mnx)
+dimension flux(mnz,mnx,2,2), add_source(mnz,mnx)
 
 ! real_area = 0.5* (1./area(n,t))
 ! Calculate Fluxes in every triangle
@@ -43,7 +43,7 @@ dt_therm = dt
 
 !$OMP Parallel private(i,j,iph,cp_eff,cond_eff,dissip,diff, &
 !$OMP                  x1,x2,x3,x4,y1,y2,y3,y4,t1,t2,t3,t4, &
-!$OMP                  qs,real_area13)
+!$OMP                  qs,real_area13,area_n,rhs)
 !$OMP do
 do i = 1,nx-1
     do j = 1,nz-1
@@ -99,8 +99,8 @@ end do
 do i = 1,nx
     do j = 1,nz
 
-        rhs(j,i) = 0
-        area_n(j,i) = 0
+        rhs = 0
+        area_n = 0
 
         ! Element (j-1,i-1). Triangle B
         if ( j.ne.1 .and. i.ne.1 ) then
@@ -108,16 +108,16 @@ do i = 1,nx
             ! side 2-3
             qs = flux(j-1,i-1,2,1) * (cord(j  ,i  ,2)-cord(j  ,i-1,2)) - &
                  flux(j-1,i-1,2,2) * (cord(j  ,i  ,1)-cord(j  ,i-1,1))
-            rhs(j,i) = rhs(j,i) + 0.5*qs
+            rhs = rhs + 0.5*qs
 
             ! side 3-1
             qs = flux(j-1,i-1,2,1) * (cord(j-1,i  ,2)-cord(j  ,i  ,2)) - &
                  flux(j-1,i-1,2,2) * (cord(j-1,i  ,1)-cord(j  ,i  ,1))
-            rhs(j,i) = rhs(j,i) + 0.5*qs
+            rhs = rhs + 0.5*qs
 
             real_area13 = 0.5/area(j-1,i-1,2)/3.
-            area_n(j,i) = area_n(j,i) + real_area13
-            rhs(j,i) = rhs(j,i) + add_source(j-1,i-1)*real_area13
+            area_n = area_n + real_area13
+            rhs = rhs + add_source(j-1,i-1)*real_area13
 
         endif
 
@@ -128,31 +128,31 @@ do i = 1,nx
             ! side 1-2
             qs = flux(j-1,i  ,1,1) * (cord(j  ,i  ,2)-cord(j-1,i  ,2)) - &
                  flux(j-1,i  ,1,2) * (cord(j  ,i  ,1)-cord(j-1,i  ,1))
-            rhs(j,i) = rhs(j,i) + 0.5*qs
+            rhs = rhs + 0.5*qs
 
             ! side 2-3
             qs = flux(j-1,i  ,1,1) * (cord(j-1,i+1,2)-cord(j  ,i  ,2)) - &
                  flux(j-1,i  ,1,2) * (cord(j-1,i+1,1)-cord(j  ,i  ,1))
-            rhs(j,i) = rhs(j,i) + 0.5*qs
+            rhs = rhs + 0.5*qs
 
             real_area13 = 0.5/area(j-1,i  ,1)/3.
-            area_n(j,i) = area_n(j,i) + real_area13
-            rhs(j,i) = rhs(j,i) + add_source(j-1,i  )*real_area13
+            area_n = area_n + real_area13
+            rhs = rhs + add_source(j-1,i  )*real_area13
 
             ! triangle B
             ! side 1-2
             qs = flux(j-1,i  ,2,1) * (cord(j  ,i  ,2)-cord(j-1,i+1,2)) - &
                  flux(j-1,i  ,2,2) * (cord(j  ,i  ,1)-cord(j-1,i+1,1))
-            rhs(j,i) = rhs(j,i) + 0.5*qs
+            rhs = rhs + 0.5*qs
 
             ! side 2-3
             qs = flux(j-1,i  ,2,1) * (cord(j  ,i+1,2)-cord(j  ,i  ,2)) - &
                  flux(j-1,i  ,2,2) * (cord(j  ,i+1,1)-cord(j  ,i  ,1))
-            rhs(j,i) = rhs(j,i) + 0.5*qs
+            rhs = rhs + 0.5*qs
 
             real_area13 = 0.5/area(j-1,i  ,2)/3.
-            area_n(j,i) = area_n(j,i) + real_area13
-            rhs(j,i) = rhs(j,i) + add_source(j-1,i  )*real_area13
+            area_n = area_n + real_area13
+            rhs = rhs + add_source(j-1,i  )*real_area13
 
         endif
         
@@ -163,31 +163,31 @@ do i = 1,nx
             ! side 2-3
             qs = flux(j  ,i-1,1,1) * (cord(j  ,i  ,2)-cord(j+1,i-1,2)) - &
                  flux(j  ,i-1,1,2) * (cord(j  ,i  ,1)-cord(j+1,i-1,1))
-            rhs(j,i) = rhs(j,i) + 0.5*qs
+            rhs = rhs + 0.5*qs
 
             ! side 3-1
             qs = flux(j  ,i-1,1,1) * (cord(j  ,i-1,2)-cord(j  ,i  ,2)) - &
                  flux(j  ,i-1,1,2) * (cord(j  ,i-1,1)-cord(j  ,i  ,1))
-            rhs(j,i) = rhs(j,i) + 0.5*qs
+            rhs = rhs + 0.5*qs
 
             real_area13 = 0.5/area(j  ,i-1,1)/3.
-            area_n(j,i) = area_n(j,i) + real_area13
-            rhs(j,i) = rhs(j,i) + add_source(j  ,i-1)*real_area13
+            area_n = area_n + real_area13
+            rhs = rhs + add_source(j  ,i-1)*real_area13
 
             ! triangle B
             ! side 1-2
             qs = flux(j  ,i-1,2,1) * (cord(j+1,i-1,2)-cord(j  ,i  ,2)) - &
                  flux(j  ,i-1,2,2) * (cord(j+1,i-1,1)-cord(j  ,i  ,1))
-            rhs(j,i) = rhs(j,i) + 0.5*qs
+            rhs = rhs + 0.5*qs
 
             ! side 3-1
             qs = flux(j  ,i-1,2,1) * (cord(j  ,i  ,2)-cord(j+1,i  ,2)) - &
                  flux(j  ,i-1,2,2) * (cord(j  ,i  ,1)-cord(j+1,i  ,1))
-            rhs(j,i) = rhs(j,i) + 0.5*qs
+            rhs = rhs + 0.5*qs
 
             real_area13 = 0.5/area(j  ,i-1,2)/3.
-            area_n(j,i) = area_n(j,i) + real_area13
-            rhs(j,i) = rhs(j,i) + add_source(j  ,i-1)*real_area13
+            area_n = area_n + real_area13
+            rhs = rhs + add_source(j  ,i-1)*real_area13
 
         endif
 
@@ -197,21 +197,21 @@ do i = 1,nx
             ! side 1-2
             qs = flux(j  ,i  ,1,1) * (cord(j+1,i  ,2)-cord(j  ,i  ,2)) - &
                  flux(j  ,i  ,1,2) * (cord(j+1,i  ,1)-cord(j  ,i  ,1))
-            rhs(j,i) = rhs(j,i) + 0.5*qs
+            rhs = rhs + 0.5*qs
 
             ! side 3-1
             qs = flux(j  ,i  ,1,1) * (cord(j  ,i  ,2)-cord(j  ,i+1,2)) - &
                  flux(j  ,i  ,1,2) * (cord(j  ,i  ,1)-cord(j  ,i+1,1))
-            rhs(j,i) = rhs(j,i) + 0.5*qs
+            rhs = rhs + 0.5*qs
 
             real_area13 = 0.5/area(j  ,i  ,1)/3.
-            area_n(j,i) = area_n(j,i) + real_area13
-            rhs(j,i) = rhs(j,i) + add_source(j  ,i  )*real_area13
+            area_n = area_n + real_area13
+            rhs = rhs + add_source(j  ,i  )*real_area13
 
         endif
 
         ! Update Temperature by Eulerian method 
-        temp(j,i) = temp(j,i)+rhs(j,i)*dt_therm/area_n(j,i)
+        temp(j,i) = temp(j,i)+rhs*dt_therm/area_n
     end do
 end do
 !$OMP end do
