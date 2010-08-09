@@ -10,6 +10,10 @@
 **    61 Rt. 9W
 **    Palisades, NY 10964, USA,
 **
+**    Eh Tan
+**    Institute for Geophysics (tan2@mail.utexas.edu)
+**    University of Texas, Austin
+**
 **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 #include <stdio.h>
@@ -75,20 +79,16 @@ int main( int argc, char* argv[])
     char		tmpBuf[PATH_MAX];
     FILE*		nxnzIn;
     FILE*		timeStepIn;
-    FILE*		meshInfoIn;
     unsigned int	rank;
-    unsigned int	simTimeStep;
-    unsigned int	dumpIteration;
+    unsigned int	i, dumpIteration;
     float		time;
-    float		dt;
-    int			gelem[3];
-    int			gnode[3];
-    int			rank_array[3];
-    unsigned int	rankI,rankJ,rankK;
-    unsigned int	nrec=0, step=0,stepMin=0,stepMax=0,stepNum=0;
+    unsigned int        *steps, nsteps;
+    unsigned int	nrec=0, step=0,stepMin=0,stepMax=0;
 	
-    if( argc != 2 ) {
-		fprintf(stderr,"flac2vtk path-to-output-directory\n");
+    if( argc < 2 ) {
+		fprintf(stderr,"usage: flac2vtk path [step0 [step1 ...]]\n\n"
+                        "Processing step0, step1 ... of flac data output to VTK format.\n"
+                        "If no steps are given, processing all steps\n");
 		exit(1);
     }
 
@@ -102,15 +102,8 @@ int main( int argc, char* argv[])
 		fprintf(stderr, "\"%s\" not found\n", tmpBuf );
 		exit(1);
 	}
-	fscanf( nxnzIn, "%d %d", &elementNumber[0], &elementNumber[1] );
-	fclose( nxnzIn );
 
-	nodeNumber[0] = elementNumber[0] + 1;
-	nodeNumber[1] = elementNumber[1] + 1;
-	globalNodeNumber = nodeNumber[0]*nodeNumber[1];
-	globalElementNumber = elementNumber[0]*elementNumber[1];
-
-	/* set the range of steps to process. Currently, it processes the entire data. */
+	/* Set the range of steps to process. Currently, it processes the entire data. */
 	sprintf( tmpBuf, "%s/_contents.0", path );
 	if( (timeStepIn = fopen( tmpBuf, "r" )) == NULL ) {
 		fprintf(stderr, "\"%s\" not found\n", tmpBuf );
@@ -122,6 +115,39 @@ int main( int argc, char* argv[])
 	stepMax = nrec-1;
 	/* obvious check. Needed later when only a portion of data is processed. */
 	assert( nrec == (stepMax-stepMin+1) );
+
+        if( argc > 2 ) {
+            /* Read steps from arguments */
+            nsteps = argc - 2;
+            steps = (unsigned int*) malloc(nsteps*sizeof(unsigned int));
+            if( steps == NULL ) {
+		fprintf(stderr, "Cannot allocate memory\n");
+		exit(1);
+            }
+
+            for( i = 0; i < nsteps; i++ )
+                steps[i] = (unsigned int) atoi(argv[i+2]);
+        } else {
+            /* all steps */
+            nsteps = nrec;
+            steps = (unsigned int*) malloc(nsteps*sizeof(unsigned int));
+            if( steps == NULL ) {
+		fprintf(stderr, "Cannot allocate memory\n");
+		exit(1);
+            }
+
+            for( i = 0; i < nsteps; i++ )
+                steps[i] = i;
+        }
+
+        /* Get mesh size */
+	fscanf( nxnzIn, "%d %d", &elementNumber[0], &elementNumber[1] );
+	fclose( nxnzIn );
+
+	nodeNumber[0] = elementNumber[0] + 1;
+	nodeNumber[1] = elementNumber[1] + 1;
+	globalNodeNumber = nodeNumber[0]*nodeNumber[1];
+	globalElementNumber = elementNumber[0]*elementNumber[1];
 
 	/* Print out some information */
 	fprintf(stderr, "Time step range:  %u <-> %u, # of steps=%d\n", stepMin, stepMax, stepMax-stepMin+1 );
@@ -220,12 +246,15 @@ int main( int argc, char* argv[])
 	/*
 	 * Read in loop information and write VTK files for wanted time steps.
 	 */
-	for( dumpIteration = stepMin; dumpIteration <= stepMax; dumpIteration++ ) {
-		float mtime = ((stepMin==stepMax)?0.0:time/(stepMax-stepMin)*dumpIteration);
-		unsigned int simTimeStep = ((stepMin==stepMax)?0:step/(stepMax-stepMin)*dumpIteration);
-		fprintf(stderr,"trying %d-th conversion out of %d: model time=%.2e Myr)\n",dumpIteration+1, stepMax-stepMin+1, mtime);
-		ConvertTimeStep( rank, dumpIteration, simTimeStep, nrec, mtime, globalNodeNumber, globalElementNumber,
-						 nodeNumber, elementNumber );
+	for( i = 0; i < nsteps; i++ ) {
+            float mtime;
+            unsigned int simTimeStep;
+            dumpIteration = steps[i];
+            mtime = ((stepMin==stepMax)?0.0:time/(stepMax-stepMin)*dumpIteration);
+            simTimeStep = ((stepMin==stepMax)?0:step/(stepMax-stepMin)*dumpIteration);
+            fprintf(stderr,"trying %d-th conversion out of %d: model time=%.2e Myr)\n",dumpIteration+1, stepMax-stepMin+1, mtime);
+            ConvertTimeStep( rank, dumpIteration, simTimeStep, nrec, mtime, globalNodeNumber, globalElementNumber,
+                             nodeNumber, elementNumber );
 	}
 		
 	/*
@@ -264,10 +293,10 @@ void ConvertTimeStep(
 					 unsigned int elementNumber[2]
 					  ) 
 {
-    char		tmpBuf[PATH_MAX], tmpBuf1[PATH_MAX];
+    char		tmpBuf[PATH_MAX];
     FILE*		vtkOut;
     FILE*		topoOut;
-    unsigned int	node_gI,node_gJ,element_gI,element_gJ,dimI;
+    unsigned int	node_gI,node_gJ,dimI;
 	
     /*
      * Open the output file 
@@ -413,7 +442,7 @@ void ConvertTimeStep(
 }
  
 void writeNodeVectorFloat(unsigned int dumpIteration, char* varName, FILE* file, FILE* vtkFile) {
-	unsigned int node_gI,node_gJ,dimI;
+	unsigned int node_gI,node_gJ;
 	float		nodeArray[globalNodeNumber][2];
 	
 	fprintf( vtkFile, "        <DataArray type=\"Float32\" Name=\"%s\" NumberOfComponents=\"3\" format=\"ascii\">\n", varName);
