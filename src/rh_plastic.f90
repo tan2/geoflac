@@ -273,38 +273,45 @@ do nab = 1,3
    kabove = j-nab
    if (tmpr.gt.1000.) cycle
    if(kabove .le. 0) exit
+
+   ! subducted crust becomes weaker to facilitate further subduction
    if(phase_ratio(j,i,kocean1).gt.0.8.and.phase_ratio(kabove,i,kcont1).gt.0.8) then
-       call newphase2marker(kabove,i,12)
-   endif
-   if(phase_ratio(j,i,karc1).gt.0.8.and.phase_ratio(kabove,i,kcont1).gt.0.8) then
-       call newphase2marker(kabove,i,12)
-   endif
-   if(phase_ratio(j,i,ksed1).gt.0.8.and.phase_ratio(kabove,i,kcont1).gt.0.8) then
-       call newphase2marker(kabove,i,12)
-   endif
-   if(phase_ratio(j,i,kocean2).gt.0.8.and.phase_ratio(kabove,i,kcont1).gt.0.8) then
        call newphase2marker(kabove,i,12)
    endif
    if(phase_ratio(j,i,kocean1).gt.0.8.and.phase_ratio(kabove,i,kcont2).gt.0.8) then
        call newphase2marker(kabove,i,12)
    endif
-   if(phase_ratio(j,i,karc1).gt.0.8.and.phase_ratio(kabove,i,kcont2).gt.0.8) then
+   if(phase_ratio(j,i,kocean2).gt.0.8.and.phase_ratio(kabove,i,kcont1).gt.0.8) then
        call newphase2marker(kabove,i,12)
    endif
    if(phase_ratio(j,i,kocean2).gt.0.8.and.phase_ratio(kabove,i,kcont2).gt.0.8) then
        call newphase2marker(kabove,i,12)
    endif
-   if(phase_ratio(j,i,kocean1).gt.0.8.and.phase_ratio(kabove,i,kmant1).gt.0.8) then
-       call newphase2marker(kabove,i,9)
+
+   if(phase_ratio(j,i,karc1).gt.0.8.and.phase_ratio(kabove,i,kcont1).gt.0.8) then
+       call newphase2marker(kabove,i,12)
    endif
-   if(phase_ratio(j,i,ksed1).gt.0.8.and.phase_ratio(kabove,i,kmant1).gt.0.8) then
+   if(phase_ratio(j,i,karc1).gt.0.8.and.phase_ratio(kabove,i,kcont2).gt.0.8) then
+       call newphase2marker(kabove,i,12)
+   endif
+
+   if(phase_ratio(j,i,ksed1).gt.0.8.and.phase_ratio(kabove,i,kcont1).gt.0.8) then
+       call newphase2marker(kabove,i,12)
+   endif
+
+   ! serpentinization
+   if(phase_ratio(j,i,kocean1).gt.0.8.and.phase_ratio(kabove,i,kmant1).gt.0.8) then
        call newphase2marker(kabove,i,9)
    endif
    if(phase_ratio(j,i,kocean2).gt.0.8.and.phase_ratio(kabove,i,kmant1).gt.0.8) then
        call newphase2marker(kabove,i,9)
    endif
+   if(phase_ratio(j,i,ksed1).gt.0.8.and.phase_ratio(kabove,i,kmant1).gt.0.8) then
+       call newphase2marker(kabove,i,9)
+   endif
 enddo
 
+! middle crust with high dissipation becomes weaker, this helps with localization
 if(phase_ratio(j,i,kcont2).gt.0.8.and.tmpr.gt.300..and.tmpr.lt.400. &
      .and.stressII(j,i)*strainII(j,i).gt.4.e6) then
     call newphase2marker(j,i,15)
