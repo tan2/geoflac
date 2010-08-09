@@ -104,12 +104,12 @@ do 3 i = 1,nx-1
             s11p(k) = stress0(j,i,1,k) + stherm 
             s22p(k) = stress0(j,i,2,k) + stherm 
             if(ny_inject.gt.0.and.j.le.nelem_inject) then
-!XXX: iinj is un-init'd if ny_inject is not 1 or 2.
-            if(i.eq.iinj) then
-            s11p(k) = stress0(j,i,1,k) + stherm +sarc1 
-            s22p(k) = stress0(j,i,2,k) + stherm +sarc2 
-!!            irh = 1 
-            endif
+                !XXX: iinj is un-init'd if ny_inject is not 1 or 2.
+                if(i.eq.iinj) then
+                    s11p(k) = stress0(j,i,1,k) + stherm +sarc1
+                    s22p(k) = stress0(j,i,2,k) + stherm +sarc2
+                    !!            irh = 1
+                endif
             endif
             s12p(k) = stress0(j,i,3,k) 
             s33p(k) = stress0(j,i,4,k) + stherm
