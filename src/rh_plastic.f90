@@ -252,6 +252,7 @@ include 'params.inc'
 include 'arrays.inc'
 
 character*200 msg
+dimension fric(5), plstrain(5), dilat(5), cohesion(5)
 
 nab = 0
 kabove = 0
@@ -303,63 +304,34 @@ do nab = 1,3
        call newphase2marker(kabove,i,9)
    endif
 enddo
+
+if(phase_ratio(j,i,kcont2).gt.0.8.and.tmpr.gt.300..and.tmpr.lt.400. &
+     .and.stressII(j,i)*strainII(j,i).gt.4.e6) then
+    call newphase2marker(j,i,15)
+endif
+
 if (iynocean.eq.1.and.iph.eq.3.or.iph.eq.7.or.iph.eq.2.or.iph.eq.14) then
     ! phase #2 above is actually a continental crust phase
-      fric1 = fric_oc(1)
-      fric2 = fric_oc(2)
-      fric3 = fric_oc(3)
-      fric4 = fric_oc(4)
-      plstrain1 = plstrain_oc(1)
-      plstrain2 = plstrain_oc(2)
-      plstrain3 = plstrain_oc(3)
-      plstrain4 = plstrain_oc(4)
-      dilat1 = dilat_oc(1)
-      dilat2 = dilat_oc(2)
-      dilat3 = dilat_oc(3)
-      dilat4 = dilat_oc(4)
-      cohesion1 = cohesion_oc(1)
-      cohesion2 = cohesion_oc(2)
-      cohesion3 = cohesion_oc(3)
-      cohesion4 = cohesion_oc(4)
+      fric = fric_oc
+      plstrain = plstrain_oc
+      dilat = dilat_oc
+      cohesion = cohesion_oc
 else
-      fric1 = fric_n(1)
-      fric2 = fric_n(2)
-      fric3 = fric_n(3)
-      fric4 = fric_n(4)
-      plstrain1 = plstrain_n(1)
-      plstrain2 = plstrain_n(2)
-      plstrain3 = plstrain_n(3)
-      plstrain4 = plstrain_n(4)
-      dilat1 = dilat_n(1)
-      dilat2 = dilat_n(2)
-      dilat3 = dilat_n(3)
-      dilat4 = dilat_n(4)
-      cohesion1 = cohesion_n(1)
-      cohesion2 = cohesion_n(2)
-      cohesion3 = cohesion_n(3)
-      cohesion4 = cohesion_n(4)
+      fric = fric_n
+      plstrain = plstrain_n
+      dilat = dilat_n
+      cohesion = cohesion_n
 endif
 
 !TO ADDRESS PHASE CHANGE IN BRITTLE MANTLE REGIME, FRICTION ANGLE IS REDUCED (SET TO 0 IN THIS CASE)
 if(iph.eq.9.or.iph.eq.12) then
-   fric1 = 0.
-   fric2 = 0.
-   fric3 = 0.
-   fric4 = 0.
-   cohesion1 = 4.e6
-   cohesion2 = 4.e6
-   cohesion3 = 4.e6
-   cohesion4 = 4.e6
+   fric = 0.
+   cohesion = 4.e6
 endif
 if(iph.eq.10) then
-   fric1 = 30.
-   fric2 = 15.
-   fric3 = 15.
-   fric4 = 15.
-   cohesion1= 4.e6
-   cohesion2= 4.e6
-   cohesion3= 4.e6
-   cohesion4= 4.e6
+   fric = 15.
+   fric(1) = 30.
+   cohesion= 4.e6
 endif
 
 ! Hardening modulus
@@ -369,91 +341,31 @@ hardn = 0.
 isoft = 0
 
 ! Find current properties from linear interpolation
-!is=1        do is = 1,nsegments-1
-     if(phase_ratio(j,i,kcont2).gt.0.8.and.tmpr.gt.300..and.tmpr.lt.400. &
-          .and.stressII(j,i)*strainII(j,i).gt.4.e6) then
-         call newphase2marker(j,i,15)
-      endif
+do is = 1,nsegments-1
 
-    pl1 = plstrain1
-    pl2 = plstrain2
+    pl1 = plstrain(is)
+    pl2 = plstrain(is+1)
  
     if (pls_curr .ge. pl1 .and. pls_curr .le. pl2) then
         isoft = 1
 
         ! Friction
-        tgf = (fric2-fric1)/(pl2-pl1)
-        phi =  fric1 + tgf*(pls_curr-pl1)
+        tgf = (fric(is+1)-fric(is))/(pl2-pl1)
+        phi =  fric(is) + tgf*(pls_curr-pl1)
 
         ! Cohesion and Dilatation
-        tgd = (dilat2-dilat1)/(pl2-pl1)
-        psi =  dilat1 + tgd*(pls_curr-pl1)
+        tgd = (dilat(is+1)-dilat(is))/(pl2-pl1)
+        psi =  dilat(is) + tgd*(pls_curr-pl1)
  
-        tgc = (cohesion2-cohesion1)/(pl2-pl1)
-        coh =  cohesion1 + tgc*(pls_curr-pl1)
+        tgc = (cohesion(is+1)-cohesion(is))/(pl2-pl1)
+        coh =  cohesion(is) + tgc*(pls_curr-pl1)
 
-        ! Hardening Modulus (for COhesion ONLY)
-        hardn = (cohesion2-cohesion1)/(pl2-pl1) 
+        ! Hardening Modulus (for Cohesion ONLY)
+        hardn = (cohesion(is+1)-cohesion(is))/(pl2-pl1)
         goto 724
     endif
-!end do
-!is=2         do is = 1,nsegments-1
-     if(phase_ratio(j,i,kcont2).gt.0.8.and.tmpr.gt.300..and.tmpr.lt.400. &
-          .and.stressII(j,i)*strainII(j,i).gt.4.e6) then
-         call newphase2marker(j,i,15)
-      endif
+end do
 
-    pl1 = plstrain2
-    pl2 = plstrain3
- 
-    if (pls_curr .ge. pl1 .and. pls_curr .le. pl2) then
-        isoft = 1
-
-        ! Friction
-        tgf = (fric3-fric2)/(pl2-pl1)
-        phi =  fric2 + tgf*(pls_curr-pl1)
-
-        ! Cohesion and Dilatation
-        tgd = (dilat3-dilat2)/(pl2-pl1)
-        psi =  dilat2 + tgd*(pls_curr-pl1)
- 
-        tgc = (cohesion3-cohesion2)/(pl2-pl1)
-        coh =  cohesion2 + tgc*(pls_curr-pl1)
-
-        ! Hardening Modulus (for COhesion ONLY)
-        hardn = (cohesion3-cohesion2)/(pl2-pl1) 
-        goto 724
-    endif
-!end do
-!is=3         do is = 1,nsegments-1
-     if(phase_ratio(j,i,kcont2).gt.0.8.and.tmpr.gt.300..and.tmpr.lt.400. &
-          .and.stressII(j,i)*strainII(j,i).gt.4.e6) then
-         call newphase2marker(j,i,15)
-      endif
-
-    pl1 = plstrain3
-    pl2 = plstrain4
- 
-    if (pls_curr .ge. pl1 .and. pls_curr .le. pl2) then
-        isoft = 1
-
-        ! Friction
-        tgf = (fric4-fric3)/(pl2-pl1)
-        phi =  fric3 + tgf*(pls_curr-pl1)
-
-        ! Cohesion and Dilatation
-        tgd = (dilat4-dilat3)/(pl2-pl1)
-        psi =  dilat3 + tgd*(pls_curr-pl1)
- 
-        tgc = (cohesion4-cohesion3)/(pl2-pl1)
-        coh =  cohesion3 + tgc*(pls_curr-pl1)
-
-        ! Hardening Modulus (for COhesion ONLY)
-        hardn = (cohesion4-cohesion3)/(pl2-pl1) 
-        goto 724
-    endif
-!end do
- 
 if (isoft.eq.0 ) then
     write( msg, * ) 'Pre_plast: No segment for current plastic strain(j,i,pls_curr,iph): ', iph,j,i,pls_curr
     call SysMsg( msg )

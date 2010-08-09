@@ -25,8 +25,7 @@ common /inout/ dtout_screen,dtout_file,dtsave_file,lastsave,lastout, &
 
 common /rheol/ visc(20),den(20),alfa(20),beta(20),pln(20),acoef(20),eactiv(20),rl(20),rm(20), &
      coha(20),cohdisp(20),phimean(20),phidisp(20),psia(20),conduct(20),cp(20), &
-     ts(20),tl(20),tk(20),fk(20),ten_off, &
-     plstrain(5),fric(5),dilat(5),cohesion(5),tau_heal, &
+     ts(20),tl(20),tk(20),fk(20),ten_off,tau_heal, &
      plstrain_oc(5), fric_oc(5), dilat_oc(5), cohesion_oc(5), &
      plstrain_n(5), fric_n(5), dilat_n(5), cohesion_n(5), &
      nphase,mphase,irheol(20),nysoft,nsegments,iynocean, &
