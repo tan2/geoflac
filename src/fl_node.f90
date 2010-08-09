@@ -311,55 +311,57 @@ do i = 1,nx
         force(j,i,2) = force(j,i,2) - rmass(j,i)*g
         balance(j,i,2) = balance(j,i,2) + abs(rmass(j,i)*g)
 
-        ! BOUNDARY CONDITIONS
-        ! pressure from water sea on top
-        if (nyhydro.gt.0.and. j.eq.1)  then
-            rho_water = -10300.
-            if(i.lt.nx) then
-                water_depth = 0.5*(cord(1,i+1,2)+cord(1,i,2))
-            else
-                water_depth = 0.5*(cord(1,i-1,2)+cord(1,i,2))
-            endif
-            if (water_depth.lt.0.) then ! No water (above sea level)
-                if(i.eq.1) then
-                  press_norm_l = 0
-                  dlx_l = 0
-                  dly_l = 0
-                  press_norm_r = rho_water*((cord(1,i+1,2)+cord(1,i,2))/2.)
-                  dlx_r = cord(1,i+1,1)-cord(1,i  ,1)
-                  dly_r = cord(1,i+1,2)-cord(1,i  ,2)
-                elseif(i.eq.nx) then
-                  press_norm_l = rho_water*((cord(1,i-1,2)+cord(1,i,2))/2.)
-                  dlx_l = cord(1,i  ,1)-cord(1,i-1,1)
-                  dly_l = cord(1,i  ,2)-cord(1,i-1,2)
-                  press_norm_r = 0
-                  dlx_r = 0
-                  dly_r = 0
-                else
-                  press_norm_l = rho_water*((cord(1,i-1,2)+cord(1,i,2))/2.)
-                  dlx_l = cord(1,i  ,1)-cord(1,i-1,1)
-                  dly_l = cord(1,i  ,2)-cord(1,i-1,2)
-                  press_norm_r = rho_water*((cord(1,i+1,2)+cord(1,i,2))/2.)
-                  dlx_r = cord(1,i+1,1)-cord(1,i  ,1)
-                  dly_r = cord(1,i+1,2)-cord(1,i  ,2)
-                endif
-                force(1,i,1) = force(1,i,1)-0.5*press_norm_l*dly_l-0.5*press_norm_r*dly_r
-                force(1,i,2) = force(1,i,2)+0.5*press_norm_l*dlx_l+0.5*press_norm_r*dlx_r
-                balance(1,i,1) = 1.0d+17
-            endif
-        endif
-            
   enddo
 enddo
 !$OMP end do
-if(nyhydro.gt.0) then 
-!$OMP do
+
+! BOUNDARY CONDITIONS
+if(nyhydro.gt.0) then
+    !$OMP do
     do i=1,nx
 
-        ! BOUNDARY CONDITIONS
+        ! pressure from water sea on top
+        rho_water = -10300.
+        if(i.lt.nx) then
+            water_depth = 0.5*(cord(1,i+1,2)+cord(1,i,2))
+        else
+            water_depth = 0.5*(cord(1,i-1,2)+cord(1,i,2))
+        endif
+
+        if (water_depth.lt.0.) then ! No water (above sea level)
+            if(i.eq.1) then
+                press_norm_l = 0
+                dlx_l = 0
+                dly_l = 0
+                press_norm_r = rho_water*((cord(1,i+1,2)+cord(1,i,2))/2.)
+                dlx_r = cord(1,i+1,1)-cord(1,i  ,1)
+                dly_r = cord(1,i+1,2)-cord(1,i  ,2)
+            elseif(i.eq.nx) then
+                press_norm_l = rho_water*((cord(1,i-1,2)+cord(1,i,2))/2.)
+                dlx_l = cord(1,i  ,1)-cord(1,i-1,1)
+                dly_l = cord(1,i  ,2)-cord(1,i-1,2)
+                press_norm_r = 0
+                dlx_r = 0
+                dly_r = 0
+            else
+                press_norm_l = rho_water*((cord(1,i-1,2)+cord(1,i,2))/2.)
+                dlx_l = cord(1,i  ,1)-cord(1,i-1,1)
+                dly_l = cord(1,i  ,2)-cord(1,i-1,2)
+                press_norm_r = rho_water*((cord(1,i+1,2)+cord(1,i,2))/2.)
+                dlx_r = cord(1,i+1,1)-cord(1,i  ,1)
+                dly_r = cord(1,i+1,2)-cord(1,i  ,2)
+            endif
+            force(1,i,1) = force(1,i,1)-0.5*press_norm_l*dly_l-0.5*press_norm_r*dly_r
+            force(1,i,2) = force(1,i,2)+0.5*press_norm_l*dlx_l+0.5*press_norm_r*dlx_r
+            balance(1,i,1) = 1.0d+17
+        endif
+    enddo
+    !$OMP end do
+
+    !$OMP do
+    do i=1,nx
 
         ! bottom support - Archimed force (normal to the surface, shear component = 0)
-        !write(*,*) force(nz,i,1),force(nz,i,2)            
         p_est = pisos + 0.5*(den(iphsub)+drosub)*g*(cord(nz,i,2)-rzbo)
         rosubg = g * (den(iphsub)+drosub) * (1-alfa(iphsub)*temp(nz,i)+beta(iphsub)*p_est)
 
@@ -396,8 +398,9 @@ if(nyhydro.gt.0) then
         !write(*,*) i,pisos,force(nz,i,1),force(nz,i,2),press_norm_l,press_norm_r,dlx_l,dlx_r,dly_l,dly_r
 
     enddo
-!$OMP end do
+    !$OMP end do
 endif
+
 !$OMP do reduction(max:boff)
 do i=1,nx
     do j=1,nz
