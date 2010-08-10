@@ -18,21 +18,19 @@ subroutine marker2elem
       do i = 1 , nx-1
           kinc = sum(nphase_counter(j,i,:))
 
-          !  if there are too few markers in the elmenent, create a new one
-          do while (kinc.le.2)
-              call SysMsg('marker2elem: too few markers in the elmenent, create a new one')
-              x1 = cord(j  ,i+1,1)
-              x2 = cord(j+1,i  ,1)
-              x3 = cord(j+1,i+1,1)
-              y1 = cord(j  ,i+1,2)
-              y2 = cord(j+1,i  ,2)
-              y3 = cord(j+1,i+1,2)
+          !  if there are too few markers in the element, create a new one
+          if(kinc.le.4) call SysMsg('marker2elem: too few markers in the element, create a new one')
+          do while (kinc.le.4)
+              x1 = min(cord(j  ,i  ,1), cord(j+1,i  ,1))
+              y1 = min(cord(j  ,i  ,2), cord(j  ,i+1,2))
+              x2 = max(cord(j+1,i+1,1), cord(j  ,i+1,1))
+              y2 = max(cord(j+1,i+1,2), cord(j+1,i  ,2))
 
               call random_number(rx)
               call random_number(ry)
 
-              xx = x2 + (0.5-rx)*(x3-x2)
-              yy = y1 + (0.5-ry)*(y3-y1)
+              xx = x1 + (0.5-rx)*(x2-x1)
+              yy = y1 + (0.5-ry)*(y2-y1)
 
               ! Calculate barycentic coordinates
               ii = i
