@@ -21,8 +21,6 @@ subroutine marker2elem
           !  if there are too few markers in the elmenent, create a new one
           do while (kinc.le.2)
               call SysMsg('marker2elem: too few markers in the elmenent, create a new one')
-              nmarkers = nmarkers + 1
-              kinc = kinc + 1
               x1 = cord(j  ,i+1,1)
               x2 = cord(j+1,i  ,1)
               x3 = cord(j+1,i+1,1)
@@ -30,21 +28,28 @@ subroutine marker2elem
               y2 = cord(j+1,i  ,2)
               y3 = cord(j+1,i+1,2)
 
-              xx = x2 + 0.5*(x3-x2)
-              mark(nmarkers)%x = xx
-              yy = y1 +0.5*(y3-y1)  
-              mark(nmarkers)%y = yy
+              call random_number(rx)
+              call random_number(ry)
+
+              xx = x2 + (0.5-rx)*(x3-x2)
+              yy = y1 + (0.5-ry)*(y3-y1)
 
               ! Calculate barycentic coordinates
               ii = i
               jj = j
               call euler2bar(xx,yy,bar1,bar2,ntr,ii,jj,inc) 
-              mark(nmarkers)%a1 = bar1 
+
+              if(inc.eq.0) cycle
+
+              kinc = kinc + 1
+              nmarkers = nmarkers + 1
+              mark(nmarkers)%x = xx
+              mark(nmarkers)%y = yy
+              mark(nmarkers)%a1 = bar1
               mark(nmarkers)%a2 = bar2 
               mark(nmarkers)%maps = aps(j,i) 
               mark(nmarkers)%ntriag = ntr 
               mark(nmarkers)%dead = 1
-              if(inc.eq.0) mark(nmarkers)%dead = 0
               ! Calculate strain
               mark(nmarkers)%meII = strainII(j,i)
               ! Calculate pressure and temperature
@@ -70,7 +75,6 @@ subroutine marker2elem
               write(*,*) 'elem has equally abundant marker phases:', i,j,nmax,nphase_counter(j,i,:)
               write(*,*) 'choosing the 1st maxloc as the phase'
           endif
-
 
       enddo
   enddo
