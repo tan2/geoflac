@@ -207,6 +207,19 @@ enddo
 
 deallocate(dum11)
 
+! recount marker phase
+nphase_counter(:,:,:) = 0
+print *, nmarkers
+do n = 1, nmarkers
+    if(mark(n)%dead .eq. 0) cycle
+    ! from ntriag, get element number
+    k = mod(mark(n)%ntriag - 1, 2) + 1
+    j = mod(mark(n)%ntriag - k, 2*(nz-1)) + 1
+    i = (mark(n)%ntriag - k) / 2 / (nz - 1) + 1
+
+    nphase_counter(j,i,mark(n)%phase) = nphase_counter(j,i,mark(n)%phase) + 1
+enddo
+
 call marker2elem
 
 endif
