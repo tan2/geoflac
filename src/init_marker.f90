@@ -56,27 +56,30 @@ do j = 1 , nz-1
 
 
 ! randomize the new coordinates inside the element
-        do l = 1 , 9 
-            nmarkers = nmarkers + 1
+        l = 1
+        do while (l .le. 9)
             call random_number(rx)
+            call random_number(ry)
             rx = 0.5 - rx
-            ddx = dx*rx/5.
-            ddy = dy*rx/5.
-            x_tr(l) = x_tr(l)+ddx
-            y_tr(l) = y_tr(l)+ddy
-      
-! define the markers for each elements in columns (9*nelemts=nmarkers) 
-            kk = kk +1 
-            mark(kk)%x = x_tr(l)
-            mark(kk)%y = y_tr(l)
-            mark(kk)%dead = 1 
-            mark(kk)%ID = kk 
-            xx = mark(kk)%x 
-            yy = mark(kk)%y 
+            ry = 0.5 - ry
+            ddx = dx*rx/3
+            ddy = dy*ry/3
+            xx = x_tr(l)+ddx
+            yy = y_tr(l)+ddy
+
             ii = i
             jj = j
             call euler2bar(xx,yy,bar1,bar2,ntr,ii,jj,inc)
-            if(ntr.eq.0) write(*,*) ii,jj,xx,yy
+            if(ntr.eq.0) cycle
+      
+! define the markers for each elements in columns (9*nelemts=nmarkers)
+            l = l + 1
+            kk = kk +1 
+
+            mark(kk)%x = xx
+            mark(kk)%y = yy
+            mark(kk)%dead = 1 
+            mark(kk)%ID = kk 
             mark(kk)%a1 = bar1
             mark(kk)%a2 = bar2
             mark(kk)%ntriag = ntr
@@ -90,6 +93,7 @@ do j = 1 , nz-1
         enddo
     enddo
 enddo
+nmarkers = kk
 write(333,*) '# of markers', nmarkers
 return
 end subroutine init_marker
