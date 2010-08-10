@@ -167,6 +167,12 @@ enddo
 open (1,file='xphasemarker.rs',access='direct',recl=nwords*kindi) 
 write (1,rec=nrec) dum11 
 close (1)
+do i = 1,nmarkers
+dum11(i) = mark(i)%dead
+enddo
+open (1,file='xdeadmarker.rs',access='direct',recl=nwords*kindi)
+write (1,rec=nrec) dum11
+close (1)
 deallocate(dum11)
 
 endif
