@@ -198,6 +198,13 @@ do i = 1,nmarkers
 mark(i)%phase = dum11(i)
 enddo
 
+open (1,file='xdeadmarker.rs',access='direct',recl=nwords*kindi)
+read (1,rec=nrec) dum11
+close (1)
+do i = 1,nmarkers
+mark(i)%dead = dum11(i)
+enddo
+
 deallocate(dum11)
 
 call marker2elem
