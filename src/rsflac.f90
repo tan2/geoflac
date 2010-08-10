@@ -214,8 +214,10 @@ do n = 1, nmarkers
     if(mark(n)%dead .eq. 0) cycle
     ! from ntriag, get element number
     k = mod(mark(n)%ntriag - 1, 2) + 1
-    j = mod(mark(n)%ntriag - k, 2*(nz-1)) + 1
+    j = mod((mark(n)%ntriag - k) / 2, nz-1) + 1
     i = (mark(n)%ntriag - k) / 2 / (nz - 1) + 1
+
+    !if(mark(n)%ntriag .ne. 2 * ( (nz-1)*(i-1)+j-1) + k) write(*,*), mark(n)%ntriag, i,j,k
 
     nphase_counter(j,i,mark(n)%phase) = nphase_counter(j,i,mark(n)%phase) + 1
 enddo
