@@ -80,15 +80,15 @@ int main( int argc, char* argv[])
     FILE*		nxnzIn;
     FILE*		timeStepIn;
     unsigned int	rank;
-    unsigned int	i, dumpIteration;
+    unsigned int	dumpIteration;
     float		time;
-    unsigned int        *steps, nsteps;
-    unsigned int	nrec=0, step=0,stepMin=0,stepMax=0;
+    unsigned int	nrec=0, step=0, stepMin=0, stepMax=0;
 	
-    if( argc < 2 ) {
-		fprintf(stderr,"usage: flac2vtk path [step0 [step1 ...]]\n\n"
-                        "Processing step0, step1 ... of flac data output to VTK format.\n"
-                        "If no steps are given, processing all steps\n");
+    if( argc < 2 || argc > 4 ) {
+		fprintf(stderr,"usage: flac2vtk path [step_min [step_max]]\n\n"
+                        "Processing flac data output to VTK format.\n"
+                        "If step_max is not given, processing to latest steps\n"
+                        "If both step_min and step_max are not given, processing all steps\n");
 		exit(1);
     }
 
@@ -96,12 +96,6 @@ int main( int argc, char* argv[])
      * Set the default input/output path and range of time steps to process.
      */
 	sprintf( path, "%s", argv[1] );
-
-	sprintf( tmpBuf, "%s/nxnz.0", path );
-	if( (nxnzIn = fopen( tmpBuf, "r" )) == NULL ) {
-		fprintf(stderr, "\"%s\" not found\n", tmpBuf );
-		exit(1);
-	}
 
 	/* Set the range of steps to process. Currently, it processes the entire data. */
 	sprintf( tmpBuf, "%s/_contents.0", path );
@@ -112,35 +106,28 @@ int main( int argc, char* argv[])
 	fscanf( timeStepIn, "%d %d %g", &nrec, &step, &time ); 
 	fclose( timeStepIn );
 
-	stepMax = nrec-1;
-	/* obvious check. Needed later when only a portion of data is processed. */
-	assert( nrec == (stepMax-stepMin+1) );
-
-        if( argc > 2 ) {
+        if( argc == 3 ) {
             /* Read steps from arguments */
-            nsteps = argc - 2;
-            steps = (unsigned int*) malloc(nsteps*sizeof(unsigned int));
-            if( steps == NULL ) {
-		fprintf(stderr, "Cannot allocate memory\n");
-		exit(1);
-            }
-
-            for( i = 0; i < nsteps; i++ )
-                steps[i] = (unsigned int) atoi(argv[i+2]);
+            stepMin = (unsigned int) atoi(argv[2]);
+            stepMax = nrec - 1;
+        } else if( argc == 4 ) {
+            /* Read steps from arguments */
+            stepMin = (unsigned int) atoi(argv[2]);
+            stepMax = (unsigned int) atoi(argv[3]);
+            if(stepMax >= nrec) stepMax = nrec - 1;
         } else {
             /* all steps */
-            nsteps = nrec;
-            steps = (unsigned int*) malloc(nsteps*sizeof(unsigned int));
-            if( steps == NULL ) {
-		fprintf(stderr, "Cannot allocate memory\n");
-		exit(1);
-            }
-
-            for( i = 0; i < nsteps; i++ )
-                steps[i] = i;
+            stepMin = 0;
+            stepMax = nrec - 1;
         }
 
         /* Get mesh size */
+	sprintf( tmpBuf, "%s/nxnz.0", path );
+	if( (nxnzIn = fopen( tmpBuf, "r" )) == NULL ) {
+		fprintf(stderr, "\"%s\" not found\n", tmpBuf );
+		exit(1);
+	}
+
 	fscanf( nxnzIn, "%d %d", &elementNumber[0], &elementNumber[1] );
 	fclose( nxnzIn );
 
@@ -246,13 +233,12 @@ int main( int argc, char* argv[])
 	/*
 	 * Read in loop information and write VTK files for wanted time steps.
 	 */
-	for( i = 0; i < nsteps; i++ ) {
+	for( dumpIteration = stepMin; dumpIteration <= stepMax; dumpIteration++ ) {
             float mtime;
             unsigned int simTimeStep;
-            dumpIteration = steps[i];
             mtime = ((stepMin==stepMax)?0.0:time/(stepMax-stepMin)*dumpIteration);
             simTimeStep = ((stepMin==stepMax)?0:step/(stepMax-stepMin)*dumpIteration);
-            fprintf(stderr,"trying %d-th conversion out of %d: model time=%.2e Myr)\n",dumpIteration+1, stepMax-stepMin+1, mtime);
+            fprintf(stderr,"trying %d-th conversion: model time=%.2e Myr)\n",dumpIteration, mtime);
             ConvertTimeStep( rank, dumpIteration, simTimeStep, nrec, mtime, globalNodeNumber, globalElementNumber,
                              nodeNumber, elementNumber );
 	}
