@@ -428,22 +428,13 @@ do i=1,nx
         endif
 
         ! VELOCITIES FROM FORCES
-        iunknown = 0
         if( ncod(j,i,1) .eq. 1 ) then
             vel(j,i,1) = bc(j,i,1) 
-!            vel(j,i,1) = 0.0
-
-!        write(*,*) i,j,vel(j,i,1)
         else
             vel(j,i,1) = vel(j,i,1) + dt*force(j,i,1)/(amass(j,i)*drat*drat)
         endif
         if( ncod(j,i,2) .eq. 1 ) then
             vel(j,i,2) = bc(j,i,2)
-            if(iunknown.eq.1) then
-                vel(j,i,2) = bc(j,i,2)* sin(time*3.14159/(2*sec_year))
-                write(*,*) bc(j,i,2), sin(time*3.14159/(2*sec_year))
-            endif
-!        write(*,*) i,j,vel(j,i,2)
         else
             vel(j,i,2) = vel(j,i,2) + dt*force(j,i,2)/(amass(j,i)*drat*drat)
         endif
