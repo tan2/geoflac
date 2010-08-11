@@ -12,8 +12,7 @@ character*200 msg
 ! check (jj,ii) elem first
 i = ii
 j = jj
-call check_inside(x,y,bar1,bar2,ntr2,i,j,inc)
-ntr = ntr2
+call check_inside(x,y,bar1,bar2,ntr,i,j,inc)
 if(inc .eq. 1) return
 
 ! search the neighboring elem
@@ -29,7 +28,6 @@ if (jend.ge.nz) jend = nz-1
 do j = jbeg, jend
     do i = ibeg ,iend
         call check_inside(x,y,bar1,bar2,ntr,i,j,inc)
-        ntr = ntr2
         if(inc .eq. 1) return
     enddo
 enddo
@@ -37,7 +35,6 @@ enddo
 ! search all surface elem
 do i = 1, nx-1
     call check_inside(x,y,bar1,bar2,ntr,i,1,inc)
-    ntr = ntr2
     if(inc .eq. 1) return
 enddo
 
@@ -47,7 +44,6 @@ call SysMsg(msg)
 do j = 1, nz-1
     do i = 1, nx-1
         call check_inside(x,y,bar1,bar2,ntr,i,j,inc)
-        ntr = ntr2
         if(inc .eq. 1) then
             ! If the marker is found, that means its current element is
             ! to far away from its original element
