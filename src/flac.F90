@@ -13,7 +13,7 @@ include 'arrays.inc'
 
 ! Update Thermal State
 ! Skip the therm calculations if itherm = 3
-if( time-time_t .gt. dtmax_therm/10) call fl_therm
+call fl_therm
 
 if (itherm .eq.2) goto 500  ! Thermal calculation only
 
