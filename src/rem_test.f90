@@ -34,16 +34,16 @@ integer function itest_mesh()
       endif
   end if
 
-  !test by dx in the first layer
-  dxratmax = 1000.
-  if(ny_inject.eq.2) dxratmax = 10.
-  dxmin = 1.d20
-  dxmax = -1.d20
-  do i = 1, nx-1
-      dx = cord(1,i+1,1) - cord(1,i,1)
-      if( dx .lt. dxmin ) dxmin = dx
-      if( dx .gt. dxmax ) dxmax = dx
-  enddo
+  !!! test by dx ratio in the first layer
+  !dxratmax = 1000.
+  !if(ny_inject.eq.2) dxratmax = 10.
+  !dxmin = 1.d20
+  !dxmax = -1.d20
+  !do i = 1, nx-1
+  !    dx = cord(1,i+1,1) - cord(1,i,1)
+  !    if( dx .lt. dxmin ) dxmin = dx
+  !    if( dx .gt. dxmax ) dxmax = dx
+  !enddo
   !if( dxmin.lt.0 .or. dxmax/dxmin.gt.dxratmax ) then
   !    if( dtout_screen .ne. 0 ) then
   !        print *, 'Remeshing due dxmax/dxmin criteria required: ', dxmin, dxmax
@@ -51,23 +51,28 @@ integer function itest_mesh()
   !        call SysMsg('TEST_MESH: Remeshing due dxmax/dxmin criteria required')
   !    endif
   !    itest_mesh = 1
-  !return
+  !    return
   !endif
+
   ! test mesh in the case of accretion at the center
   if (ny_inject.eq.2) then
       !check the width of the two elements at the center
       dx_accr = abs(cord(1,iinj+1,1)-cord(1,iinj,1))
       if (dx_accr.ge.3.*dx_init) then
+          if( dtout_screen .ne. 0 ) then
+              print *, 'Remeshing due to accretion required.'
+              write(333,*) 'Remeshing due to accretion required.'
+          else
+              call SysMsg('Remeshing due to accretion required.')
+          endif
           itest_mesh = 1
-          iac_rem = 1 
-      endif
-      if( dtout_screen .ne. 0.and.itest_mesh.eq.1 ) then
-          print *, 'Remeshing due to accretion required.'
-          write(333,*) 'Remeshing due to accretion required.'
+          iac_rem = 1
+          return
       endif
   endif
-  ! test by the angle
-  if( mod(nloop,ntest_rem).ne.0 ) return
+
+  ! test by the angle is expensive, so do it every ntest_rem loops
+  if( mod(nloop, ntest_rem).ne.0 ) return
 
   pi = 3.14159265358979323846
   degrad = pi/180.
@@ -101,12 +106,12 @@ integer function itest_mesh()
                   yb = cord(jv(k-1),iv(k-1),2)-cord(jv(k),iv(k),2)
                   xxbl = sqrt(xb*xb + yb*yb) 
 
-                  angle(k)=raddeg*acos((xa*xb+ya*yb)/(xxal*xxbl))
+                  angle(k) = raddeg*acos((xa*xb+ya*yb)/(xxal*xxbl))
               end do
               angle (1) = 180.-angle(2)-angle(3)
 
               ! min angle in one trianle
-              anglemin1=min(angle(1),angle(2),angle(3))  
+              anglemin1 = min(angle(1),angle(2),angle(3))
 
               ! min angle in the whole mesh
               if( anglemin1 .lt. anglemint ) then
