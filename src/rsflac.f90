@@ -188,7 +188,6 @@ read (1,rec=nrec) dum11
 close (1)
 do i = 1,nmarkers
 mark(i)%ntriag = dum11(i)
-!write(*,*) dum11(i),mark(i)%ntriag
 enddo
 
 open (1,file='xphasemarker.rs',access='direct',recl=nwords*kindi)
@@ -212,6 +211,12 @@ nphase_counter(:,:,:) = 0
 print *, nmarkers
 do n = 1, nmarkers
     if(mark(n)%dead .eq. 0) cycle
+
+     if(mark(n)%ntriag.lt.1 .or. mark(n)%ntriag.gt.2*(nx-1)*(nz-1)) then
+         print *, 'Wrong marker ntriag', mark(n)%ID, mark(n)%ntriag
+         stop 999
+     endif
+
     ! from ntriag, get element number
     k = mod(mark(n)%ntriag - 1, 2) + 1
     j = mod((mark(n)%ntriag - k) / 2, nz-1) + 1
