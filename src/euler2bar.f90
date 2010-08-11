@@ -5,6 +5,8 @@ include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 
+character*200 msg
+
 ! find the triangle in which the marker belongs
 
 ! check (jj,ii) elem first
@@ -34,13 +36,14 @@ enddo
 
 ! search all surface elem
 do i = 1, nx-1
-    call check_inside(x,y,bar1,bar2,ntr,i,j,inc)
+    call check_inside(x,y,bar1,bar2,ntr,i,1,inc)
     ntr = ntr2
     if(inc .eq. 1) return
 enddo
 
 ! search all elem, usually it means the marker is "dead"
-call SysMsg('Searching all elements for marker location')
+write(msg,*) 'Searching all elem. for marker, original (i,j) ', ii, jj
+call SysMsg(msg)
 do j = 1, nz-1
     do i = 1, nx-1
         call check_inside(x,y,bar1,bar2,ntr,i,j,inc)
@@ -48,7 +51,8 @@ do j = 1, nz-1
         if(inc .eq. 1) then
             ! If the marker is found, that means its current element is
             ! to far away from its original element
-            call SysMsg('Found after searching all elements, might need more frequent remeshing?')
+            write(msg,*) 'Found at (i,j)', i, j, ' Might need more frequent remeshing?'
+            call SysMsg(msg)
             return
         endif
     enddo
