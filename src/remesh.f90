@@ -1,12 +1,12 @@
  
-subroutine re_mesh
+subroutine remesh
 use arrays
 
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 
-common /remesh/ pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
+common /remeshing/ pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
 cold(mnz+1,mnx+1,2),cnew(mnz+1,mnx+1,2),numtr(mnz+1,mnx+1),nzt,nxt
 allocatable :: dummy(:,:), cordo(:,:,:)
 
@@ -216,7 +216,7 @@ subroutine rem_trpars
 include 'precision.inc'
 include 'arrays.inc'
 
-common /remesh/ pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
+common /remeshing/ pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
 cold(mnz+1,mnx+1,2),cnew(mnz+1,mnx+1,2),numtr(mnz+1,mnx+1),nzt,nxt
 
 
@@ -274,7 +274,7 @@ subroutine rem_barcord
 include 'precision.inc'
 include 'arrays.inc'
 
-common /remesh/ pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
+common /remeshing/ pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
 cold(mnz+1,mnx+1,2),cnew(mnz+1,mnx+1,2),numtr(mnz+1,mnx+1),nzt,nxt
 
 
@@ -409,7 +409,7 @@ subroutine rem_interpolate( arr )
 include 'precision.inc'
 include 'arrays.inc'
 include 'params.inc'
-common /remesh/ pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
+common /remeshing/ pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
 cold(mnz+1,mnx+1,2),cnew(mnz+1,mnx+1,2),numtr(mnz+1,mnx+1),nzt,nxt
 dimension dummy(nzt,nxt),arr(nzt,nxt)
 

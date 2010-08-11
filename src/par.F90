@@ -164,7 +164,7 @@ do while( time .lt. time_max )
         call bar2euler
         call elem2marker
       endif
-      call re_mesh
+      call remesh
       ! If markers are present recalculate a1,a2 local coordinates and assign elements with phase ratio vector
       if (iint_marker.eq.1) then
         call lpeuler2bar

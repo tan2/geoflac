@@ -73,7 +73,7 @@ include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 
-common /remesh/ pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
+common /remeshing/ pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
 cold(mnz+1,mnx+1,2),cnew(mnz+1,mnx+1,2),numtr(mnz+1,mnx+1),nzt,nxt
 
 do i = 1,nx-1
