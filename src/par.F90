@@ -157,7 +157,6 @@ do while( time .lt. time_max )
   ! Remeshing
   if( ny_rem.eq.1 .and. itherm.ne.2 ) then
     if( itest_mesh() .eq. 1 ) then
-      call fl_therm
       if(iynts.eq.1) call init_temp
       ! If there are markers recalculate their x,y global coordinate and assign them aps, eII, press, temp
       if(iint_marker.eq.1) then
