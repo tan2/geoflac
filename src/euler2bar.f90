@@ -15,10 +15,10 @@ ntr = ntr2
 if(inc .eq. 1) return
 
 ! search the neighboring elem
-ibeg = ii-1
-iend = ii+1
-jbeg = jj-1
-jend = jj+1
+ibeg = ii-2
+iend = ii+2
+jbeg = jj-2
+jend = jj+2
 if (ibeg.le.0) ibeg = 1
 if (jbeg.le.0) jbeg = 1
 if (iend.ge.nx) iend = nx-1
@@ -39,19 +39,22 @@ do i = 1, nx-1
     if(inc .eq. 1) return
 enddo
 
-! search all elem
+! search all elem, usually it means the marker is "dead"
 call SysMsg('Searching all elements for marker location')
 do j = 1, nz-1
     do i = 1, nx-1
         call check_inside(x,y,bar1,bar2,ntr,i,j,inc)
         ntr = ntr2
-        if(inc .eq. 1) return
+        if(inc .eq. 1) then
+            ! If the marker is found, that means its current element is
+            ! to far away from its original element
+            call SysMsg('Found after searching all elements, might need more frequent remeshing?')
+            return
+        endif
     enddo
 enddo
 
-call SysMsg('Marker not inside any element!')
-stop 31
-
+inc = 0
 return
 end subroutine euler2bar
 
