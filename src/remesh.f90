@@ -151,6 +151,10 @@ call rem_interpolate( dummy )
 temp(1:nzt,1:nxt) = dummy(1:nzt,1:nxt)
 deallocate( dummy )
 
+! Changing the temperature of left-most elements
+! in accordance to initial temperature
+iynts = 20
+call init_temp
 
 ! AFTER INTERPOLATIONS - RECALCULATE SOME DEPENDENT VARIABLES
 
