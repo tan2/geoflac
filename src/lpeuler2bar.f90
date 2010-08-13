@@ -8,8 +8,7 @@ include 'arrays.inc'
 
 nphase_counter(:,:,:) = 0
 
-!!!$DIR LOOP_PARALLEL
-!!!$DIR LOOP_PRIVATE(k,xx,yy,bar1,bar2,ntr)
+!$OMP parallel do private(k,nmtriag,ntr,nmelemt,ii,jj,xx,yy,bar1,bar2,inc)
 do k = 1 , nmarkers
     if (mark(k)%dead.eq.0) cycle
     nmtriag = mark(k)%ntriag
@@ -34,8 +33,11 @@ do k = 1 , nmarkers
     mark(k)%a2 = bar2
     mark(k)%ntriag = ntr
 
+    !$OMP critical
     nphase_counter(jj,ii,mark(k)%phase) = nphase_counter(jj,ii,mark(k)%phase) + 1
+    !$OMP end critical
 enddo
+!$OMP end parallel do
 return
 
 end subroutine lpeuler2bar
