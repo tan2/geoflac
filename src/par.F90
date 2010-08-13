@@ -119,10 +119,10 @@ do while( time .lt. time_max )
 !write(*,*) dt
   if( dtout_screen .ne. 0 ) then
     if( dtacc_screen .gt. dtout_screen ) then
-       write(*,'(I9,A,F7.3,A,F6.3,A,F8.1,A)') nloop,'''s step. Time[My]=', time/sec_year/1.e+6, &
-                ', dt=', dt/sec_year, ',  elapsed sec-', secnds(time0)
-       write(333,'(I9,A,F7.3,A,F6.3,A,F8.1,A)') nloop,'''s step. Time[My]=', time/sec_year/1.e+6, &
-                ', dt=', dt/sec_year, ',  elapsed sec-', secnds(time0)
+       write(*,'(I10,A,F7.3,A,F8.1,A)') nloop,'''s step. Time[My]=', time/sec_year/1.e+6, &
+                ',  elapsed sec-', secnds(time0)
+       write(333,'(I10,A,F7.3,A,F8.1,A)') nloop,'''s step. Time[My]=', time/sec_year/1.e+6, &
+                ',  elapsed sec-', secnds(time0)
 
        ! Forces at the boundaries
        if( io_forc.eq.1 ) then
@@ -140,7 +140,7 @@ do while( time .lt. time_max )
            force_r = force_r+abs(sxxd)*abs(dl)
          end do
          open (1,file='forc.0',access='direct',form='formatted',recl=28)
-         write (1,'(f6.2,1x,e10.2,1x,e10.2)',rec=nrec) time/sec_year/1.e6, force_l, force_r
+         write (1,'(f7.3,1x,e10.2,1x,e10.2)',rec=nrec) time/sec_year/1.e6, force_l, force_r
          nrec = nrec + 1
          close (1)
        endif
@@ -199,7 +199,7 @@ do while( time .lt. time_max )
   if( mod(nloop,1000) .eq. 0 ) then
     area_diff = total_area(0)/abs(rzbo*rxbo) - 1
     !write( *,'(i6,1x,e9.2,1x,e9.2,1x,e9.2)' ) nloop, area_diff, devmax, dvmax
-    write(33,'(i9,1x,e9.2,1x,e9.2,1x,e9.2)' ) nloop, area_diff, devmax, dvmax
+    write(33,'(i10,1x,e9.2,1x,e9.2,1x,e9.2)' ) nloop, area_diff, devmax, dvmax
     devmax = 0; dvmax = 0;
     !call flush(33)
   endif
