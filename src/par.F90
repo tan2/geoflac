@@ -199,7 +199,7 @@ do while( time .lt. time_max )
   if( mod(nloop,1000) .eq. 0 ) then
     area_diff = total_area(0)/abs(rzbo*rxbo) - 1
     !write( *,'(i6,1x,e9.2,1x,e9.2,1x,e9.2)' ) nloop, area_diff, devmax, dvmax
-    write(33,'(i6,1x,e9.2,1x,e9.2,1x,e9.2)' ) nloop, area_diff, devmax, dvmax
+    write(33,'(i9,1x,e9.2,1x,e9.2,1x,e9.2)' ) nloop, area_diff, devmax, dvmax
     devmax = 0; dvmax = 0;
     !call flush(33)
   endif
