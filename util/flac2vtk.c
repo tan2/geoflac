@@ -33,7 +33,7 @@
 //#define DEBUG
 
 
-void ConvertTimeStep( int rank, unsigned int dumpIteration, unsigned int simTimeStep, unsigned int nrec, double time, unsigned int gnode, unsigned int gelement, unsigned int nodeNumber[2], unsigned int elementNumber[2] );
+void ConvertTimeStep( int rank, unsigned int dumpIteration, double time, unsigned int gnode, unsigned int gelement, unsigned int nodeNumber[2], unsigned int elementNumber[2] );
 void writeNodeVectorFloat(unsigned int dumpIteration, char* varName, FILE* file, FILE* vtkFile);
 void writeNodeScalarDouble(unsigned int dumpIteration, char* varName, FILE* file, FILE* vtkFile);
 void writeNodeScalarFloat(unsigned int dumpIteration, char* varName, FILE* file, FILE* vtkFile);
@@ -80,7 +80,7 @@ int main( int argc, char* argv[])
     FILE*		nxnzIn;
     FILE*		timeStepIn;
     unsigned int	rank;
-    unsigned int	dumpIteration;
+    unsigned int	dumpIteration, junk;
     float		time;
     unsigned int	nrec=0, step=0, stepMin=0, stepMax=0;
 	
@@ -97,28 +97,31 @@ int main( int argc, char* argv[])
      */
 	sprintf( path, "%s", argv[1] );
 
-	/* Set the range of steps to process. Currently, it processes the entire data. */
+        /* Read the max steps */
 	sprintf( tmpBuf, "%s/_contents.0", path );
 	if( (timeStepIn = fopen( tmpBuf, "r" )) == NULL ) {
 		fprintf(stderr, "\"%s\" not found\n", tmpBuf );
 		exit(1);
 	}
-	fscanf( timeStepIn, "%d %d %g", &nrec, &step, &time ); 
-	fclose( timeStepIn );
+	while(!feof(timeStepIn)) {
+            fscanf( timeStepIn, "%d %d %g", &nrec, &step, &time );
+        }
+	rewind( timeStepIn );
 
+        /* Set the range of steps to process. */
         if( argc == 3 ) {
             /* Read steps from arguments */
             stepMin = (unsigned int) atoi(argv[2]);
-            stepMax = nrec - 1;
+            stepMax = nrec;
         } else if( argc == 4 ) {
             /* Read steps from arguments */
             stepMin = (unsigned int) atoi(argv[2]);
             stepMax = (unsigned int) atoi(argv[3]);
-            if(stepMax >= nrec) stepMax = nrec - 1;
+            if(stepMax > nrec) stepMax = nrec;
         } else {
             /* all steps */
-            stepMin = 0;
-            stepMax = nrec - 1;
+            stepMin = 1;
+            stepMax = nrec;
         }
 
         /* Get mesh size */
@@ -233,19 +236,20 @@ int main( int argc, char* argv[])
 	/*
 	 * Read in loop information and write VTK files for wanted time steps.
 	 */
-	for( dumpIteration = stepMin; dumpIteration <= stepMax; dumpIteration++ ) {
-            float mtime;
-            unsigned int simTimeStep;
-            mtime = ((stepMin==stepMax)?0.0:time/(stepMax-stepMin)*dumpIteration);
-            simTimeStep = ((stepMin==stepMax)?0:step/(stepMax-stepMin)*dumpIteration);
-            fprintf(stderr,"trying %d-th conversion: model time=%.2e Myr)\n",dumpIteration, mtime);
-            ConvertTimeStep( rank, dumpIteration, simTimeStep, nrec, mtime, globalNodeNumber, globalElementNumber,
+	for( dumpIteration = 1; dumpIteration < stepMin; dumpIteration++ ) {
+            fscanf( timeStepIn, "%d %d %g", &junk, &step, &time );
+        }
+	for( dumpIteration = stepMin-1; dumpIteration < stepMax; dumpIteration++ ) {
+            fscanf( timeStepIn, "%d %d %g", &junk, &step, &time );
+            fprintf(stderr,"trying %d-th conversion: model time=%.2e Myr)\n", dumpIteration+1, time);
+            ConvertTimeStep( rank, dumpIteration, time, globalNodeNumber, globalElementNumber,
                              nodeNumber, elementNumber );
 	}
 		
 	/*
 	 * Close the input files 
 	 */
+        fclose( timeStepIn );
 	fclose( coordIn );
 	fclose( velIn );
 	fclose( apsIn );
@@ -270,9 +274,7 @@ int main( int argc, char* argv[])
 void ConvertTimeStep( 
 					 int rank, 
 					 unsigned int dumpIteration, 
-					 unsigned int simTimeStep, 
-					 unsigned int nrec, 
-					 double time, 
+					 double time,
 					 unsigned int globalNodeNumber,
 					 unsigned int globalElementNumber,
 					 unsigned int nodeNumber[2], 
@@ -287,13 +289,13 @@ void ConvertTimeStep(
     /*
      * Open the output file 
      */
-    sprintf( tmpBuf, "%s/flac.%06u.vts", path, dumpIteration );
+    sprintf( tmpBuf, "%s/flac.%06u.vts", path, dumpIteration+1 );
     fprintf(stderr, "%s\n", tmpBuf);
     if( (vtkOut = fopen( tmpBuf, "w+" )) == NULL ) {
 		fprintf(stderr, "Cannot open \"%s\" for writing\n", tmpBuf );
 		exit(1);
     }
-    sprintf( tmpBuf, "%s/topo.%06u.dat", path, nrec );
+    sprintf( tmpBuf, "%s/topo.%06u.dat", path, dumpIteration+1 );
     if( (topoOut = fopen( tmpBuf, "w+" )) == NULL ) {
 		fprintf(stderr, "Cannot open \"%s\" for writing\n", tmpBuf );
 		exit(1);
