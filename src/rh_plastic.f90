@@ -277,35 +277,15 @@ do nab = 1,3
    if(kabove .le. 0) exit
 
    ! subducted crust becomes weaker to facilitate further subduction
-   if(phase_ratio(j,i,kocean1).gt.0.8.and. &
-        (phase_ratio(kabove,i,kcont1).gt.0.8 .or. phase_ratio(kabove,i,kcont2).gt.0.8)) then
-       call newphase2marker(kabove,i,kweak)
-   endif
-   if(phase_ratio(j,i,kocean2).gt.0.8.and. &
-        (phase_ratio(kabove,i,kcont1).gt.0.8 .or. phase_ratio(kabove,i,kcont2).gt.0.8)) then
-       call newphase2marker(kabove,i,kweak)
-   endif
-
-   if(phase_ratio(j,i,karc1).gt.0.8.and. &
-        (phase_ratio(kabove,i,kcont1).gt.0.8 .or. phase_ratio(kabove,i,kcont2).gt.0.8)) then
-       call newphase2marker(kabove,i,kweak)
-   endif
-
-   if(phase_ratio(j,i,ksed1).gt.0.8.and. &
+   if((phase_ratio(j,i,kocean1).gt.0.8 .or. phase_ratio(j,i,kocean2).gt.0.8 &
+        .or. phase_ratio(j,i,karc1).gt.0.8 .or. phase_ratio(j,i,ksed1).gt.0.8) .and. &
         (phase_ratio(kabove,i,kcont1).gt.0.8 .or. phase_ratio(kabove,i,kcont2).gt.0.8)) then
        call newphase2marker(kabove,i,kweak)
    endif
 
    ! serpentinization
-   if(phase_ratio(j,i,kocean1).gt.0.8.and. &
-        (phase_ratio(kabove,i,kmant1).gt.0.8 .or. phase_ratio(kabove,i,kmant2).gt.0.8)) then
-       call newphase2marker(kabove,i,kserp)
-   endif
-   if(phase_ratio(j,i,kocean2).gt.0.8.and. &
-        (phase_ratio(kabove,i,kmant1).gt.0.8 .or. phase_ratio(kabove,i,kmant2).gt.0.8)) then
-       call newphase2marker(kabove,i,kserp)
-   endif
-   if(phase_ratio(j,i,ksed1).gt.0.8.and. &
+   if((phase_ratio(j,i,kocean1).gt.0.8 .or. phase_ratio(j,i,kocean2).gt.0.8 &
+        .or. phase_ratio(j,i,ksed1).gt.0.8) .and. &
         (phase_ratio(kabove,i,kmant1).gt.0.8 .or. phase_ratio(kabove,i,kmant2).gt.0.8)) then
        call newphase2marker(kabove,i,kserp)
    endif
