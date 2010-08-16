@@ -139,8 +139,8 @@ do while( time .lt. time_max )
            dl = cord(j+1,nx-1,2)-cord(j,nx-1,2)
            force_r = force_r+abs(sxxd)*abs(dl)
          end do
-         open (1,file='forc.0',access='direct',form='formatted',recl=28)
-         write (1,'(f7.3,1x,e10.2,1x,e10.2)',rec=nrec) time/sec_year/1.e6, force_l, force_r
+         open (1,file='forc.0',position='append')
+         write (1,'(f7.3,1x,e10.2,1x,e10.2)') time/sec_year/1.e6, force_l, force_r
          nrec = nrec + 1
          close (1)
        endif
