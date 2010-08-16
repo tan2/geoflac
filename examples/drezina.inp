@@ -225,7 +225,7 @@ phasedat.inp   ; file with distribution of phase on the 2D grid (phasedat)
 ; 11- left/right fixed
 1            3               500         15.
 ;
-; dx_rem (if mode_rem=11 defines critical shortening for remeshing in dx-units)
+; dx_rem (if mode_rem=3 or 11, defines critical shortening for remeshing in units of rxbo/(nx-1))
 1.
 ;
 ; Diffusion of topography(1) and (when-2) also bottom boundary
