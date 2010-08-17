@@ -114,7 +114,7 @@ dtacc_tracer = 0
 nrec = 1 
 i_search = 0
 !do index_nobody_would_use=1,1
-do while( time .lt. time_max )
+do while( time .le. time_max )
   nloop = nloop + 1
 !write(*,*) dt
   if( dtout_screen .ne. 0 ) then
