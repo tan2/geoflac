@@ -47,8 +47,12 @@ endif
 ! Case with iynts = 2 or 10 for continental and collision
 if (iynts.eq.2 .or. iynts.eq.10) then
     do n = 1, nzone_age
-       if(n.gt.1) ixtb1(n) = ixtb1(n)-1
-       do i = ixtb1(n),ixtb2(n)-1
+       if(n.eq.1) then
+           inx1 = ixtb1(n)
+       else
+           inx1 = ixtb1(n) - 1
+       endif
+       do i = inx1,ixtb2(n)-1
        do j = 1, nz-1
           y = -cord(j,i,2)*1.e-3
           if (y.lt.hc(n)) iphase(j,i) = iph_col1(n)   
