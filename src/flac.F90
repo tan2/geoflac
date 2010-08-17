@@ -20,6 +20,9 @@ if (itherm .eq.2) goto 500  ! Thermal calculation only
 ! Calculation of strain rates from velocity
 call fl_srate
 
+! Changing marker phases
+call change_phase
+
 ! Update stresses by constitutive law (and mix isotropic stresses)
 call fl_rheol
 
