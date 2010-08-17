@@ -1,7 +1,9 @@
 ! -*- F90 -*-
 
 module arrays
+#ifdef USE_CUDA
   use iso_c_binding
+#endif
   implicit none
 
   ! fortran array pointer
@@ -47,7 +49,9 @@ module arrays
 contains
 
   subroutine allocate_arrays(nz, nx)
+#ifdef USE_CUDA
     use iso_c_binding
+#endif
     implicit none
 
     integer, intent(in) :: nz, nx
