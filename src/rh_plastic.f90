@@ -254,49 +254,8 @@ include 'arrays.inc'
 character*200 msg
 dimension fric(5), plstrain(5), dilat(5), cohesion(5)
 
-nab = 0
-kabove = 0
 iph = iphase(j,i)
-
-kocean1 = 3
-kocean2 = 7
-kcont1 = 2
-kcont2 = 6
-kmant1 = 4
-kmant2 = 8
-ksed1 = 10
-karc1 = 14
-kweak = 12
-kserp = 9
-
 pls_curr = aps(j,i)
-tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
-do nab = 1,3
-   kabove = j-nab
-   if (tmpr.gt.1000.) cycle
-   if(kabove .le. 0) exit
-
-   ! subducted crust becomes weaker to facilitate further subduction
-   if((phase_ratio(j,i,kocean1).gt.0.8 .or. phase_ratio(j,i,kocean2).gt.0.8 &
-        .or. phase_ratio(j,i,karc1).gt.0.8 .or. phase_ratio(j,i,ksed1).gt.0.8) .and. &
-        (phase_ratio(kabove,i,kcont1).gt.0.8 .or. phase_ratio(kabove,i,kcont2).gt.0.8)) then
-       call newphase2marker(kabove,i,kweak)
-   endif
-
-   ! serpentinization
-   if((phase_ratio(j,i,kocean1).gt.0.8 .or. phase_ratio(j,i,kocean2).gt.0.8 &
-        .or. phase_ratio(j,i,ksed1).gt.0.8) .and. &
-        (phase_ratio(kabove,i,kmant1).gt.0.8 .or. phase_ratio(kabove,i,kmant2).gt.0.8)) then
-       call newphase2marker(kabove,i,kserp)
-   endif
-enddo
-
-! middle crust with high dissipation becomes weaker, this helps with localization
-!if((phase_ratio(j,i,kcont1).gt.0.8 .or. phase_ratio(j,i,kcont2).gt.0.8) &
-!     .and.tmpr.gt.300..and.tmpr.lt.400. &
-!     .and.stressII(j,i)*strainII(j,i).gt.4.e6) then
-!    call newphase2marker(j,i,15)
-!endif
 
 if (iynocean.eq.1.and.iph.eq.3.or.iph.eq.7.or.iph.eq.2.or.iph.eq.14) then
     ! phase #2 above is actually a continental crust phase
