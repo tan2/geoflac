@@ -42,7 +42,7 @@ function Eff_dens( j, i)
           if (k.eq.1 .or. k.eq.3 .or. k.eq.7) then
               ! phase change pressure
               trpres = -0.3e9 + 2.2e6*tmpr
-              if (tmpr.gt.450 .and. (-1.0*press).ge.trpres) then
+              if (tmpr.gt.550 .and. (-1.0*press).ge.trpres) then
                   delta_rho = 400.
               endif
           endif
