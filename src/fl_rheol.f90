@@ -237,8 +237,6 @@ do 3 i = 1,nx-1
 !	write(*,*) depl(1),depl(2),depl(3),depl(4),area(j,i,1),area(j,i,2),area(j,i,3),area(j,i,4)
 
         ! LINEAR HEALING OF THE PLASTIC STRAIN
-           tau_heal = 1.e15
-    
         if (tau_heal .ne. 0.) &
             aps (j,i) = aps (j,i)/(1.+dt/tau_heal) 
         if (ny_inject.gt.0.and.i.eq.iinj) aps (j,i) = 0.
