@@ -21,9 +21,15 @@ cuda = 0
 
 
 ## Select fortran 90 compiler
-F90 = gfortran # GNU version >= 4.2, otherwise openmp won't work
-#F90 = ifort    # Intel, tested with v11.1
-#F90 = f90      # Sun
+
+## GNU version >= 4.2, otherwise openmp won't work
+F90 = gfortran
+
+## Intel, tested with v11.1
+#F90 = ifort
+
+## Sun
+#F90 = f90
 
 
 ########################################################################
