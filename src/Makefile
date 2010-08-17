@@ -5,10 +5,14 @@
 # Author: Eh Tan <tan2@mail.utexas.edu>
 #
 
-
-## execute "make debug=0 cuda=1" if making production run
+## Execute "make" if making production run. Or "make debug=1" for debugging run.
+##
 ## debug = 0: optimized build; 1: debugging build
-## cuda = 0:f90 only; 1: cuda runtime; 2: cuda emulation
+## omp = 1: enable openmp support
+## coverage = 1: enable code coverage analysis (used for debugging)
+## gprof = 1: enable profiling (used for tuning optimization)
+## cuda = 0: f90 only; 1: cuda runtime; 2: cuda emulation
+
 debug = 0
 omp = 1
 coverage = 0
@@ -16,73 +20,76 @@ gprof = 0
 cuda = 0
 
 
-#### fortran 90 compiler, compiler flags, linker flags
+## Select fortran 90 compiler
+F90 = gfortran # GNU version >= 4.2, otherwise openmp won't work
+#F90 = ifort    # Intel, tested with v11.1
+#F90 = f90      # Sun
+
+
+########################################################################
+## Select compiler and linker flags
+## (Usually you won't need to modify anything below)
+########################################################################
 
 CFLAGS =
 LDFLAGS =
 
-## for GNU gfortran < 4.2 (no openmp support)
-#F90 = gfortran
-#ifeq ($(debug), 0)
-#	CFLAGS += -O3
-#else
-#	CFLAGS += -O0 -g -Wall -fbounds-check -ftrapv
-#endif
-#LDFLAGS =
-
 ## for GNU gfortran >= 4.2
-F90 = gfortran
+ifeq ($(F90), gfortran)
 
-ifeq ($(debug), 0)
-	CFLAGS += -O3 -ffast-math
-	ifeq ($(omp), 1)
-		CFLAGS += -fopenmp
-		LDFLAGS += -fopenmp
+	ifeq ($(debug), 0)
+		CFLAGS += -O3 -ffast-math
+		ifeq ($(omp), 1)
+			CFLAGS += -fopenmp
+			LDFLAGS += -fopenmp
+		endif
+	else
+		CFLAGS += -O0 -g -Wall -fbounds-check -ftrapv -fbacktrace -fdump-core
+		LDFLAGS += -g
 	endif
-else
-	CFLAGS += -O0 -g -Wall -fbounds-check -ftrapv -fbacktrace -fdump-core
-	LDFLAGS += -g
-endif
 
-ifeq ($(coverage), 1)
-	CFLAGS += -fprofile-arcs -ftest-coverage
-	LDFLAGS += -fprofile-arcs -ftest-coverage
-endif
+	ifeq ($(coverage), 1)
+		CFLAGS += -fprofile-arcs -ftest-coverage
+		LDFLAGS += -fprofile-arcs -ftest-coverage
+	endif
 
-ifeq ($(gprof), 1)
-	CFLAGS += -pg -g
-	LDFLAGS += -pg -g
+	ifeq ($(gprof), 1)
+		CFLAGS += -pg -g
+		LDFLAGS += -pg -g
+	endif
 endif
 
 ## for Intel v11.1
-#F90 = ifort
-#CFLAGS += -assume byterecl
-#ifeq ($(debug), 0)
-#       CFLAGS += -fast
-#	ifeq ($(omp), 1)
-#		CFLAGS += -fopenmp
-#		LDFLAGS += -fopenmp
-#	endif
-#else
-#       CFLAGS += -O0 -g -no-opt-subscript-in-range -ftrapuv -check all -traceback
-#       LDFLAGS +=
-#endif
+ifeq ($(F90), ifort)
+	CFLAGS += -assume byterecl
+	ifeq ($(debug), 0)
+		CFLAGS += -fast
+		ifeq ($(omp), 1)
+			CFLAGS += -fopenmp
+			LDFLAGS += -fopenmp
+		endif
+	else
+	       CFLAGS += -O0 -g -no-opt-subscript-in-range -ftrapuv -check all -traceback
+	       LDFLAGS +=
+	endif
+endif
 
 ## for Solaris
-#F90 = f90
-#ifeq ($(debug), 0)
-#	CFLAGS += -O3 -r8const -fast -xloopinfo -xtarget=generic64 -s -xipo
-#	ifeq ($(omp), 1)
-#		CFLAGS += -xopenmp=parallel
-#		LDFLAGS += -xopenmp
-#	endif
-#else
-#	# -r8const: Promote single precision const to double precision.
-#	# -C: Enable runtime subscript range checking
-#	# -fpover=yes: Provide run-time overflow check during READ
-#	# -xcheck=%all: Enable all run-time check
-#	CFLAGS += -g -w3 -r8const -C -fpover=yes -xcheck=%all
-#endif
+ifeq ($(F90), f90)
+	ifeq ($(debug), 0)
+		CFLAGS += -O3 -r8const -fast -xloopinfo -s -xipo
+		ifeq ($(omp), 1)
+			CFLAGS += -xopenmp=parallel
+			LDFLAGS += -xopenmp
+		endif
+	else
+		# -r8const: Promote single precision const to double precision.
+		# -C: Enable runtime subscript range checking
+		# -fpover=yes: Provide run-time overflow check during READ
+		# -xcheck=%all: Enable all run-time check
+		CFLAGS += -g -w3 -r8const -C -fpover=yes -xcheck=%all
+	endif
+endif
 
 
 #### CUDA C compiler, compiler flags, linker flags
