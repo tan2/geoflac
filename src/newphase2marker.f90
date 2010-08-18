@@ -90,16 +90,20 @@ do kk = 1 , nmarkers
         enddo
     endif
 
-    ! middle crust with high dissipation becomes weaker,
+    ! XXX: middle crust with high dissipation becomes weaker,
     ! this helps with localization
-    if(iph==kcont1 .or. iph==kcont2 &
-         .and. tmpr > 300. .and. tmpr < 400. &
-         .and. stressII(j,i)*strainII(j,i) > 4.e6) then
-        nphase_counter(j,i,iph) = nphase_counter(j,i,iph) - 1
-        mark(kk)%phase = kweakmc
-        nphase_counter(j,i,kweakmc) = nphase_counter(j,i,kweakmc) + 1
-    endif
+    !if(iph==kcont1 .or. iph==kcont2 &
+    !     .and. tmpr > 300. .and. tmpr < 400. &
+    !     .and. stressII(j,i)*strainII(j,i) > 4.e6) then
+    !    nphase_counter(j,i,iph) = nphase_counter(j,i,iph) - 1
+    !    mark(kk)%phase = kweakmc
+    !    nphase_counter(j,i,kweakmc) = nphase_counter(j,i,kweakmc) + 1
+    !endif
 
 enddo
+
+! recompute phase ratio
+call marker2elem
+
 return
 end subroutine change_phase
