@@ -42,6 +42,11 @@ include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 
+integer ichanged(10*mnx), jchanged(10*mnx)
+integer kph(1)
+
+nchanged = 0
+
 kocean1 = 3
 kocean2 = 7
 kcont1 = 2
@@ -79,6 +84,9 @@ do kk = 1 , nmarkers
                 nphase_counter(j,i,iph) = nphase_counter(j,i,iph) - 1
                 mark(kk)%phase = kweak
                 nphase_counter(j,i,kweak) = nphase_counter(j,i,kweak) + 1
+                nchanged = nchanged + 1
+                ichanged(nchanged) = i
+                jchanged(nchanged) = j
 
             else if(phase_ratio(jabove,i,kmant1) > 0.8 .or. &
                  phase_ratio(jabove,i,kmant2) > 0.8 ) then
@@ -86,6 +94,9 @@ do kk = 1 , nmarkers
                 nphase_counter(j,i,iph) = nphase_counter(j,i,iph) - 1
                 mark(kk)%phase = kserp
                 nphase_counter(j,i,kserp) = nphase_counter(j,i,kserp) + 1
+                nchanged = nchanged + 1
+                ichanged(nchanged) = i
+                jchanged(nchanged) = j
             endif
         enddo
     endif
@@ -98,12 +109,27 @@ do kk = 1 , nmarkers
     !    nphase_counter(j,i,iph) = nphase_counter(j,i,iph) - 1
     !    mark(kk)%phase = kweakmc
     !    nphase_counter(j,i,kweakmc) = nphase_counter(j,i,kweakmc) + 1
+    !    nchanged = nchanged + 1
+    !    ichanged(nchanged) = i
+    !    jchanged(nchanged) = j
     !endif
 
+    if(nchanged >= 10*mnx) stop 38
 enddo
 
-! recompute phase ratio
-call marker2elem
+! recompute phase ratio of those changed elements
+do k = 1, nchanged
+    i = ichanged(k)
+    j = jchanged(k)
+
+    kinc = sum(nphase_counter(j,i,:))
+
+    phase_ratio(j,i,1:nphase) = nphase_counter(j,i,1:nphase) / float(kinc)
+
+    ! the phase of this element is the most abundant marker phase
+    kph = maxloc(nphase_counter(j,i,:))
+    iphase(j,i) = kph(1)
+enddo
 
 return
 end subroutine change_phase
