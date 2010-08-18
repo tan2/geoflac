@@ -125,7 +125,7 @@ if (iynts.eq.20) then
     age_init = age_1(n)*3.14*1.e+7*1.e+6 + time 
     diff_m = cond_m/1000./dens_m
     tau_d = 200.e3*200.e3/(pi*pi*diff_m)
-    !XXX: temp(:,6:nx) not initialized
+    ! temp(:,6:nx) not initialized
     if (nloop.eq.0) write(*,*) 'Warning: iynts=20 -- temp(:,6:nx) not initialized'
     do i = 1, 5 
         do j = 1,nz
@@ -148,6 +148,7 @@ if (iynts.eq.20) then
             if (j.eq.1) temp(j,i) = t_top
             !       write(*,*) tss,tm,q_m,cond_m,hc(n),y,tt
         enddo
+        source(1:nz-1,i) = source(1:nz-1,6)
     enddo
     return
 endif
@@ -157,8 +158,7 @@ do j = 1,nz
     temp(j,1:nx) = (t_bot-t_top)/abs(rzbo)*abs(cord(j,1,2)-z0) + t_top
 end do
 
-dz = abs(cord(2,1,2)-cord(1,1,2))/1000
-
+!dz = abs(cord(2,1,2)-cord(1,1,2))/1000
 !irep = 0
 !do while (.true.)
 !    a = 0; b = 0;
