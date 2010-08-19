@@ -44,20 +44,21 @@ include 'arrays.inc'
 
 integer ichanged(10*mnx), jchanged(10*mnx)
 integer kph(1)
+integer, parameter :: kocean1 = 3
+integer, parameter :: kocean2 = 7
+integer, parameter :: kcont1 = 2
+integer, parameter :: kcont2 = 6
+integer, parameter :: kmant1 = 4
+integer, parameter :: kmant2 = 8
+integer, parameter :: ksed1 = 10
+integer, parameter :: karc1 = 14
+integer, parameter :: kweak = 12
+integer, parameter :: kserp = 9
+integer, parameter :: kweakmc = 15
+integer, parameter :: keclg = 13
 
 nchanged = 0
 
-kocean1 = 3
-kocean2 = 7
-kcont1 = 2
-kcont2 = 6
-kmant1 = 4
-kmant2 = 8
-ksed1 = 10
-karc1 = 14
-kweak = 12
-kserp = 9
-kweakmc = 15
 
 !$OMP parallel private(kk,i,j,k,n,tmpr,iph,jabove,kinc,kph)
 !$OMP do
@@ -71,56 +72,94 @@ do kk = 1 , nmarkers
     i = (n - k) / 2 / (nz - 1) + 1
 
     ! If temperature of this element is too high, this marker is already
-    ! too deep in the mantle, don't need to consider it further
+    ! too deep in the mantle, where there is no significant phase change.
     tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
     if (tmpr.gt.1000.) cycle
 
+    ! depth below the surface in km
+    depth = (cord(1,i,2) - 0.5*(cord(j,i,2)+cord(j+1,i,2)))*1e-3
+    press = den(iph)*g*depth
+
     iph = mark(kk)%phase
 
-    ! subducted crust becomes weaker to facilitate further subduction
-    if(iph==kocean1 .or. iph==kocean2 .or. iph==karc1 .or. iph==ksed1) then
-        do jabove = max(1,j-3), j-1
-            if(phase_ratio(kcont1,jabove,i) > 0.8 .or. &
-                 phase_ratio(kcont2,jabove,i) > 0.8 ) then
-                ! subducted below continent, weakening
-                mark(kk)%phase = kweak
+    select case(iph)
+    case (kcont1, kcont2)
+        ! subduction below continent, continent becomes weaker to
+        ! facilitate further subduction
+        do jbelow = j, j+2
+            if(phase_ratio(kocean1,jbelow,i) > 0.8 .or. &
+                 phase_ratio(kocean2,jbelow,i) > 0.8 .or. &
+                 phase_ratio(karc1,jbelow,i) > 0.8 .or. &
+                 phase_ratio(ksed1,jbelow,i) > 0.8) then
                 !$OMP critical (change_phase1)
                 nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
                 nphase_counter(kweak,j,i) = nphase_counter(kweak,j,i) + 1
                 nchanged = nchanged + 1
                 !$OMP end critical (change_phase1)
-                ichanged(nchanged) = i
-                jchanged(nchanged) = j
-
-            else if(phase_ratio(kmant1,jabove,i) > 0.8 .or. &
-                 phase_ratio(kmant2,jabove,i) > 0.8 ) then
-                ! subuducted below mantle, serpentinization
-                mark(kk)%phase = kserp
-                !$OMP critical (change_phase1)
-                nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
-                nphase_counter(kserp,j,i) = nphase_counter(kserp,j,i) + 1
-                nchanged = nchanged + 1
-                !$OMP end critical (change_phase1)
+                mark(kk)%phase = kweak
                 ichanged(nchanged) = i
                 jchanged(nchanged) = j
             endif
         enddo
-    endif
 
-    ! XXX: middle crust with high dissipation becomes weaker,
-    ! this helps with localization
-    !if(iph==kcont1 .or. iph==kcont2 &
-    !     .and. tmpr > 300. .and. tmpr < 400. &
-    !     .and. stressII(j,i)*strainII(j,i) > 4.e6) then
-    !    mark(kk)%phase = kweakmc
-    !    !$OMP critical (change_phase1)
-    !    nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
-    !    nphase_counter(kweakmc,j,i) = nphase_counter(kweakmc,j,i) + 1
-    !    nchanged = nchanged + 1
-    !    !$OMP end critical (change_phase1)
-    !    ichanged(nchanged) = i
-    !    jchanged(nchanged) = j
-    !endif
+        ! XXX: middle crust with high dissipation becomes weaker,
+        ! this helps with localization
+        !if(tmpr > 300. .and. tmpr < 400. &
+        !     .and. stressII(j,i)*strainII(j,i) > 4.e6) then
+        !    !$OMP critical (change_phase1)
+        !    nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
+        !    nphase_counter(kweakmc,j,i) = nphase_counter(kweakmc,j,i) + 1
+        !    nchanged = nchanged + 1
+        !    !$OMP end critical (change_phase1)
+        !    mark(kk)%phase = kweakmc
+        !    ichanged(nchanged) = i
+        !    jchanged(nchanged) = j
+        !endif
+
+    case (kmant1, kmant2)
+        ! subuducted oceanic crust below mantle, mantle is serpentinized
+        if(depth < 50.) then
+            do jbelow = j, j+2
+                if(phase_ratio(kocean1,jbelow,i) > 0.8 .or. &
+                     phase_ratio(kocean2,jbelow,i) > 0.8 .or. &
+                     phase_ratio(ksed1,jbelow,i) > 0.8) then
+                    !$OMP critical (change_phase1)
+                    nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
+                    nphase_counter(kserp,j,i) = nphase_counter(kserp,j,i) + 1
+                    nchanged = nchanged + 1
+                    !$OMP end critical (change_phase1)
+                    mark(kk)%phase = kserp
+                    ichanged(nchanged) = i
+                    jchanged(nchanged) = j
+                endif
+            enddo
+        endif
+    case (1, kocean1, kocean2)
+        ! basalt -> eclogite
+        ! phase change pressure
+        trpres = -0.3e9 + 2.2e6*tmpr
+        if (tmpr.gt.550 .and. (-1.0*press).ge.trpres) then
+            mark(kk)%phase = keclg
+            !$OMP critical (change_phase1)
+            nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
+            nphase_counter(keclg,j,i) = nphase_counter(keclg,j,i) + 1
+            nchanged = nchanged + 1
+            !$OMP end critical (change_phase1)
+            ichanged(nchanged) = i
+            jchanged(nchanged) = j
+        endif
+    case (kserp)
+        ! remove serpentinite when it goes below 50 km
+        if(depth >= 50.) then
+            !$OMP critical (change_phase1)
+            nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
+            nphase_counter(kmant1,j,i) = nphase_counter(kmant1,j,i) + 1
+            nchanged = nchanged + 1
+            !$OMP end critical (change_phase1)
+            ichanged(nchanged) = i
+            jchanged(nchanged) = j
+        endif
+    end select
 
     if(nchanged >= 10*mnx) stop 38
 enddo
