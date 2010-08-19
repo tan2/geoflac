@@ -36,18 +36,7 @@ function Eff_dens( j, i)
           !press = stressI(j,i)
           press = dens*g*zcord
 
-          delta_rho = 0.
-
-          ! basalt -> eclogite
-          if (k.eq.1 .or. k.eq.3 .or. k.eq.7) then
-              ! phase change pressure
-              trpres = -0.3e9 + 2.2e6*tmpr
-              if (tmpr.gt.550 .and. (-1.0*press).ge.trpres) then
-                  delta_rho = 400.
-              endif
-          endif
-
-          dens = (den(k)+delta_rho) * ( 1 - alfa(k)*tmpr + beta(k)*press )
+          dens = den(k) * ( 1 - alfa(k)*tmpr + beta(k)*press )
 
           if(k.eq.11) then
               delta_den = 400.
