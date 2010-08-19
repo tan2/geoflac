@@ -26,7 +26,7 @@ function Eff_dens( j, i)
   else
       Eff_dens = 0.
       do k = 1, nphase
-          ratio = phase_ratio(j,i,k)
+          ratio = phase_ratio(k,j,i)
           ! when ratio is small, it won't affect the density
           if(ratio .lt. 1e-9) cycle
 
@@ -188,7 +188,7 @@ cond = conduct(k)
 if( if_hydro .eq. 1 ) then
     cond = HydroDiff(j,i)*den(k)*cp(k)
 endif
-Eff_conduct = Eff_conduct + phase_ratio(j,i,k)*cond
+Eff_conduct = Eff_conduct + phase_ratio(k,j,i)*cond
 enddo
 endif
 !write(*,*) Eff_conduct, cond
@@ -254,7 +254,7 @@ if (iint_marker.ne.1) then
 else
 
     do k = 1, nphase
-        if(phase_ratio(j,i,k) .lt. 0.01) cycle
+        if(phase_ratio(k,j,i) .lt. 0.01) cycle
 
         pow  =  1./pln(k) - 1.
         pow1 = -1./pln(k)
@@ -289,10 +289,10 @@ else
         if(k.eq.8.and.vis.le.1.e19)  vis = 1.e19
         if(k.eq.4.and.vis.le.1.e19)  vis = 1.e19
 
-        Eff_visc = Eff_visc + phase_ratio(j,i,k)*vis
-        !write(*,*) i,j, Eff_visc, vis, tmpr,phase_ratio(j,i,k)
+        Eff_visc = Eff_visc + phase_ratio(k,j,i)*vis
+        !write(*,*) i,j, Eff_visc, vis, tmpr,phase_ratio(k,j,i)
     enddo
-    if(vis.eq.0.) write(*,*) 'eff_visc:', e2sr(j,i),phase_ratio(j,i,k),Eff_visc,vis
+    if(vis.eq.0.) write(*,*) 'eff_visc:', e2sr(j,i),phase_ratio(k,j,i),Eff_visc,vis
 endif
 
 return

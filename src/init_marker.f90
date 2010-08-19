@@ -89,7 +89,7 @@ do j = 1 , nz-1
             mark(kk)%mpres  = 0.
             mark(kk)%mtemp  = 0.
 
-            nphase_counter(j,i,mark(kk)%phase) = nphase_counter(j,i,mark(kk)%phase) + 1
+            nphase_counter(mark(kk)%phase,j,i) = nphase_counter(mark(kk)%phase,j,i) + 1
         enddo
     enddo
 enddo

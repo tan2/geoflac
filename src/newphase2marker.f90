@@ -23,13 +23,13 @@ do kk = 1 , nmarkers
     mark(kk)%meII = strainII(j,i)
     mark(kk)%mpres = stressI(j,i)
     mark(kk)%mtemp = tmpr
-    nphase_counter(j,i,mark(kk)%phase) = nphase_counter(j,i,mark(kk)%phase) - 1
+    nphase_counter(mark(kk)%phase,j,i) = nphase_counter(mark(kk)%phase,j,i) - 1
     mark(kk)%phase = iph
-    nphase_counter(j,i,iph) = nphase_counter(j,i,iph) + 1
+    nphase_counter(iph,j,i) = nphase_counter(iph,j,i) + 1
 enddo
 
-phase_ratio(j,i,:) = 0.0
-phase_ratio(j,i,iph) = 1.0
+phase_ratio(:,j,i) = 0.0
+phase_ratio(iph,j,i) = 1.0
 
 return
 end subroutine newphase2marker
@@ -80,25 +80,25 @@ do kk = 1 , nmarkers
     ! subducted crust becomes weaker to facilitate further subduction
     if(iph==kocean1 .or. iph==kocean2 .or. iph==karc1 .or. iph==ksed1) then
         do jabove = max(1,j-3), j-1
-            if(phase_ratio(jabove,i,kcont1) > 0.8 .or. &
-                 phase_ratio(jabove,i,kcont2) > 0.8 ) then
+            if(phase_ratio(kcont1,jabove,i) > 0.8 .or. &
+                 phase_ratio(kcont2,jabove,i) > 0.8 ) then
                 ! subducted below continent, weakening
                 mark(kk)%phase = kweak
                 !$OMP critical (change_phase1)
-                nphase_counter(j,i,iph) = nphase_counter(j,i,iph) - 1
-                nphase_counter(j,i,kweak) = nphase_counter(j,i,kweak) + 1
+                nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
+                nphase_counter(kweak,j,i) = nphase_counter(kweak,j,i) + 1
                 nchanged = nchanged + 1
                 !$OMP end critical (change_phase1)
                 ichanged(nchanged) = i
                 jchanged(nchanged) = j
 
-            else if(phase_ratio(jabove,i,kmant1) > 0.8 .or. &
-                 phase_ratio(jabove,i,kmant2) > 0.8 ) then
+            else if(phase_ratio(kmant1,jabove,i) > 0.8 .or. &
+                 phase_ratio(kmant2,jabove,i) > 0.8 ) then
                 ! subuducted below mantle, serpentinization
                 mark(kk)%phase = kserp
                 !$OMP critical (change_phase1)
-                nphase_counter(j,i,iph) = nphase_counter(j,i,iph) - 1
-                nphase_counter(j,i,kserp) = nphase_counter(j,i,kserp) + 1
+                nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
+                nphase_counter(kserp,j,i) = nphase_counter(kserp,j,i) + 1
                 nchanged = nchanged + 1
                 !$OMP end critical (change_phase1)
                 ichanged(nchanged) = i
@@ -114,8 +114,8 @@ do kk = 1 , nmarkers
     !     .and. stressII(j,i)*strainII(j,i) > 4.e6) then
     !    mark(kk)%phase = kweakmc
     !    !$OMP critical (change_phase1)
-    !    nphase_counter(j,i,iph) = nphase_counter(j,i,iph) - 1
-    !    nphase_counter(j,i,kweakmc) = nphase_counter(j,i,kweakmc) + 1
+    !    nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
+    !    nphase_counter(kweakmc,j,i) = nphase_counter(kweakmc,j,i) + 1
     !    nchanged = nchanged + 1
     !    !$OMP end critical (change_phase1)
     !    ichanged(nchanged) = i
@@ -132,14 +132,14 @@ do k = 1, nchanged
     i = ichanged(k)
     j = jchanged(k)
 
-    kinc = sum(nphase_counter(j,i,:))
+    kinc = sum(nphase_counter(:,j,i))
 
     !$OMP critical (change_phase2)
-    phase_ratio(j,i,1:nphase) = nphase_counter(j,i,1:nphase) / float(kinc)
+    phase_ratio(1:nphase,j,i) = nphase_counter(1:nphase,j,i) / float(kinc)
     !$OMP end critical (change_phase2)
 
     ! the phase of this element is the most abundant marker phase
-    kph = maxloc(nphase_counter(j,i,:))
+    kph = maxloc(nphase_counter(:,j,i))
     !$OMP critical (change_phase3)
     iphase(j,i) = kph(1)
     !$OMP end critical (change_phase3)
