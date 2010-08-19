@@ -28,6 +28,9 @@ F90 = gfortran
 ## Intel, tested with v11.1
 #F90 = ifort
 
+## PGI group
+#F90 = pgf90
+
 ## Sun
 #F90 = f90
 
@@ -78,6 +81,20 @@ ifeq ($(F90), ifort)
 	       CFLAGS += -O0 -g -no-opt-subscript-in-range -ftrapuv -check all -traceback
 	       LDFLAGS +=
 	endif
+endif
+
+## for PGI (untested)
+ifeq ($(F90), pgf90)
+        ifeq ($(debug), 0)
+                CFLAGS += -O3 -fast -fastsse -Mnoframe -Mipa=fast
+                ifeq ($(omp), 1)
+                        CFLAGS += -mp
+                        LDFLAGS += -mp
+                endif
+        else
+               CFLAGS += -O0 -g -Mbounds -Mchkstk -traceback
+               LDFLAGS +=
+        endif
 endif
 
 ## for Solaris
