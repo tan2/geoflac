@@ -224,7 +224,7 @@ do n = 1, nmarkers
 
     !if(mark(n)%ntriag .ne. 2 * ( (nz-1)*(i-1)+j-1) + k) write(*,*), mark(n)%ntriag, i,j,k
 
-    nphase_counter(j,i,mark(n)%phase) = nphase_counter(j,i,mark(n)%phase) + 1
+    nphase_counter(mark(n)%phase,j,i) = nphase_counter(mark(n)%phase,j,i) + 1
 enddo
 
 call marker2elem

@@ -16,7 +16,7 @@ subroutine marker2elem
 
   do j = 1 , nz-1
       do i = 1 , nx-1
-          kinc = sum(nphase_counter(j,i,:))
+          kinc = sum(nphase_counter(:,j,i))
 
           !  if there are too few markers in the element, create a new one
           if(kinc.le.4) call SysMsg('marker2elem: too few markers in the element, create a new one')
@@ -57,20 +57,20 @@ subroutine marker2elem
               mark(nmarkers)%ID = nmarkers 
               ! assign phase to the new marker
               mark(nmarkers)%phase = iphase(j,i)
-              nphase_counter(j,i,mark(nmarkers)%phase) = nphase_counter(j,i,mark(nmarkers)%phase) + 1
+              nphase_counter(mark(nmarkers)%phase,j,i) = nphase_counter(mark(nmarkers)%phase,j,i) + 1
           enddo
 
-          phase_ratio(j,i,1:nphase) = nphase_counter(j,i,1:nphase) / float(kinc)
+          phase_ratio(1:nphase,j,i) = nphase_counter(1:nphase,j,i) / float(kinc)
 
           ! the phase of this element is the most abundant marker phase
-          kph = maxloc(nphase_counter(j,i,:))
+          kph = maxloc(nphase_counter(:,j,i))
           iphase(j,i) = kph(1)
 
           !! sometimes there are more than one phases that are equally abundant
-          !maxphase = maxval(nphase_counter(j,i,:))
-          !nmax = count(nphase_counter(j,i,:) == maxphase)
+          !maxphase = maxval(nphase_counter(:,j,i))
+          !nmax = count(nphase_counter(:,j,i) == maxphase)
           !if(nmax .gt. 1) then
-          !    write(*,*) 'elem has equally abundant marker phases:', i,j,nmax,nphase_counter(j,i,:)
+          !    write(*,*) 'elem has equally abundant marker phases:', i,j,nmax,nphase_counter(:,j,i)
           !    write(*,*) 'choosing the 1st maxloc as the phase'
           !endif
 

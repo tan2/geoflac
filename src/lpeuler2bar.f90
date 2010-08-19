@@ -34,7 +34,7 @@ do k = 1 , nmarkers
     mark(k)%ntriag = ntr
 
     !$OMP critical
-    nphase_counter(jj,ii,mark(k)%phase) = nphase_counter(jj,ii,mark(k)%phase) + 1
+    nphase_counter(mark(k)%phase,jj,ii) = nphase_counter(mark(k)%phase,jj,ii) + 1
     !$OMP end critical
 enddo
 !$OMP end parallel do
