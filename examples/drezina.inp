@@ -1,6 +1,6 @@
 ;;; Example input for flac
 ;;;
-;;; This input file took 165m18s, or 9918s, to compute 500 kyrs of model time
+;;; This input file took 107m29s, or 6449s, to compute 500 kyrs of model time
 ;;; (on Intel Core2 Quad CPU Q9650 3.00GHz, using all four cores).
 ;;;
 ;==================================================================
@@ -139,7 +139,7 @@ proftemp.dat   temperature profile dat.file
 ;(12) weak crust, transformed from (2) and (6) if obducting over oceanic crust
 12,1., 2800., 3.0e-5, 0.0e-11, 3.05, 1.25e-1, 1.76e+5, 3.0e+10, 3.0e+10, 44.e+6,0., 30.,0.,  0.,  2.5, 1000.,  9000., 12000., 12000., 1.
 ;(13) eclogite, transformed from (3) and (7), denser and more viscous
-12,1., 3370., 3.0e-5, 0.0e-12, 3.05, 1.25e-1, 5.00e+5, 3.0e+10, 3.0e+10, 44.e+6,0., 30.,0.,  0.,  3.3, 1000., 13000., 16000., 16000., 1.
+12,1., 3370., 3.0e-5, 0.0e-12, 3.05, 1.25e-1, 4.50e+5, 3.0e+10, 3.0e+10, 44.e+6,0., 30.,0.,  0.,  3.3, 1000., 13000., 16000., 16000., 1.
 ;(14) buoyant arc
 12,1., 2850., 3.0e-5, 0.0e-12, 3.05, 1.25e-1, 8.76e+5, 3.0e+10, 3.0e+10, 44.e+6,0., 30.,0.,  0.,  3.3, 1000., 13000., 16000., 16000., 1.
 ;(15) weak middle crust, transformed from (3) and (7) if stressed and heated
