@@ -64,7 +64,7 @@ real*8, parameter :: eclogite_temp = 550.
 nchanged = 0
 
 
-!$OMP parallel private(kk,i,j,k,n,tmpr,depth,iph,press,jabove,kinc,kph)
+!$OMP parallel private(kk,i,j,k,n,tmpr,depth,iph,press,jabove,trepres,kinc,kph)
 !$OMP do
 do kk = 1 , nmarkers
     if (mark(kk)%dead.eq.0) cycle
