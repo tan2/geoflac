@@ -78,15 +78,14 @@ do kk = 1 , nmarkers
 
     ! depth below the surface in km
     depth = (cord(1,i,2) - 0.5*(cord(j,i,2)+cord(j+1,i,2)))*1e-3
-    press = den(iph)*g*depth
-
     iph = mark(kk)%phase
+    press = den(iph)*g*depth
 
     select case(iph)
     case (kcont1, kcont2)
         ! subduction below continent, continent becomes weaker to
         ! facilitate further subduction
-        do jbelow = j, j+2
+        do jbelow = j, min(j+2,nz-1)
             if(phase_ratio(kocean1,jbelow,i) > 0.8 .or. &
                  phase_ratio(kocean2,jbelow,i) > 0.8 .or. &
                  phase_ratio(karc1,jbelow,i) > 0.8 .or. &
@@ -119,7 +118,7 @@ do kk = 1 , nmarkers
     case (kmant1, kmant2)
         ! subuducted oceanic crust below mantle, mantle is serpentinized
         if(depth < 50.) then
-            do jbelow = j, j+2
+            do jbelow = j, min(j+2,nz-1)
                 if(phase_ratio(kocean1,jbelow,i) > 0.8 .or. &
                      phase_ratio(kocean2,jbelow,i) > 0.8 .or. &
                      phase_ratio(ksed1,jbelow,i) > 0.8) then
