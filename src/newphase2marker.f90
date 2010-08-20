@@ -137,13 +137,13 @@ do kk = 1 , nmarkers
         ! basalt -> eclogite
         ! phase change pressure
         trpres = -0.3e9 + 2.2e6*tmpr
-        if (tmpr.gt.550 .and. (-1.0*press).ge.trpres) then
-            mark(kk)%phase = keclg
+        if (tmpr.gt.550. .and. (-1.0*press).ge.trpres) then
             !$OMP critical (change_phase1)
             nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
             nphase_counter(keclg,j,i) = nphase_counter(keclg,j,i) + 1
             nchanged = nchanged + 1
             !$OMP end critical (change_phase1)
+            mark(kk)%phase = keclg
             ichanged(nchanged) = i
             jchanged(nchanged) = j
         endif
@@ -155,6 +155,7 @@ do kk = 1 , nmarkers
             nphase_counter(kmant1,j,i) = nphase_counter(kmant1,j,i) + 1
             nchanged = nchanged + 1
             !$OMP end critical (change_phase1)
+            mark(kk)%phase = kmant1
             ichanged(nchanged) = i
             jchanged(nchanged) = j
         endif
