@@ -164,12 +164,12 @@ if( topo_kappa .gt. 0. ) then
         endif
         xtgt(i) = abs((cord(1,i+1,2)-cord(1,i  ,2))/(cord(1,i+1,1)-cord(1,i  ,1))) 
         xtgtmax = max(xtgt(i),xtgtmax)
-!        snder = ( (cord(1,i+1,2)-cord(1,i  ,2))/(cord(1,i+1,1)-cord(1,i  ,1)) - &
-!            (cord(1,i  ,2)-cord(1,i-1,2))/(cord(1,i  ,1)-cord(1,i-1,1)) ) / &
-!            (cord(1,i+1,1)-cord(1,i-1,1))
-!        dh(i) = topo_kappa2 * dt * snder
-        alphaE = log(10.0)/20000/20000
-        dh(i)= -1.0 * topo_kappa * dt * exp(-1.0*alphaE*(cord(1,i,1)-100000)**2)
+        snder = ( (cord(1,i+1,2)-cord(1,i  ,2))/(cord(1,i+1,1)-cord(1,i  ,1)) - &
+            (cord(1,i  ,2)-cord(1,i-1,2))/(cord(1,i  ,1)-cord(1,i-1,1)) ) / &
+            (cord(1,i+1,1)-cord(1,i-1,1))
+        dh(i) = topo_kappa2 * dt * snder
+!        alphaE = log(10.0)/20000/20000
+!        dh(i)= -1.0 * topo_kappa * dt * exp(-1.0*alphaE*(cord(1,i,1)-100000)**2)
         if( dabs(dh(i)).gt.dzmax) dzmax = dabs(dh(i))
 !        write(*,*) i,dh(i),snder,dt,topo_kappa
     end do
