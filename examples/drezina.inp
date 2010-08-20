@@ -1,6 +1,6 @@
 ;;; Example input for flac
 ;;;
-;;; This input file took 107m29s, or 6449s, to compute 500 kyrs of model time
+;;; This input file took 127m29s, or 7649s, to compute 500 kyrs of model time
 ;;; (on Intel Core2 Quad CPU Q9650 3.00GHz, using all four cores).
 ;;;
 ;==================================================================
