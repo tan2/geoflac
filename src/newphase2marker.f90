@@ -57,10 +57,14 @@ integer, parameter :: kserp = 9
 integer, parameter :: kweakmc = 15
 integer, parameter :: keclg = 13
 
+! min. depth (m) and temperature (C) of eclogite phase transition
+real*8, parameter :: eclogite_depth = 59.e3
+real*8, parameter :: eclogite_temp = 550.
+
 nchanged = 0
 
 
-!$OMP parallel private(kk,i,j,k,n,tmpr,iph,jabove,kinc,kph)
+!$OMP parallel private(kk,i,j,k,n,tmpr,depth,iph,press,jabove,kinc,kph)
 !$OMP do
 do kk = 1 , nmarkers
     if (mark(kk)%dead.eq.0) cycle
@@ -71,13 +75,15 @@ do kk = 1 , nmarkers
     j = mod((n - k) / 2, nz-1) + 1
     i = (n - k) / 2 / (nz - 1) + 1
 
+    tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
+
+    ! depth below the surface in m
+    depth = (cord(1,i,2) - 0.5*(cord(j,i,2)+cord(j+1,i,2)))
+
     ! If temperature of this element is too high, this marker is already
     ! too deep in the mantle, where there is no significant phase change.
-    tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
-    if (tmpr.gt.1000.) cycle
+    if (tmpr > 1000. .or. depth > eclogite_depth + 20.e3) cycle
 
-    ! depth below the surface in km
-    depth = (cord(1,i,2) - 0.5*(cord(j,i,2)+cord(j+1,i,2)))*1e-3
     iph = mark(kk)%phase
     press = den(iph)*g*depth
 
@@ -117,7 +123,7 @@ do kk = 1 , nmarkers
 
     case (kmant1, kmant2)
         ! subuducted oceanic crust below mantle, mantle is serpentinized
-        if(depth < 50.) then
+        if(depth < eclogite_depth) then
             do jbelow = j, min(j+2,nz-1)
                 if(phase_ratio(kocean1,jbelow,i) > 0.8 .or. &
                      phase_ratio(kocean2,jbelow,i) > 0.8 .or. &
@@ -136,8 +142,9 @@ do kk = 1 , nmarkers
     case (1, kocean1, kocean2)
         ! basalt -> eclogite
         ! phase change pressure
-        trpres = -0.3e9 + 2.2e6*tmpr
-        if (tmpr.gt.550. .and. (-1.0*press).ge.trpres) then
+        ! based on Fig 1 of Hacker at AGU Monograph, 1996
+        trpres = 0.3e9 + 1.9e6*tmpr
+        if (tmpr > eclogite_temp .and. press >= trpres) then
             !$OMP critical (change_phase1)
             nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
             nphase_counter(keclg,j,i) = nphase_counter(keclg,j,i) + 1
@@ -148,8 +155,8 @@ do kk = 1 , nmarkers
             jchanged(nchanged) = j
         endif
     case (kserp)
-        ! remove serpentinite when it goes below 50 km
-        if(depth >= 50.) then
+        ! remove serpentinite when it goes too deep
+        if(depth >= eclogite_depth + 5.e3) then
             !$OMP critical (change_phase1)
             nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
             nphase_counter(kmant1,j,i) = nphase_counter(kmant1,j,i) + 1
