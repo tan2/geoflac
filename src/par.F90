@@ -7,8 +7,15 @@ include 'params.inc'
 include 'arrays.inc'
 include 'omp_lib.h'
 
-
+character*200 inputfile
 real*4 secnds,time0
+
+narg = iargc()
+if(narg /= 1) then
+    write(*,*) 'usage: flac inputfile'
+    stop 1
+endif
+call getarg(1, inputfile)
 
 ! Area
 open( 33, file='area.dat' )
@@ -23,7 +30,7 @@ nloop = 0
 nloop_restarted = 0
 
 ! Read task parameters
-call read_params()
+call read_params(inputfile)
 call allocate_arrays(nz, nx)
 
 ! Try to read save-file contents. If file exist - restart, othewise - new start

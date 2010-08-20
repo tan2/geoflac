@@ -1,12 +1,14 @@
 ! Reads problem parameters from input file
 
-subroutine read_params
+subroutine read_params(inputfile)
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 
+character*200 inputfile
+
 iu =4 
-open( iu, file='drezina.inp' )
+open( iu, file=inputfile )
 
 ! MESH
 call AdvanceToNextInputLine( 4 )
