@@ -254,11 +254,20 @@ include 'arrays.inc'
 character*200 msg
 dimension fric(5), plstrain(5), dilat(5), cohesion(5)
 
+integer, parameter :: kocean1 = 3
+integer, parameter :: kocean2 = 7
+integer, parameter :: kcont1 = 2
+integer, parameter :: kcont2 = 6
+integer, parameter :: ksed1 = 10
+integer, parameter :: karc1 = 14
+integer, parameter :: kweak = 12
+integer, parameter :: kserp = 9
+
 iph = iphase(j,i)
 pls_curr = aps(j,i)
 
-if (iynocean.eq.1.and.iph.eq.3.or.iph.eq.7.or.iph.eq.2.or.iph.eq.14) then
-    ! phase #2 above is actually a continental crust phase
+if (iynocean==1.and.iph==kocean1.or.iph==kocean2.or.iph==kcont1.or.iph==karc1) then
+    ! XXX: phase #2 above is actually a continental crust phase
       fric = fric_oc
       plstrain = plstrain_oc
       dilat = dilat_oc
@@ -271,11 +280,11 @@ else
 endif
 
 ! XXX: TO ADDRESS PHASE CHANGE IN BRITTLE MANTLE REGIME, FRICTION ANGLE IS REDUCED (SET TO 0 IN THIS CASE)
-if(iph.eq.9.or.iph.eq.12) then
+if(iph==kserp.or.iph==kweak) then
    fric = 0.
    cohesion = 4.e6
 endif
-if(iph.eq.10) then
+if(iph==ksed1) then
    fric = 15.
    fric(1) = 30.
    cohesion= 4.e6
