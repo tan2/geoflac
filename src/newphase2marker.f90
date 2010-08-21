@@ -42,7 +42,7 @@ include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 
-integer ichanged(10*mnx), jchanged(10*mnx)
+integer ichanged(100*mnx), jchanged(100*mnx)
 integer kph(1)
 integer, parameter :: kocean1 = 3
 integer, parameter :: kocean2 = 7
@@ -64,7 +64,7 @@ real*8, parameter :: eclogite_temp = 550.
 nchanged = 0
 
 
-!$OMP parallel private(kk,i,j,k,n,tmpr,depth,iph,press,jabove,trpres,kinc,kph)
+!$OMP parallel private(kk,i,j,k,n,tmpr,depth,iph,press,jbelow,trpres)
 !$OMP do
 do kk = 1 , nmarkers
     if (mark(kk)%dead.eq.0) cycle
@@ -85,13 +85,12 @@ do kk = 1 , nmarkers
     if (tmpr > 1000. .or. depth > eclogite_depth + 20.e3) cycle
 
     iph = mark(kk)%phase
-    press = den(iph)*g*depth
 
     select case(iph)
     case (kcont1, kcont2)
         ! subduction below continent, continent becomes weaker to
         ! facilitate further subduction
-        do jbelow = j, min(j+2,nz-1)
+        do jbelow = min(j+1,nz-1), min(j+3,nz-1)
             if(phase_ratio(kocean1,jbelow,i) > 0.8 .or. &
                  phase_ratio(kocean2,jbelow,i) > 0.8 .or. &
                  phase_ratio(karc1,jbelow,i) > 0.8 .or. &
@@ -100,10 +99,10 @@ do kk = 1 , nmarkers
                 nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
                 nphase_counter(kweak,j,i) = nphase_counter(kweak,j,i) + 1
                 nchanged = nchanged + 1
-                !$OMP end critical (change_phase1)
-                mark(kk)%phase = kweak
                 ichanged(nchanged) = i
                 jchanged(nchanged) = j
+                !$OMP end critical (change_phase1)
+                mark(kk)%phase = kweak
             endif
         enddo
 
@@ -115,16 +114,16 @@ do kk = 1 , nmarkers
         !    nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
         !    nphase_counter(kweakmc,j,i) = nphase_counter(kweakmc,j,i) + 1
         !    nchanged = nchanged + 1
-        !    !$OMP end critical (change_phase1)
-        !    mark(kk)%phase = kweakmc
         !    ichanged(nchanged) = i
         !    jchanged(nchanged) = j
+        !    !$OMP end critical (change_phase1)
+        !    mark(kk)%phase = kweakmc
         !endif
 
     case (kmant1, kmant2)
         ! subuducted oceanic crust below mantle, mantle is serpentinized
         if(depth < eclogite_depth) then
-            do jbelow = j, min(j+2,nz-1)
+            do jbelow = min(j+1,nz-1), min(j+3,nz-1)
                 if(phase_ratio(kocean1,jbelow,i) > 0.8 .or. &
                      phase_ratio(kocean2,jbelow,i) > 0.8 .or. &
                      phase_ratio(ksed1,jbelow,i) > 0.8) then
@@ -132,10 +131,10 @@ do kk = 1 , nmarkers
                     nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
                     nphase_counter(kserp,j,i) = nphase_counter(kserp,j,i) + 1
                     nchanged = nchanged + 1
-                    !$OMP end critical (change_phase1)
-                    mark(kk)%phase = kserp
                     ichanged(nchanged) = i
                     jchanged(nchanged) = j
+                    !$OMP end critical (change_phase1)
+                    mark(kk)%phase = kserp
                 endif
             enddo
         endif
@@ -144,15 +143,16 @@ do kk = 1 , nmarkers
         ! phase change pressure
         ! based on Fig 1 of Hacker at AGU Monograph, 1996
         trpres = 0.3e9 + 1.9e6*tmpr
+        press = den(iph)*g*depth
         if (tmpr > eclogite_temp .and. press >= trpres) then
             !$OMP critical (change_phase1)
             nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
             nphase_counter(keclg,j,i) = nphase_counter(keclg,j,i) + 1
             nchanged = nchanged + 1
-            !$OMP end critical (change_phase1)
-            mark(kk)%phase = keclg
             ichanged(nchanged) = i
             jchanged(nchanged) = j
+            !$OMP end critical (change_phase1)
+            mark(kk)%phase = keclg
         endif
     case (kserp)
         ! remove serpentinite when it goes too deep
@@ -161,18 +161,18 @@ do kk = 1 , nmarkers
             nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
             nphase_counter(kmant1,j,i) = nphase_counter(kmant1,j,i) + 1
             nchanged = nchanged + 1
-            !$OMP end critical (change_phase1)
-            mark(kk)%phase = kmant1
             ichanged(nchanged) = i
             jchanged(nchanged) = j
+            !$OMP end critical (change_phase1)
+            mark(kk)%phase = kmant1
         endif
     end select
 
-    if(nchanged >= 10*mnx) stop 38
+    if(nchanged >= 100*mnx) stop 38
 enddo
 !$OMP end do
+!$OMP end parallel
 
-!$OMP do
 ! recompute phase ratio of those changed elements
 do k = 1, nchanged
     i = ichanged(k)
@@ -180,17 +180,11 @@ do k = 1, nchanged
 
     kinc = sum(nphase_counter(:,j,i))
 
-    !$OMP critical (change_phase2)
     phase_ratio(1:nphase,j,i) = nphase_counter(1:nphase,j,i) / float(kinc)
-    !$OMP end critical (change_phase2)
 
     ! the phase of this element is the most abundant marker phase
     kph = maxloc(nphase_counter(:,j,i))
-    !$OMP critical (change_phase3)
     iphase(j,i) = kph(1)
-    !$OMP end critical (change_phase3)
 enddo
-!$OMP end do
-!$OMP end parallel
 return
 end subroutine change_phase
