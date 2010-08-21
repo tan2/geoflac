@@ -32,7 +32,7 @@ if( fmelt .gt. 0. ) then
     endif
 endif
 
-
+!XXX: phase #115 never exists
 ! experiments with Peierls law
 if (iph .eq. 115 ) then
     PL_sigma = 8.5e+9
