@@ -16,7 +16,6 @@ do 51 i = 1,nx-1
     rogh = 0.
     do 52 j = 1,nz-1
         iph = iphase(j,i)
-        if(iph.eq.0) goto 52
         tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
         densT = den(iph) * ( 1 - alfa(iph)*tmpr )
         dh1 = cord (j,i  ,2) - cord (j+1,i  ,2)
