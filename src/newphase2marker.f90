@@ -82,7 +82,7 @@ do kk = 1 , nmarkers
 
     ! If temperature of this element is too high, this marker is already
     ! too deep in the mantle, where there is no significant phase change.
-    if (tmpr > 1000. .or. depth > eclogite_depth + 20.e3) cycle
+    if (tmpr > 1000. .or. depth > eclogite_depth + 50.e3) cycle
 
     iph = mark(kk)%phase
 
@@ -103,6 +103,7 @@ do kk = 1 , nmarkers
                 jchanged(nchanged) = j
                 !$OMP end critical (change_phase1)
                 mark(kk)%phase = kweak
+                exit
             endif
         enddo
 
@@ -135,6 +136,7 @@ do kk = 1 , nmarkers
                     jchanged(nchanged) = j
                     !$OMP end critical (change_phase1)
                     mark(kk)%phase = kserp
+                    exit
                 endif
             enddo
         endif
@@ -177,6 +179,11 @@ enddo
 do k = 1, nchanged
     i = ichanged(k)
     j = jchanged(k)
+
+    !if(minval(nphase_counter(:,j,i)) < 0) then
+    !    print *, j, i, nphase_counter(:,j,i)
+    !    stop 999
+    !endif
 
     kinc = sum(nphase_counter(:,j,i))
 
