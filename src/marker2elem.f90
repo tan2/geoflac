@@ -35,7 +35,7 @@ subroutine marker2elem
               ! Calculate barycentic coordinates
               ii = i
               jj = j
-              call euler2bar(xx,yy,bar1,bar2,ntr,ii,jj,inc) 
+              call check_inside(xx,yy,bar1,bar2,ntr,ii,jj,inc)
 
               if(inc.eq.0) cycle
 

@@ -28,14 +28,22 @@ if (jend.ge.nz) jend = nz-1
 do j = jbeg, jend
     do i = ibeg ,iend
         call check_inside(x,y,bar1,bar2,ntr,i,j,inc)
-        if(inc .eq. 1) return
+        if(inc .eq. 1) then
+            ii = i
+            jj = j
+            return
+        endif
     enddo
 enddo
 
 ! search all surface elem
 do i = 1, nx-1
     call check_inside(x,y,bar1,bar2,ntr,i,1,inc)
-    if(inc .eq. 1) return
+    if(inc .eq. 1) then
+        ii = i
+        jj = 1
+        return
+    endif
 enddo
 
 ! search all elem, usually it means the marker is "dead"
@@ -49,6 +57,8 @@ do j = 1, nz-1
             ! to far away from its original element
             write(msg,*) 'Found at (i,j)', i, j, ' Might need more frequent remeshing?'
             call SysMsg(msg)
+            ii = i
+            jj = j
             return
         endif
     enddo
