@@ -12,8 +12,8 @@ parameter( min_elmarkers = 0, max_elmarkers = 12 )
 
 !$OMP parallel private(x1,x2,x3,y1,y2,y3,n,det,i,k,j,ba1,ba2,xnum,xdem)
 !$OMP do
-do j = 1 , nz-1
 do i = 1 , nx-1
+do j = 1 , nz-1
 do k = 1 , 2
 
   if (k.eq.1) then
