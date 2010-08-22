@@ -8,18 +8,22 @@ subroutine marker2elem
   common /markers/ nfreemarkers,ndeadmarkers,xmpt(mnz*mnx*2,2,3)
   parameter( min_elmarkers = 0, max_elmarkers = 12 )
   integer kph(1)
-  !type(marker):: mark(nmarkers)
+
+  character*200 msg
 
   ! Interpolate marker properties into elements
   ! Find the triangle in which each marker belongs
 
 
-  do j = 1 , nz-1
-      do i = 1 , nx-1
+  do i = 1 , nx-1
+      do j = 1 , nz-1
           kinc = sum(nphase_counter(:,j,i))
 
           !  if there are too few markers in the element, create a new one
-          if(kinc.le.4) call SysMsg('marker2elem: too few markers in the element, create a new one')
+          if(kinc.le.4) then
+              write(msg,*) 'marker2elem: , create a new marker in the element (i,j))', i, j
+              call SysMsg(msg)
+          endif
           do while (kinc.le.4)
               x1 = min(cord(j  ,i  ,1), cord(j+1,i  ,1))
               y1 = min(cord(j  ,i  ,2), cord(j  ,i+1,2))
