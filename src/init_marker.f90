@@ -67,7 +67,7 @@ do j = 1 , nz-1
 
             ii = i
             jj = j
-            call euler2bar(xx,yy,bar1,bar2,ntr,ii,jj,inc)
+            call check_inside(xx,yy,bar1,bar2,ntr,ii,jj,inc)
             if(ntr.eq.0) cycle
       
 ! define the markers for each elements
