@@ -8,33 +8,30 @@ include 'arrays.inc'
 
 nphase_counter(:,:,:) = 0
 
-!$OMP parallel do private(k,nmtriag,ntr,nmelemt,ii,jj,xx,yy,bar1,bar2,inc)
-do k = 1 , nmarkers
-    if (mark(k)%dead.eq.0) cycle
-    nmtriag = mark(k)%ntriag
-    ntr = nmtriag
-    nmelemt = int((nmtriag-1)/2+1)
-    if (mod(nmelemt,nz-1).eq.0) then
-        ii = nmelemt/(nz-1)
-    else
-        ii = int((nmelemt/(nz-1))+1)
-    endif
-    jj = nmelemt-(nz-1)*(ii-1)
-    xx = mark(k)%x
-    yy = mark(k)%y
-    call euler2bar(xx,yy,bar1,bar2,ntr,ii,jj,inc)
+!$OMP parallel do private(n,k,j,i,xx,yy,bar1,bar2,ntr,inc)
+do n = 1 , nmarkers
+    if (mark(n)%dead.eq.0) cycle
+
+    ! from ntriag, get element number
+    k = mod(mark(n)%ntriag - 1, 2) + 1
+    j = mod((mark(n)%ntriag - k) / 2, nz-1) + 1
+    i = (mark(n)%ntriag - k) / 2 / (nz - 1) + 1
+
+    xx = mark(n)%x
+    yy = mark(n)%y
+    call euler2bar(xx,yy,bar1,bar2,ntr,i,j,inc)
     if (inc.eq.0) then
-        !write(*,*) ii,jj,ntr,xx,yy
-        mark(k)%dead = 0
+        !write(*,*) i,j,ntr,xx,yy
+        mark(n)%dead = 0
         cycle
     endif
 
-    mark(k)%a1 = bar1
-    mark(k)%a2 = bar2
-    mark(k)%ntriag = ntr
+    mark(n)%a1 = bar1
+    mark(n)%a2 = bar2
+    mark(n)%ntriag = ntr
 
     !$OMP critical
-    nphase_counter(mark(k)%phase,jj,ii) = nphase_counter(mark(k)%phase,jj,ii) + 1
+    nphase_counter(mark(n)%phase,j,i) = nphase_counter(mark(n)%phase,j,i) + 1
     !$OMP end critical
 enddo
 !$OMP end parallel do
