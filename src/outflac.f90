@@ -105,9 +105,8 @@ endif
 
 ! Density 
 if( io_mark.eq.1 ) then
-!    De(1:nz-1,1:nx-1) = rmarker(1:nz-1,1:nx-1)
-   do j = 1, nz-1
    do i = 1, nx-1
+   do j = 1, nz-1
           De(j,i) = Eff_dens(j,i)
    enddo
    enddo
