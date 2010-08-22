@@ -14,9 +14,7 @@ parameter( onesixth = 0.1666666666666666666666)
 parameter( fivesixth = 0.8333333333333333333333)
 
 nphase_counter = 0
-max_markers = 9*(nz-1)*(nx-1)
 
-nelemts  = (nx-1)*(nz-1)
 ! define euler coordinate of the markers
 ! Distribute evenly first then randomize the distribution
 ! to start 9 markers per elements
@@ -57,7 +55,7 @@ do j = 1 , nz-1
 
 ! randomize the new coordinates inside the element
         l = 1
-        do while (l .le. 9)
+        do while (l .lt. 9)
             call random_number(rx)
             call random_number(ry)
             rx = 0.5 - rx
@@ -72,7 +70,7 @@ do j = 1 , nz-1
             call euler2bar(xx,yy,bar1,bar2,ntr,ii,jj,inc)
             if(ntr.eq.0) cycle
       
-! define the markers for each elements in columns (9*nelemts=nmarkers)
+! define the markers for each elements
             l = l + 1
             kk = kk +1 
 
@@ -95,6 +93,9 @@ do j = 1 , nz-1
 enddo
 nmarkers = kk
 write(333,*) '# of markers', nmarkers
+
+call marker2elem
+
 return
 end subroutine init_marker
 
