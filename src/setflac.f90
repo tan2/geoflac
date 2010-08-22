@@ -28,7 +28,6 @@ call init_phase
 ! Setup markers
 if (iint_marker.eq.1) then
 call init_marker
-call marker2elem
 endif
 ! Setup tracers
 if (iint_tracer.eq.1) call init_tracer
