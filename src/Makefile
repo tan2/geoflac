@@ -186,7 +186,6 @@ SRCS =	\
 	outflac.f90 \
 	outmarker.f90 \
 	outtracer.f90 \
-	read_more.f90 \
 	read_params.f90 \
 	rem_cord.f90 \
 	remesh.f90 \
