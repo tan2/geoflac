@@ -137,6 +137,7 @@ call AdvanceToNextInputLine( 4 )
 read (4,*) iax1,iay1,ibx1,iby1,icx1,icy1,idx1,idy1 
 call AdvanceToNextInputLine( 4 )
 read (4,*) nzone_age 
+call AdvanceToNextInputLine( 4 )
 do i = 1, nzone_age
       read (4,*) age_1(i),hc(i),iph_col1(i),iph_col2(i),ixtb1(i),ixtb2(i) 
 enddo

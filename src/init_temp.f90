@@ -206,8 +206,8 @@ do j = 1,nz-1
     source(j,1:nx-1) = hs*exp(-y/hr)
 end do
 
-! Initial quadrilateral temperature perturbation
-if( temp_per.gt.0 ) then
+! Initial rectangular temperature perturbation
+if( temp_per.ne.0. ) then
     temp(iy1t:iy2t,ix1t:ix2t) = temp(iy1t:iy2t,ix1t:ix2t) + temp_per
 endif              
 
