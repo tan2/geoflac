@@ -12,8 +12,8 @@ dimension depl(4)
 dimension s11p(4),s22p(4),s12p(4),s33p(4),s11v(4),s22v(4),s12v(4),s33v(4)
 logical rh_sel
 
-c1d3 = 1./3.
-c1d6 = 1./6.
+real*8, parameter :: c1d3 = 1./3.
+real*8, parameter :: c1d6 = 1./6.
 
 !XXX: hard-code constant
 if( mod(nloop,10).eq.0 .OR. ireset.eq.1 ) then
@@ -25,6 +25,7 @@ endif
 rh_sel = .true.
 irh=irheol(mphase)
 if(irh.eq.11) call init_visc
+
 !if(iynts.eq.1) call init_temp
 
 ! Initial stress boundary condition
@@ -51,7 +52,9 @@ if (ny_inject.gt.0) then
          sarc2 = sarc1*poiss/(1.-poiss)
          !write(*,*) sarc1,sarc2
 endif
+
 irh_mark = 0
+
 !$OMP Parallel Private(i,j,k,iph,irh,bulkm,rmu,coh,phi,psi, &
 !$OMP                  stherm,hardn,vis, &
 !$OMP                  de11,de22,de12,de33,dv, &
@@ -66,10 +69,12 @@ do 3 i = 1,nx-1
         ! iphase (j,i) is number of a phase NOT a rheology
         iph = iphase(j,i)
         irh = irheol(iph)
+
 !        if(ny_inject.gt.0.and.j.le.nelem_inject) then
 !        if(i.eq.iinj.or.i.eq.iinj-1) irh_mark = 1
 !        if(i.eq.iinj) irh = 3 
 !        endif
+
         ! Elastic modules & viscosity & plastic properties
         bulkm = rl(iph) + 2.*rm(iph)/3.
         rmu   = rm(iph)
@@ -93,7 +98,7 @@ do 3 i = 1,nx-1
         vis = visn(j,i)
 
         ! Cycle by triangles
-        do 4 k = 1,4   
+        do k = 1,4
 
             ! Incremental strains
             de11 = strainr(1,k,j,i)*dt
@@ -170,8 +175,7 @@ do 3 i = 1,nx-1
                     endif
                 endif
             endif
-
-4       continue
+        enddo
 
         if( irh.ge.11 .AND. rh_sel ) then
             ! deside - elasto-plastic or viscous deformation

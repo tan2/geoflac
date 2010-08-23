@@ -3,8 +3,9 @@ subroutine maxwell (bulkm,rmu0,viscosity,s11,s22,s33,s12,de11,de22,de33,de12,dv)
 include 'precision.inc'
 include 'params.inc'
 character*200 msgstr
-c1d3 = 1./3.
-visc_cut = 1.e+19
+
+real*8, parameter :: c1d3 = 1./3.
+real*8, parameter :: visc_cut = 1.e+19
 
 if( viscosity .lt. visc_cut ) then
     rmu = rmu0 * viscosity/visc_cut

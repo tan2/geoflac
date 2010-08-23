@@ -21,9 +21,9 @@ include 'params.inc'
 include 'arrays.inc'
 
 
-c1d3 = 1./3.
-c4d3 = 4./3.
-c1d12 = 1./12.
+real*8, parameter :: c1d3 = 1./3.
+real*8, parameter :: c4d3 = 4./3.
+real*8, parameter :: c1d12 = 1./12.
 
 ! minimal propagation distance
 dlmin = dlmin_prop()
