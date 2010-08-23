@@ -15,14 +15,14 @@ logical rh_sel
 real*8, parameter :: c1d3 = 1./3.
 real*8, parameter :: c1d6 = 1./6.
 
-!XXX: hard-code constant
-if( mod(nloop,10).eq.0 .OR. ireset.eq.1 ) then
-    rh_sel = .true.
-else
-    rh_sel = .false.
-endif
-!XXX: hard-coded constant!!!
+!if( mod(nloop,10).eq.0 .OR. ireset.eq.1 ) then
+!    rh_sel = .true.
+!else
+!    rh_sel = .false.
+!endif
 rh_sel = .true.
+
+!XXX: irh==11, or irh>=11?
 irh=irheol(mphase)
 if(irh.eq.11) call init_visc
 
