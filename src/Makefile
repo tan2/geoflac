@@ -194,7 +194,6 @@ SRCS =	\
 	rh_elastic.f90 \
 	rh_maxwell.f90 \
 	rh_plastic.f90 \
-	rh_visc.f90 \
 	rmasses.f90 \
 	rsflac.f90 \
 	saveflac.f90 \
