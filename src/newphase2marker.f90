@@ -80,12 +80,21 @@ do kk = 1 , nmarkers
     ! depth below the surface in m
     depth = (cord(1,i,2) - 0.5*(cord(j,i,2)+cord(j+1,i,2)))
 
+    !XXX: Some quick checks to skip markers that won't change phase. Might
+    !     not be accurate!
+
     ! If temperature of this element is too high, this marker is already
     ! too deep in the mantle, where there is no significant phase change.
-    if (tmpr > 1000. .or. depth > eclogite_depth + 50.e3) cycle
+    if (tmpr > 1000.) cycle
 
     iph = mark(kk)%phase
 
+    ! If too deep, only need to check basalt-eclogite transition,
+    ! skip other phases.
+    if ((iph /= kocean1 .or. iph /= kocean2) .and. &
+         depth > eclogite_depth + 10.e3) cycle
+
+    ! Rules of phase changes
     select case(iph)
     case (kcont1, kcont2)
         ! subduction below continent, continent becomes weaker to
