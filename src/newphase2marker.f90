@@ -58,8 +58,8 @@ integer, parameter :: kweakmc = 15
 integer, parameter :: keclg = 13
 
 ! min. depth (m) and temperature (C) of eclogite phase transition
-real*8, parameter :: eclogite_depth = 59.e3
-real*8, parameter :: eclogite_temp = 550.
+real*8, parameter :: eclogite_depth = 50.e3
+real*8, parameter :: eclogite_temp = 500.
 
 nchanged = 0
 
