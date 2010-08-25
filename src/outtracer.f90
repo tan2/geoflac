@@ -37,23 +37,30 @@ call bar2euler
 
 do kk = 1,nmtracers
     id = idtracer(kk)
-    n = mark(id)%ntriag
-    nn = (n-1)/2
-    ! if triangle number is pair or impair
-    k = mod(n-1, 2) + 1
-    j = mod(nn, nz-1) + 1
-    i = nn/(nz-1) + 1
-
-    tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
-
     xik(kk) = float(kk)
     ! time in myrs
     timtrk(kk) = time/sec_year/1.e6
-    xtrak(kk) = mark(id)%x
-    ytrak(kk) = mark(id)%y
-    temptrak(kk) = tmpr
-    prestrak(kk) = stressI(j,i)
-    straintrak(kk) = strainII(j,i)
+
+    if(mark(id)%dead .eq. 0) then
+        xtrak(kk) = 0.
+        ytrak(kk) = 0.
+        temptrak(kk) = 0.
+        prestrak(kk) = 0.
+        straintrak(kk) = 0.
+    else
+        n = mark(id)%ntriag
+        nn = (n-1)/2
+        k = mod(n-1, 2) + 1
+        j = mod(nn, nz-1) + 1
+        i = nn/(nz-1) + 1
+
+        xtrak(kk) = mark(id)%x
+        ytrak(kk) = mark(id)%y
+        tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
+        temptrak(kk) = tmpr
+        prestrak(kk) = stressI(j,i)
+        straintrak(kk) = strainII(j,i)
+    endif
 enddo
 
 D1d = 0.
