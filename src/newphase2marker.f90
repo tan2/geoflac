@@ -44,6 +44,8 @@ include 'arrays.inc'
 
 integer ichanged(100*mnx), jchanged(100*mnx)
 integer kph(1)
+dimension ratio(20)
+
 integer, parameter :: kocean1 = 3
 integer, parameter :: kocean2 = 7
 integer, parameter :: kcont1 = 2
@@ -60,11 +62,12 @@ integer, parameter :: keclg = 13
 ! min. depth (m) and temperature (C) of eclogite phase transition
 real*8, parameter :: eclogite_depth = 50.e3
 real*8, parameter :: eclogite_temp = 500.
+real*8, parameter :: mantle_density = 3000.
 
 nchanged = 0
 
 
-!$OMP parallel private(kk,i,j,k,n,tmpr,depth,iph,press,jbelow,trpres)
+!$OMP parallel private(kk,i,j,k,n,tmpr,depth,iph,press,jbelow,trpres,kinc,kph,ratio)
 !$OMP do
 do kk = 1 , nmarkers
     if (mark(kk)%dead.eq.0) cycle
@@ -152,9 +155,8 @@ do kk = 1 , nmarkers
     case (1, kocean1, kocean2)
         ! basalt -> eclogite
         ! phase change pressure
-        ! based on Fig 1 of Hacker at AGU Monograph, 1996
-        trpres = 0.3e9 + 1.9e6*tmpr
-        press = den(iph)*g*depth
+        trpres = -0.3e9 + 2.2e6*tmpr
+        press = mantle_density * g * depth
         if (tmpr > eclogite_temp .and. press >= trpres) then
             !$OMP critical (change_phase1)
             nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
@@ -185,6 +187,7 @@ enddo
 !$OMP end parallel
 
 ! recompute phase ratio of those changed elements
+!$OMP do
 do k = 1, nchanged
     i = ichanged(k)
     j = jchanged(k)
@@ -195,12 +198,16 @@ do k = 1, nchanged
     !endif
 
     kinc = sum(nphase_counter(:,j,i))
-
-    phase_ratio(1:nphase,j,i) = nphase_counter(1:nphase,j,i) / float(kinc)
-
-    ! the phase of this element is the most abundant marker phase
+    ratio(1:nphase) = nphase_counter(1:nphase,j,i) / float(kinc)
     kph = maxloc(nphase_counter(:,j,i))
+
+    !$OMP critical (change_phase2)
+    ! the phase of this element is the most abundant marker phase
     iphase(j,i) = kph(1)
+    phase_ratio(1:nphase,j,i) = ratio(1:nphase)
+    !$OMP end critical (change_phase2)
+
 enddo
+!$OMP end do
 return
 end subroutine change_phase
