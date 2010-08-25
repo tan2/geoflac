@@ -162,7 +162,6 @@ SRCS =	\
 	bc_update.f90 \
 	dt_adjust.f90 \
 	dt_mass.f90 \
-	elem2marker.f90 \
 	euler2bar.f90 \
 	fl_move.f90 \
 	fl_node.f90 \

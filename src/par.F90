@@ -168,7 +168,6 @@ do while( time .le. time_max )
       ! If there are markers recalculate their x,y global coordinate and assign them aps, eII, press, temp
       if(iint_marker.eq.1) then
         call bar2euler
-        call elem2marker
       endif
       call remesh
       ! If markers are present recalculate a1,a2 local coordinates and assign elements with phase ratio vector
