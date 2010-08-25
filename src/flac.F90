@@ -21,7 +21,8 @@ if (itherm .eq.2) goto 500  ! Thermal calculation only
 call fl_srate
 
 ! Changing marker phases
-call change_phase
+! XXX: change_phase is slow, don't call it every loop
+if( mod(nloop, 10).eq.0 ) call change_phase
 
 ! Update stresses by constitutive law (and mix isotropic stresses)
 call fl_rheol
