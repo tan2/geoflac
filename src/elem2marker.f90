@@ -18,11 +18,6 @@ do n = 1 , nmarkers
     j = mod((mark(n)%ntriag - k) / 2, nz-1) + 1
     i = (mark(n)%ntriag - k) / 2 / (nz - 1) + 1
 
-    mark(n)%maps = aps(j,i)
-    mark(n)%meII = strainII(j,i)
-    mark(n)%mpres = stressI(j,i)
-    tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
-    mark(n)%mtemp = tmpr
 enddo
 !$OMP end parallel do
 return
