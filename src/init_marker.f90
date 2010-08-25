@@ -82,10 +82,6 @@ do j = 1 , nz-1
             mark(kk)%a2 = bar2
             mark(kk)%ntriag = ntr
             mark(kk)%phase = iphase(j,i)
-            mark(kk)%maps   = aps(j,i)
-            mark(kk)%meII   = 0. 
-            mark(kk)%mpres  = 0.
-            mark(kk)%mtemp  = 0.
 
             nphase_counter(mark(kk)%phase,j,i) = nphase_counter(mark(kk)%phase,j,i) + 1
         enddo

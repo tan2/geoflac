@@ -49,16 +49,9 @@ subroutine marker2elem
               mark(nmarkers)%y = yy
               mark(nmarkers)%a1 = bar1
               mark(nmarkers)%a2 = bar2 
-              mark(nmarkers)%maps = aps(j,i) 
-              mark(nmarkers)%ntriag = ntr 
+              mark(nmarkers)%ntriag = ntr
               mark(nmarkers)%dead = 1
-              ! Calculate strain
-              mark(nmarkers)%meII = strainII(j,i)
-              ! Calculate pressure and temperature
-              tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
-              mark(nmarkers)%mpres = stressI(j,i)
-              mark(nmarkers)%mtemp = tmpr 
-              mark(nmarkers)%ID = nmarkers 
+              mark(nmarkers)%ID = nmarkers
               ! assign phase to the new marker
               mark(nmarkers)%phase = iphase(j,i)
               nphase_counter(mark(nmarkers)%phase,j,i) = nphase_counter(mark(nmarkers)%phase,j,i) + 1

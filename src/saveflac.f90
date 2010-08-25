@@ -121,30 +121,6 @@ enddo
 open (1,file='xa2marker.rs',access='direct',recl=nwords*kindr) 
 write (1,rec=nrec) dum1 
 close (1)
-do i = 1,nmarkers
-dum1(i) = mark(i)%maps
-enddo
-open (1,file='xmapsmarker.rs',access='direct',recl=nwords*kindr) 
-write (1,rec=nrec) dum1 
-close (1)
-do i = 1,nmarkers
-dum1(i) = mark(i)%meII
-enddo
-open (1,file='xmeIImarker.rs',access='direct',recl=nwords*kindr) 
-write (1,rec=nrec) dum1 
-close (1)
-do i = 1,nmarkers
-dum1(i) = mark(i)%mpres
-enddo
-open (1,file='xmpresmarker.rs',access='direct',recl=nwords*kindr) 
-write (1,rec=nrec) dum1 
-close (1)
-do i = 1,nmarkers
-dum1(i) = mark(i)%mtemp
-enddo
-open (1,file='xmtempmarker.rs',access='direct',recl=nwords*kindr) 
-write (1,rec=nrec) dum1 
-close (1)
 deallocate(dum1)
 
 allocate(dum11(nmarkers))
