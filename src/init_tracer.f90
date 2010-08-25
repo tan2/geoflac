@@ -2,42 +2,34 @@ subroutine init_tracer
 USE marker_data
 
 include 'precision.inc'
-include 'params.inc'
 include 'arrays.inc'
 
-common /tracers/ tracerid(mnz*mnx*2)
-kint = 0
+common /tracers/ idtracer(2*mnz*mnx)
+
+dimension ielem(2,mnz,mnx)
+
+ielem = 0
 nmtracers = 0
-iik = 0 
-jjk = 0
-nzz = 0
-do m = 1, nzone_tracer 
-   nzz = nzz + (ity2(m)-ity1(m)+1)
-enddo
-do n = 1, nzone_tracer
-   do i = itx1(n),itx2(n) 
-         iik = iik + 1
-      do j = ity1(n),ity2(n)
-         jjk = jjk + 1
-         do k = 1,2
-         do l = 1,nmarkers
-               ntr = 2*( (nz-1)*(i-1) +j-1) + k
-               mm = 2*( (nzz-1)*(iik-1)+jjk - 1)
-            if (ntr.ne.mark(l)%ntriag) then
-               cycle
-            else
-               kint = kint + 1
-               if(kint.eq.1) then
-               nmtracers = nmtracers + 1
-               tracerid(nmtracers) = mark(l)%ID
-!               write(*,*) nmtracers, tracerid(mm+k),mm+k               
-               endif
-               endif
+
+do kk = 1,nmarkers
+    n = mark(kk)%ntriag
+    nn = (n-1)/2
+    k = mod(n-1, 2) + 1
+    j = mod(nn, nz-1) + 1
+    i = nn/(nz-1) + 1
+
+    if(ielem(k,j,i) == 0) then
+        do n = 1, nzone_tracer
+            if(i >= itx1(n) .and. i <= itx2(n) .and. &
+                 j >= ity1(n) .and. j <= ity2(n)) then
+                ielem(k,j,i) = 1
+                nmtracers = nmtracers + 1
+                ! Storing the array index of this marker, assuming that
+                ! markers never move in the array
+                idtracer(nmtracers) = kk
+            endif
           enddo
-          enddo
-          kint = 0
-    enddo
-enddo
+    endif
 enddo
 return
-end
+end subroutine init_tracer
