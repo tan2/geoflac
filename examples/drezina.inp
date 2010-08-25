@@ -44,13 +44,13 @@
 2
 ;----------------------------------------------------------------
 ;nofside       1-left,2-bottom,3-right,4-top
-;nbc1,nbc2     range of application of boundary condition
+;nbc1,nbc2     range of nodes for boundary condition
 ;nbc           type of boundary condition
 ;  there are the following forms of boundary conditions:
 ;  0  - no conditions
 ;  10 - velx            01 - velz
 ;  20 - normal stress   02 - shear stress (x,z) plane
-;  30 - vely                (strike slip version)
+;  30 - vely (strike slip version)
 ;----------------------------------------------------------------
 ;  Function of boundary conditions:
 ;------------------------------------------------------------------
@@ -62,7 +62,7 @@
 1         1     41    10   1.6e-9  0.   0.    0.    0.    0.     0.    0.    0.
 3         1     41    10   0.e-10  0.   0.    0.    0.    0.     0.    0.    0.
 ;
-; Hydrostatic pressure  applied at the bottom (on the depth of rzbo and TOP!!)
+; Hydrostatic pressure applied at the bottom (on the depth of rzbo and TOP!!)
 ; {y,n(1,0),auto(2)}, Pressure at compens.depth, substratum phase, addit. dens. diff, damp_vis
 2                     0.                         8                 0.                 0.e+7
 ;
@@ -81,10 +81,10 @@
 ; Radiogenic heating
 1.e-9, 10.      - hs (W/kg ~ 1.e-9),  hr (radio_fold) (km)
 ;
-; Bottom Boundary conditions flag and value (1- temperature, 2- heat flux in mW/m2 ) 
+; Bottom Boundary conditions flag and value (1- temperature in Celsius, 2- heat flux in mW/m2 ) 
 1 1000. 
 ;
-; Initial additional perturbation (rectangular box)
+; Initial additional perturbation (rectangular box of nodes)
 0.,160,240,41,61          - temp_per,ix1,ix2,iy1,iy2 (box of thermal perturbation)
 ;
 ; Predefined distributions
@@ -99,8 +99,9 @@ proftemp.dat   temperature profile dat.file
 0 0 0 0 0 0 0 0
 ; If (iynts = 2) Initially Variable thermal age continental and oceanic lithosphere accross the box
 2              - nzone_age (number of zones of different age max 20),nphasl
-80., 7., 3, 8, 1,160    - Thermal age (Myr.), crustal thick (km), crustal phase, mantle phase, x nodes 1 and 2
-200., 30., 2, 8, 161,201    - Thermal age (Myr.), crustal thick (km), crustal phase, mantle phase, x nodes 1 and 2
+;Thermal age (Myr), crustal thickness (km), crustal phase, mantle phase, x nodes 1, and 2
+ 80.,  7.,  3,  8,   1, 160
+200., 30.,  2,  8, 161, 201
 ;
 ;===================================================================
 ;    C o n d i t i o n s : P h a s e
@@ -151,13 +152,13 @@ proftemp.dat   temperature profile dat.file
 phasedat.inp   ; file with distribution of phase on the 2D grid (phasedat)
 ; Main phase
 8    -mphase
-; Number of horizontal layers with other phases, incoming material
+; Number of horizontal layers for incoming material
 2   - nphasl
 ; top element   bottom    Phase
      1           7        3 
      8          40        8
 ;
-; Initial heterogeneities
+; Initial heterogeneities.
 ; geometries: 
 ; 0- rectangular,
 ; 1,2- Gauss shape
@@ -165,6 +166,7 @@ phasedat.inp   ; file with distribution of phase on the 2D grid (phasedat)
 ; 4- diagonal line plus init.plastic strain
 2  - inhom(number of inhomogenities)
 ; ix1   ix2   iy1   iy2   phase   geometry    init.pl.strain
+; (ix1 < ix2 for inhom=0,3,4; iy1 < iy2 for inhom=0)
   120   135   1      7     3       4          15.
   136   152   8     15     8       4          15.
 ;
