@@ -83,10 +83,12 @@ include 'precision.inc'
 include 'params.inc'
 character* (*) message
 
+!$OMP critical (sysmsg)
 open( 13, file='sys.msg', position="append", action="write" )
 write(13, * ) "Loops:", nloop, "Time[Ma]:", time/sec_year/1.e+6
 write(13, * ) message
 close(13)
+!$OMP end critical (sysmsg)
 
 return
 end
