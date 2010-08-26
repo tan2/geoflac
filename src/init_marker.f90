@@ -26,8 +26,8 @@ kk = 0
 !call random_seed
 !write(333,*) 'Call to random_seed(), result may be stochastic'
 
-do j = 1 , nz-1
-    do i = 1 , nx-1
+do i = 1 , nx-1
+    do j = 1 , nz-1
         dx = cord(j,i+1,1)-cord(j,i,1)
         dy = cord(j+1,i,2)-cord(j,i,2)
 
