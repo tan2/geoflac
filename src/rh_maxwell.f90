@@ -59,8 +59,10 @@ s33d = (s33d * vic1 + 2. * rmu * de33d) * vic2
 s12  = (s12  * vic1 + 2. * rmu * de12 ) * vic2
 
 ! isotropic stress is elastic
-if( abs(dev) .gt. devmax ) devmax = abs(dev)
-if( abs(dv) .gt. dvmax ) dvmax = abs(dv)
+!$OMP critical (maxwell)
+devmax = max(devmax, abs(dev))
+dvmax = max(dvmax, abs(dv))
+!$OMP end critical (maxwell)
 
 s0 = s0 + bulkm * dv
 
