@@ -30,7 +30,7 @@ ntherm = ntherm+1
 
 ! saving old temperature
 !$DIR PREFER_PARALLEL
-temp0(1:nz,1:nx) = temp(1:nz,1:nx)
+if (istress_therm.gt.0) temp0(1:nz,1:nx) = temp(1:nz,1:nx)
 
 !dt_therm = time - time_t
 dt_therm = dt
