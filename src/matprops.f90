@@ -72,14 +72,13 @@ if( tmpr .lt. ts(iph) ) then
     fm = 0.
 elseif( tmpr .lt. tk(iph) ) then
     fm = fk(iph)/(tk(iph)-ts(iph)) * (tmpr-ts(iph))
+    fm = min(max(fm, 0.), 1.)
 elseif( tmpr .lt. tl(iph) ) then
     fm = (1.-fk(iph))/(tl(iph)-tk(iph))*(tmpr-tk(iph)) + fk(iph)
+    fm = min(max(fm, 0.), 1.)
 else
     fm = 1.
 endif
-
-if( fm .lt. 0 ) fm = 0.
-if( fm .gt. 1 ) fm = 1.
 
 Eff_melt = fm
 
