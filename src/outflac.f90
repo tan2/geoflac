@@ -29,7 +29,7 @@ else
     nrec = nrec + 1
     backspace(1)
 endif
-write( 1, '(i4,1x,i8,1x,f7.3)' ) nrec, nloop, time/sec_year/1.e6
+write( 1, '(i6,1x,i8,1x,f7.3)' ) nrec, nloop, time/sec_year/1.e6
 close(1)
 
 ! Time
