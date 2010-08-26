@@ -63,7 +63,7 @@ irh_mark = 0
 !$OMP                  depl,ipls,diss, &
 !$OMP                  sII_plas,sII_visc, &
 !$OMP                  quad_area,s0a,s0b,s0,tau_heal)
-!$OMP do
+!$OMP do schedule(guided)
 do 3 i = 1,nx-1
     do 3 j = 1,nz-1
         ! iphase (j,i) is number of a phase NOT a rheology

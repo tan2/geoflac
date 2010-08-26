@@ -63,7 +63,7 @@ nchanged = 0
 
 
 !$OMP parallel private(kk,i,j,k,n,tmpr,depth,iph,press,jbelow,trpres,kinc,kph,ratio)
-!$OMP do
+!$OMP do schedule(guided)
 do kk = 1 , nmarkers
     if (mark(kk)%dead.eq.0) cycle
 
