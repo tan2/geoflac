@@ -28,7 +28,7 @@ function Eff_dens( j, i)
       do k = 1, nphase
           ratio = phase_ratio(k,j,i)
           ! when ratio is small, it won't affect the density
-          if(ratio .lt. 1e-9) cycle
+          if(ratio .lt. 0.01) cycle
 
           dens = den(k) * ( 1 - alfa(k)*tmpr + beta(k)*press )
 
@@ -141,44 +141,49 @@ use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
-Eff_conduct = 0.
 
-iph = iphase(j,i)
-cond = conduct(iph)
 
-!if( den(iph) .lt. 3000. ) then  ! for crustal material
-!    tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
-!    if( tmpr.lt.25 ) tmpr = 25.
-!    Eff_conduct = -0.38*dlog(tmpr) + 4.06
-!endif
+if (iint_marker.ne.1) then
+    iph = iphase(j,i)
+    cond = conduct(iph)
 
-! HOOK
-! Hydrothermal alteration of thermal diffusivity  - see user_luc.f90
-if( if_hydro .eq. 1 ) then
-    cond = HydroDiff(j,i)*den(iph)*cp(iph)
+    !if( den(iph) .lt. 3000. ) then  ! for crustal material
+    !    tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
+    !    if( tmpr.lt.25 ) tmpr = 25.
+    !    Eff_conduct = -0.38*dlog(tmpr) + 4.06
+    !endif
+
+    ! HOOK
+    ! Hydrothermal alteration of thermal diffusivity  - see user_luc.f90
+    if( if_hydro .eq. 1 ) then
+        cond = HydroDiff(j,i)*den(iph)*cp(iph)
+    endif
+    Eff_conduct = cond
+
+else
+    Eff_conduct = 0.
+    do k = 1 , nphase
+
+        ! when ratio is small, it won't affect the density
+        if(phase_ratio(k,j,i) .lt. 0.01) cycle
+
+        cond = conduct(k)
+
+        !if( den(k) .lt. 3000. ) then  ! for crustal material
+        !    tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
+        !    if( tmpr.lt.25 ) tmpr = 25.
+        !    Eff_conduct = -0.38*dlog(tmpr) + 4.06
+        !endif
+
+        ! HOOK
+        ! Hydrothermal alteration of thermal diffusivity  - see user_luc.f90
+        if( if_hydro .eq. 1 ) then
+            cond = HydroDiff(j,i)*den(k)*cp(k)
+        endif
+        Eff_conduct = Eff_conduct + phase_ratio(k,j,i)*cond
+    enddo
 endif
- Eff_conduct = cond
 
-if (iint_marker.eq.1) then
-Eff_conduct = 0.
-do k = 1 , nphase
-
-cond = conduct(k)
-
-!if( den(k) .lt. 3000. ) then  ! for crustal material
-!    tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
-!    if( tmpr.lt.25 ) tmpr = 25.
-!    Eff_conduct = -0.38*dlog(tmpr) + 4.06
-!endif
-
-! HOOK
-! Hydrothermal alteration of thermal diffusivity  - see user_luc.f90
-if( if_hydro .eq. 1 ) then
-    cond = HydroDiff(j,i)*den(k)*cp(k)
-endif
-Eff_conduct = Eff_conduct + phase_ratio(k,j,i)*cond
-enddo
-endif
 !write(*,*) Eff_conduct, cond
 return
 end function Eff_conduct
