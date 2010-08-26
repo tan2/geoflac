@@ -16,13 +16,12 @@ save se2sr, sshrheat, nsrate, dtavg
 if( ireset .eq. 1 ) nsrate = -1
 
 if( nsrate .eq. -1 ) then
-!$OMP parallel workshare
+!$OMP parallel sections
     se2sr = 0.
-!$OMP end parallel workshare
-!$OMP parallel workshare
+!$OMP section
     sshrheat = 0.
-!$OMP end parallel workshare
-    
+!$OMP end parallel sections
+
     dtavg = 0.
 endif
 ! --------
