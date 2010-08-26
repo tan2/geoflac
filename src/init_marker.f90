@@ -90,6 +90,11 @@ enddo
 nmarkers = kk
 write(333,*) '# of markers', nmarkers
 
+if(nmarkers > max_markers) then
+    call SysMsg('INIT_MARKER: # of markers exceeds max. value. Please increase mark array size.')
+    stop 15
+endif
+
 call marker2elem
 
 return
