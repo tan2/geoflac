@@ -1,4 +1,5 @@
 MODULE marker_data
+  integer, parameter :: max_markers = 10000000
   SAVE
   type marker
      sequence
@@ -10,6 +11,6 @@ MODULE marker_data
      real(8) :: x,y           ! Euler coordinates
   end type marker
 
-  type(marker) :: mark(10000000)
+  type(marker) :: mark(max_markers)
 
 END MODULE marker_data

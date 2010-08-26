@@ -45,6 +45,10 @@ subroutine marker2elem
 
               kinc = kinc + 1
               nmarkers = nmarkers + 1
+              if(nmarkers > max_markers) then
+                  call SysMsg('MARKER2ELEM: # of markers exceeds max. value. Please increase mark array size.')
+                  stop 15
+              endif
               mark(nmarkers)%x = xx
               mark(nmarkers)%y = yy
               mark(nmarkers)%a1 = bar1

@@ -30,7 +30,7 @@ common /rheol/ visc(20),den(20),alfa(20),beta(20),pln(20),acoef(20),eactiv(20),r
      plstrain_n(5), fric_n(5), dilat_n(5), cohesion_n(5), &
      nphase,mphase,irheol(20),nysoft,nsegments,iynocean, &
      inhom,ix1(20),ix2(20),iy1(20),iy2(20),inphase(20),igeom(20),xinitaps(20),nphasl, &
-     ltop(20),lbottom(20),lphase(20),max_markers,nmarkers, &
+     ltop(20),lbottom(20),lphase(20),nmarkers, &
      iint_marker,iint_tracer,nzone_tracer,dt_outtracer,itx1(20),itx2(20),ity1(20),ity2(20), &
      nzone_marker,imx1(20),imx2(20),imy1(20),imy2(20)
 
