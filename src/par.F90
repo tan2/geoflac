@@ -5,7 +5,6 @@ use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
-include 'omp_lib.h'
 
 character*200 inputfile
 real*4 secnds,time0
