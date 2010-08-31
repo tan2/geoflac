@@ -6,7 +6,6 @@ use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
-include 'omp_lib.h'
 
 
 ! Move Grid
