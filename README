@@ -1,0 +1,44 @@
+
+==========
+Compile
+==========
+
+$ cd src
+$ make F90=<f90 compiler>
+
+This will generate a binary "flac".
+
+Supported compilers: GNU "gfortran", Intel "ifort", PGI "pgf90, and Sun "f90"
+
+The default is to build optimized binary with openmp. Several command line
+options can build other type of binaries.
+
+debug=1    -- debugging binary
+omp=0      -- disable openmp
+coverage=1 -- code coverage analysis (only for gfortran)
+gprof=1    -- profiling
+
+
+==========
+Run
+==========
+
+$ cd ../examples
+$ ../src/flac test-subduction.inp
+
+The descrition of the input parameters can be found in doc/ directory.
+
+
+==========
+Plotting
+==========
+
+$ cd ../util
+$ make
+$ ./flac2vtk ../examples
+
+This will generate a series of VTK files (*.vts), which can be visualized by
+several programs, e.g. ParaView, LLNL's VisIt, MayaVi.
+
+
+by Eh Tan, August 2010
