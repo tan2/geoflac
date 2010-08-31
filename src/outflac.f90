@@ -56,6 +56,15 @@ if( io_vel.eq.1 ) then
     close (1)
 endif
 
+! Temperature in [Celsius]
+if( io_temp.eq.1 ) then
+    nwords = nz*nx
+    Dn2(1:nz,1:nz,1) = temp(1:nz,1:nx)
+    open (1,file='temperature.0',access='direct',recl=nwords*kindr)
+    write (1,rec=nrec) Dn2(1:nz,1:nz,1)
+    close (1)
+endif
+
 
 deallocate( Dn2 )
 
@@ -188,19 +197,6 @@ if( io_pres.eq.1 ) then
         end do
     end do
     open (1,file='pres.0',access='direct',recl=nwords*kindr) 
-    write (1,rec=nrec) De
-    close (1)
-endif
-
-
-! Temperature
-if( io_temp.eq.1 ) then
-    do i = 1, nx-1
-        do j = 1, nz-1
-            De(j,i) = 0.25*( temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1) )
-        end do
-    end do
-    open (1,file='temp.0',access='direct',recl=nwords*kindr) 
     write (1,rec=nrec) De
     close (1)
 endif
