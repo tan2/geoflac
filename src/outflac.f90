@@ -59,9 +59,9 @@ endif
 ! Temperature in [Celsius]
 if( io_temp.eq.1 ) then
     nwords = nz*nx
-    Dn2(1:nz,1:nz,1) = temp(1:nz,1:nx)
+    Dn2(1:nz,1:nx,1) = temp(1:nz,1:nx)
     open (1,file='temperature.0',access='direct',recl=nwords*kindr)
-    write (1,rec=nrec) Dn2(1:nz,1:nz,1)
+    write (1,rec=nrec) Dn2(1:nz,1:nx,1)
     close (1)
 endif
 
