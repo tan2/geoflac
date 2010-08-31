@@ -158,6 +158,11 @@ int main( int argc, char* argv[])
 		fprintf(stderr, "\"%s\" not found\n", tmpBuf );
 		exit(1);
 	}
+	sprintf( tmpBuf, "%s/temperature.%u", path, rank );
+	if( (tempIn = fopen( tmpBuf, "r" )) == NULL ) {
+		fprintf(stderr, "\"%s\" not found\n", tmpBuf );
+		exit(1);
+	}
 	sprintf( tmpBuf, "%s/srII.%u", path, rank );
 	if( (strainRateIn = fopen( tmpBuf, "r" )) == NULL ) {
 		fprintf(stderr, "\"%s\" not found\n", tmpBuf );
@@ -207,11 +212,6 @@ int main( int argc, char* argv[])
 	if( ( pressureIn = fopen( tmpBuf, "r" )) == NULL ) {
 		fprintf(stderr, "\"%s\" not found\n", tmpBuf );
 		doHPr = 0;
-	}
-	sprintf( tmpBuf, "%s/temp.%u", path, rank );
-	if( (tempIn = fopen( tmpBuf, "r" )) == NULL ) {
-		fprintf(stderr, "\"%s\" not found\n", tmpBuf );
-		exit(1);
 	}
 	sprintf( tmpBuf, "%s/visc.%u", path, rank );
 	if( (viscIn = fopen( tmpBuf, "r" )) == NULL ) {
@@ -322,7 +322,12 @@ void ConvertTimeStep(
      * Write out the velocity information 
      */
 	writeNodeVectorFloat(dumpIteration, "Velocity", velIn, vtkOut );
-	
+
+    /*
+     * Write out the temperature information
+     */
+      	writeNodeScalarFloat(dumpIteration, "Temperature", tempIn, vtkOut );
+
     fprintf( vtkOut, "      </PointData>\n");
 
     /* 
@@ -374,7 +379,6 @@ void ConvertTimeStep(
     /*
      * Write out the thermal information 
      */
-      	writeElementScalarFloat(dumpIteration, "Temperature", tempIn, vtkOut );
       	writeElementScalarFloat(dumpIteration, "Viscosity", viscIn, vtkOut);
         writeElementScalarFloat(dumpIteration, "Density", densIn, vtkOut );
       	writeElementScalarFloat(dumpIteration, "HeatSource", srcIn, vtkOut );
