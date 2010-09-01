@@ -202,6 +202,20 @@ if( io_pres.eq.1 ) then
 endif
 
 
+! Temperature
+if( io_temp.eq.1 ) then
+    do i = 1, nx-1
+        do j = 1, nz-1
+            De(j,i) = 0.25*( temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1) )
+        end do
+    end do
+    open (1,file='temp.0',access='direct',recl=nwords*kindr)
+    write (1,rec=nrec) De
+    close (1)
+endif
+
+
+
 ! Phase
 if( io_melt.eq.1 ) then
     open (1,file='phase.0',access='direct',recl=nwords*kindi)
