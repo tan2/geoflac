@@ -1,21 +1,30 @@
 
 !------ Elasto-Plastic
 
-subroutine plastic(bulkm,rmu,coh,phi,psi,depls,ipls,diss,hardn,s11,s22,s33,s12,de11,de22,de33,de12)
-      
-include 'precision.inc'
-include 'params.inc'
-logical fsflg
+subroutine plastic(bulkm,rmu,coh,phi,psi,depls,ipls,diss,hardn,s11,s22,s33,s12,de11,de22,de33,de12,&
+     ten_off,ndim,irh_mark)
+implicit none
 
-
+integer, intent(in) :: ndim, irh_mark
+real*8, intent(in) :: bulkm, rmu, coh, phi, psi, hardn, de11, de22, de33, de12, ten_off
+real*8, intent(inout) :: s11, s22, s33, s12
+real*8, intent(out) :: depls, diss
+integer, intent(out) :: ipls
 real*8, parameter :: pi = 3.14159265358979323846
 real*8, parameter :: degrad = pi/180.
 real*8, parameter :: c1d3 = 1./3.
 real*8, parameter :: c4d3 = 4./3.
 real*8, parameter :: c2d3 = 2./3.
-
 ! press_add formaely was passed by a parameter. in my case it is always zero.
 real*8, parameter :: press_add = 0.
+
+real*8 sphi, spsi, anphi, anpsi, amc, e1, e2, sh2, x1, ten_max, &
+     s11i, s22i, s12i, s33i, sdif, s0, rad, si, sii, s1, s2, s3, psdif, &
+     fs, alams, dep1, dep3, depm, cs2, si2, dc2, dss
+integer icase
+logical fsflg
+
+
 
 ! ------------------------------
 ! Initialization section
