@@ -134,7 +134,8 @@ do 3 i = 1,nx-1
 
             elseif (irh.eq.3) then
                 ! viscous
-                call maxwell(bulkm,rmu,vis,s11v(k),s22v(k),s33v(k),s12v(k),de11,de22,de33,de12,dv)
+                call maxwell(bulkm,rmu,vis,s11v(k),s22v(k),s33v(k),s12v(k),de11,de22,de33,de12,dv,&
+                     ndim,dt,devmax,dvmax)
                 irheol_fl(j,i) = -1  
                 stress0(j,i,1,k) = s11v(k)
                 stress0(j,i,2,k) = s22v(k)
@@ -143,7 +144,8 @@ do 3 i = 1,nx-1
 
             elseif (irh.eq.6) then
                 ! plastic
-                call plastic(bulkm,rmu,coh,phi,psi,depl(k),ipls,diss,hardn,s11p(k),s22p(k),s33p(k),s12p(k),de11,de22,de33,de12)
+                call plastic(bulkm,rmu,coh,phi,psi,depl(k),ipls,diss,hardn,s11p(k),s22p(k),s33p(k),s12p(k),de11,de22,de33,de12,&
+                     ten_off,ndim,irh_mark)
                 irheol_fl(j,i) = 1
                 stress0(j,i,1,k) = s11p(k)
                 stress0(j,i,2,k) = s22p(k)
@@ -154,20 +156,24 @@ do 3 i = 1,nx-1
                 ! Mixed rheology (Maxwell or plastic)
                 if( rh_sel ) then
                     call plastic(bulkm,rmu,coh,phi,psi,depl(k),ipls,diss,hardn,&
-                        s11p(k),s22p(k),s33p(k),s12p(k),de11,de22,de33,de12)
+                        s11p(k),s22p(k),s33p(k),s12p(k),de11,de22,de33,de12,&
+                        ten_off,ndim,irh_mark)
                     call maxwell(bulkm,rmu,vis,s11v(k),s22v(k),s33v(k),s12v(k),&
-                        de11,de22,de33,de12,dv)
+                        de11,de22,de33,de12,dv,&
+                        ndim,dt,devmax,dvmax)
                 else ! use previously defined rheology
                     if( irheol_fl(j,i) .eq. 1 ) then
                         call plastic(bulkm,rmu,coh,phi,psi,depl(k),ipls,diss,hardn,&
-                            s11p(k),s22p(k),s33p(k),s12p(k),de11,de22,de33,de12)
+                            s11p(k),s22p(k),s33p(k),s12p(k),de11,de22,de33,de12,&
+                            ten_off,ndim,irh_mark)
                         stress0(j,i,1,k) = s11p(k)
                         stress0(j,i,2,k) = s22p(k)
                         stress0(j,i,3,k) = s12p(k)
                         stress0(j,i,4,k) = s33p(k)
                     else  ! irheol_fl(j,i) = -1
                         call maxwell(bulkm,rmu,vis,s11v(k),s22v(k),s33v(k),s12v(k),&
-                            de11,de22,de33,de12,dv)
+                            de11,de22,de33,de12,dv,&
+                            ndim,dt,devmax,dvmax)
                         stress0(j,i,1,k) = s11v(k)
                         stress0(j,i,2,k) = s22v(k)
                         stress0(j,i,3,k) = s12v(k)
