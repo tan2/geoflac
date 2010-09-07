@@ -153,8 +153,7 @@ deallocate( dummy )
 
 ! Changing the temperature of left-most elements
 ! in accordance to initial temperature
-iynts = 20
-call init_temp
+call sidewalltemp(1,5)
 
 ! AFTER INTERPOLATIONS - RECALCULATE SOME DEPENDENT VARIABLES
 
