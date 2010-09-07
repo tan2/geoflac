@@ -267,37 +267,36 @@ integer, parameter :: kocean1 = 3
 integer, parameter :: kocean2 = 7
 integer, parameter :: kcont1 = 2
 integer, parameter :: kcont2 = 6
-integer, parameter :: ksed1 = 10
+integer, parameter :: ksed1 = 11
 integer, parameter :: karc1 = 14
 integer, parameter :: kweak = 12
+integer, parameter :: kweakmc = 15
 integer, parameter :: kserp = 9
 
 iph = iphase(j,i)
 pls_curr = aps(j,i)
 
-if (iynocean==1.and.iph==kocean1.or.iph==kocean2.or.iph==kcont1.or.iph==karc1) then
-    ! XXX: phase #2 above is actually a continental crust phase
-      fric = fric_oc
-      plstrain = plstrain_oc
-      dilat = dilat_oc
-      cohesion = cohesion_oc
-else
-      fric = fric_n
-      plstrain = plstrain_n
-      dilat = dilat_n
-      cohesion = cohesion_n
+fric = fric_n
+plstrain = plstrain_n
+dilat = dilat_n
+cohesion = cohesion_n
+if (iynocean==1.and.iph==kocean1.or.iph==kocean2) then
+    fric = fric_oc
+    plstrain = plstrain_oc
+    dilat = dilat_oc
+    cohesion = cohesion_oc
+else if(iph==kserp.or.iph==kweak.or.iph==kweakmc.or.iph==ksed1) then
+    ! TO ADDRESS PHASE CHANGE IN BRITTLE MANTLE REGIME, FRICTION ANGLE IS REDUCED
+    ! (SET TO 0 IN THIS CASE)
+    fric = 0.
+    cohesion = 4.e6
+else if(iph==karc1) then
+    ! arc is dehydrated and strong
+    fric(1) = 30.
+    fric(2:) = 15.
+    cohesion = 4.e6
 endif
 
-! XXX: TO ADDRESS PHASE CHANGE IN BRITTLE MANTLE REGIME, FRICTION ANGLE IS REDUCED (SET TO 0 IN THIS CASE)
-if(iph==kserp.or.iph==kweak) then
-   fric = 0.
-   cohesion = 4.e6
-endif
-if(iph==ksed1) then
-   fric = 15.
-   fric(1) = 30.
-   cohesion= 4.e6
-endif
 
 ! Hardening modulus
 hardn = 0.
