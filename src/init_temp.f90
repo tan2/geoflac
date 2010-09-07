@@ -109,50 +109,6 @@ enddo
 goto 20
 endif
 
-! This section is intended for remeshing.
-if (iynts.eq.20) then
-    cond_c = 2.2
-    cond_m = 3.3
-    dens_c = 2700.
-    dens_m = 3300.
-    t_boot = 1330.
-    pi = 3.14159
-    n=1
-    tr= dens_c*hs*hr*hr*1.e+6/cond_c*exp(1.-exp(-hc(n)/hr))
-    q_m = (t_boot-t_top-tr)/((hc(n)*1000.)/cond_c+((200.e3-(hc(n))*1000.))/cond_m)  
-    tm  = t_top + (q_m/cond_c)*hc(n)*1000. + tr
-    !   write(*,*) rzbo, tr, hs, hr, hc(n), q_m, tm
-    age_init = age_1(n)*3.14*1.e+7*1.e+6 + time 
-    diff_m = cond_m/1000./dens_m
-    tau_d = 200.e3*200.e3/(pi*pi*diff_m)
-    ! temp(:,6:nx) not initialized
-    if (nloop.eq.0) write(*,*) 'Warning: iynts=20 -- temp(:,6:nx) not initialized'
-    do i = 1, 5 
-        do j = 1,nz
-            ! depth in km
-            y = -cord(j,i,2)*1.e-3
-            !  steady state part
-            if (y.le.hc(n)) tss = t_top+(q_m/cond_c)*y*1000.+(dens_c*hs*hr*hr*1.e+6/cond_c)*exp(1.-exp(-y/hr))
-            if (y.gt.hc(n)) tss = tm + (q_m/cond_m)*1000.*(y-hc(n))
-
-            ! time-dependent part
-            tt = 0.
-            pp =-1.
-            do k = 1,100
-                an = 1.*k
-                pp = -pp
-                tt = tt +pp/(an)*exp(-an*an*age_init/tau_d)*dsin(pi*k*(200.e3-y*1000.)/(200.e3))
-            enddo
-            temp(j,i) = tss +2./pi*(t_boot-t_top)*tt
-            if(temp(j,i).gt.1330.or.y.gt.200.) temp(j,i)= 1330.
-            if (j.eq.1) temp(j,i) = t_top
-            !       write(*,*) tss,tm,q_m,cond_m,hc(n),y,tt
-        enddo
-        source(1:nz-1,i) = source(1:nz-1,6)
-    enddo
-    return
-endif
-
 ! estimate initial temperature as linear (for first approx. of conductivities)
 do j = 1,nz
     temp(j,1:nx) = (t_bot-t_top)/abs(rzbo)*abs(cord(j,1,2)-z0) + t_top
@@ -216,6 +172,72 @@ endif
 
 return
 end
+
+
+subroutine sidewalltemp(i1, i2)
+  use arrays, only : temp, cord
+  include 'precision.inc'
+  include 'params.inc'
+  include 'arrays.inc'
+
+  ! This subroutine is intended for remeshing.
+  cond_c = 2.2
+  cond_m = 3.3
+  dens_c = 2700.
+  dens_m = 3300.
+  t_boot = 1330.
+  pi = 3.14159
+
+  if(nzone_age < 1) then
+      stop 'nzone_age < 1, cannot determine temperature of incoming material'
+  endif
+
+  if(i1 == 1) then
+      ! left sidewall
+      n = 1
+  else
+      ! right sidewall
+      n = nzone_age
+  endif
+
+  tr= dens_c*hs*hr*hr*1.e+6/cond_c*exp(1.-exp(-hc(n)/hr))
+  q_m = (t_boot-t_top-tr)/((hc(n)*1000.)/cond_c+((200.e3-(hc(n))*1000.))/cond_m)
+  tm  = t_top + (q_m/cond_c)*hc(n)*1000. + tr
+  !   write(*,*) rzbo, tr, hs, hr, hc(n), q_m, tm
+  age_init = age_1(n)*3.14*1.e+7*1.e+6 + time
+  diff_m = cond_m/1000./dens_m
+  tau_d = 200.e3*200.e3/(pi*pi*diff_m)
+
+  do i = i1, i2
+      do j = 1,nz
+          ! depth in km
+          y = -cord(j,i,2)*1.e-3
+          !  steady state part
+          if (y.le.hc(n)) tss = t_top+(q_m/cond_c)*y*1000.+(dens_c*hs*hr*hr*1.e+6/cond_c)*exp(1.-exp(-y/hr))
+          if (y.gt.hc(n)) tss = tm + (q_m/cond_m)*1000.*(y-hc(n))
+
+          ! time-dependent part
+          tt = 0.
+          pp =-1.
+          do k = 1,100
+              an = 1.*k
+              pp = -pp
+              tt = tt +pp/(an)*exp(-an*an*age_init/tau_d)*dsin(pi*k*(200.e3-y*1000.)/(200.e3))
+          enddo
+          temp(j,i) = tss +2./pi*(t_boot-t_top)*tt
+          if(temp(j,i).gt.1330.or.y.gt.200.) temp(j,i)= 1330.
+          if (j.eq.1) temp(j,i) = t_top
+          !       write(*,*) tss,tm,q_m,cond_m,hc(n),y,tt
+      enddo
+
+      if(i1 == 1) then
+          source(1:nz-1,i) = source(1:nz-1,i2+1)
+      else
+          source(1:nz-1,i) = source(1:nz-1,ii-1)
+      endif
+  enddo
+  return
+end subroutine sidewalltemp
 
 
 function cnd( j )
