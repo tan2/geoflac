@@ -86,18 +86,28 @@ call rem_interpolate( dummy )
 visn(1:nzt,1:nxt) = dummy(1:nzt,1:nxt)
 
 ! phases
-! XXX: Assuming material is coming from the left boundary
-! and is within 3-element distance from the left boundary
-! and has the same layered structure as the initial setup.
+! XXX: Assuming material is coming from the left or right boundary
+! and is within 3-element distance from the boundary and has the
+! same layered structure as the 4th element away from the boundary
 
-do k = 1,nphasl
-    do ii = 1,3
-        do jj = ltop(k),lbottom(k)
+idist = 2
+if(incoming_left==1) then
+    do ii = 1,1+idist
+        do jj = 1,nz
             aps(jj,ii) = 0.0
-            call newphase2marker(jj,ii,lphase(k))
+            call newphase2marker(jj,ii,iphase(jj,idist+2))
         end do
     end do
-end do
+endif
+
+if(moving_right==1) then
+    do ii = nx-idist, nx
+        do jj = 1,nz
+            aps(jj,ii) = 0.0
+            call newphase2marker(jj,ii,iphase(jj,nx-idist-1))
+        end do
+    end do
+endif
 
 ! XXX: the bottom elements must be mantle material, otherwise
 ! too much deformation can occur(?)
@@ -151,9 +161,10 @@ call rem_interpolate( dummy )
 temp(1:nzt,1:nxt) = dummy(1:nzt,1:nxt)
 deallocate( dummy )
 
-! Changing the temperature of left-most elements
+! Changing the temperature of left-/right- most elements
 ! in accordance to initial temperature
-call sidewalltemp(1,5)
+if(incoming_left==1) call sidewalltemp(1,1+idist)
+if(incoming_right==1) call sidewalltemp(nx+1-idist,nx+1)
 
 ! AFTER INTERPOLATIONS - RECALCULATE SOME DEPENDENT VARIABLES
 
