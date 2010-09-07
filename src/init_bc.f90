@@ -22,6 +22,11 @@ subroutine init_bc
   nopbou = 0  
   ncodbou = 0
   nebou = 0
+
+  ! flags indicating whether material is coming from the sidewalls
+  incoming_left = 0
+  incoming_right = 0
+
   !---------Number of side (nofside) -------------------------------
   !              4
   !       !----------------!
@@ -98,6 +103,9 @@ subroutine init_bc
                   call stressbc (i,nnop,numbp,numbp1,xa)  
               endif
 
+              if ((nbc(i).eq.1.or.nbc(i).eq.10).and.bca(i).gt.0) then
+                  incoming_left = 1
+              endif
           enddo
       endif
 
@@ -163,6 +171,9 @@ subroutine init_bc
                   call stressbc (i,nnop,numbp,numbp1,xa)
               endif
 
+              if ((nbc(i).eq.1.or.nbc(i).eq.10).and.bca(i).lt.0) then
+                  incoming_right = 1
+              endif
           enddo
       endif
       !-------------------------------------------------------------
