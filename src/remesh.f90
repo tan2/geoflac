@@ -95,7 +95,11 @@ if(incoming_left==1) then
     do ii = 1,1+idist
         do jj = 1,nz
             aps(jj,ii) = 0.0
-            call newphase2marker(jj,ii,iphase(jj,idist+2))
+            if((cord(1,ii,2) - cord(jj,ii,2)) < hc(1)*1e3) then
+                call newphase2marker(jj,ii,iph_col1(1))
+            else
+                call newphase2marker(jj,ii,iph_col2(1))
+            endif
         end do
     end do
 endif
@@ -104,7 +108,11 @@ if(moving_right==1) then
     do ii = nx-idist, nx
         do jj = 1,nz
             aps(jj,ii) = 0.0
-            call newphase2marker(jj,ii,iphase(jj,nx-idist-1))
+            if((cord(1,ii,2) - cord(jj,ii,2)) < hc(nzone_age)*1e3) then
+                call newphase2marker(jj,ii,iph_col1(nzone_age))
+            else
+                call newphase2marker(jj,ii,iph_col2(nzone_age))
+            endif
         end do
     end do
 endif
