@@ -16,7 +16,7 @@ f90      -- Sun Studio
 The default is to build optimized binary with openmp. Several command line
 options can build other type of binaries.
 
-debug=1    -- debugging binary
+debug=1    -- debugging binary (detecting various coding errors at runtime)
 omp=0      -- disable openmp
 coverage=1 -- code coverage analysis (only for gfortran)
 gprof=1    -- profiling
@@ -29,7 +29,13 @@ $ make debug=1
 Run
 ==========
 
+To run the provided example input, execute following commands:
 $ cd ../examples
+$ rm *.0 sys.msg   # delete old output files
+$ ../src/flac test-subduction.inp
+
+To restart a model from previous output, execute following commands:
+$ mv _contents.save _contents.rs
 $ ../src/flac test-subduction.inp
 
 The description of input parameters can be found in doc/ directory.
@@ -48,4 +54,4 @@ several programs, e.g. ParaView, LLNL's VisIt, MayaVi.
 
 
 ----
-by Eh Tan, August 2010
+by Eh Tan, September 2010
