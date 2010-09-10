@@ -259,19 +259,10 @@ use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
+include 'phases.inc'
 
 character*200 msg
 dimension fric(5), plstrain(5), dilat(5), cohesion(5)
-
-integer, parameter :: kocean1 = 3
-integer, parameter :: kocean2 = 7
-integer, parameter :: kcont1 = 2
-integer, parameter :: kcont2 = 6
-integer, parameter :: ksed1 = 11
-integer, parameter :: karc1 = 14
-integer, parameter :: kweak = 12
-integer, parameter :: kweakmc = 15
-integer, parameter :: kserp = 9
 
 iph = iphase(j,i)
 pls_curr = aps(j,i)
