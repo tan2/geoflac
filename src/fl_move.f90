@@ -139,6 +139,7 @@ use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
+include 'phases.inc'
 common /markers/ nfreemarkers,ndeadmarkers,xmpt(mnz*mnx*2,2,3)
 parameter( min_elmarkers = 0, max_elmarkers = 12 )
 
@@ -147,7 +148,7 @@ dimension dh(mnx+1),xtgt(mnx)
 
 if (mod(nloop,10000).eq.0) then
   do ii = 1,nx-1
-      call newphase2marker(1,ii,11)
+      call newphase2marker(1,ii,ksed1)
   enddo
 endif
 !EROSION PROCESSES

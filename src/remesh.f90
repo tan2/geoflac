@@ -5,6 +5,7 @@ use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
+include 'phases.inc'
 
 common /remeshing/ pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
 cold(mnz+1,mnx+1,2),cnew(mnz+1,mnx+1,2),numtr(mnz+1,mnx+1),nzt,nxt
@@ -122,7 +123,7 @@ endif
 do ii = 1,nx-1
     do jj = nz-3,nz-1
         aps(jj,ii) = 0.0
-        call newphase2marker(jj,ii,8)
+        call newphase2marker(jj,ii,kmant1)
     end do
 end do
 

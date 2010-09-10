@@ -5,6 +5,7 @@ function Eff_dens( j, i)
   include 'precision.inc'
   include 'params.inc'
   include 'arrays.inc'
+  include 'phases.inc'
 
   zcord = 0.25*(cord(j,i,2)+cord(j+1,i,2)+cord(j,i+1,2)+cord(j+1,i+1,2))
   tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
@@ -38,7 +39,7 @@ function Eff_dens( j, i)
 
           dens = den(k) * ( 1 - alfa(k)*tmpr + beta(k)*press )
 
-          if(k.eq.11) then
+          if(k.eq.ksed1) then
               delta_den = 400.
               zefold = 6000.
               !dens = (den(k) - delta_den*exp(zcord/zefold)) * ( 1 - alfa(k)*tmpr + beta(k)*press )
@@ -203,6 +204,7 @@ use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
+include 'phases.inc'
 
 Eff_visc = 0.
 r=8.31448e0
@@ -279,8 +281,7 @@ else
         if (vis .lt. v_min) vis = v_min
         if (vis .gt. v_max) vis = v_max
 
-        if(k.eq.8.and.vis.le.1.e19)  vis = 1.e19
-        if(k.eq.4.and.vis.le.1.e19)  vis = 1.e19
+        if(k.eq.kmant1.or.k.eq.kmant2) vis = max(vis, 1.e19)
 
         Eff_visc = Eff_visc + phase_ratio(k,j,i)*vis
         !write(*,*) i,j, Eff_visc, vis, tmpr,phase_ratio(k,j,i)
