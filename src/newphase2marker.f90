@@ -36,23 +36,11 @@ use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
+include 'phases.inc'
 
 integer ichanged(100*mnx), jchanged(100*mnx)
 integer kph(1)
 dimension ratio(20)
-
-integer, parameter :: kocean1 = 3
-integer, parameter :: kocean2 = 7
-integer, parameter :: kcont1 = 2
-integer, parameter :: kcont2 = 6
-integer, parameter :: kmant1 = 4
-integer, parameter :: kmant2 = 8
-integer, parameter :: ksed1 = 10
-integer, parameter :: karc1 = 14
-integer, parameter :: kweak = 12
-integer, parameter :: kserp = 9
-integer, parameter :: kweakmc = 15
-integer, parameter :: keclg = 13
 
 ! min. depth (m) and temperature (C) of eclogite phase transition
 real*8, parameter :: eclogite_depth = 50.e3
