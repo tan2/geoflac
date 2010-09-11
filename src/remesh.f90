@@ -93,39 +93,29 @@ visn(1:nzt,1:nxt) = dummy(1:nzt,1:nxt)
 
 idist = 2
 if(incoming_left==1) then
-    do ii = 1,1+idist
-        do jj = 1,nz
-            aps(jj,ii) = 0.0
-            if((cord(1,ii,2) - cord(jj,ii,2)) < hc(1)*1e3) then
-                call newphase2marker(jj,ii,iph_col1(1))
-            else
-                call newphase2marker(jj,ii,iph_col2(1))
-            endif
-        end do
-    end do
+    do jj = 1, nz-1
+        if((cord(1,1,2) - cord(jj,1,2)) > hc(1)*1e3) exit
+    enddo
+
+    aps(1:nz-1, 1:1+idist) = 0.0
+    call newphase2marker(1, jj-1, 1, 1+idist, iph_col1(1))
+    call newphase2marker(jj, nz-1, 1, 1+idist, iph_col2(1))
 endif
 
 if(moving_right==1) then
-    do ii = nx-idist, nx
-        do jj = 1,nz
-            aps(jj,ii) = 0.0
-            if((cord(1,ii,2) - cord(jj,ii,2)) < hc(nzone_age)*1e3) then
-                call newphase2marker(jj,ii,iph_col1(nzone_age))
-            else
-                call newphase2marker(jj,ii,iph_col2(nzone_age))
-            endif
-        end do
-    end do
+    do jj = 1, nz-1
+        if((cord(1,nx,2) - cord(jj,nx,2)) > hc(nzone_age)*1e3) exit
+    enddo
+
+    aps(1:nz-1, nx-1-idist:nx-1) = 0.0
+    call newphase2marker(1, jj-1, nx-1-idist, nx-1, iph_col1(nzone_age))
+    call newphase2marker(jj, nz-1, nx-1-idist, nx-1, iph_col2(nzone_age))
 endif
 
 ! XXX: the bottom elements must be mantle material, otherwise
 ! too much deformation can occur(?)
-do ii = 1,nx-1
-    do jj = nz-3,nz-1
-        aps(jj,ii) = 0.0
-        call newphase2marker(jj,ii,kmant1)
-    end do
-end do
+aps(nz-3:nz-1, 1:nx-1) = 0.0
+call newphase2marker(nz-3, nz-1, 1, nx-1, kmant1)
 
 
 ! sources
