@@ -147,9 +147,7 @@ dimension dh(mnx+1),xtgt(mnx)
 ! Make sure the top layer is made of mobile sediments
 
 if (mod(nloop,10000).eq.0) then
-  do ii = 1,nx-1
-      call newphase2marker(1,ii,ksed1)
-  enddo
+    call newphase2marker(1,1,1,nx-1,ksed1)
 endif
 !EROSION PROCESSES
 if( topo_kappa .gt. 0. ) then             

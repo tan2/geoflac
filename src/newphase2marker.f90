@@ -1,30 +1,30 @@
-subroutine newphase2marker (j,i,iph)
+subroutine newphase2marker (j1, j2, i1, i2, iph)
 USE marker_data
 use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 
-! reset the markers in this element
+! reset the markers within elements in the rectangular region
 
 iphase(j,i) = iph
 
-! Calculate triangle number in which the markers belong
-ntriang1 = 2 * ( (nz-1)*(i-1)+j-1) + 1
-ntriang2 = 2 * ( (nz-1)*(i-1)+j-1) + 2
-
-!XXX: add omp directive
 do kk = 1 , nmarkers
     if (mark(kk)%dead.eq.0) cycle
     n = mark(kk)%ntriag
-    if (n.ne.ntriang1 .or. n.ne.ntriang2) cycle
-    nphase_counter(mark(kk)%phase,j,i) = nphase_counter(mark(kk)%phase,j,i) - 1
-    mark(kk)%phase = iph
-    nphase_counter(iph,j,i) = nphase_counter(iph,j,i) + 1
+    k = mod(n - 1, 2) + 1
+    j = mod((n - k) / 2, nz-1) + 1
+    i = (n - k) / 2 / (nz - 1) + 1
+
+    if(j>=j1 .and. j<=j2 .and. i>=i1 .and. i<=i2) then
+        nphase_counter(mark(kk)%phase,j,i) = nphase_counter(mark(kk)%phase,j,i) - 1
+        mark(kk)%phase = iph
+        nphase_counter(iph,j,i) = nphase_counter(iph,j,i) + 1
+    endif
 enddo
 
-phase_ratio(:,j,i) = 0.0
-phase_ratio(iph,j,i) = 1.0
+phase_ratio(:,j,i) = 0.d0
+phase_ratio(iph,j,i) = 1.d0
 
 return
 end subroutine newphase2marker
