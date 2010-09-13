@@ -6,7 +6,7 @@ include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 parameter( kindr=4 )
-real xik(nmtracers),timtrk(nmtracers),xtrak(nmtracers),ytrak(nmtracers),temptrak(nmtracers)
+real xik(nmtracers),timtrk(nmtracers),xtrak(nmtracers),ytrak(nmtracers),temptrak(nmtracers),phtrak(nmtracers)
 real prestrak(nmtracers),straintrak(nmtracers)
 real(kindr) D1d(nmtracers)
 
@@ -47,6 +47,7 @@ do kk = 1,nmtracers
         temptrak(kk) = 0.
         prestrak(kk) = 0.
         straintrak(kk) = 0.
+        phtrak(kk) = 0.
     else
         n = mark(id)%ntriag
         nn = (n-1)/2
@@ -60,6 +61,7 @@ do kk = 1,nmtracers
         temptrak(kk) = tmpr
         prestrak(kk) = stressI(j,i)
         straintrak(kk) = strainII(j,i)
+        phtrak(kk) = int(mark(id)%phase)
     endif
 enddo
 
@@ -105,6 +107,12 @@ D1d(i) = straintrak(i)
 enddo
 open (1,file='outtrackstrain.0',access='direct',recl=nwords*kindr)
 write (1,rec=nrec) D1d 
+close (1)
+do i = 1, nmtracers
+D1d(i) = phtrak(i)
+enddo
+open (1,file='outtrackphase.0',access='direct',recl=nwords*kindr)
+write (1,rec=nrec) D1d
 close (1)
 
 return
