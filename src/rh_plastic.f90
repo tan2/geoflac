@@ -12,7 +12,6 @@ real*8, intent(out) :: depls, diss
 integer, intent(out) :: ipls
 real*8, parameter :: pi = 3.14159265358979323846
 real*8, parameter :: degrad = pi/180.
-real*8, parameter :: c1d3 = 1./3.
 real*8, parameter :: c4d3 = 4./3.
 real*8, parameter :: c2d3 = 2./3.
 ! press_add formaely was passed by a parameter. in my case it is always zero.
