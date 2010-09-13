@@ -276,11 +276,12 @@ if __name__ == '__main__':
 
     fl = Flac()
 
-    # read the last record from the mesh file
+    # read the last record of the mesh and temperature
     fl.read_mesh(fl.nrec-1)
+    fl.read_temperature(fl.nrec-1)
 
-    # print x, z to screen
-    printing(fl.x, fl.z)
+    # print (x, z, T) to screen
+    printing(fl.x, fl.z, fl.T)
 
     fl.read_time()
-    print fl.time
+    print '# time =', fl.time
