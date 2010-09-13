@@ -46,7 +46,25 @@ class FlacBase(object):
         f = open('mesh.0')
         offset = frame * columns * self.nodes * sizeoffloat
         f.seek(offset)
-        self.z, self.x = self._read_data(f, columns)
+        self.x, self.z = self._read_data(f, columns)
+        return
+
+
+    def read_vel(self, frame):
+        columns = 2
+        f = open('vel.0')
+        offset = frame * columns * self.nodes * sizeoffloat
+        f.seek(offset)
+        self.vx, self.vz = self._read_data(f, columns)
+        return
+
+
+    def read_temperature(self, frame):
+        columns = 1
+        f = open('temperature.0')
+        offset = frame * columns * self.nodes * sizeoffloat
+        f.seek(offset)
+        self.T = self._read_data(f, columns)
         return
 
 
@@ -154,6 +172,18 @@ class _Flac_numpy(FlacBase):
     def read_mesh(self, frame):
         FlacBase.read_mesh(self, frame)
         self._reshape_nodal_fields(self.x, self.z)
+        return
+
+
+    def read_vel(self, frame):
+        FlacBase.read_vel(self, frame)
+        self._reshape_nodal_fields(self.vx, self.vz)
+        return
+
+
+    def read_temperature(self, frame):
+        FlacBase.read_temperature(self, frame)
+        self._reshape_nodal_fields(self.T)
         return
 
 
