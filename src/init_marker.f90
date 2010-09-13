@@ -7,7 +7,6 @@ include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 
-common /markers/ nfreemarkers,ndeadmarkers,xmpt(mnz*mnx*2,2,3)
 real(8), dimension(9) :: x_tr,y_tr
 parameter( onesixth = 0.1666666666666666666666)
 parameter( fivesixth = 0.8333333333333333333333)
