@@ -5,8 +5,8 @@ USE marker_data
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
-common /markers/ nfreemarkers,ndeadmarkers,xmpt(mnz*mnx*2,2,3)
-!type(marker) :: mark(nmarkers)
+common /markers/ xmpt(mnz*mnx*2,2,3)
+
 ! calculate the new paramters for the triangles
 
 !$OMP parallel private(x1,x2,x3,y1,y2,y3,n,det,i,k,j,ba1,ba2,xnum,xdem)

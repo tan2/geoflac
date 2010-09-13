@@ -5,7 +5,6 @@ subroutine marker2elem
   include 'precision.inc'
   include 'params.inc'
   include 'arrays.inc'
-  common /markers/ nfreemarkers,ndeadmarkers,xmpt(mnz*mnx*2,2,3)
   integer kph(1)
 
   character*200 msg
