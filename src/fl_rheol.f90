@@ -12,9 +12,6 @@ dimension depl(4)
 dimension s11p(4),s22p(4),s12p(4),s33p(4),s11v(4),s22v(4),s12v(4),s33v(4)
 logical rh_sel
 
-real*8, parameter :: c1d3 = 1./3.
-real*8, parameter :: c1d6 = 1./6.
-
 !if( mod(nloop,10).eq.0 .OR. ireset.eq.1 ) then
 !    rh_sel = .true.
 !else

@@ -6,7 +6,6 @@ include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 common /markers/ nfreemarkers,ndeadmarkers,xmpt(mnz*mnx*2,2,3)
-parameter( min_elmarkers = 0, max_elmarkers = 12 )
 !type(marker) :: mark(nmarkers)
 ! calculate the new paramters for the triangles
 

@@ -21,8 +21,6 @@ include 'params.inc'
 include 'arrays.inc'
 
 
-real*8, parameter :: c1d3 = 1./3.
-real*8, parameter :: c4d3 = 4./3.
 real*8, parameter :: c1d12 = 1./12.
 
 ! minimal propagation distance

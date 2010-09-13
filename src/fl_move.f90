@@ -140,8 +140,6 @@ include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 include 'phases.inc'
-common /markers/ nfreemarkers,ndeadmarkers,xmpt(mnz*mnx*2,2,3)
-parameter( min_elmarkers = 0, max_elmarkers = 12 )
 
 dimension dh(mnx+1),xtgt(mnx)
 ! Make sure the top layer is made of mobile sediments

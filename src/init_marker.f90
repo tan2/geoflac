@@ -9,7 +9,6 @@ include 'arrays.inc'
 
 common /markers/ nfreemarkers,ndeadmarkers,xmpt(mnz*mnx*2,2,3)
 real(8), dimension(9) :: x_tr,y_tr
-parameter( min_elmarkers = 0, max_elmarkers = 12 )
 parameter( onesixth = 0.1666666666666666666666)
 parameter( fivesixth = 0.8333333333333333333333)
 
