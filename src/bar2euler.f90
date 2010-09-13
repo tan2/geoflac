@@ -5,7 +5,7 @@ USE marker_data
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
-common /markers/ xmpt(mnz*mnx*2,2,3)
+common /markers/ xmpt(2,3,mnz*mnx*2)
 
 ! calculate the new paramters for the triangles
 
@@ -38,16 +38,23 @@ do k = 1 , 2
         det=( (x2*y3-y2*x3) - (x1*y3-y1*x3) + (x1*y2-y1*x2) )
 
 !Find the parameters ONLY for 2 vertices
-        xmpt(n,1,1) = (x2*y3-y2*x3)/det
-        xmpt(n,1,2) = (y2-y3)/det
-        xmpt(n,1,3) = (x3-x2)/det
-        xmpt(n,2,1) = (x3*y1-y3*x1)/det
-        xmpt(n,2,2) = (y3-y1)/det
-        xmpt(n,2,3) = (x1-x3)/det
+        xmpt(1,1,n) = (x2*y3-y2*x3)/det
+        xmpt(1,2,n) = (y2-y3)/det
+        xmpt(1,3,n) = (x3-x2)/det
+        xmpt(2,1,n) = (x3*y1-y3*x1)/det
+        xmpt(2,2,n) = (y3-y1)/det
+        xmpt(2,3,n) = (x1-x3)/det
 enddo
 enddo
 enddo
 !$OMP end do
+
+! For brevity xmp1(1,2,n) --> m12 etc
+!
+! a1 = m11 + m12*x + m13*y
+! a2 = m21 + m22*x + m23*y
+!
+! solve for x and y
 
 !$OMP do
 do i = 1 , nmarkers
@@ -56,10 +63,10 @@ do i = 1 , nmarkers
      ba1 = mark(i)%a1 
      ba2 = mark(i)%a2 
 ! Calculate eulerian from barycentic coordinates
-     xnum = ba2*xmpt(n,1,3)-xmpt(n,2,1)*xmpt(n,1,3)-xmpt(n,2,3)*ba1+xmpt(n,2,3)*xmpt(n,1,1)
-     xdem = xmpt(n,1,3)*xmpt(n,2,2)-xmpt(n,2,3)*xmpt(n,1,2)
+     xnum = ba2*xmpt(1,3,n)-xmpt(2,1,n)*xmpt(1,3,n)-xmpt(2,3,n)*ba1+xmpt(2,3,n)*xmpt(1,1,n)
+     xdem = xmpt(1,3,n)*xmpt(2,2,n)-xmpt(2,3,n)*xmpt(1,2,n)
      mark(i)%x   = xnum/xdem
-     mark(i)%y   = (ba1 - xmpt(n,1,1) - xmpt(n,1,2)*(xnum/xdem))/xmpt(n,1,3) 
+     mark(i)%y   = (ba1 - xmpt(1,1,n) - xmpt(1,2,n)*(xnum/xdem))/xmpt(1,3,n)
 enddo
 !$OMP end do
 !$OMP end parallel
