@@ -211,7 +211,7 @@ subroutine sidewalltemp(i1, i2)
   do i = i1, i2
       do j = 1,nz
           ! depth in km
-          y = -cord(j,i,2)*1.e-3
+          y = (cord(1,i,2)-cord(j,i,2))*1.e-3
           !  steady state part
           if (y.le.hc(n)) tss = t_top+(q_m/cond_c)*y*1000.+(dens_c*hs*hr*hr*1.e+6/cond_c)*exp(1.-exp(-y/hr))
           if (y.gt.hc(n)) tss = tm + (q_m/cond_m)*1000.*(y-hc(n))
