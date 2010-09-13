@@ -20,10 +20,12 @@ class FlacBase(object):
     def __init__(self, swap_endian=False):
         self.swap_endian = swap_endian
 
-        # read header files
-        header = open('_contents.0').readline().split()
+        # read record number
+        headers = open('_contents.0').readlines()
+        header = headers[-1].split()
         self.nrec = int(header[0])
 
+        # read grid size
         header = open('nxnz.0').readline().split()
         self.nx = int(header[0]) + 1
         self.nz = int(header[1]) + 1
@@ -31,6 +33,11 @@ class FlacBase(object):
         self.nodes = self.nx * self.nz
         self.elements = (self.nx - 1) * (self.nz - 1)
 
+        # read tracer size
+        headers = open('_tracers.0').readlines()
+        header = headers[-1].split()
+        self.ntracerrec = int(header[0])
+        self.ntracers = int(header[1])
         return
 
 
@@ -48,7 +55,6 @@ class FlacBase(object):
         self.time = self._read_data(f, 1, num=self.nrec)
 
         return
-
 
 
     def ij2node(self, i, j):
@@ -98,7 +104,7 @@ class _Flac(FlacBase):
 
 class _Flac_numpy(FlacBase):
     '''Read Flac data file using "numpy" module.
-    This class is preferred over class Flac.
+    This class is preferred over class _Flac.
     '''
 
 
@@ -149,6 +155,49 @@ class _Flac_numpy(FlacBase):
         FlacBase.read_mesh(self, frame)
         self._reshape_nodal_fields(self.x, self.z)
         return
+
+
+    def read_tracers(self):
+        self.tracer_time = numpy.zeros(self.ntracerrec, dtype='f')
+        self.tracer_x = numpy.zeros((self.ntracerrec, self.ntracers), dtype='f')
+        self.tracer_y = numpy.zeros((self.ntracerrec, self.ntracers), dtype='f')
+        self.tracer_temp = numpy.zeros((self.ntracerrec, self.ntracers), dtype='f')
+        self.tracer_pres = numpy.zeros((self.ntracerrec, self.ntracers), dtype='f')
+        self.tracer_strain = numpy.zeros((self.ntracerrec, self.ntracers), dtype='f')
+        self.tracer_phase = numpy.zeros((self.ntracerrec, self.ntracers), dtype='f')
+
+        self.tracer_id = self._read_data('outtrackID.0', 1, num=self.ntracers, typecode='f')
+
+        f1 = open('outtracktime.0')
+        f2 = open('outtrackxx.0')
+        f3 = open('outtrackyy.0')
+        f4 = open('outtracktemp.0')
+        f5 = open('outtrackpres.0')
+        f6 = open('outtrackstrain.0')
+        f7 = open('outtrackphase.0')
+
+        for i in range(self.ntracerrec):
+            time = self._read_data(f1, 1, num=self.ntracers, typecode='f')
+            x = self._read_data(f2, 1, num=self.ntracers, typecode='f')
+            y = self._read_data(f3, 1, num=self.ntracers, typecode='f')
+            temperature = self._read_data(f4, 1, num=self.ntracers, typecode='f')
+            pressure = self._read_data(f5, 1, num=self.ntracers, typecode='f')
+            strain = self._read_data(f6, 1, num=self.ntracers, typecode='f')
+            phase = self._read_data(f7, 1, num=self.ntracers, typecode='f')
+
+            self.tracer_x[i,:] = x
+            self.tracer_y[i,:] = y
+            self.tracer_temp[i,:] = temperature
+            self.tracer_pres[i,:] = pressure
+            self.tracer_strain[i,:] = strain
+            self.tracer_phase[i,:] = phase
+
+            # all tracers have the same time
+            self.tracer_time[i] = time[0]
+
+        return
+
+
 
 
 ## setup alias
