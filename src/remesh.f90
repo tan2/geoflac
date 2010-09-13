@@ -94,7 +94,7 @@ visn(1:nzt,1:nxt) = dummy(1:nzt,1:nxt)
 idist = 2
 if(incoming_left==1) then
     do jj = 1, nz-1
-        if((cord(1,1,2) - cord(jj,1,2)) > hc(1)*1e3) exit
+        if((cord(1,1,2) - 0.5*(cord(jj,1,2)+cord(jj+1,1,2))) > hc(1)*1e3) exit
     enddo
 
     aps(1:nz-1, 1:1+idist) = 0.0
@@ -104,7 +104,7 @@ endif
 
 if(moving_right==1) then
     do jj = 1, nz-1
-        if((cord(1,nx,2) - cord(jj,nx,2)) > hc(nzone_age)*1e3) exit
+        if((cord(1,nx,2) - 0.5*(cord(jj,nx,2)+cord(jj+1,nx,2))) > hc(nzone_age)*1e3) exit
     enddo
 
     aps(1:nz-1, nx-1-idist:nx-1) = 0.0
