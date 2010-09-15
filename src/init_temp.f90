@@ -73,11 +73,10 @@ cond_c = 2.2
 cond_m = 3.3
 dens_c = 2700.
 dens_m = 3300.
-t_boot = 1330.
 pi = 3.14159
 do n = 1, nzone_age
    tr= dens_c*hs*hr*hr*1.e+6/cond_c*exp(1.-exp(-hc(n)/hr))
-      q_m = (t_boot-t_top-tr)/((hc(n)*1000.)/cond_c+((200.e3-(hc(n))*1000.))/cond_m)  
+      q_m = (t_bot-t_top-tr)/((hc(n)*1000.)/cond_c+((200.e3-(hc(n))*1000.))/cond_m)  
    tm  = t_top + (q_m/cond_c)*hc(n)*1000. + tr
 !   write(*,*) rzbo, tr, hs, hr, hc(n), q_m, tm
    age_init = age_1(n)*3.14*1.e+7*1.e+6
@@ -99,7 +98,7 @@ do n = 1, nzone_age
             pp = -pp
             tt = tt +pp/(an)*exp(-an*an*age_init/tau_d)*dsin(pi*k*(200.e3-y*1000.)/(200.e3))
          enddo
-      temp(j,i) = tss +2./pi*(t_boot-t_top)*tt
+      temp(j,i) = tss +2./pi*(t_bot-t_top)*tt
         if(temp(j,i).gt.1330.or.y.gt.200.) temp(j,i)= 1330.
         if (j.eq.1) temp(j,i) = t_top
 !       write(*,*) tss,tm,q_m,cond_m,hc(n),y,tt
@@ -185,7 +184,7 @@ subroutine sidewalltemp(i1, i2)
   cond_m = 3.3
   dens_c = 2700.
   dens_m = 3300.
-  t_boot = 1330.
+  t_bot = 1330.
   pi = 3.14159
 
   if(nzone_age < 1) then
@@ -201,7 +200,7 @@ subroutine sidewalltemp(i1, i2)
   endif
 
   tr= dens_c*hs*hr*hr*1.e+6/cond_c*exp(1.-exp(-hc(n)/hr))
-  q_m = (t_boot-t_top-tr)/((hc(n)*1000.)/cond_c+((200.e3-(hc(n))*1000.))/cond_m)
+  q_m = (t_bot-t_top-tr)/((hc(n)*1000.)/cond_c+((200.e3-(hc(n))*1000.))/cond_m)
   tm  = t_top + (q_m/cond_c)*hc(n)*1000. + tr
   !   write(*,*) rzbo, tr, hs, hr, hc(n), q_m, tm
   age_init = age_1(n)*3.14*1.e+7*1.e+6 + time
@@ -224,7 +223,7 @@ subroutine sidewalltemp(i1, i2)
               pp = -pp
               tt = tt +pp/(an)*exp(-an*an*age_init/tau_d)*dsin(pi*k*(200.e3-y*1000.)/(200.e3))
           enddo
-          temp(j,i) = tss +2./pi*(t_boot-t_top)*tt
+          temp(j,i) = tss +2./pi*(t_bot-t_top)*tt
           if(temp(j,i).gt.1330.or.y.gt.200.) temp(j,i)= 1330.
           if (j.eq.1) temp(j,i) = t_top
           !       write(*,*) tss,tm,q_m,cond_m,hc(n),y,tt
