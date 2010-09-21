@@ -47,6 +47,9 @@ real*8, parameter :: eclogite_depth = 50.e3
 real*8, parameter :: eclogite_temp = 500.
 real*8, parameter :: mantle_density = 3000.
 
+! temperature (C) of serpentine phase transition
+real*8, parameter :: serpentine_temp = 550.
+
 nchanged = 0
 
 
@@ -151,8 +154,12 @@ do kk = 1 , nmarkers
             mark(kk)%phase = keclg
         endif
     case (kserp)
-        ! remove serpentinite when it goes too deep
-        if(depth >= eclogite_depth + 5.e3) then
+        ! dehydration, serpentinite -> normal mantle
+        ! Phase diagram taken from Ulmer and Trommsdorff, Nature, 1995
+        ! Fixed points (730 C, 2.1 GPa) (500 C, 7.5 GPa)
+        trpres = 2.1e9 + (7.5e9 - 2.1e9) * (tmpr - 730.) / (500. - 730.)
+        press = mantle_density * g * depth
+        if (tmpr > serpentine_temp .and. press >= trpres) then
             !$OMP critical (change_phase1)
             nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
             nphase_counter(kmant1,j,i) = nphase_counter(kmant1,j,i) + 1
