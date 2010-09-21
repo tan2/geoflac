@@ -50,7 +50,13 @@ do j = 1,nz
 enddo
 enddo
 enddo
-amass = 0
+
+if (idt_scale .eq. 0) then
+    amass = rmass
+else
+    amass = 0
+end if
+
 dtmax_therm = 1.e+28
 dt_maxwell = 1.e+28
 
@@ -99,7 +105,6 @@ do 1 i = 1,nx-1
             amass(j  ,i+1) = amass(j  ,i+1) + am3
 
         else  ! idt_scale=0
-            amass(j,i) = rmass(j,i)
             ! Find the dtime for given geometry, density and elas_mod
             dte = frac*dlmin*sqrt(dens/pwave)
             dt_elastic = min(dt_elastic,dte)
