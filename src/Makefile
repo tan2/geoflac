@@ -217,13 +217,13 @@ else
 all: $(CUEXE)
 endif
 
-$(EXE): $(MODULES) $(OBJS2) $(OBJS)
+$(EXE): $(MODULE_OBJS) $(OBJS2) $(OBJS)
 	$(F90) $(LDFLAGS) $(MODULE_OBJS) $(OBJS) $(OBJS2) -o $@
 
-$(CUEXE): $(MODULES) $(OBJS2) $(OBJS) $(CUDAFLAC_OBJS)
+$(CUEXE): $(MODULES_OBJS) $(OBJS2) $(OBJS) $(CUDAFLAC_OBJS)
 	$(F90) $(LDFLAGS) $(MODULE_OBJS) $(OBJS) $(OBJS2) $(CUDAFLAC_OBJS) -o $@
 
-$(MODULES): %.mod : %.f90
+$(MODULE_OBJS): %.o : %.f90
 	$(F90) $(CFLAGS) -c $<
 
 $(OBJS): %.o : %.f90
