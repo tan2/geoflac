@@ -34,7 +34,7 @@ common /rheol/ visc(20),den(20),alfa(20),beta(20),pln(20),acoef(20),eactiv(20),r
      ltop(20),lbottom(20),lphase(20), &
      imx1(20),imx2(20),imy1(20),imy2(20), &
      itx1(20),itx2(20),ity1(20),ity2(20), &
-     nphasl,nzone_marker,nmarkers, iint_marker,iint_tracer,nzone_tracer,dt_outtrace
+     nphasl,nzone_marker,nmarkers, iint_marker,iint_tracer,nzone_tracer,dt_outtracer
 
 common /therm/ t_top,t_bot,hs,hr,temp_per,bot_bc,time_t,dt_therm, &
      itherm,istress_therm,initial_geoth,itemp_bc,ix1t,ix2t,iy1t,iy2t,ishearh, &
