@@ -47,8 +47,8 @@ do i = 1, nx-1
 enddo
 
 ! search all elem, usually it means the marker is "dead"
-write(msg,*) 'Searching all elem. for marker, original (i,j) ', ii, jj
-call SysMsg(msg)
+!write(msg,*) 'Searching all elem. for marker, original (i,j) ', ii, jj
+!call SysMsg(msg)
 do j = 1, nz-1
     do i = 1, nx-1
         call check_inside(x,y,bar1,bar2,ntr,i,j,inc)
