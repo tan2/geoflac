@@ -12,12 +12,14 @@ parameter( onesixth = 0.1666666666666666666666)
 parameter( fivesixth = 0.8333333333333333333333)
 
 nphase_counter = 0
+ntopmarker(:) = 0
+itopmarker(:,:) = 0
 
 ! define euler coordinate of the markers
 ! Distribute evenly first then randomize the distribution
 ! to start 9 markers per elements
 nmarkers = 0
-kk = 0
+
 ! zones with 9 markers per elements
 ! calculate the id (element number) of the zones of high res
 
@@ -63,38 +65,55 @@ do i = 1 , nx-1
             xx = x_tr(l)+ddx
             yy = y_tr(l)+ddy
 
-            ii = i
-            jj = j
-            call check_inside(xx,yy,bar1,bar2,ntr,ii,jj,inc)
-            if(ntr.eq.0) cycle
-      
-! define the markers for each elements
+            call add_marker(xx, yy, iphase(j,i), nmarkers, j, i, inc)
+            if(inc.eq.0) cycle
+
             l = l + 1
-            kk = kk +1 
-
-            mark(kk)%x = xx
-            mark(kk)%y = yy
-            mark(kk)%dead = 1 
-            mark(kk)%ID = kk 
-            mark(kk)%a1 = bar1
-            mark(kk)%a2 = bar2
-            mark(kk)%ntriag = ntr
-            mark(kk)%phase = iphase(j,i)
-
-            nphase_counter(mark(kk)%phase,j,i) = nphase_counter(mark(kk)%phase,j,i) + 1
+            !print *, xx, yy, mark(kk)%a1, mark(kk)%a2, mark(kk)%ntriag
         enddo
     enddo
 enddo
-nmarkers = kk
-write(333,*) '# of markers', nmarkers
 
-if(nmarkers > max_markers) then
-    call SysMsg('INIT_MARKER: # of markers exceeds max. value. Please increase mark array size.')
-    stop 15
-endif
+write(333,*) '# of markers', nmarkers
 
 call marker2elem
 
 return
 end subroutine init_marker
 
+
+subroutine add_marker(x, y, iph, kk, j, i, inc)
+  USE marker_data
+  use arrays
+  include 'precision.inc'
+  include 'params.inc'
+  include 'arrays.inc'
+
+  call check_inside(x , y, bar1, bar2, ntr, i, j, inc)
+  if(inc.eq.0) return
+
+  kk = kk + 1
+
+  mark(kk)%x = x
+  mark(kk)%y = y
+  mark(kk)%dead = 1
+  mark(kk)%ID = kk
+  mark(kk)%a1 = bar1
+  mark(kk)%a2 = bar2
+  mark(kk)%ntriag = ntr
+  mark(kk)%phase = iph
+
+  nphase_counter(iph,j,i) = nphase_counter(iph,j,i) + 1
+  if(j == 1) then
+      ! recording the id of markers belonging to surface elements
+      ntopmarker(i) = ntopmarker(i) + 1
+      if(ntopmarker(i) > max_markers_per_elem) stop 'too many markers at surface elements'
+      itopmarker(ntopmarker(i), i) = kk
+  end if
+
+  if(kk > max_markers) then
+      call SysMsg('ADD_MARKER: # of markers exceeds max. value. Please increase mark array size.')
+      stop 15
+  endif
+
+end subroutine add_marker
