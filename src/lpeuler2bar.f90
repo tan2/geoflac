@@ -7,6 +7,7 @@ include 'params.inc'
 include 'arrays.inc'
 
 nphase_counter(:,:,:) = 0
+ntopmarker(:) = 0
 
 !$OMP parallel do private(n,k,j,i,xx,yy,bar1,bar2,ntr,inc)
 do n = 1 , nmarkers
@@ -30,9 +31,18 @@ do n = 1 , nmarkers
     mark(n)%a2 = bar2
     mark(n)%ntriag = ntr
 
-    !$OMP critical
+    !$OMP critical (lpeulerbar1)
     nphase_counter(mark(n)%phase,j,i) = nphase_counter(mark(n)%phase,j,i) + 1
-    !$OMP end critical
+    !$OMP end critical (lpeulerbar1)
+
+    if(j == 1) then
+        !$OMP critical (lpeulerbar2)
+        ! recording the id of markers belonging to surface elements
+        ntopmarker(i) = ntopmarker(i) + 1
+        if(ntopmarker(i) > max_markers_per_elem) stop 'too many markers at surface elements'
+        itopmarker(ntopmarker(i), i) = n
+        !$OMP end critical (lpeulerbar2)
+    end if
 enddo
 !$OMP end parallel do
 return
