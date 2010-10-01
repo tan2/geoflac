@@ -34,6 +34,8 @@ do i = 1,nx
 end do
 
 dx_init = abs(cord(1,2,1)-cord(1,1,1))
+basement = 0.5 * (cord(1,1:nx-1,2) + cord(1,2:nx,2))
+old_topo = basement
 
 return
 end
