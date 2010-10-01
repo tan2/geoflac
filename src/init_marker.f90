@@ -83,6 +83,15 @@ end subroutine init_marker
 
 
 subroutine add_marker(x, y, iph, kk, j, i, inc)
+  ! Add a marker at physical coordinate (x, y), with phase iph, to
+  ! element (j, i). The current (before adding thsi marker) marker size
+  ! is kk. If (x, y) is not within the element, inc is set to 0 and
+  ! marker not added. Otherwise, marker is added to "mark" array and kk
+  ! incremented by 1.
+  !
+  ! *** This subroutine is not thread-safe. DON'T CALL IT WITHIN
+  ! *** OPENMP/OMP SECTION.
+
   USE marker_data
   use arrays
   include 'precision.inc'
