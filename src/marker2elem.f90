@@ -1,6 +1,4 @@
 subroutine marker2elem 
-  USE marker_data
-
   use arrays
   include 'precision.inc'
   include 'params.inc'
@@ -34,29 +32,10 @@ subroutine marker2elem
               xx = x1 + (0.5-rx)*(x2-x1)
               yy = y1 + (0.5-ry)*(y2-y1)
 
-              ! Calculate barycentic coordinates
-              ii = i
-              jj = j
-              call check_inside(xx,yy,bar1,bar2,ntr,ii,jj,inc)
-
+              call add_marker(xx, yy, iphase(j,i), nmarkers, j, i, inc)
               if(inc.eq.0) cycle
 
               kinc = kinc + 1
-              nmarkers = nmarkers + 1
-              if(nmarkers > max_markers) then
-                  call SysMsg('MARKER2ELEM: # of markers exceeds max. value. Please increase mark array size.')
-                  stop 15
-              endif
-              mark(nmarkers)%x = xx
-              mark(nmarkers)%y = yy
-              mark(nmarkers)%a1 = bar1
-              mark(nmarkers)%a2 = bar2 
-              mark(nmarkers)%ntriag = ntr
-              mark(nmarkers)%dead = 1
-              mark(nmarkers)%ID = nmarkers
-              ! assign phase to the new marker
-              mark(nmarkers)%phase = iphase(j,i)
-              nphase_counter(mark(nmarkers)%phase,j,i) = nphase_counter(mark(nmarkers)%phase,j,i) + 1
           enddo
 
           phase_ratio(1:nphase,j,i) = nphase_counter(1:nphase,j,i) / float(kinc)
