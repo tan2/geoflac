@@ -280,11 +280,6 @@ else if(iph==kserp.or.iph==kweak.or.iph==kweakmc.or.iph==ksed1) then
     ! (SET TO 0 IN THIS CASE)
     fric = 0.
     cohesion = 4.e6
-else if(iph==karc1) then
-    ! arc is dehydrated and strong
-    fric(1) = 30.
-    fric(2:) = 15.
-    cohesion = 4.e6
 endif
 
 
