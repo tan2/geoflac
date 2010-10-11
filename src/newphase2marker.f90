@@ -7,8 +7,6 @@ include 'arrays.inc'
 
 ! reset the markers within elements in the rectangular region
 
-iphase(j,i) = iph
-
 do kk = 1 , nmarkers
     if (mark(kk)%dead.eq.0) cycle
     n = mark(kk)%ntriag
@@ -18,6 +16,7 @@ do kk = 1 , nmarkers
 
     if(j>=j1 .and. j<=j2 .and. i>=i1 .and. i<=i2) then
         nphase_counter(mark(kk)%phase,j,i) = nphase_counter(mark(kk)%phase,j,i) - 1
+        iphase(j,i) = iph
         mark(kk)%phase = iph
         nphase_counter(iph,j,i) = nphase_counter(iph,j,i) + 1
     endif
