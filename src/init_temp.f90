@@ -184,7 +184,6 @@ subroutine sidewalltemp(i1, i2)
   cond_m = 3.3
   dens_c = 2700.
   dens_m = 3300.
-  t_bot = 1330.
   pi = 3.14159
 
   if(nzone_age < 1) then
