@@ -41,9 +41,10 @@ integer ichanged(100*mnx), jchanged(100*mnx)
 integer kph(1)
 dimension ratio(20)
 
-! min. depth (m) and temperature (C) of eclogite phase transition
-real*8, parameter :: eclogite_depth = 50.e3
-real*8, parameter :: eclogite_temp = 500.
+! max. depth (m) of eclogite phase transition
+real*8, parameter :: max_basalt_depth = 150.e3
+! min. temperature (C) of eclogite phase transition
+real*8, parameter :: min_eclogite_temp = 500.
 real*8, parameter :: mantle_density = 3000.
 
 ! temperature (C) of serpentine phase transition
@@ -76,11 +77,6 @@ do kk = 1 , nmarkers
     if (tmpr > 1000.) cycle
 
     iph = mark(kk)%phase
-
-    ! If too deep, only need to check basalt-eclogite transition,
-    ! skip other phases.
-    if ((iph /= kocean1 .or. iph /= kocean2) .and. &
-         depth > eclogite_depth + 10.e3) cycle
 
     ! Rules of phase changes
     select case(iph)
@@ -120,7 +116,7 @@ do kk = 1 , nmarkers
 
     case (kmant1, kmant2)
         ! subuducted oceanic crust below mantle, mantle is serpentinized
-        if(depth < eclogite_depth) then
+        if(depth < max_basalt_depth) then
             do jbelow = min(j+1,nz-1), min(j+3,nz-1)
                 if(phase_ratio(kocean1,jbelow,i) > 0.8 .or. &
                      phase_ratio(kocean2,jbelow,i) > 0.8 .or. &
@@ -142,7 +138,7 @@ do kk = 1 , nmarkers
         ! phase change pressure
         trpres = -0.3e9 + 2.2e6*tmpr
         press = mantle_density * g * depth
-        if (tmpr > eclogite_temp .and. press >= trpres) then
+        if (tmpr > min_eclogite_temp .and. press >= trpres) then
             !$OMP critical (change_phase1)
             nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
             nphase_counter(keclg,j,i) = nphase_counter(keclg,j,i) + 1
