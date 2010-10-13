@@ -120,21 +120,23 @@ do kk = 1 , nmarkers
 
     case (kmant1, kmant2)
         ! subuducted oceanic crust below mantle, mantle is serpentinized
-        do jbelow = min(j+1,nz-1), min(j+3,nz-1)
-            if(phase_ratio(kocean1,jbelow,i) > 0.8 .or. &
-                phase_ratio(kocean2,jbelow,i) > 0.8 .or. &
-                phase_ratio(ksed1,jbelow,i) > 0.8) then
-                !$OMP critical (change_phase1)
-                nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
-                nphase_counter(kserp,j,i) = nphase_counter(kserp,j,i) + 1
-                nchanged = nchanged + 1
-                ichanged(nchanged) = i
-                jchanged(nchanged) = j
-                !$OMP end critical (change_phase1)
-                mark(kk)%phase = kserp
-                exit
-            endif
-        enddo
+        if(depth < eclogite_depth) then
+            do jbelow = min(j+1,nz-1), min(j+3,nz-1)
+                if(phase_ratio(kocean1,jbelow,i) > 0.8 .or. &
+                     phase_ratio(kocean2,jbelow,i) > 0.8 .or. &
+                     phase_ratio(ksed1,jbelow,i) > 0.8) then
+                    !$OMP critical (change_phase1)
+                    nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
+                    nphase_counter(kserp,j,i) = nphase_counter(kserp,j,i) + 1
+                    nchanged = nchanged + 1
+                    ichanged(nchanged) = i
+                    jchanged(nchanged) = j
+                    !$OMP end critical (change_phase1)
+                    mark(kk)%phase = kserp
+                    exit
+                endif
+            enddo
+        endif
     case (kocean1, kocean2)
         ! basalt -> eclogite
         ! phase change pressure
