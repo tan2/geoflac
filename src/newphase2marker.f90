@@ -116,54 +116,51 @@ do kk = 1 , nmarkers
 
     case (kmant1, kmant2)
         ! subuducted oceanic crust below mantle, mantle is serpentinized
-        if(depth < max_basalt_depth) then
-            do jbelow = min(j+1,nz-1), min(j+3,nz-1)
-                if(phase_ratio(kocean1,jbelow,i) > 0.8 .or. &
-                     phase_ratio(kocean2,jbelow,i) > 0.8 .or. &
-                     phase_ratio(ksed1,jbelow,i) > 0.8) then
-                    !$OMP critical (change_phase1)
-                    nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
-                    nphase_counter(kserp,j,i) = nphase_counter(kserp,j,i) + 1
-                    nchanged = nchanged + 1
-                    ichanged(nchanged) = i
-                    jchanged(nchanged) = j
-                    !$OMP end critical (change_phase1)
-                    mark(kk)%phase = kserp
-                    exit
-                endif
-            enddo
-        endif
+        if(depth > max_basalt_depth) cycle
+        do jbelow = min(j+1,nz-1), min(j+3,nz-1)
+            if(phase_ratio(kocean1,jbelow,i) > 0.8 .or. &
+                phase_ratio(kocean2,jbelow,i) > 0.8 .or. &
+                phase_ratio(ksed1,jbelow,i) > 0.8) then
+                !$OMP critical (change_phase1)
+                nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
+                nphase_counter(kserp,j,i) = nphase_counter(kserp,j,i) + 1
+                nchanged = nchanged + 1
+                ichanged(nchanged) = i
+                jchanged(nchanged) = j
+                !$OMP end critical (change_phase1)
+                mark(kk)%phase = kserp
+                exit
+            endif
+        enddo
     case (kocean1, kocean2)
         ! basalt -> eclogite
         ! phase change pressure
         trpres = -0.3e9 + 2.2e6*tmpr
         press = mantle_density * g * depth
-        if (tmpr > min_eclogite_temp .and. press >= trpres) then
-            !$OMP critical (change_phase1)
-            nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
-            nphase_counter(keclg,j,i) = nphase_counter(keclg,j,i) + 1
-            nchanged = nchanged + 1
-            ichanged(nchanged) = i
-            jchanged(nchanged) = j
-            !$OMP end critical (change_phase1)
-            mark(kk)%phase = keclg
-        endif
+        if (tmpr < min_eclogite_temp .or. press < trpres) cycle
+        !$OMP critical (change_phase1)
+        nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
+        nphase_counter(keclg,j,i) = nphase_counter(keclg,j,i) + 1
+        nchanged = nchanged + 1
+        ichanged(nchanged) = i
+        jchanged(nchanged) = j
+        !$OMP end critical (change_phase1)
+        mark(kk)%phase = keclg
     case (kserp)
         ! dehydration, serpentinite -> normal mantle
         ! Phase diagram taken from Ulmer and Trommsdorff, Nature, 1995
         ! Fixed points (730 C, 2.1 GPa) (500 C, 7.5 GPa)
         trpres = 2.1e9 + (7.5e9 - 2.1e9) * (tmpr - 730.) / (500. - 730.)
         press = mantle_density * g * depth
-        if (tmpr > serpentine_temp .and. press >= trpres) then
-            !$OMP critical (change_phase1)
-            nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
-            nphase_counter(kmant1,j,i) = nphase_counter(kmant1,j,i) + 1
-            nchanged = nchanged + 1
-            ichanged(nchanged) = i
-            jchanged(nchanged) = j
-            !$OMP end critical (change_phase1)
-            mark(kk)%phase = kmant1
-        endif
+        if (tmpr < serpentine_temp .or. press < trpres) cycle
+        !$OMP critical (change_phase1)
+        nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
+        nphase_counter(kmant1,j,i) = nphase_counter(kmant1,j,i) + 1
+        nchanged = nchanged + 1
+        ichanged(nchanged) = i
+        jchanged(nchanged) = j
+        !$OMP end critical (change_phase1)
+        mark(kk)%phase = kmant1
     end select
 
     if(nchanged >= 100*mnx) stop 38
