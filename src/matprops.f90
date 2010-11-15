@@ -281,12 +281,12 @@ else
         if (vis .lt. v_min) vis = v_min
         if (vis .gt. v_max) vis = v_max
 
-        if(k.eq.kmant1.or.k.eq.kmant2) vis = max(vis, 1.e19)
-
-        Eff_visc = Eff_visc + phase_ratio(k,j,i)*vis
+        ! harmonic mean
+        Eff_visc = Eff_visc + phase_ratio(k,j,i) / vis
         !write(*,*) i,j, Eff_visc, vis, tmpr,phase_ratio(k,j,i)
     enddo
-    if(vis.eq.0.) write(*,*) 'eff_visc:', e2sr(j,i),phase_ratio(k,j,i),Eff_visc,vis
+
+    Eff_visc = 1 / Eff_visc
 endif
 
 return
