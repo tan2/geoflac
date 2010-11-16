@@ -32,6 +32,7 @@ Run
 To run the provided example input, execute following commands:
 $ cd ../examples
 $ rm *.0 sys.msg   # delete old output files
+$ export OMP_NUM_THREADS=<# of CPU cores>  # you can skip this step if using ALLavailable CPU cores
 $ ../src/flac test-subduction.inp
 
 To restart a model from previous output, execute following commands:
