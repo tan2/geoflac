@@ -8,7 +8,7 @@ $ make F90=<f90 compiler>
 This will generate a binary "flac".
 
 Supported compilers:
-gfortran -- GNU, v4.2 or later, otherwise openmp is disabled
+gfortran -- GNU (default), v4.2 or later, otherwise openmp is disabled
 ifort    -- Intel
 pgf90    -- PGI
 f90      -- Sun Studio
@@ -54,4 +54,4 @@ several programs, e.g. ParaView, LLNL's VisIt, MayaVi.
 
 
 ----
-by Eh Tan, September 2010
+by Eh Tan, November 2010
