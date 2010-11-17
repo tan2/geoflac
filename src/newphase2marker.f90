@@ -168,8 +168,10 @@ enddo
 !$OMP end do
 !$OMP end parallel
 
+! storing plastic strain in temporary array
+junk2(1:nz-1,1:nx-1) = aps(1:nz-1,1:nx-1)
+
 ! recompute phase ratio of those changed elements
-!$OMP do
 do k = 1, nchanged
     i = ichanged(k)
     j = jchanged(k)
@@ -183,13 +185,15 @@ do k = 1, nchanged
     ratio(1:nphase) = nphase_counter(1:nphase,j,i) / float(kinc)
     kph = maxloc(nphase_counter(:,j,i))
 
-    !$OMP critical (change_phase2)
     ! the phase of this element is the most abundant marker phase
     iphase(j,i) = kph(1)
     phase_ratio(1:nphase,j,i) = ratio(1:nphase)
-    !$OMP end critical (change_phase2)
+
+    ! When phase change occurs, the mineral would recrystalize and lost
+    ! all plastic strain associated with this marker.
+    aps(j,i) = aps(j,i) - junk2(j,i) / float(kinc)
 
 enddo
-!$OMP end do
+
 return
 end subroutine change_phase
