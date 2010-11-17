@@ -191,7 +191,7 @@ do k = 1, nchanged
 
     ! When phase change occurs, the mineral would recrystalize and lost
     ! all plastic strain associated with this marker.
-    aps(j,i) = aps(j,i) - junk2(j,i) / float(kinc)
+    aps(j,i) = max(aps(j,i) - junk2(j,i) / float(kinc), 0d0)
 
 enddo
 
