@@ -112,10 +112,10 @@ if(moving_right==1) then
     call newphase2marker(jj, nz-1, nx-1-idist, nx-1, iph_col2(nzone_age))
 endif
 
-! XXX: the bottom elements must be mantle material, otherwise
-! too much deformation can occur(?)
-aps(nz-3:nz-1, 1:nx-1) = 0.0
-call newphase2marker(nz-3, nz-1, 1, nx-1, kmant1)
+!!$! XXX: the bottom elements must be mantle material, otherwise
+!!$! too much deformation can occur(?)
+!!$aps(nz-3:nz-1, 1:nx-1) = 0.0
+!!$call newphase2marker(nz-3, nz-1, 1, nx-1, kmant1)
 
 
 ! sources
