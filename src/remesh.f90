@@ -102,7 +102,7 @@ if(incoming_left==1) then
     call newphase2marker(jj, nz-1, 1, 1+idist, iph_col2(1))
 endif
 
-if(moving_right==1) then
+if(incoming_right==1) then
     do jj = 1, nz-1
         if((cord(1,nx,2) - 0.5*(cord(jj,nx,2)+cord(jj+1,nx,2))) > hc(nzone_age)*1e3) exit
     enddo
