@@ -13,6 +13,8 @@ module arrays
 
   integer, pointer, save :: ncod(:,:,:)
 
+  ! temporary array
+  real*8, pointer, save :: junk2(:,:)
 
 #ifdef USE_CUDA
 
@@ -73,6 +75,8 @@ contains
 
     allocate(ncod(nz, nx, 2))
 
+    allocate(junk2(nz, nx))
+
 #else
 
 
@@ -121,6 +125,7 @@ contains
     call allocate_int(pncod, itmp1d, nz*nx*2)
     call c_f_pointer(pncod, ncod, [nz, nx, 2])
 
+    allocate(junk2(nz, nx))
 
   contains
 
