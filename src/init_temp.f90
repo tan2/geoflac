@@ -231,7 +231,7 @@ subroutine sidewalltemp(i1, i2)
       if(i1 == 1) then
           source(1:nz-1,i) = source(1:nz-1,i2+1)
       else
-          source(1:nz-1,i) = source(1:nz-1,ii-1)
+          source(1:nz-1,i) = source(1:nz-1,i1-1)
       endif
   enddo
   return
