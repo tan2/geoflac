@@ -52,8 +52,10 @@ ifeq ($(F90), gfortran)
 	ifeq ($(debug), 0)
 		CFLAGS += -O3 -ffast-math
 	else
-		CFLAGS += -O0 -g -Wall -fbounds-check -ftrapv -fbacktrace -fdump-core
-		LDFLAGS += -g
+		CFLAGS += -O0 -g -Wall -fbounds-check -ftrapv -fbacktrace -fdump-core \
+			-Waliasing -Walign-commons -Wampersand -Wintrinsic-shadow \
+			-Wline-truncation -Wsurprising -Wunderflow \
+			-finit-integer=-99 -finit-real=nan -frange-check -Werror
 	endif
 
 	ifeq ($(coverage), 1)
