@@ -45,13 +45,12 @@ LDFLAGS =
 
 ## for GNU gfortran >= 4.2
 ifeq ($(F90), gfortran)
-
+	ifeq ($(omp), 1)
+		CFLAGS += -fopenmp
+		LDFLAGS += -fopenmp
+	endif
 	ifeq ($(debug), 0)
 		CFLAGS += -O3 -ffast-math
-		ifeq ($(omp), 1)
-			CFLAGS += -fopenmp
-			LDFLAGS += -fopenmp
-		endif
 	else
 		CFLAGS += -O0 -g -Wall -fbounds-check -ftrapv -fbacktrace -fdump-core
 		LDFLAGS += -g
@@ -71,26 +70,26 @@ endif
 ## for Intel v11.1
 ifeq ($(F90), ifort)
 	CFLAGS += -assume byterecl
+	ifeq ($(omp), 1)
+		CFLAGS += -fopenmp
+		LDFLAGS += -fopenmp
+	endif
 	ifeq ($(debug), 0)
 		CFLAGS += -fast
-		ifeq ($(omp), 1)
-			CFLAGS += -fopenmp
-			LDFLAGS += -fopenmp
-		endif
 	else
 	       CFLAGS += -O0 -g -no-opt-subscript-in-range -ftrapuv -check all -traceback
 	       LDFLAGS +=
 	endif
 endif
 
-## for PGI (untested)
+## for PGI
 ifeq ($(F90), pgf90)
+	ifeq ($(omp), 1)
+		CFLAGS += -mp
+		LDFLAGS += -mp
+	endif
         ifeq ($(debug), 0)
                 CFLAGS += -O3 -fast -fastsse -Mnoframe -Mipa=fast
-                ifeq ($(omp), 1)
-                        CFLAGS += -mp
-                        LDFLAGS += -mp
-                endif
         else
                CFLAGS += -O0 -g -Mbounds -Mchkstk -traceback
                LDFLAGS +=
@@ -99,17 +98,17 @@ endif
 
 ## for Solaris
 ifeq ($(F90), f90)
+	ifeq ($(omp), 1)
+		CFLAGS += -xopenmp=parallel
+		LDFLAGS += -xopenmp
+	endif
+	# -r8const: Promote single precision const to double precision.
+	# -C: Enable runtime subscript range checking
+	# -fpover=yes: Provide run-time overflow check during READ
+	# -xcheck=%all: Enable all run-time check
 	ifeq ($(debug), 0)
 		CFLAGS += -O3 -r8const -fast -xloopinfo -s -xipo
-		ifeq ($(omp), 1)
-			CFLAGS += -xopenmp=parallel
-			LDFLAGS += -xopenmp
-		endif
 	else
-		# -r8const: Promote single precision const to double precision.
-		# -C: Enable runtime subscript range checking
-		# -fpover=yes: Provide run-time overflow check during READ
-		# -xcheck=%all: Enable all run-time check
 		CFLAGS += -g -w3 -r8const -C -fpover=yes -xcheck=%all
 	endif
 endif
