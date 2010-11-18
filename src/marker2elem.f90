@@ -7,7 +7,7 @@ subroutine marker2elem
   include 'arrays.inc'
   integer kph(1)
 
-  character*200 msg
+  !character*200 msg
 
   ! Interpolate marker properties into elements
   ! Find the triangle in which each marker belongs
