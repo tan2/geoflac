@@ -9,14 +9,6 @@ include 'params.inc'
 include 'arrays.inc'
 
 
-!character  phasedat*20
-
-pi = 3.14159265358979323846
-degrad = pi/180.
-
-
-
-
 ! Main phase
 iphase = mphase
 
