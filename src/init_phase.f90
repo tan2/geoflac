@@ -12,15 +12,6 @@ include 'arrays.inc'
 ! Main phase
 iphase = mphase
 
-! Other phases in horizontal layers 
-do k = 1,nphasl
-    do i = 1,nx-1
-        do j = ltop(k),lbottom(k)
-            iphase(j,i) = lphase(k)
-        end do
-    end do
-end do
-
 !  Read distribution of the phases from the dat file
 if (irphase .gt. 0) then
     open(12, file=phasefile)
@@ -34,7 +25,17 @@ if (irphase .gt. 0) then
         enddo
     enddo
     close(12)
+    goto 100
 endif
+
+! Other phases in horizontal layers
+do k = 1,nphasl
+    do i = 1,nx-1
+        do j = ltop(k),lbottom(k)
+            iphase(j,i) = lphase(k)
+        end do
+    end do
+end do
 
 ! Case with iynts = 2 or 10 for continental and collision
 if (iynts.eq.2 .or. iynts.eq.10) then
@@ -112,6 +113,7 @@ do i = 1,inhom
     endif
 end do
 
+100 continue
 
 ! Check if viscous rheology present
 ivis_present = 0
