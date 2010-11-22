@@ -23,7 +23,7 @@ end do
 
 !  Read distribution of the phases from the dat file
 if (irphase .gt. 0) then
-    open(12,file='phasedat.inp')
+    open(12, file=phasefile)
     read(12,*) nphasl
     do k=1,nphasl
         read(12,*) lphase(k)
