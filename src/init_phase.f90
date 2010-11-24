@@ -12,8 +12,8 @@ include 'arrays.inc'
 ! Main phase
 iphase = mphase
 
-!  Read distribution of the phases from the dat file
 if (irphase .gt. 0) then
+    !  Read distribution of the phases from the dat file
     open(12, file=phasefile)
     read(12,*) nphasl
     do k=1,nphasl
@@ -25,34 +25,33 @@ if (irphase .gt. 0) then
         enddo
     enddo
     close(12)
-    goto 100
-endif
-
-! Other phases in horizontal layers
-do k = 1,nphasl
-    do i = 1,nx-1
-        do j = ltop(k),lbottom(k)
-            iphase(j,i) = lphase(k)
+else
+    ! phases in horizontal layers
+    do k = 1,nphasl
+        do i = 1,nx-1
+            do j = ltop(k),lbottom(k)
+                iphase(j,i) = lphase(k)
+            end do
         end do
     end do
-end do
 
-! Case with iynts = 2 or 10 for continental and collision
-if (iynts.eq.2 .or. iynts.eq.10) then
-    do n = 1, nzone_age
-       if(n.eq.1) then
-           inx1 = ixtb1(n)
-       else
-           inx1 = ixtb1(n) - 1
-       endif
-       do i = inx1,ixtb2(n)-1
-       do j = 1, nz-1
-          y = -cord(j,i,2)*1.e-3
-          if (y.lt.hc(n)) iphase(j,i) = iph_col1(n)   
-          if (y.ge.hc(n)) iphase(j,i) = iph_col2(n)   
-       enddo
-       enddo
-    enddo
+    ! Case with iynts = 2 or 10 for continental and collision
+    if (iynts.eq.2 .or. iynts.eq.10) then
+        do n = 1, nzone_age
+            if(n.eq.1) then
+                inx1 = ixtb1(n)
+            else
+                inx1 = ixtb1(n) - 1
+            endif
+            do i = inx1,ixtb2(n)-1
+                do j = 1, nz-1
+                    y = -cord(j,i,2)*1.e-3
+                    if (y.lt.hc(n)) iphase(j,i) = iph_col1(n)
+                    if (y.ge.hc(n)) iphase(j,i) = iph_col2(n)
+                enddo
+            enddo
+        enddo
+    endif
 endif
 
 write(333,*) 'Phases of horizontal layers:'
@@ -112,8 +111,6 @@ do i = 1,inhom
         end do
     endif
 end do
-
-100 continue
 
 ! Check if viscous rheology present
 ivis_present = 0
