@@ -35,7 +35,7 @@ end do
 
 dx_init = abs(cord(1,2,1)-cord(1,1,1))
 basement(1:nx-1) = 0.5 * (cord(1,1:nx-1,2) + cord(1,2:nx,2))
-old_topo(1:nx-1) = basement(1:nx-1)
+dhacc(1:nx) = 0.d0
 
 return
 end

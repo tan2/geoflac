@@ -6,7 +6,8 @@ parameter(max_markers_per_elem=32)
 
 common /phase_arrays/ iphase(mnz,mnx), nphase_counter(20,mnz,mnx), phase_ratio(20,mnz,mnx)
 
-common /topo_arrays/ basement(mnx), old_topo(mnx), ntopmarker(mnx), itopmarker(max_markers_per_elem,mnx)
+common /topo_arrays/ basement(mnx), dhacc(mnx+1), &
+     ntopmarker(mnx), itopmarker(max_markers_per_elem,mnx)
 
 common /all_arrays/ strainr(3,4,mnz,mnx)
 
