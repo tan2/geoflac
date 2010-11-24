@@ -135,18 +135,15 @@ end subroutine fl_move
 ! Diffuse topography
 !============================================================
 subroutine diff_topo
+use marker_data
 use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 include 'phases.inc'
 
-dimension dh(mnx+1),xtgt(mnx)
-! Make sure the top layer is made of mobile sediments
+dimension dh(mnx+1), xtgt(mnx)
 
-if (mod(nloop,10000).eq.0) then
-    call newphase2marker(1,1,1,nx-1,ksed1)
-endif
 !EROSION PROCESSES
 if( topo_kappa .gt. 0. ) then             
     xtgtmax = 0.
@@ -164,8 +161,6 @@ if( topo_kappa .gt. 0. ) then
             (cord(1,i  ,2)-cord(1,i-1,2))/(cord(1,i  ,1)-cord(1,i-1,1)) ) / &
             (cord(1,i+1,1)-cord(1,i-1,1))
         dh(i) = topo_kappa2 * dt * snder
-!        alphaE = log(10.0)/20000/20000
-!        dh(i)= -1.0 * topo_kappa * dt * exp(-1.0*alphaE*(cord(1,i,1)-100000)**2)
         if( dabs(dh(i)).gt.dzmax) dzmax = dabs(dh(i))
 !        write(*,*) i,dh(i),snder,dt,topo_kappa
     end do
@@ -175,15 +170,18 @@ if( topo_kappa .gt. 0. ) then
         call SysMsg('DIFF_TOPO: divergence!')
         stop
     endif
-!    if(xtgtmax.gt.0.4) then
-    do i = 2, nx-1
-        cord(1,i,2) = cord(1,i,2) + dh(i)
-!        write(*,*) dh(i)
-    end do
-!   endif
-    cord(1,1 ,2) = cord(1,2   ,2)
-    cord(1,nx,2) = cord(1,nx-1,2)
 
+    dh(1) = dh(2)
+    dh(nx) = dh(nx-1)
+    cord(1,1:nx,2) = cord(1,1:nx,2) + dh(1:nx)
+
+    ! accumulated topo change since last resurface
+    dhacc(1:nx) = dhacc(1:nx) + dh(1:nx)
+
+    ! adjust markers
+    if(mod(nloop, 100) .eq. 0) then
+        call resurface
+    end if
 endif
 
 
@@ -225,6 +223,81 @@ endif
        
 return
 end subroutine diff_topo
+
+
+
+
+subroutine resurface
+  use marker_data
+  use arrays
+  include 'precision.inc'
+  include 'params.inc'
+  include 'arrays.inc'
+
+  dimension shp2(2,3,2)
+
+  do i = 1, nx-1
+      ! restoring cord array to its value before last resurface
+      cord(1,i:i+1,2) = cord(1,i:i+1,2) - dhacc(i:i+1)
+
+      ! compute physical coordinate of markers before resurface
+      do k = 1, ntopmarker(i)
+          call shape_functions(1,i,shp2)
+          n = itopmarker(k, i)
+          ntriag = mark(n)%ntriag
+          m = mod(ntriag,2) + 1
+          call bar2xy(mark(n)%a1, mark(n)%a2, shp2(:,:,m), x, y)
+          xx = mark(n)%x
+          yy = mark(n)%y
+      end do
+
+      ! restoring cord array
+      cord(1,i:i+1,2) = cord(1,i:i+1,2) + dhacc(i:i+1)
+
+      ! adjust marker barycentric coordinates since the topo has changed
+      k = 1
+      do while (.true.)
+          n = itopmarker(k, i)
+          xx = mark(n)%x
+          yy = mark(n)%y
+          call check_inside(xx, yy, bar1, bar2, ntr, i, 1, inc)
+          if(inc == 0) then
+              ! The maker could possibly be moved to a neighboring element.
+              ! For simplicity, the marker is discarded.
+              mark(n)%dead = 0
+              nphase_counter(mark(n)%phase,1,i) = nphase_counter(mark(n)%phase,1,i) - 1
+              ! move the last marker in itopmarker to k-th position
+              itopmarker(k,i) = itopmarker(ntopmarker(i),i)
+              ntopmarker(i) = ntopmarker(i) - 1
+              cycle
+          end if
+          mark(n)%a1 = bar1
+          mark(n)%a2 = bar2
+          mark(n)%ntriag = ntr
+          k = k + 1
+          if(k > ntopmarker(i)) exit
+      end do
+
+      ! add/remove markers if topo changed too much
+      surface = 0.5 * (cord(1,i,2) + cord(1,i+1,2))
+      diff = surface - basement(i)
+
+      kinc = sum(nphase_counter(:,1,i))
+      if (diff*kinc .ge. elz) then
+          ! sedimentation, add a sediment marker
+      else if(-diff*kinc .ge. elz) then
+          ! erosion, remove the top marker
+      end if
+
+      ! recalculate phase ratio
+      kinc = sum(nphase_counter(:,1,i))
+      phase_ratio(1:nphase,1,i) = nphase_counter(1:nphase,1,i) / float(kinc)
+
+  end do
+
+  dhacc(1:nx) = 0.d0
+
+end subroutine resurface
 
 
 subroutine diff_topo_old
