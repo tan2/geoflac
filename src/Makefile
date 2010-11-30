@@ -20,7 +20,12 @@ gprof = 0
 cuda = 0
 
 
-## Select fortran 90 compiler
+## any customized flags
+CFLAGS =
+LDFLAGS =
+
+
+## Select default fortran 90 compiler
 
 ## GNU version >= 4.2, otherwise openmp won't work
 F90 = gfortran
@@ -39,9 +44,6 @@ F90 = gfortran
 ## Select compiler and linker flags
 ## (Usually you won't need to modify anything below)
 ########################################################################
-
-CFLAGS =
-LDFLAGS =
 
 ## for GNU gfortran >= 4.2
 ifeq ($(F90), gfortran)
