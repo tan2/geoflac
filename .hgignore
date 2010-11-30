@@ -4,6 +4,7 @@ syntax:glob
 src/*.mod
 src/*.o
 src/flac
+src/0.patch
 util/flac2vtk
 
 # files created by 'hg revert'

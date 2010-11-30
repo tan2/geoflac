@@ -150,6 +150,10 @@ ifneq ($(cuda), 0)
 endif
 
 
+## command to invoke mercurial VCS
+HG = hg
+
+
 MODULE_SRCS = \
 	marker_data.f90
 
@@ -222,9 +226,11 @@ endif
 
 $(EXE): $(MODULE_OBJS) $(OBJS2) $(OBJS)
 	$(F90) $(LDFLAGS) $(MODULE_OBJS) $(OBJS) $(OBJS2) -o $@
+	@which hg > /dev/null && (hg summary && hg diff) > 0.patch
 
 $(CUEXE): $(MODULES_OBJS) $(OBJS2) $(OBJS) $(CUDAFLAC_OBJS)
 	$(F90) $(LDFLAGS) $(MODULE_OBJS) $(OBJS) $(OBJS2) $(CUDAFLAC_OBJS) -o $@
+	@which hg > /dev/null && (hg summary && hg diff) > 0.patch
 
 $(MODULE_OBJS): %.o : %.f90
 	$(F90) $(CFLAGS) -c $<
