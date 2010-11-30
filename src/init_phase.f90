@@ -97,7 +97,7 @@ do i = 1,inhom
     ! weak zone at 45 degree
     if (igeom (i) .eq.3) then
         do j = ix1(i),ix2(i)
-            k = int(float(iy2(i)-iy1(i))/float(ix2(i)-ix1(i))*(j-ix1(i))) + iy1(i)
+            k = nint(float(iy2(i)-iy1(i))/float(ix2(i)-ix1(i))*(j-ix1(i))) + iy1(i)
             iphase(k,j) = inphase(i)
         end do
     endif
@@ -105,9 +105,10 @@ do i = 1,inhom
     ! Weak zone in accumulated plastic strain at 45 degree        
     if (igeom (i).eq.4) then
         do j =ix1(i),ix2(i)
-            k = int(float(iy2(i)-iy1(i))/float(ix2(i)-ix1(i))*(j-ix1(i))) + iy1(i)
+            k = nint(float(iy2(i)-iy1(i))/float(ix2(i)-ix1(i))*(j-ix1(i))) + iy1(i)
             aps(k,j)=xinitaps(i)
             iphase(k,j) = inphase(i)
+            write(*,*) j, k
         end do
     endif
 end do
