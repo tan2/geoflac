@@ -38,7 +38,7 @@ if (drat .lt. 1.) drat = 1.
 !$OMP                  p_est, rosubg, &
 !$OMP                  press_norm_l, dlx_l, dly_l, &
 !$OMP                  press_norm_r, dlx_r, dly_r, &
-!$OMP                  iunknown, rho_water, water_depth)
+!$OMP                  iunknown, rho_water_g, water_depth)
 !
 !$OMP do
 do i = 1,nx
@@ -321,7 +321,7 @@ if(nyhydro.gt.0) then
     do i=1,nx
 
         ! pressure from water sea on top
-        rho_water = -10300.
+        rho_water_g = 1030. * g
         if(i.lt.nx) then
             water_depth = 0.5*(cord(1,i+1,2)+cord(1,i,2))
         else
@@ -333,21 +333,21 @@ if(nyhydro.gt.0) then
                 press_norm_l = 0
                 dlx_l = 0
                 dly_l = 0
-                press_norm_r = rho_water*((cord(1,i+1,2)+cord(1,i,2))/2.)
+                press_norm_r = rho_water_g*((cord(1,i+1,2)+cord(1,i,2))/2.)
                 dlx_r = cord(1,i+1,1)-cord(1,i  ,1)
                 dly_r = cord(1,i+1,2)-cord(1,i  ,2)
             elseif(i.eq.nx) then
-                press_norm_l = rho_water*((cord(1,i-1,2)+cord(1,i,2))/2.)
+                press_norm_l = rho_water_g*((cord(1,i-1,2)+cord(1,i,2))/2.)
                 dlx_l = cord(1,i  ,1)-cord(1,i-1,1)
                 dly_l = cord(1,i  ,2)-cord(1,i-1,2)
                 press_norm_r = 0
                 dlx_r = 0
                 dly_r = 0
             else
-                press_norm_l = rho_water*((cord(1,i-1,2)+cord(1,i,2))/2.)
+                press_norm_l = rho_water_g*((cord(1,i-1,2)+cord(1,i,2))/2.)
                 dlx_l = cord(1,i  ,1)-cord(1,i-1,1)
                 dly_l = cord(1,i  ,2)-cord(1,i-1,2)
-                press_norm_r = rho_water*((cord(1,i+1,2)+cord(1,i,2))/2.)
+                press_norm_r = rho_water_g*((cord(1,i+1,2)+cord(1,i,2))/2.)
                 dlx_r = cord(1,i+1,1)-cord(1,i  ,1)
                 dly_r = cord(1,i+1,2)-cord(1,i  ,2)
             endif
