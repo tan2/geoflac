@@ -7,13 +7,19 @@ use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
+include 'phases.inc'
 
 pi = 3.14159265358979323846
 degrad = pi/180.
 
 n = 0
 do 51 i = 1,nx-1
-    rogh = 0.
+    if(iphase(1,i) == kocean1 .or. iphase(1,j) == kocean2) then
+        ! oceanic crust under 8000 meter of ocean (density = 1030)
+        rogh = -1030. * g * 8.e3
+    else
+        rogh = 0.
+    endif
     do 52 j = 1,nz-1
         iph = iphase(j,i)
         tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
