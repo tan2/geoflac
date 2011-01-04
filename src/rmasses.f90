@@ -8,7 +8,7 @@ include 'params.inc'
 include 'arrays.inc'
 
 
-c1d12 = 1./12.
+real*8, parameter :: c1d12 = 1./12.
 
 
 !   Calcualtion of the TRUE GRAVITATIONAL ZONE MASSES
@@ -19,11 +19,9 @@ c1d12 = 1./12.
 !-----------------------------------
 
 rmass = 0
-!$DIR LOOP_PARALLEL
-!$DIR LOOP_PRIVATE(j,dens)
 
-do 1 i = 1, nx-1
-    do 1 j = 1, nz-1
+do i = 1, nx-1
+    do j = 1, nz-1
 
         !  Area and densities of zones
         dens = Eff_dens( j,i )
@@ -49,7 +47,8 @@ do 1 i = 1, nx-1
         rmass(j  ,i  )=rmass(j  ,i  )+c1d12/area(j,i,4)*dens
         rmass(j+1,i+1)=rmass(j+1,i+1)+c1d12/area(j,i,4)*dens 
         rmass(j  ,i+1)=rmass(j  ,i+1)+c1d12/area(j,i,4)*dens 
-1 continue
+    enddo
+enddo
 
 return
 end
