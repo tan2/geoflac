@@ -20,10 +20,10 @@ function Eff_dens( j, i)
       iph = iphase(j,i)
       dens = den(iph) * ( 1 - alfa(iph)*tmpr + beta(iph)*press )
 
-      ! Effect of melt
-      fmelt = Eff_melt(iph, tmpr)
-      dens = dens * ( 1.-0.1*fmelt )
-      Eff_dens = dens
+!!$      ! Effect of melt
+!!$      fmelt = Eff_melt(iph, tmpr)
+!!$      dens = dens * ( 1.-0.1*fmelt )
+!!$      Eff_dens = dens
   else
       Eff_dens = 0.
       do k = 1, nphase
@@ -221,17 +221,17 @@ if (iint_marker.ne.1) then
     vis = 0.25 * srat**pow*(0.75*acoef(iph))**pow1* &
          exp(eactiv(iph)/(pln(iph)*r*(tmpr+273.)))*1.e+6
 
-    ! Effect of melt
-    fmelt_crit = 0.05
-    fmelt = Eff_melt(iph, tmpr)
-    if( fmelt .gt. 0. ) then
-        if( fmelt .lt. fmelt_crit ) then
-            vislog = fmelt/fmelt_crit*dlog10(v_min/vis) + dlog10(vis)
-            vis = 10.**vislog
-        else
-            vis = v_min
-        endif
-    endif
+!!$    ! Effect of melt
+!!$    fmelt_crit = 0.05
+!!$    fmelt = Eff_melt(iph, tmpr)
+!!$    if( fmelt .gt. 0. ) then
+!!$        if( fmelt .lt. fmelt_crit ) then
+!!$            vislog = fmelt/fmelt_crit*dlog10(v_min/vis) + dlog10(vis)
+!!$            vis = 10.**vislog
+!!$        else
+!!$            vis = v_min
+!!$        endif
+!!$    endif
 
 
     ! limiting from above (quasi-Peierls)

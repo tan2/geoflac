@@ -20,17 +20,17 @@ pow1 = -1./pln(iph)
 vis = 0.25 * srat**pow*(0.75*acoef(iph))**pow1* &
         exp(eactiv(iph)/(pln(iph)*r*(tmpr+273.)))*1.e+6
 
-! Effect of melt
-fmelt_crit = 0.05
-fmelt = Eff_melt(iph, tmpr)
-if( fmelt .gt. 0. ) then
-    if( fmelt .lt. fmelt_crit ) then
-        vislog = fmelt/fmelt_crit*dlog10(v_min/vis) + dlog10(vis)
-        vis = 10.**vislog
-    else
-        vis = v_min
-    endif
-endif
+!!$! Effect of melt
+!!$fmelt_crit = 0.05
+!!$fmelt = Eff_melt(iph, tmpr)
+!!$if( fmelt .gt. 0. ) then
+!!$    if( fmelt .lt. fmelt_crit ) then
+!!$        vislog = fmelt/fmelt_crit*dlog10(v_min/vis) + dlog10(vis)
+!!$        vis = 10.**vislog
+!!$    else
+!!$        vis = v_min
+!!$    endif
+!!$endif
 
 !XXX: phase #115 never exists
 ! experiments with Peierls law
