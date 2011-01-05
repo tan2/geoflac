@@ -233,66 +233,63 @@ subroutine resurface
   include 'precision.inc'
   include 'params.inc'
   include 'arrays.inc'
+  include 'phases.inc'
 
   dimension shp2(2,3,2)
 
   do i = 1, nx-1
-      ! restoring cord array to its value before last resurface
-      cord(1,i:i+1,2) = cord(1,i:i+1,2) - dhacc(i:i+1)
-
-      ! compute physical coordinate of markers before resurface
-      do k = 1, ntopmarker(i)
-          call shape_functions(1,i,shp2)
-          n = itopmarker(k, i)
-          ntriag = mark(n)%ntriag
-          m = mod(ntriag,2) + 1
-          call bar2xy(mark(n)%a1, mark(n)%a2, shp2(:,:,m), x, y)
-          xx = mark(n)%x
-          yy = mark(n)%y
-      end do
-
-      ! restoring cord array
-      cord(1,i:i+1,2) = cord(1,i:i+1,2) + dhacc(i:i+1)
-
-      ! adjust marker barycentric coordinates since the topo has changed
-      k = 1
-      do while (.true.)
-          n = itopmarker(k, i)
-          xx = mark(n)%x
-          yy = mark(n)%y
-          call check_inside(xx, yy, bar1, bar2, ntr, i, 1, inc)
-          if(inc == 0) then
-              ! The maker could possibly be moved to a neighboring element.
-              ! For simplicity, the marker is discarded.
-              mark(n)%dead = 0
-              nphase_counter(mark(n)%phase,1,i) = nphase_counter(mark(n)%phase,1,i) - 1
-              ! move the last marker in itopmarker to k-th position
-              itopmarker(k,i) = itopmarker(ntopmarker(i),i)
-              ntopmarker(i) = ntopmarker(i) - 1
-              cycle
-          end if
-          mark(n)%a1 = bar1
-          mark(n)%a2 = bar2
-          mark(n)%ntriag = ntr
-          k = k + 1
-          if(k > ntopmarker(i)) exit
-      end do
+      call shape_functions(1,i,shp2)
 
       ! add/remove markers if topo changed too much
       surface = 0.5 * (cord(1,i,2) + cord(1,i+1,2))
+      elz = surface - 0.5 * (cord(2,i,2) + cord(2,i+1,2))
       diff = surface - basement(i)
 
       kinc = sum(nphase_counter(:,1,i))
       if (diff*kinc .ge. elz) then
           ! sedimentation, add a sediment marker
+          do while (.true.)
+              call random_number(rx)
+              xx = cord(1,i,1) + rx * (cord(1,i+1,1) - cord(1,i,1))
+              yy = min(cord(1,i,2), cord(1,i+1,2)) - 0.05 * elz
+              call add_marker(xx, yy, ksed1, nmarkers, 1, i, inc)
+              if(inc.ne.0) exit
+              write(*,*) cord(1,i:i+1,1), cord(1:2,i,2), xx, yy
+          enddo
+
+          basement(i) = surface
+
+          ! recalculate phase ratio
+          kinc = sum(nphase_counter(:,1,i))
+          phase_ratio(1:nphase,1,i) = nphase_counter(1:nphase,1,i) / float(kinc)
+
       else if(-diff*kinc .ge. elz) then
           ! erosion, remove the top marker
+          ymax = -1e30
+          nmax = 0
+          kmax = 0
+          do k = 1, ntopmarker(i)
+              n = itopmarker(k, i)
+              ntriag = mark(n)%ntriag
+              m = mod(ntriag,2) + 1
+              call bar2xy(mark(n)%a1, mark(n)%a2, shp2(:,:,m), x, y)
+              if(ymax < y) then
+                  ymax = y
+                  nmax = n
+                  kmax = k
+              endif
+          end do
+          mark(nmax)%dead = 0
+          ! replace topmarker k with last topmarker
+          itopmarker(k,i) = itopmarker(ntopmarker(i),i)
+          ntopmarker(i) = ntopmarker(i) - 1
+
+          basement(i) = surface
+
+          ! recalculate phase ratio
+          kinc = sum(nphase_counter(:,1,i))
+          phase_ratio(1:nphase,1,i) = nphase_counter(1:nphase,1,i) / float(kinc)
       end if
-
-      ! recalculate phase ratio
-      kinc = sum(nphase_counter(:,1,i))
-      phase_ratio(1:nphase,1,i) = nphase_counter(1:nphase,1,i) / float(kinc)
-
   end do
 
   dhacc(1:nx) = 0.d0
