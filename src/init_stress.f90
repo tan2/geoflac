@@ -53,7 +53,7 @@ open(1,file='pisos.rs')
 write(1,*) pisos
 close (1)
 
-e2sr = 0
+e2sr = 1e-16
 
 return
 end
