@@ -44,7 +44,9 @@ subroutine init_bc
   !  0  - no condition 
   !  10 - velx           01 - vely 
   !  20 - normal stress  02 - shear stress 
-  !  30 - vely           40 - shear stress out of the plane
+  !  30 - vely
+  !  40 - shear stress out of the plane
+  !  50 - velx with visc-dep profile
   ! ---------------------------------------------------------------- 
   ! function of boundary conditions: 
   !   a + bx + cx**2 + d cos (2pi ex) + f sin (2pi gx) 
@@ -209,6 +211,8 @@ subroutine init_bc
           enddo
       endif
 
+      ! viscosity-dependent velocity profile
+      if (nbc(i).eq.50) call velbc_visc(i)
 
   enddo
   !
@@ -339,6 +343,47 @@ subroutine velbc (i,numbp,x)
 
   return
 end subroutine velbc
+
+
+subroutine velbc_visc(i)
+
+  use arrays
+  include 'precision.inc'
+  include 'arrays.inc'
+  include 'params.inc'
+
+  if (nofside(i).eq.1) then
+      ii = 1
+      ie = 1
+  else if (nofside(i).eq.3) then
+      ii = nx
+      ie = nx - 1
+  else
+      stop 'Wrong side for velbv_visc'
+  endif
+
+  tmp = 0.
+  do jj = nbc1(i), nbc2(i)
+      if(jj == 1) cycle
+      tmp = tmp + (cord(jj-1,ii,2) - cord(jj,ii,2)) / min(Eff_visc(jj-1,ie), 3e23)
+  enddo
+  tmp1 = tmp
+  tmp = bca(i) / tmp
+
+  do jj = nbc1(i), nbc2(i)
+      if(jj > 1) then
+          tmp1 = tmp1 - (cord(jj-1,ii,2) - cord(jj,ii,2)) / min(Eff_visc(jj-1,ie), 3e23)
+          write(*,*) jj, min(Eff_visc(jj-1,ie),3e23), tmp1 * tmp
+      else
+          write(*,*) jj, 3e23, tmp1 * tmp
+      end if
+      ncod(jj,ii,1) = 1
+      bc(jj,ii,1) = tmp1 * tmp
+  enddo
+  bc(nz,ii,1) = 0
+
+end subroutine velbc_visc
+
 
 !
 ! Find Maximum velocity applied to the boundaries
