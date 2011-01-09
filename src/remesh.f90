@@ -163,7 +163,7 @@ deallocate( dummy )
 ! Changing the temperature of left-/right- most elements
 ! in accordance to initial temperature
 if(incoming_left==1) call sidewalltemp(1,1+idist)
-if(incoming_right==1) call sidewalltemp(nx+1-idist,nx+1)
+if(incoming_right==1) call sidewalltemp(nx-idist,nx)
 
 ! AFTER INTERPOLATIONS - RECALCULATE SOME DEPENDENT VARIABLES
 
