@@ -37,6 +37,10 @@ open (1,file='cord.rs',access='direct',recl=nwords*kindr)
 write (1,rec=nrec) cord
 close (1)
 
+open (1,file='dhacc.rs',access='direct',recl=(nx-1)*kindr)
+write (1,rec=nrec) dhacc(1:nx-1)
+close (1)
+
 open (1,file='vel.rs',access='direct',recl=nwords*kindr) 
 write (1,rec=nrec) vel
 close (1)
