@@ -25,7 +25,7 @@ enddo
 !$OMP end parallel
 
 ! Diffuse topography
-if( topo_kappa.gt.0. .OR. bottom_kappa.gt.0. ) call diff_topo
+if( topo_kappa.gt.0.) call diff_topo
 
 
 !$OMP parallel private(i,j,x1,y1,x2,y2,x3,y3,x4,y4, &
@@ -140,12 +140,10 @@ include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 
-dimension dh(mnx+1), xtgt(mnx)
+dimension dh(mnx+1)
 
 !EROSION PROCESSES
 if( topo_kappa .gt. 0. ) then             
-    xtgtmax = 0.
-    dzmax = 0.
     do i = 2, nx-1
         water_depth = 0.5*(cord(1,i+1,2)+cord(1,i,2))
         if (water_depth.lt.0) then
@@ -153,21 +151,11 @@ if( topo_kappa .gt. 0. ) then
         else
           topo_kappa2 = topo_kappa
         endif
-        xtgt(i) = abs((cord(1,i+1,2)-cord(1,i  ,2))/(cord(1,i+1,1)-cord(1,i  ,1)))
-        xtgtmax = max(xtgt(i),xtgtmax)
         snder = ( (cord(1,i+1,2)-cord(1,i  ,2))/(cord(1,i+1,1)-cord(1,i  ,1)) - &
             (cord(1,i  ,2)-cord(1,i-1,2))/(cord(1,i  ,1)-cord(1,i-1,1)) ) / &
             (cord(1,i+1,1)-cord(1,i-1,1))
         dh(i) = topo_kappa2 * dt * snder
-        if( dabs(dh(i)).gt.dzmax) dzmax = dabs(dh(i))
-!        write(*,*) i,dh(i),snder,dt,topo_kappa
     end do
-
-    if( dzmax*(nz-1) .gt. dabs(rzbo) ) then
-         write(*,*) dzmax,nz,rzbo,dt,topo_kappa2,snder
-        call SysMsg('DIFF_TOPO: divergence!')
-        stop
-    endif
 
     dh(1) = dh(2)
     dh(nx) = dh(nx-1)
@@ -185,42 +173,6 @@ if( topo_kappa .gt. 0. ) then
 endif
 
 
-! diffuse also bottom boundary
-if( bottom_kappa .gt. 0. ) then
-    
-    dzmax = 0.
-    dhsum = 0.
-    do i = 2, nx-1
-        snder = ( (cord(nz,i+1,2)-cord(nz,i  ,2))/(cord(nz,i+1,1)-cord(nz,i  ,1)) - &
-            (cord(nz,i  ,2)-cord(nz,i-1,2))/(cord(nz,i  ,1)-cord(nz,i-1,1)) ) / &
-            (cord(nz,i+1,1)-cord(nz,i-1,1))
-        dh(i) = bottom_kappa * dt * snder
-        dhsum = dhsum + dh(i)
-        if( dabs(dh(i)).gt.dzmax) dzmax = dabs(dh(i))
-    end do
-
-    new_cord = cord(nz,2,2) + dh(2)
-    dh(1) = new_cord - cord(nz,1,2)
-    dhsum = dhsum + dh(1)
-    if( dabs(dh(1)).gt.dzmax) dzmax = dabs(dh(1))
-
-    new_cord = cord(nz,nx-1,2) + dh(nx-1)
-    dh(nx) = new_cord - cord(nz,nx,2)
-    dhsum = dhsum + dh(nx)
-    if( dabs(dh(nx)).gt.dzmax) dzmax = dabs(dh(nx))
-
-    if( dzmax*(nz-1) .gt. dabs(rzbo) ) then
-        call SysMsg('DIFF_TOPO: divergency at the bottom!')
-        stop
-    endif
-
-    deltah = dhsum/nx
-    do i = 1, nx
-        cord(nz,i,2) = cord(nz,i,2) + dh(i) - deltah
-    end do
-
-endif
-       
 return
 end subroutine diff_topo
 
@@ -296,56 +248,3 @@ subroutine resurface
 
 end subroutine resurface
 
-
-subroutine diff_topo_old
-use arrays
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
-
-dimension dh(mnx+1)
-
-             
-dzmax = 0.
-
-do i = 2, nx-1
-    dx = cord(1,i,1)-cord(1,i-1,1)
-    snder = ( (cord(1,i+1,2)-cord(1,i  ,2))/(cord(1,i+1,1)-cord(1,i  ,1)) - &
-              (cord(1,i  ,2)-cord(1,i-1,2))/(cord(1,i  ,1)-cord(1,i-1,1)) ) / &
-            (cord(1,i+1,1)-cord(1,i-1,1))
-    dh(i) = topo_kappa * dt * snder
-    if( dabs(dh(i)).gt.dzmax) dzmax = dabs(dh(i))
-end do
-
-if( dzmax*(nz-1) .gt. dabs(rzbo) ) then
-    call SysMsg('DIFF_TOPO: divergency!')
-    stop
-endif
-
-do i = 2, nx-1
-    cord(1,i,2) = cord(1,i,2) + dh(i)
-end do
-
-
-! diffuse also bottom boundary
-if( bottom_kappa .ne. 0. ) then
-    do i = 2, nx-1
-        dx = cord(nz,i,1)-cord(nz,i-1,1)
-        snder = (cord(nz,i+1,2)-2*cord(nz,i,2)+cord(nz,i-1,2))/4/dx/dx
-        dh(i) = bottom_kappa * dt * snder
-        if( dabs(dh(i)).gt.dzmax) dzmax = dabs(dh(i))
-    end do
-
-    if( dzmax*(nz-1) .gt. dabs(rzbo) ) then
-        call SysMsg('DIFF_TOPO: divergency!')
-        stop
-    endif
-
-    do i = 2, nx-1
-        cord(nz,i,2) = cord(nz,i,2) + dh(i)
-    end do
-
-endif
-       
-return
-end subroutine diff_topo_old
