@@ -135,12 +135,10 @@ end subroutine fl_move
 ! Diffuse topography
 !============================================================
 subroutine diff_topo
-use marker_data
 use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
-include 'phases.inc'
 
 dimension dh(mnx+1), xtgt(mnx)
 
@@ -155,7 +153,7 @@ if( topo_kappa .gt. 0. ) then
         else
           topo_kappa2 = topo_kappa
         endif
-        xtgt(i) = abs((cord(1,i+1,2)-cord(1,i  ,2))/(cord(1,i+1,1)-cord(1,i  ,1))) 
+        xtgt(i) = abs((cord(1,i+1,2)-cord(1,i  ,2))/(cord(1,i+1,1)-cord(1,i  ,1)))
         xtgtmax = max(xtgt(i),xtgtmax)
         snder = ( (cord(1,i+1,2)-cord(1,i  ,2))/(cord(1,i+1,1)-cord(1,i  ,1)) - &
             (cord(1,i  ,2)-cord(1,i-1,2))/(cord(1,i  ,1)-cord(1,i-1,1)) ) / &
@@ -176,10 +174,12 @@ if( topo_kappa .gt. 0. ) then
     cord(1,1:nx,2) = cord(1,1:nx,2) + dh(1:nx)
 
     ! accumulated topo change since last resurface
-    dhacc(1:nx) = dhacc(1:nx) + dh(1:nx)
+    dhacc(1:nx-1) = dhacc(1:nx-1) + 0.5 * (dh(1:nx-1) + dh(2:nx))
 
     ! adjust markers
     if(mod(nloop, 100) .eq. 0) then
+        !print *, 'max sedimentation rate (m/yr):', maxval(dh(1:nx)) * 3.16e7 / dt
+        !print *, 'max erosion rate (m/yr):', minval(dh(1:nx)) * 3.16e7 / dt
         call resurface
     end if
 endif
@@ -243,11 +243,12 @@ subroutine resurface
       ! add/remove markers if topo changed too much
       surface = 0.5 * (cord(1,i,2) + cord(1,i+1,2))
       elz = surface - 0.5 * (cord(2,i,2) + cord(2,i+1,2))
-      diff = surface - basement(i)
+      diff = dhacc(i)
 
       kinc = sum(nphase_counter(:,1,i))
       if (diff*kinc .ge. elz) then
           ! sedimentation, add a sediment marker
+          !print *, 'add sediment', i, diff, elz
           do while (.true.)
               call random_number(rx)
               xx = cord(1,i,1) + rx * (cord(1,i+1,1) - cord(1,i,1))
@@ -257,7 +258,7 @@ subroutine resurface
               write(*,*) cord(1,i:i+1,1), cord(1:2,i,2), xx, yy
           enddo
 
-          basement(i) = surface
+          dhacc(i) = 0
 
           ! recalculate phase ratio
           kinc = sum(nphase_counter(:,1,i))
@@ -265,6 +266,7 @@ subroutine resurface
 
       else if(-diff*kinc .ge. elz) then
           ! erosion, remove the top marker
+          !print *, 'erosion', i, diff, elz
           ymax = -1e30
           nmax = 0
           kmax = 0
@@ -284,15 +286,13 @@ subroutine resurface
           itopmarker(k,i) = itopmarker(ntopmarker(i),i)
           ntopmarker(i) = ntopmarker(i) - 1
 
-          basement(i) = surface
+          dhacc(i) = 0
 
           ! recalculate phase ratio
           kinc = sum(nphase_counter(:,1,i))
           phase_ratio(1:nphase,1,i) = nphase_counter(1:nphase,1,i) / float(kinc)
       end if
   end do
-
-  dhacc(1:nx) = 0.d0
 
 end subroutine resurface
 

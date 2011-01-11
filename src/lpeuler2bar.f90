@@ -6,6 +6,8 @@ include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 
+character*200 msg
+
 nphase_counter(:,:,:) = 0
 ntopmarker(:) = 0
 
@@ -36,10 +38,15 @@ do n = 1 , nmarkers
     !$OMP end critical (lpeulerbar1)
 
     if(j == 1) then
+        if(ntopmarker(i) == max_markers_per_elem) then
+            write(msg,*) 'Too many markers at surface elements in lpeuler2bar:', i, n
+            call SysMsg(msg)
+            mark(n)%dead = 0
+            cycle
+        endif
         !$OMP critical (lpeulerbar2)
         ! recording the id of markers belonging to surface elements
         ntopmarker(i) = ntopmarker(i) + 1
-        if(ntopmarker(i) > max_markers_per_elem) stop 'too many markers at surface elements'
         itopmarker(ntopmarker(i), i) = n
         !$OMP end critical (lpeulerbar2)
     end if
