@@ -98,8 +98,21 @@ subroutine add_marker(x, y, iph, kk, j, i, inc)
   include 'params.inc'
   include 'arrays.inc'
 
+  character*200 msg
+
   call check_inside(x , y, bar1, bar2, ntr, i, j, inc)
   if(inc.eq.0) return
+
+  if(j == 1) then
+      if(ntopmarker(i) == max_markers_per_elem) then
+          write(msg,*) 'Too many markers at surface elements:', i, ntopmarker(i)
+          call SysMsg(msg)
+          return
+      endif
+      ! recording the id of markers belonging to surface elements
+      ntopmarker(i) = ntopmarker(i) + 1
+      itopmarker(ntopmarker(i), i) = kk + 1
+  end if
 
   kk = kk + 1
 
@@ -113,12 +126,6 @@ subroutine add_marker(x, y, iph, kk, j, i, inc)
   mark(kk)%phase = iph
 
   nphase_counter(iph,j,i) = nphase_counter(iph,j,i) + 1
-  if(j == 1) then
-      ! recording the id of markers belonging to surface elements
-      ntopmarker(i) = ntopmarker(i) + 1
-      if(ntopmarker(i) > max_markers_per_elem) stop 'too many markers at surface elements'
-      itopmarker(ntopmarker(i), i) = kk
-  end if
 
   if(kk > max_markers) then
       call SysMsg('ADD_MARKER: # of markers exceeds max. value. Please increase mark array size.')
