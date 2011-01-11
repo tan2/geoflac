@@ -15,6 +15,7 @@ parameter( kindr=8, kindi=4 )
 real(kindr), allocatable :: dum1(:),dum2(:,:)
 integer(kindi), allocatable :: dum11(:), idum2(:,:)
 real*8 rtime, rdt
+character*200 msg
 
 open( 1, file='_contents.rs', status='old' )
 read( 1, * ) nrec, nloop, time_my, nmarkers, nmtracers
@@ -35,6 +36,11 @@ nwords = nz*nx*2
 open (1,file='cord.rs',access='direct',recl=nwords*kindr) 
 read (1,rec=nrec) cord
 close (1)
+
+open (1,file='dhacc.rs',access='direct',recl=(nx-1)*kindr)
+read (1,rec=nrec) dhacc(1:nx-1)
+close (1)
+
 open (1,file='vel.rs',access='direct',recl=nwords*kindr) 
 read (1,rec=nrec) vel
 close (1)
@@ -175,6 +181,7 @@ deallocate(dum11)
 
 ! recount marker phase
 nphase_counter(:,:,:) = 0
+ntopmarker(:) = 0
 print *, nmarkers
 do n = 1, nmarkers
     if(mark(n)%dead .eq. 0) cycle
@@ -191,7 +198,19 @@ do n = 1, nmarkers
 
     !if(mark(n)%ntriag .ne. 2 * ( (nz-1)*(i-1)+j-1) + k) write(*,*), mark(n)%ntriag, i,j,k
 
+    if(j == 1) then
+        if(ntopmarker(i) == max_markers_per_elem) then
+            write(msg,*) 'Too many markers at surface elements:', i, ntopmarker(i)
+            call SysMsg(msg)
+            cycle
+        endif
+        ! recording the id of markers belonging to surface elements
+        ntopmarker(i) = ntopmarker(i) + 1
+        itopmarker(ntopmarker(i), i) = n + 1
+    end if
+
     nphase_counter(mark(n)%phase,j,i) = nphase_counter(mark(n)%phase,j,i) + 1
+
 enddo
 
 call marker2elem
