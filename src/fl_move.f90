@@ -166,8 +166,9 @@ if( topo_kappa .gt. 0. ) then
 
     ! adjust markers
     if(mod(nloop, 100) .eq. 0) then
-        !print *, 'max sedimentation rate (m/yr):', maxval(dh(1:nx)) * 3.16e7 / dt
-        !print *, 'max erosion rate (m/yr):', minval(dh(1:nx)) * 3.16e7 / dt
+!!$        print *, 'max sed/erosion rate (m/yr):' &
+!!$             , maxval(dh(1:nx)) * 3.16e7 / dt &
+!!$             , minval(dh(1:nx)) * 3.16e7 / dt
         call resurface
     end if
 endif
