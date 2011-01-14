@@ -46,7 +46,15 @@ do i = 1,nmarkers
  D1d(i)= mark(i)%y
 enddo
 open (1,file='outmarkyy.0',access='direct',recl=nwords*kindr)
-write (1,rec=nrec)  D1d 
+write (1,rec=nrec) D1d
+close (1)
+
+
+do i = 1,nmarkers
+ D1d(i)= mark(i)%age
+enddo
+open (1,file='outmarkage.0',access='direct',recl=nwords*kindr)
+write (1,rec=nrec) D1d
 close (1)
 
 
