@@ -146,6 +146,14 @@ mark(i)%a2 = dum1(i)
 enddo
 
 
+open (1,file='xagemarker.rs',access='direct',recl=nwords*kindr)
+read (1,rec=nrec) dum1
+close (1)
+do i = 1,nmarkers
+mark(i)%age = dum1(i)
+enddo
+
+
 allocate(dum11(nmarkers))
 
 open (1,file='xIDmarker.rs',access='direct',recl=nwords*kindi)

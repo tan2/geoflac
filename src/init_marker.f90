@@ -122,6 +122,7 @@ subroutine add_marker(x, y, iph, kk, j, i, inc)
   mark(kk)%ID = kk
   mark(kk)%a1 = bar1
   mark(kk)%a2 = bar2
+  mark(kk)%age = time
   mark(kk)%ntriag = ntr
   mark(kk)%phase = iph
 
