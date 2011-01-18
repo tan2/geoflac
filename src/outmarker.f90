@@ -8,6 +8,8 @@ parameter( kindr=4, kindi=4 )
 real(kindr) D1d(nmarkers)
 integer(kindi) D1i(nmarkers)
 
+character*100 fn
+
 nrec = 0
 D1d = 0.
 ! define record number and write it to contents
@@ -29,42 +31,54 @@ endif
 write( 1, '(i6,1x,i8,1x,i8,1x,f7.3)' ) nrec, nloop,nmarkers, time/sec_year/1.e6
 close(1)
 
+!! Since the number of markers changes with time, the marker data cannot be
+!! output as a single unformatted file. Output different files for each record.
+
 ! Coordinates  [km]
 nwords = nmarkers 
-!write(*,*) nmarkers,nwords
 do i = 1, nmarkers
- D1d(i)= mark(i)%x
-! if (i.lt.1000) write(*,*) mark(i)%x, D1d(i)
+    D1d(i)= mark(i)%x * 1e-3
 enddo
-open (1,file='outmarkxx.0',access='direct',recl=nwords*kindr)
-write (1,rec=nrec) D1d 
+write(fn,'(A,I6.6,A)') 'outmarkx.', nrec, '.0'
+open (1,file=fn,access='direct',recl=nwords*kindr)
+write (1,rec=1) D1d
 close (1)
 
-D1d = 0.
-
 do i = 1,nmarkers
- D1d(i)= mark(i)%y
+    D1d(i)= mark(i)%y * 1e-3
 enddo
-open (1,file='outmarkyy.0',access='direct',recl=nwords*kindr)
-write (1,rec=nrec) D1d
+write(fn,'(A,I6.6,A)') 'outmarky.', nrec, '.0'
+open (1,file=fn,access='direct',recl=nwords*kindr)
+write (1,rec=1) D1d
 close (1)
 
-
+! Age [Myrs]
 do i = 1,nmarkers
- D1d(i)= mark(i)%age
+    D1d(i)= mark(i)%age / sec_year / 1.e6
 enddo
-open (1,file='outmarkage.0',access='direct',recl=nwords*kindr)
-write (1,rec=nrec) D1d
+write(fn,'(A,I6.6,A)') 'outmarkage.', nrec, '.0'
+open (1,file=fn,access='direct',recl=nwords*kindr)
+write (1,rec=1) D1d
 close (1)
 
 
 D1i = 0
 do l = 1,nmarkers
- D1i(l)= mark(l)%phase
+    D1i(l)= mark(l)%phase
 enddo
-open (1,file='outmarkphase.0',access='direct',recl=nwords*kindi)
-write (1,rec=nrec) D1i
+write(fn,'(A,I6.6,A)') 'outmarkphase.', nrec, '.0'
+open (1,file=fn,access='direct',recl=nwords*kindr)
+write (1,rec=1) D1i
+close (1)
+
+
+do l = 1,nmarkers
+    D1i(l)= mark(l)%dead
+enddo
+write(fn,'(A,I6.6,A)') 'outmarkdead.', nrec, '.0'
+open (1,file=fn,access='direct',recl=nwords*kindr)
+write (1,rec=1) D1i
 close (1)
 
 return
-end
+end subroutine outmarker

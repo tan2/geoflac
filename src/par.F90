@@ -61,7 +61,7 @@ else ! file does not exist - new start
     call setflac
     ! Output of initial configuration
     call outflac
- !   if (iint_marker.eq.1) call outmarker
+    if (iint_marker.eq.1) call outmarker
 end if
 
 
@@ -179,7 +179,6 @@ do while( time .le. time_max )
         call marker2elem
       endif
       ireset = 1
-      ! call outmarker
     endif
   endif
 
@@ -187,6 +186,7 @@ do while( time .le. time_max )
   if( dtout_file .ne. 0 ) then 
     if( dtacc_file .gt. dtout_file ) then
       call outflac
+      if (iint_marker.eq.1) call outmarker
       dtacc_file = 0
     endif
   endif
