@@ -25,16 +25,17 @@ common /inout/ dtout_screen,dtout_file,dtsave_file,lastsave,lastout, &
      irphase,irtemp,phasefile,tempfile,irh_mark
 
 common /rheol/ visc(20),den(20),alfa(20),beta(20),pln(20),acoef(20),eactiv(20),rl(20),rm(20), &
-     coha(20),cohdisp(20),phimean(20),phidisp(20),psia(20),conduct(20),cp(20), &
-     ts(20),tl(20),tk(20),fk(20),ten_off,tau_heal, &
-     plstrain_oc(5), fric_oc(5), dilat_oc(5), cohesion_oc(5), &
-     plstrain_n(5), fric_n(5), dilat_n(5), cohesion_n(5), &
-     nphase,mphase,irheol(20),nysoft,nsegments,iynocean, &
-     inhom,ix1(20),ix2(20),iy1(20),iy2(20),inphase(20),igeom(20),xinitaps(20), &
+     plstrain(20),fric1(20),fric2(20),cohesion1(20),cohesion2(20), &
+     conduct(20),cp(20), &
+     ts(20),tl(20),tk(20),fk(20), &
+     ten_off,tau_heal, &
+     xinitaps(20),dt_outtracer, &
+     nphase,mphase,irheol(20), &
+     inhom,ix1(20),ix2(20),iy1(20),iy2(20),inphase(20),igeom(20), &
      ltop(20),lbottom(20),lphase(20), &
      imx1(20),imx2(20),imy1(20),imy2(20), &
      itx1(20),itx2(20),ity1(20),ity2(20), &
-     nphasl,nzone_marker,nmarkers, iint_marker,iint_tracer,nzone_tracer,dt_outtracer
+     nphasl,nzone_marker,nmarkers, iint_marker,iint_tracer,nzone_tracer
 
 common /therm/ t_top,t_bot,hs,hr,temp_per,bot_bc,time_t,dt_therm, &
      itherm,istress_therm,initial_geoth,itemp_bc,ix1t,ix2t,iy1t,iy2t,ishearh, &

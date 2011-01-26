@@ -260,9 +260,6 @@ include 'params.inc'
 include 'arrays.inc'
 include 'phases.inc'
 
-character*200 msg
-dimension fric(5), plstrain(5), dilat(5), cohesion(5)
-
 pls_curr = aps(j,i)
 
 coh = 0
@@ -275,59 +272,31 @@ hardn = 0.
 do iph = 1, nphase
     if(phase_ratio(iph,j,i) .lt. 0.01) cycle
 
-    fric = fric_n
-    plstrain = plstrain_n
-    dilat = dilat_n
-    cohesion = cohesion_n
-    if (iynocean==1.and.iph==kocean1.or.iph==kocean2) then
-        fric = fric_oc
-        plstrain = plstrain_oc
-        dilat = dilat_oc
-        cohesion = cohesion_oc
-    else if(iph==kserp.or.iph==kweak.or.iph==kweakmc.or.iph==ksed1) then
-        ! TO ADDRESS PHASE CHANGE IN BRITTLE MANTLE REGIME, FRICTION ANGLE IS REDUCED
-        ! (SET TO 0 IN THIS CASE)
-        fric = 5
-        cohesion = 4.e6
-    endif
-
-
-    ! Piece-wise linear softening
-    isoft = 0
-
     ! Find current properties from linear interpolation
-    do is = 1,nsegments-1
+    if(pls_curr < plstrain(iph)) then
 
-        pl1 = plstrain(is)
-        pl2 = plstrain(is+1)
+        pl2 = plstrain(iph)
  
-        if (pls_curr .ge. pl1 .and. pls_curr .le. pl2) then
-            isoft = 1
+        ! Friction
+        tgf = (fric2(iph)-fric1(iph))/pl2
+        phi =  phi + phase_ratio(iph,j,i) * (fric1(iph) + tgf*pls_curr)
 
-            ! Friction
-            tgf = (fric(is+1)-fric(is))/(pl2-pl1)
-            phi =  phi + phase_ratio(iph,j,i) * (fric(is) + tgf*(pls_curr-pl1))
-
-            ! Cohesion and Dilatation
-            tgd = (dilat(is+1)-dilat(is))/(pl2-pl1)
-            psi = psi + phase_ratio(iph,j,i) * (dilat(is) + tgd*(pls_curr-pl1))
+        ! Cohesion and Dilatation
+        !tgd = (dilat2(iph)-dilat1(iph))/pl2
+        !psi = psi + phase_ratio(iph,j,i) * (dilat1(iph) + tgd*pls_curr)
  
-            tgc = (cohesion(is+1)-cohesion(is))/(pl2-pl1)
-            coh = coh + phase_ratio(iph,j,i) * (cohesion(is) + tgc*(pls_curr-pl1))
+        tgc = (cohesion2(iph)-cohesion1(iph))/pl2
+        coh = coh + phase_ratio(iph,j,i) * (cohesion1(iph) + tgc*pls_curr)
 
-            ! Hardening Modulus (for Cohesion ONLY)
-            hardn = hardn + phase_ratio(iph,j,i) * ((cohesion(is+1)-cohesion(is))/(pl2-pl1))
-            goto 724
-        endif
-    end do
+        ! Hardening Modulus (for Cohesion ONLY)
+        hardn = hardn + phase_ratio(iph,j,i) * tgc
+    else
 
-    if (isoft.eq.0 ) then
-        write( msg, * ) 'Pre_plast: No segment for current plastic strain(j,i,pls_curr,iph): ', iph,j,i,pls_curr
-        call SysMsg( msg )
-        stop 25
+        phi = phi + fric2(iph)
+        coh = coh + cohesion2(iph)
+        hardn = hardn + 0.
+
     endif
-
-724 continue
 
 enddo
 return
