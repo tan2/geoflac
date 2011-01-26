@@ -75,9 +75,6 @@ do 3 i = 1,nx-1
         ! Elastic modules & viscosity & plastic properties
         bulkm = rl(iph) + 2.*rm(iph)/3.
         rmu   = rm(iph)
-        coh   = coha(iph)
-        phi   = phimean(iph)
-        psi   = psia(iph)
 
         ! Thermal stresses (alfa_v = 3.e-5 1/K)
         stherm = 0.

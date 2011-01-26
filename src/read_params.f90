@@ -148,7 +148,8 @@ read(4,*) nphase
 do i = 1, nphase 
     call AdvanceToNextInputLine( 4 )
     read(4,*) irheol(i),visc(i),den(i),alfa(i),beta(i),pln(i),acoef(i),eactiv(i),rl(i),rm(i), &
-    coha(i),cohdisp(i),phimean(i),phidisp(i),psia(i),conduct(i),cp(i),ts(i),tl(i),tk(i),fk(i)
+         plstrain(i),fric1(i),fric2(i),cohesion1(i),cohesion2(i), &
+         conduct(i),cp(i),ts(i),tl(i),tk(i),fk(i)
 end do
 ! Flag to take initial phase distribution from a file
 call AdvanceToNextInputLine( 4 )
@@ -187,27 +188,6 @@ end do
 ! Tension cut-off
 call AdvanceToNextInputLine( 4 )
 read(4,*) ten_off
-! softening for plasticity
-call AdvanceToNextInputLine( 4 )
-read(4,*) nysoft
-call AdvanceToNextInputLine( 4 )
-read(4,*) nsegments
-if( nsegments .gt. 5 ) then
-    call SysMsg('Read_params: Increase arrays for softening model')
-    stop 27
-endif
-do i = 1, nsegments
-    call AdvanceToNextInputLine( 4 )
-    read(4,*) plstrain_n(i), fric_n(i), dilat_n(i), cohesion_n(i)
-end do
-call AdvanceToNextInputLine( 4 )
-!  weakening for the oceanic crust
-read(4,*) iynocean 
-call AdvanceToNextInputLine( 4 )
-do i = 1, nsegments
-    call AdvanceToNextInputLine( 4 )
-    read(4,*) plstrain_oc(i), fric_oc(i), dilat_oc(i), cohesion_oc(i)
-end do
 !linear healing parameter
 call AdvanceToNextInputLine( 4 )
 read(4,*) tau_heal

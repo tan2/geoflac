@@ -598,10 +598,8 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 
 \i0 					
 \i visc(i)
-\i0 		Viscosity (Aug-2010: 
-\i \ul never used
-\i0 \ulnone ; set =1 !).
-\i \
+\i0 		
+\i \ul never used\ulnone \
 
 \i0 					
 \i den(i)
@@ -651,31 +649,33 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i \
 
 \i0 					
-\i coha(i)
-\i0 		Mohr-Coulomb: cohesion 
+\i plstrain(i)
+\i0 	Mohr-Coulomb: final plastic strain of weakening
 \i \
 
 \i0 					
-\i cohdisp(i)
-\i0 	Mohr-Coulomb: disp
+\i fric1(i)
+\i0 		Mohr-Coulomb: friction angle (initial)
+\i \
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
+
+\i0 \cf0 					
+\i fric2(i)
+\i0 		Mohr-Coulomb: friction angle (final)
 \i \
 
 \i0 					
-\i phimean(i)
-\i0 	Mohr-Coulomb: phi
+\i cohesion1(i)
+\i0 	Mohr-Coulomb: cohesion (initial)
 \i \
 
 \i0 					
-\i phidisp(i)
-\i0 	Mohr-Coulomb: disp \cf2 NEVER USED IN CODE!
-\i \cf0 \
-
-\i0 					
-\i psia(i)
-\i0 		Mohr-Coulomb: psi 
+\i cohesion2(i)
+\i0 	Mohr-Coulomb: cohesion (final)
 \i \
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
-\i0 					
+\i0 \cf0 					
 \i conduct(i)
 \i0 	thermal property: conductivity
 \i \
@@ -830,89 +830,14 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i xinitaps	
 \i0 	initial plastic strain. E.g., 15 = very weak. \
 \
-		\cf2 NOTE: 
-\i\b nysoft
-\i0\b0  below is read in but never used within the code !!! \cf0 \
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i\b \cf0 ten_off
 \i0\b0 				
 \i\fs20 R*8
 \i0\fs22 	Tension cut-off.   E.g., 1.E9\
 
-\i\b nysoft
-\i0\b0 				
-\i\fs20 int
-\i0\fs22 	Softening for plasticity 0-no, 1-yes, 2-exponent.\
-
-\i\b nsegments
-\i0\b0 			
-\i\fs20 int
-\i0\fs22 	Number of plasticity linear segments (up to 5 or 0).\
-					User-defined strength versus plastic strain curve.\
-     
-\i nsegment
-\i0  lines of:\
-	
-\i\b plstrain_n(i), fric_n(i), dilat_n(i), cohesion_n(i)\
-\pard\pardeftab720\ri0\sl-220
-
-\i0\b0 \cf0 				
-\i\fs20 4 R*8
-\i0\fs22 	
-\i plstrain_n(i)
-\i0 		plastic strain.
-\i \
-
-\i0 					
-\i fric_n(i)
-\i0 		friction.
-\i \
-
-\i0 					
-\i dilat_n(i)
-\i0 		dilatation.
-\i \
-
-\i0 					
-\i cohesion_n(i)
-\i0 		cohension. \
-\pard\pardeftab720\ri0\sl-220
-
-\i\b \cf0 iynocean
-\i0\b0  			
-\i\fs20 int
-\i0\fs22 	Is there specific weakening for oceanic crust (0-no,1-yes)\
-    
-\i nsegment
-\i0  lines of:\
-	
-\i\b plstrain_oc(i), fric_oc(i), dilat_oc(i), cohesion_oc(i)\
-\pard\pardeftab720\ri0\sl-220
-
-\i0\b0 \cf0 				
-\i\fs20 4 R*8
-\i0\fs22 	
-\i plstrain_oc(i)
-\i0 		plastic strain.
-\i \
-
-\i0 					
-\i fric_oc(i)
-\i0 		friction.
-\i \
-
-\i0 					
-\i dilat_oc(i)
-\i0 		dilatation.
-\i \
-
-\i0 					
-\i cohesion_oc(i)
-\i0 		cohension. \
-\pard\pardeftab720\ri0\sl-220
-
-\i\b \cf0 tau_heal
+\i\b tau_heal
 \i0\b0 			
 \i\fs20 R*8
 \i0\fs22 	Linear healing parameter.    Plastic strain decreases with time;\
