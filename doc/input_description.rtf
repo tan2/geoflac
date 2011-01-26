@@ -1,4 +1,4 @@
-{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf320
+{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
 {\fonttbl\f0\froman\fcharset0 Times-Roman;\f1\ftech\fcharset77 Symbol;\f2\fmodern\fcharset0 Courier;
 }
 {\colortbl;\red255\green255\blue255;\red255\green0\blue0;}
@@ -10,14 +10,14 @@
 
 \f0\b\fs22 \cf0 \ul \ulc0 INPUT PARAMETER FILE DESCRIPTION\
 (by David Okaya - August-2010)\
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \b0 \cf0 \ulnone \
 Notes:	(1) Any number of comment lines can be present and are preceded by a semi-colon.\
 \
 	(2) In the earth mesh, #nodes = #elements + 1   (one more nodes than cells).\
 \
-	(3) Parameters highlighted in cyan are repeated for #lines based on prior parameter.  \
+	(3) Parameters highlighted are repeated for #lines based on prior parameter.  \
 	E.g.,		
 \i\b nitems
 \b0 \
@@ -31,53 +31,27 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i\b nitems
 \i0\b0 =0, then 
 \i \cf2 \ul \ulc2 NO
-\i0 \cf0 \ulnone  cyan lines should be given.\
+\i0 \cf0 \ulnone  lines should be given.\
 \
-	(4) Parameters highlighted in yellow must be given even if prior parameter turns off the option.  \
-	The values in this line are dummy - never used.\
-\pard\pardeftab720\ri0\sl-220
-
-\i\b \cf0 	
-\i0\b0 E.g., 		
-\i\b irtemp
-\i0\b0 			(Predefined thermal distributions in a file? 0-no, 1-yes.)\
-				if(
-\i irtemp
-\i0  = 1)then 
-\i one
-\i0  line of:\
-				
-\i\b tempfile
-\i0\b0 		Filename containing temperature distribution.
-\i\b \
-\pard\pardeftab720\ri0\sl-220
-
-\i0\b0 \cf0 				if(
-\i irtemp
-\i0  = 0)then 
-\i one blank
-\i0  line or use a dummy name.\
-				(blank or dummy name)	(equivalent to above but empty).\
-\
-\
+	\
 ;===================================================================\
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \b \cf0 ;MESH PARAMETERS		NOTE: 
 \b0  first three lines of Mesh Parameters define cell spacing.\
 						
-\i dx = (rxbo-x0)/nx
+\i dx = (rxbo-x0)/nex
 \i0 ,    
-\i dz = (rzbo-z0)/nz
+\i dz = (rzbo-z0)/nez
 \i0  \
 					In general, it is good to have 
 \i dx = dz
 \i0  (square elements).\
 
 \b \
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
-\i \cf0 nx, nz
+\i \cf0 nex, nez
 \i0\b0 				
 \i\fs20 2 int
 \i0\fs22 	#Elements in X and Z directions.\
@@ -149,9 +123,9 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i0 		
 \i\fs20 int, int
 \i0\fs22 	Flags denoting use of markers, tracers: 0-No, 1-Yes.\
-					For Aug-2010 code version, 
+					iint_marker 
 \i \ul MUST
-\i0 \ulnone  use "1, 1"\
+\i0 \ulnone  use 1\
 
 \i\b nzone_marker
 \i0\b0 			
@@ -202,10 +176,10 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \
 \
 \
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \b \cf0 ; MECHANICAL CONDITIONS\
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \b0 \cf0 	These are the following forms of boundary conditions:\
 		0  - no conditions\
@@ -224,7 +198,7 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \f1 \uc0\u967 
 \f0 =0-1).\
 	If the BC is a velocity in x or z, it is provided in units of meters/sec, a very small number.  For reference, 1 cm/year = 3.17E-10 m/sec and 1 km/myr = 3.17E-11.\
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i\b \cf0 ynstressbc, ydrsides
 \i0\b0 		
@@ -241,7 +215,7 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i0  lines of:\
 	
 \i\b nofside(i),nbc1(i),nbc2(i),nbc(i), bca(i),bcb(i),bcc(i),bcd(i),bce(i),bcf(i),bcg(i),bch(i),bci(i)\
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i0\b0 \cf0 				
 \i\fs20 4 int, 9R*8\
@@ -297,7 +271,7 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \f1 \uc0\u967 
 \f0\i  = (node_in_segment - nbc1) / (nbc2 - nbc1)
 \i0 \
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i\b \cf0 nyhydro,pisos,iphsub,drosub,damp_vis
 \i0\b0 	
@@ -332,10 +306,10 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i0\fs22 	Acceleration of gravity (m/sec\super 2\nosupersub ).  (typically 9.81 or 10).\
 \
 \
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \b \cf0 ; THERMAL CONDITIONS\
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i \cf0 i_prestress
 \i0\b0  			
@@ -395,10 +369,10 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \f0 Temp\
 						rectangular Xleft,Xright, Ztop,Zbottom nodes.\
 \
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \b \cf0 	; Predefined distributions \
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i \cf0 irtemp
 \i0\b0 				
@@ -418,7 +392,7 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 					nz, looping over nx.  E.g.,\
 					[outer do i = 1,nx; inner do j=1,nz, read T(j,i) ]
 \i\b \
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i0\b0 \cf0      if(
 \i irtemp
@@ -426,7 +400,7 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i one blank
 \i0  line!\
 	(blank) 				(equivalent to above but empty).\
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i\b \cf0 time_scale
 \i0\b0 			
@@ -492,7 +466,7 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i0  lines of:\
 	
 \i\b age_1(i),hc(i),iph_col1(i),iph_col2(i),ixtb1(i),ixtb2(i)\
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i0\b0 \cf0 			
 \i\fs20 2R*8, 4 int
@@ -520,10 +494,10 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i0  nodes 2 (right side of zone in nodes).\
 \
 \
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \b \cf0 ;  RHEOLOGY\
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \b0 \cf0 ;  Rheological Condition for a phase (rock type).  Full VEP uses irheol=12.\
 ;		 1- elastic,\
@@ -571,10 +545,10 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 ; (4) erosion produces sediments at top layer.\
 	any phase at topmost layer			---->	11	sediment #2\
 \
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \b \cf0 	; Fundamental Rock Types \
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i \cf0 nphase
 \i0\b0 				
@@ -585,7 +559,7 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i0  lines of:\
 	
 \i\b irheol(i),visc(i),den(i),alfa(i),beta(i),pln(i),acoef(i),eactiv(i),rl(i),rm(i), \
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i0\b0 \cf0 	
 \i\b coha(i),cohdisp(i),phimean(i),phidisp(i),psia(i),conduct(i),cp(i),ts(i),tl(i),tk(i),fk(i)\
@@ -710,7 +684,7 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \b ; INITIAL PHASE DISTRIBUTION\
 	; Define model rock type distribution via external file or by horizontal layers 
 \b0 \
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i\b \cf0 irphase
 \i0\b0 				
@@ -728,7 +702,7 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i0 	Filename containing phase distribution. One column of phaseid\
 					by element (not by node). Vertical fast, horz slow dimensions.
 \i\b \
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i0\b0 \cf0      if(
 \i irphase
@@ -737,7 +711,7 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i0  line!\
     	(blank) 				(equivalent to above but empty).\
 \
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i\b \cf0 mphase
 \i0\b0 				
@@ -753,7 +727,7 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i0  lines of:\
 	
 \i\b ltop(i), lbottom(i), lphase(i)\
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i0\b0 \cf0 				
 \i\fs20 3 int
@@ -768,7 +742,7 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i0 	phase ID of this layer (between 1 - 
 \i nphase
 \i0 )\
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \b \cf0 	; Define rock type anomolies.
 \b0 \
@@ -781,7 +755,7 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 			diagonal slope polarity (e.g., iy1>1y2 for dipping towards left).\
 	
 \b ; inclusions\
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i \cf0 inhom
 \i0\b0 				
@@ -792,7 +766,7 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i0  lines of:\
 	
 \i\b ix1(i), ix2(i), iy1(i), iy2(i), inphase(i), igeom(i), xinitaps\
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i0\b0 \cf0 			
 \i\fs20 6 int R*8
@@ -828,7 +802,7 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 
 \i0 					
 \i xinitaps	
-\i0 	initial plastic strain. E.g., 15 = very weak. \
+\i0 initial plastic strain. E.g., 15 = very weak. \
 \
 \pard\pardeftab720\ri0\sl-220\ql\qnatural
 
@@ -841,8 +815,8 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i0\b0 			
 \i\fs20 R*8
 \i0\fs22 	Linear healing parameter.    Plastic strain decreases with time;\
-								time value (in sec). 1e15 = 100 myr.  \
-								For healing, use 1e13 ~ 1 myr.\
+								time value (in sec). 3e15 = 100 myr.  \
+								For healing, use 3e13 ~ 1 myr.\
 
 \i\b v_min, v_max, ivis_shape, efoldc 
 \i0\b0 	Viscosity limits\
@@ -856,7 +830,7 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i v_max
 \i0 			Maximum viscosity.   E.g., 3E27
 \i \
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i0 \cf0 					
 \i  ivis_shape
@@ -876,7 +850,7 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 					
 \i efoldc
 \i0 			description?\
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i\b \cf0 igeotherm, g_x0, g_y0c, g_amplitude, g_width  	
 \i0\b0 	\
@@ -889,7 +863,7 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i g_x0
 \i0 			see below.
 \i \
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i0 \cf0 					
 \i g_y0c
@@ -924,7 +898,7 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \f0\fs22 	;  =2	
 \f2\fs16 if (abs(g_x0-xc).lt.g_width) geoth = g_y0c+ g_amplitude*(1.-abs(g_x0-xc)/g_width)\
 		if (abs(g_x0-xc).ge.g_width) geoth = g_y0c\
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \f0\i\b\fs22 \cf0 ny_inject, nelem_inject, rate_inject 
 \i0\b0 				Magma injection / Accretionary.  This \
@@ -934,7 +908,7 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i tcutoff_eclo
 \i0 , etc.).
 \b \
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \b0 \cf0 			
 \i\fs20 2 int, R*8
@@ -951,11 +925,11 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i0 			see below.\
 \
 \
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \b \cf0 ; REMESHING\
 \
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i \cf0 ny_rem, mode_rem, ntest_rem, angle_rem
 \i0\b0 	\
@@ -976,7 +950,7 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i ntest_rem
 \i0 		#time steps to test if remeshing needed.
 \i \
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i0 \cf0 					
 \i angle_rem
@@ -984,7 +958,7 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i \
 
 \i0 \
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i\b \cf0 dx_rem
 \i0\b0 				
@@ -997,13 +971,13 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 							then remesh at pre-given shortening.\
 							! dx_rem*dx - critical distance of shortnening.\
 						This is for cases mode_rem=3 or 4.\
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 \cf0 					Nominal size = 
 \i rxb0/(nx-1)
 \i0 .  
 \i dx_rem
 \i0  = 0-1; %nominal size.\
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i\b \cf0 topo_kappa, bottom_kappa
 \i0\b0 	
@@ -1011,13 +985,13 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i0\fs22 	Erosion diffusion of topography:  diffusivity top, bottom.  \
 \
 \
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \b \cf0 ; PROCESS CONTROL\
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \b0 \cf0 ! inertial mass scaling\
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i\b \cf0 idt_scale
 \i0\b0 			
@@ -1078,7 +1052,7 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i0\b0 			
 \i\fs20 int
 \i0\fs22 	\cf2 Related to bottom boundary somehow. \cf0  \
-\pard\pardeftab720\ri0\sl-240
+\pard\pardeftab720\ri0\sl-240\ql\qnatural
 
 \i\b \cf0 movegrid, ndim
 \i0\b0 			
@@ -1089,7 +1063,7 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 					
 \i ndim
 \i0  		Dim: =2 normal cases; =3 in/out of plane stress.\
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i\b \cf0 demf, mix_strain, mix_stress
 \i0\b0 	\
@@ -1106,11 +1080,11 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i0 	0-no, 1-yes.\
 \
 \
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \b \cf0 ; OUTPUT PARAMETERS    \
 	; Time parameters below are in thousands years\
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i \cf0 time_max
 \i0\b0 			
@@ -1131,7 +1105,7 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 
 \i io_vel,io_srII,io_eII,io_aps,io_sII,io_sxx,io_szz,io_sxz,io_pres, &\
      io_temp,io_phase,io_visc,io_density,io_mark,io_src,io_diss,io_forc,io_hfl,io_topo\
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i0\b0 \cf0 			
 \i 19 int	io_vel
@@ -1243,7 +1217,7 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i mesh.0
 \i0 \
 \
-\pard\pardeftab720\ri0\sl-220
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i\b \cf0 lastout
 \i0\b0 				
