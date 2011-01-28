@@ -2,132 +2,254 @@
 
 import sys
 
+try:
+    import numpy as np
+except ImportError:
+    print 'Error: Failed importing "numpy" module.'
+    print 'Please install the module and add it to PYTHONPATH environment variable.'
+    sys.exit(1)
+
+
 # the precision of saved file
 doubleprecision = False
+sizeofint = 4
 if doubleprecision:
     sizeoffloat = 8
-    default_typecode = 'd'
+    default_dtype = np.double
 else:
     sizeoffloat = 4
-    default_typecode = 'f'
+    default_dtype = np.single
 
 
 
-class FlacBase(object):
-    '''Base class for reading Flac files. _read_data() needs to be
-    defined by derived class.'''
+class Flac(object):
+    '''Read Flac data file
+    '''
 
     def __init__(self, swap_endian=False):
         self.swap_endian = swap_endian
+        self.reload()
+        return
 
+
+    def reload(self):
         # read record number
-        headers = open('_contents.0').readlines()
-        header = headers[-1].split()
-        self.nrec = int(header[0])
+        tmp = np.fromfile('_contents.0', sep=' ')
+        tmp.shape = (-1, 3)
+        self.time = tmp[:,2]
+        self.nrec = len(self.time)
 
         # read grid size
-        header = open('nxnz.0').readline().split()
-        self.nx = int(header[0]) + 1
-        self.nz = int(header[1]) + 1
+        nex, nez = np.fromfile('nxnz.0', sep=' ', dtype=int)
+        self.nx, self.nz = nex+1, nez+1
+        self.nnodes = self.nx * self.nz
+        self.nelements = nex * nez
 
-        self.nodes = self.nx * self.nz
-        self.elements = (self.nx - 1) * (self.nz - 1)
-
-        # read tracer size
-        headers = open('_tracers.0').readlines()
-        header = headers[-1].split()
-        self.ntracerrec = int(header[0])
-        self.ntracers = int(header[1])
         return
 
 
     def read_mesh(self, frame):
         columns = 2
         f = open('mesh.0')
-        offset = frame * columns * self.nodes * sizeoffloat
+        offset = (frame-1) * columns * self.nnodes * sizeoffloat
         f.seek(offset)
-        self.x, self.z = self._read_data(f, columns)
-        return
+        x, z = self._read_data(f, columns)
+        self._reshape_nodal_fields(x, z)
+        return x, z
 
 
     def read_vel(self, frame):
         columns = 2
         f = open('vel.0')
-        offset = frame * columns * self.nodes * sizeoffloat
+        offset = (frame-1) * columns * self.nnodes * sizeoffloat
         f.seek(offset)
-        self.vx, self.vz = self._read_data(f, columns)
-        return
+        vx, vz = self._read_data(f, columns)
+        self._reshape_nodal_fields(vx, vz)
+        return vx, vz
 
 
     def read_temperature(self, frame):
         columns = 1
         f = open('temperature.0')
-        offset = frame * columns * self.nodes * sizeoffloat
+        offset = (frame-1) * columns * self.nnodes * sizeoffloat
         f.seek(offset)
-        self.T = self._read_data(f, columns)
-        return
+        T = self._read_data(f, columns)
+        self._reshape_nodal_fields(T)
+        return T
 
 
-    def read_time(self):
-        f = open('time.0')
-        self.time = self._read_data(f, 1, num=self.nrec)
-
-        return
-
-
-    def ij2node(self, i, j):
-        return (j-1) + (i-1) * (self.nz)
-
+    def read_aps(self, frame):
+        columns = 1
+        f = open('aps.0')
+        offset = (frame-1) * columns * self.nelements * sizeoffloat
+        f.seek(offset)
+        aps = self._read_data(f, columns, count=self.nelements)
+        self._reshape_elemental_fields(aps)
+        return aps
 
 
-class _Flac(FlacBase):
-    '''Read Flac data file using stdlib "array" module. The data will be read in as 1D arrays.'''
-
-    def _read_data(self, fileobj, columns,
-                    num=None, typecode=None):
-        '''Read data from a file-like object 'fileobj'.
-
-        The 'typecode' specifies the storage type, default to single precision
-        float. Other typecode is possible, but not implemented.
-        '''
-
-        # number of nodes
-        if num is None:
-            num = self.nodes
-
-        # total number of items
-        n = columns * num
-
-        if typecode is None:
-            typecode = default_typecode
-
-        a = array.array(typecode)
-        a.fromfile(fileobj, n)
-        if self.swap_endian:
-            a.byteswap()
-
-        #print a
-        if columns == 1:
-            return a
-        else:
-            # split the data
-            result = range(columns)
-            for i in range(columns):
-                result[i] = a[i*num:(i+1)*num]
-
-            # convert list into tuple for unpacking
-            return tuple(result)
+    def read_density(self, frame):
+        columns = 1
+        f = open('density.0')
+        offset = (frame-1) * columns * self.nelements * sizeoffloat
+        f.seek(offset)
+        density = self._read_data(f, columns, count=self.nelements)
+        self._reshape_elemental_fields(density)
+        return density
 
 
 
-class _Flac_numpy(FlacBase):
-    '''Read Flac data file using "numpy" module.
-    This class is preferred over class _Flac.
-    '''
+    def read_eII(self, frame):
+        columns = 1
+        f = open('eII.0')
+        offset = (frame-1) * columns * self.nelements * sizeoffloat
+        f.seek(offset)
+        eII = self._read_data(f, columns, count=self.nelements)
+        self._reshape_elemental_fields(eII)
+        return eII
 
 
-    def _read_data(self, fileobj, columns,
-                    num=None, typecode=None):
+    def read_sII(self, frame):
+        columns = 1
+        f = open('sII.0')
+        offset = (frame-1) * columns * self.nelements * sizeoffloat
+        f.seek(offset)
+        sII = self._read_data(f, columns, count=self.nelements)
+        self._reshape_elemental_fields(sII)
+        return sII
+
+
+    def read_sxx(self, frame):
+        columns = 1
+        f = open('sxx.0')
+        offset = (frame-1) * columns * self.nelements * sizeoffloat
+        f.seek(offset)
+        sxx = self._read_data(f, columns, count=self.nelements)
+        self._reshape_elemental_fields(sxx)
+        return sxx
+
+
+    def read_sxz(self, frame):
+        columns = 1
+        f = open('sxz.0')
+        offset = (frame-1) * columns * self.nelements * sizeoffloat
+        f.seek(offset)
+        sxz = self._read_data(f, columns, count=self.nelements)
+        self._reshape_elemental_fields(sxz)
+        return sxz
+
+
+    def read_szz(self, frame):
+        columns = 1
+        f = open('szz.0')
+        offset = (frame-1) * columns * self.nelements * sizeoffloat
+        f.seek(offset)
+        szz = self._read_data(f, columns, count=self.nelements)
+        self._reshape_elemental_fields(szz)
+        return szz
+
+
+    def read_srII(self, frame):
+        columns = 1
+        f = open('srII.0')
+        offset = (frame-1) * columns * self.nelements * sizeoffloat
+        f.seek(offset)
+        srII = self._read_data(f, columns, count=self.nelements)
+        self._reshape_elemental_fields(srII)
+        return srII
+
+
+    def read_pres(self, frame):
+        columns = 1
+        f = open('pres.0')
+        offset = (frame-1) * columns * self.nelements * sizeoffloat
+        f.seek(offset)
+        pres = self._read_data(f, columns, count=self.nelements)
+        self._reshape_elemental_fields(pres)
+        return pres
+
+
+    def read_diss(self, frame):
+        columns = 1
+        f = open('diss.0')
+        offset = (frame-1) * columns * self.nelements * sizeoffloat
+        f.seek(offset)
+        diss = self._read_data(f, columns, count=self.nelements)
+        self._reshape_elemental_fields(diss)
+        return diss
+
+
+    def read_visc(self, frame):
+        columns = 1
+        f = open('visc.0')
+        offset = (frame-1) * columns * self.nelements * sizeoffloat
+        f.seek(offset)
+        visc = self._read_data(f, columns, count=self.nelements)
+        self._reshape_elemental_fields(visc)
+        return visc
+
+
+    def read_phase(self, frame):
+        columns = 1
+        f = open('phase.0')
+        offset = (frame-1) * columns * self.nelements * sizeofint
+        f.seek(offset)
+        phase = self._read_data(f, columns, count=self.nelements, dtype=int)
+        self._reshape_elemental_fields(phase)
+        return phase
+
+
+    def read_markers(self, frame):
+        suffix = '.%06d.0' % frame
+        dead = self._read_data('markdead' + suffix, dtype=int)
+
+        tmp = self._read_data('markx' + suffix)
+        x = self._remove_dead_markers(tmp, dead)
+
+        tmp = self._read_data('marky' + suffix)
+        y = self._remove_dead_markers(tmp, dead)
+
+        tmp = self._read_data('markage' + suffix)
+        age = self._remove_dead_markers(tmp, dead)
+
+        tmp = self._read_data('markphase' + suffix, dtype=int)
+        phase = self._remove_dead_markers(tmp, dead)
+
+        return x, y, age, phase
+
+
+    def read_tracers(self):
+        # read tracer size
+        tmp = np.fromfile('_tracers.0', sep=' ')
+        tmp.shape = (-1, 4)
+        ntracerrec = tmp.shape[0]
+        ntracers = int(tmp[0,1])
+        n = ntracerrec * ntracers
+
+        time = self._read_data('outtracktime.0', count=n)
+        x = self._read_data('outtrackxx.0', count=n)
+        x.shape = (ntracerrec, ntracers)
+
+        y = self._read_data('outtrackyy.0', count=n)
+        y.shape = (ntracerrec, ntracers)
+
+        T = self._read_data('outtracktemp.0', count=n)
+        T.shape = (ntracerrec, ntracers)
+
+        p = self._read_data('outtrackpres.0', count=n)
+        p.shape = (ntracerrec, ntracers)
+
+        e = self._read_data('outtrackstrain.0', count=n)
+        e.shape = (ntracerrec, ntracers)
+
+        phase = self._read_data('outtrackphase.0', count=n)
+        phase.shape = (ntracerrec, ntracers)
+
+        return x, y, T, p, e, phase
+
+
+    def _read_data(self, fileobj, columns=1,
+                   count=None, dtype=None):
         '''Read data from a file-like object 'fileobj'.
 
         The 'dtype' specifies the storage type, default to single precision
@@ -135,16 +257,16 @@ class _Flac_numpy(FlacBase):
         '''
 
         # number of nodes
-        if num is None:
-            num = self.nodes
+        if count is None:
+            count = self.nnodes
 
         # total number of items
-        n = columns * num
+        n = columns * count
 
-        if typecode is None:
-            typecode = default_typecode
+        if dtype is None:
+            dtype = default_dtype
 
-        result = numpy.fromfile(fileobj, typecode, n)
+        result = np.fromfile(fileobj, dtype, n)
         if self.swap_endian:
             result.byteswap(True)
 
@@ -158,85 +280,18 @@ class _Flac_numpy(FlacBase):
     def _reshape_nodal_fields(self, *argv):
         for x in argv:
             x.shape = (self.nx, self.nz)
-
         return
 
 
     def _reshape_elemental_fields(self, *argv):
         for x in argv:
             x.shape = (self.nx-1, self.nz-1)
-
         return
 
 
-    def read_mesh(self, frame):
-        FlacBase.read_mesh(self, frame)
-        self._reshape_nodal_fields(self.x, self.z)
-        return
-
-
-    def read_vel(self, frame):
-        FlacBase.read_vel(self, frame)
-        self._reshape_nodal_fields(self.vx, self.vz)
-        return
-
-
-    def read_temperature(self, frame):
-        FlacBase.read_temperature(self, frame)
-        self._reshape_nodal_fields(self.T)
-        return
-
-
-    def read_tracers(self):
-        self.tracer_time = numpy.zeros(self.ntracerrec, dtype='f')
-        self.tracer_x = numpy.zeros((self.ntracerrec, self.ntracers), dtype='f')
-        self.tracer_y = numpy.zeros((self.ntracerrec, self.ntracers), dtype='f')
-        self.tracer_temp = numpy.zeros((self.ntracerrec, self.ntracers), dtype='f')
-        self.tracer_pres = numpy.zeros((self.ntracerrec, self.ntracers), dtype='f')
-        self.tracer_strain = numpy.zeros((self.ntracerrec, self.ntracers), dtype='f')
-        self.tracer_phase = numpy.zeros((self.ntracerrec, self.ntracers), dtype='f')
-
-        self.tracer_id = self._read_data('outtrackID.0', 1, num=self.ntracers, typecode='f')
-
-        f1 = open('outtracktime.0')
-        f2 = open('outtrackxx.0')
-        f3 = open('outtrackyy.0')
-        f4 = open('outtracktemp.0')
-        f5 = open('outtrackpres.0')
-        f6 = open('outtrackstrain.0')
-        f7 = open('outtrackphase.0')
-
-        for i in range(self.ntracerrec):
-            time = self._read_data(f1, 1, num=self.ntracers, typecode='f')
-            x = self._read_data(f2, 1, num=self.ntracers, typecode='f')
-            y = self._read_data(f3, 1, num=self.ntracers, typecode='f')
-            temperature = self._read_data(f4, 1, num=self.ntracers, typecode='f')
-            pressure = self._read_data(f5, 1, num=self.ntracers, typecode='f')
-            strain = self._read_data(f6, 1, num=self.ntracers, typecode='f')
-            phase = self._read_data(f7, 1, num=self.ntracers, typecode='f')
-
-            self.tracer_x[i,:] = x
-            self.tracer_y[i,:] = y
-            self.tracer_temp[i,:] = temperature
-            self.tracer_pres[i,:] = pressure
-            self.tracer_strain[i,:] = strain
-            self.tracer_phase[i,:] = phase
-
-            # all tracers have the same time
-            self.tracer_time[i] = time[0]
-
-        return
-
-
-
-
-## setup alias
-try:
-    import numpy
-    Flac = _Flac_numpy
-except ImportError:
-    import array
-    Flac = _Flac
+    def _remove_dead_markers(self, a, dead):
+        b = a[dead==1]
+        return b
 
 
 
@@ -277,11 +332,10 @@ if __name__ == '__main__':
     fl = Flac()
 
     # read the last record of the mesh and temperature
-    fl.read_mesh(fl.nrec-1)
-    fl.read_temperature(fl.nrec-1)
+    x, y = fl.read_mesh(fl.nrec-1)
+    T = fl.read_temperature(fl.nrec-1)
 
-    # print (x, z, T) to screen
-    printing(fl.x, fl.z, fl.T)
+    # print (x, y, T) to screen
+    printing(x, y, T)
 
-    fl.read_time()
-    print '# time =', fl.time
+    print '# time =', fl.time[fl.nrec-1], 'Myrs'
