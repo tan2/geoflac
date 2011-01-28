@@ -15,15 +15,15 @@ D1d = 0.
 ! define record number and write it to contents
 if( lastout .eq. 1 ) then
     nrec = 1
-    open (1,file='_outmarkers.0')
+    open (1,file='_markers.0')
 else
-    open (1,file='_outmarkers.0',status='old',err=5)
+    open (1,file='_markers.0',status='old',err=5)
 
     do while (.TRUE.)
         read( 1, *, end=10 ) nrec
     end do
     5 continue
-    open (1,file='_outmarkers.0',position='append')
+    open (1,file='_markers.0',position='append')
     nrec = 0
     10 continue
     nrec = nrec + 1
@@ -39,7 +39,7 @@ nwords = nmarkers
 do i = 1, nmarkers
     D1d(i)= mark(i)%x * 1e-3
 enddo
-write(fn,'(A,I6.6,A)') 'outmarkx.', nrec, '.0'
+write(fn,'(A,I6.6,A)') 'markx.', nrec, '.0'
 open (1,file=fn,access='direct',recl=nwords*kindr)
 write (1,rec=1) D1d
 close (1)
@@ -47,7 +47,7 @@ close (1)
 do i = 1,nmarkers
     D1d(i)= mark(i)%y * 1e-3
 enddo
-write(fn,'(A,I6.6,A)') 'outmarky.', nrec, '.0'
+write(fn,'(A,I6.6,A)') 'marky.', nrec, '.0'
 open (1,file=fn,access='direct',recl=nwords*kindr)
 write (1,rec=1) D1d
 close (1)
@@ -56,7 +56,7 @@ close (1)
 do i = 1,nmarkers
     D1d(i)= mark(i)%age / sec_year / 1.e6
 enddo
-write(fn,'(A,I6.6,A)') 'outmarkage.', nrec, '.0'
+write(fn,'(A,I6.6,A)') 'markage.', nrec, '.0'
 open (1,file=fn,access='direct',recl=nwords*kindr)
 write (1,rec=1) D1d
 close (1)
@@ -66,7 +66,7 @@ D1i = 0
 do l = 1,nmarkers
     D1i(l)= mark(l)%phase
 enddo
-write(fn,'(A,I6.6,A)') 'outmarkphase.', nrec, '.0'
+write(fn,'(A,I6.6,A)') 'markphase.', nrec, '.0'
 open (1,file=fn,access='direct',recl=nwords*kindr)
 write (1,rec=1) D1i
 close (1)
@@ -75,7 +75,7 @@ close (1)
 do l = 1,nmarkers
     D1i(l)= mark(l)%dead
 enddo
-write(fn,'(A,I6.6,A)') 'outmarkdead.', nrec, '.0'
+write(fn,'(A,I6.6,A)') 'markdead.', nrec, '.0'
 open (1,file=fn,access='direct',recl=nwords*kindr)
 write (1,rec=1) D1i
 close (1)
