@@ -27,7 +27,7 @@ def main(path, start=1, end=-1):
         # Allocating a 3-vector tmp array for VTK data output.
         tmp = np.zeros((fl.nx, fl.nz, 3), dtype=float)
 
-        print i
+        print 'Writing record #%d, model time=%.3e' % (i, fl.time[i-1])
         fvts = open('flac.%06d.vts' % i, 'w')
         vts_header(fvts, nex, nez)
 
@@ -81,7 +81,7 @@ def main(path, start=1, end=-1):
     return
 
 
-def vts_dataarray(f, data, data_name=None, data_comps=None):
+def vts_dataarray(f, data, data_name=None, data_comps=None, swapaxes=True):
     if data.dtype in (int, np.int32, np.int_):
         dtype = 'Int32'
     elif data.dtype in (float, np.single, np.double, np.float,
@@ -103,7 +103,10 @@ def vts_dataarray(f, data, data_name=None, data_comps=None):
     f.write(header)
 
     # vts requires x-axis increment fastest
-    tmp = data.swapaxes(0,1)
+    if swapaxes:
+        tmp = data.swapaxes(0,1)
+    else:
+        tmp = data
     tmp.tofile(f, sep=' ')
     f.write('\n</DataArray>\n')
     return
