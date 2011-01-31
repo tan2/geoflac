@@ -6,8 +6,6 @@ include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 
-!allocatable :: a(:,:),b(:)
-!allocate( a(nz,nz),b(nz) )
 !  Read distribution of temperatures from the dat file
 if (irtemp .gt. 0) then
     open( 1, file=tempfile, status='old', err=101 )
@@ -26,128 +24,93 @@ if (irtemp .gt. 0) then
     stop 21
 endif
 
-! Temperature structure for ridges
-! uses setup for viscosity from Alexei
-if (iynts.eq.1) then
-do i = 1,nx-1
-    do j = 1,nz-1
-       xc = 0.25*(cord (j,i  ,1) + cord(j+1,i  ,1) + &
-                cord (j,i+1,1) + cord(j+1,i+1,1))
-       yc = 0.25*(cord (j,i  ,2) + cord(j+1,i  ,2) + &
-                cord (j,i+1,2) + cord(j+1,i+1,2))
-!       Line
-       if (igeotherm .eq.0) geoth = g_y0c
-!       Gauss perturbation
-       if (igeotherm .eq.1 ) then
-       geoth = g_y0c + g_amplitude*exp(-((xc-g_x0)/g_width)**2.)
-       endif
-!       Linear perturbation
-       if (igeotherm .eq.2) then
-       if ( abs(g_x0-xc).lt.g_width) geoth = g_y0c+ &
-        g_amplitude*(1.-abs(g_x0-xc)/g_width)
-       if ( abs(g_x0-xc).ge.g_width) geoth = g_y0c
-       endif
+select case(iynts)
+case (1)
+    ! Temperature structure for ridges
+    ! uses setup for viscosity from Alexei
+    do i = 1,nx-1
+        do j = 1,nz-1
+            xc = 0.25*(cord (j,i  ,1) + cord(j+1,i  ,1) + &
+                 cord (j,i+1,1) + cord(j+1,i+1,1))
+            yc = 0.25*(cord (j,i  ,2) + cord(j+1,i  ,2) + &
+                 cord (j,i+1,2) + cord(j+1,i+1,2))
+            !       Line
+            if (igeotherm .eq.0) geoth = g_y0c
+            !       Gauss perturbation
+            if (igeotherm .eq.1 ) then
+                geoth = g_y0c + g_amplitude*exp(-((xc-g_x0)/g_width)**2.)
+            endif
+            !       Linear perturbation
+            if (igeotherm .eq.2) then
+                if ( abs(g_x0-xc).lt.g_width) geoth = g_y0c+ &
+                     g_amplitude*(1.-abs(g_x0-xc)/g_width)
+                if ( abs(g_x0-xc).ge.g_width) geoth = g_y0c
+            endif
 
-! Temperatures
-! E-fold depends on x (correction due to lateral change in geotherm)
+            ! Temperatures
+            ! E-fold depends on x (correction due to lateral change in geotherm)
 
-       if(yc.ge.geoth) then
-           temp(j,i)=t_top+((tbos-t_top)/geoth)*yc
-       else
-           temp(j,i)=tbos + ((tbos-t_top)/(0.5*geoth))*(yc-geoth)
-       endif
-       if(temp(j,i).gt.t_bot) temp(j,i) = t_bot
-enddo
-enddo
-do j = 1, nz
-   temp(j,nx) = temp(j,nx-2)
-enddo
-do i = 1, nx
-   temp(nz,i) = temp(nz-1,i)
-enddo
-goto 10
-endif
-!!  Initial continental geotherm of a given age accross the box with variable age
-if (iynts.eq.2) then
-cond_c = 2.2
-cond_m = 3.3
-dens_c = 2700.
-dens_m = 3300.
-pi = 3.14159
-do n = 1, nzone_age
-   tr= dens_c*hs*hr*hr*1.e+6/cond_c*exp(1.-exp(-hc(n)/hr))
-      q_m = (t_bot-t_top-tr)/((hc(n)*1000.)/cond_c+((200.e3-(hc(n))*1000.))/cond_m)  
-   tm  = t_top + (q_m/cond_c)*hc(n)*1000. + tr
-!   write(*,*) rzbo, tr, hs, hr, hc(n), q_m, tm
-   age_init = age_1(n)*3.14*1.e+7*1.e+6
-   diff_m = cond_m/1000./dens_m
-   tau_d = 200.e3*200.e3/(pi*pi*diff_m) 
-   do i = ixtb1(n), ixtb2(n)
-      do j = 1,nz
-! depth in km
-         y = -cord(j,i,2)*1.e-3
-!  steady state part
-         if (y.le.hc(n)) tss = t_top+(q_m/cond_c)*y*1000.+(dens_c*hs*hr*hr*1.e+6/cond_c)*exp(1.-exp(-y/hr))
-         if (y.gt.hc(n)) tss = tm + (q_m/cond_m)*1000.*(y-hc(n))
-
-! time-dependent part
-         tt = 0.
-         pp =-1.
-         do k = 1,100
-            an = 1.*k
-            pp = -pp
-            tt = tt +pp/(an)*exp(-an*an*age_init/tau_d)*dsin(pi*k*(200.e3-y*1000.)/(200.e3))
-         enddo
-      temp(j,i) = tss +2./pi*(t_bot-t_top)*tt
-        if(temp(j,i).gt.1330.or.y.gt.200.) temp(j,i)= 1330.
-        if (j.eq.1) temp(j,i) = t_top
-!       write(*,*) tss,tm,q_m,cond_m,hc(n),y,tt
-      enddo
+            if(yc.ge.geoth) then
+                temp(j,i)=t_top+((tbos-t_top)/geoth)*yc
+            else
+                temp(j,i)=tbos + ((tbos-t_top)/(0.5*geoth))*(yc-geoth)
+            endif
+            if(temp(j,i).gt.t_bot) temp(j,i) = t_bot
+        enddo
     enddo
-enddo 
-goto 20
-endif
+    do j = 1, nz
+        temp(j,nx) = temp(j,nx-2)
+    enddo
+    do i = 1, nx
+        temp(nz,i) = temp(nz-1,i)
+    enddo
 
-! estimate initial temperature as linear (for first approx. of conductivities)
-do j = 1,nz
-    temp(j,1:nx) = (t_bot-t_top)/abs(rzbo)*abs(cord(j,1,2)-z0) + t_top
-end do
+case (2)
+    !!  Initial continental geotherm of a given age accross the box with variable age
+    cond_c = 2.2
+    cond_m = 3.3
+    dens_c = 2700.
+    dens_m = 3300.
+    pi = 3.14159
+    do n = 1, nzone_age
+        tr= dens_c*hs*hr*hr*1.e+6/cond_c*exp(1.-exp(-hc(n)/hr))
+        q_m = (t_bot-t_top-tr)/((hc(n)*1000.)/cond_c+((200.e3-(hc(n))*1000.))/cond_m)
+        tm  = t_top + (q_m/cond_c)*hc(n)*1000. + tr
+        !   write(*,*) rzbo, tr, hs, hr, hc(n), q_m, tm
+        age_init = age_1(n)*3.14*1.e+7*1.e+6
+        diff_m = cond_m/1000./dens_m
+        tau_d = 200.e3*200.e3/(pi*pi*diff_m)
+        do i = ixtb1(n), ixtb2(n)
+            do j = 1,nz
+                ! depth in km
+                y = -cord(j,i,2)*1.e-3
+                !  steady state part
+                if (y.le.hc(n)) tss = t_top+(q_m/cond_c)*y*1000.+(dens_c*hs*hr*hr*1.e+6/cond_c)*exp(1.-exp(-y/hr))
+                if (y.gt.hc(n)) tss = tm + (q_m/cond_m)*1000.*(y-hc(n))
 
-!dz = abs(cord(2,1,2)-cord(1,1,2))/1000
-!irep = 0
-!do while (.true.)
-!    a = 0; b = 0;
-!    a(1,1) = 1; b(1) = t_top;
-!    do j = 2, nz-1
-!        a(j,j-1) = cnd(j-1)+4*cnd(j)-cnd(j+1)
-!        a(j,j  ) = -8*cnd(j)
-!        a(j,j+1) = cnd(j+1)+4*cnd(j)-cnd(j-1)
-!        b(j) = -4*dz*dz*htgen(j)
-!    enddo
-!    a(nz,nz) = 1; b(nz) = t_bot;
-!
-!    call Gauss(a,nz,b)
-!
-!    tdiff = 0
-!    do j = 1,nz
-!        tdiff = max( abs( b(j)-temp(j,1) ), tdiff )
-!        temp(j,1:nx) = b(j)
-!    end do
+                ! time-dependent part
+                tt = 0.
+                pp =-1.
+                do k = 1,100
+                    an = 1.*k
+                    pp = -pp
+                    tt = tt +pp/(an)*exp(-an*an*age_init/tau_d)*dsin(pi*k*(200.e3-y*1000.)/(200.e3))
+                enddo
+                temp(j,i) = tss +2./pi*(t_bot-t_top)*tt
+                if(temp(j,i).gt.1330.or.y.gt.200.) temp(j,i)= 1330.
+                if (j.eq.1) temp(j,i) = t_top
+                !       write(*,*) tss,tm,q_m,cond_m,hc(n),y,tt
+            enddo
+        enddo
+    enddo
 
-!    if( tdiff .lt. 0.1 ) exit
+case default
+    ! estimate initial temperature as linear (for first approx. of conductivities)
+    do j = 1,nz
+        temp(j,1:nx) = (t_bot-t_top)/abs(rzbo)*abs(cord(j,1,2)-z0) + t_top
+    end do
+end select
 
-!    irep = irep+1
-!    if( irep .gt. 1000 ) then
-!        call SysMsg('INIT_TEMP: No convergence !')
-!        stop
-!    endif
-
-!end do
-
-!deallocate( a,b )
-
-10 continue
-20 continue
 open( 1, file='temp0.dat' )
 do j = 1,nz
     write(1,'(f5.1,1x,f6.1,1x,f6.1,1x,f6.1)') -cord (j,1,2)*1.e-3, temp(j,1)
@@ -170,7 +133,7 @@ endif
 !call RedefineTemp
 
 return
-end
+end subroutine init_temp
 
 
 subroutine sidewalltemp(i1, i2)
