@@ -28,8 +28,8 @@ def main(path, start=1, end=-1):
 
         # point-based data
         fvtp.write('  <PointData>\n')
-        vts_dataarray(fvtp, age, 'age', 1, swapaxes=False)
-        vts_dataarray(fvtp, phase.astype(np.int32), 'phase', 1, swapaxes=False)
+        vts_dataarray(fvtp, age, 'age', 1)
+        vts_dataarray(fvtp, phase.astype(np.int32), 'phase', 1)
         fvtp.write('  </PointData>\n')
 
         # point coordinates
@@ -40,7 +40,7 @@ def main(path, start=1, end=-1):
         tmp[:,0] = x
         tmp[:,1] = z
         fvtp.write('  <Points>\n')
-        vts_dataarray(fvtp, tmp, '', 3, swapaxes=False)
+        vts_dataarray(fvtp, tmp, '', 3)
         fvtp.write('  </Points>\n')
 
         vtp_footer(fvtp)
