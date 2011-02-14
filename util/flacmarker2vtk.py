@@ -36,7 +36,7 @@ def main(path, start=1, end=-1):
 
         # VTK requires vector field (velocity, coordinate) has 3 components.
         # Allocating a 3-vector tmp array for VTK data output.
-        tmp = np.zeros((nmarkers, 3), dtype=float)
+        tmp = np.zeros((nmarkers, 3), dtype=x.dtype)
         tmp[:,0] = x
         tmp[:,1] = z
         fvtp.write('  <Points>\n')

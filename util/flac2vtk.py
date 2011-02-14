@@ -4,11 +4,15 @@
 '''
 
 import sys, os
+import zlib, base64
 import numpy as np
 import flac
 
 ndims = 2
 nstress = 4
+
+# whether write VTK files in compressed binary (base64 encoded) or uncompressed plain ascii
+output_in_binary = True
 
 def main(path, start=1, end=-1):
 
@@ -23,10 +27,6 @@ def main(path, start=1, end=-1):
         end = fl.nrec - 1
 
     for i in range(start, end+1):
-        # VTK requires vector field (velocity, coordinate) has 3 components.
-        # Allocating a 3-vector tmp array for VTK data output.
-        tmp = np.zeros((fl.nx, fl.nz, 3), dtype=float)
-
         print 'Writing record #%d, model time=%.3e' % (i, fl.time[i-1])
         fvts = open('flac.%06d.vts' % i, 'w')
         vts_header(fvts, nex, nez)
@@ -35,6 +35,9 @@ def main(path, start=1, end=-1):
         fvts.write('  <PointData>\n')
 
         vx, vz = fl.read_vel(i)
+        # VTK requires vector field (velocity, coordinate) has 3 components.
+        # Allocating a 3-vector tmp array for VTK data output.
+        tmp = np.zeros((fl.nx, fl.nz, 3), dtype=vx.dtype)
         tmp[:,:,0] = vx
         tmp[:,:,1] = vz
         vts_dataarray(fvts, tmp, 'Velocity', 3)
@@ -101,8 +104,12 @@ def vts_dataarray(f, data, data_name=None, data_comps=None, swapaxes=True):
     if data_comps:
         ncomp = 'NumberOfComponents="{0}"'.format(data_comps)
 
-    header = '<DataArray type="{0}" {1} {2} format="ascii">\n'.format(
-        dtype, name, ncomp)
+    if output_in_binary:
+        fmt = 'binary'
+    else:
+        fmt = 'ascii'
+    header = '<DataArray type="{0}" {1} {2} format="{3}">\n'.format(
+        dtype, name, ncomp, fmt)
     f.write(header)
 
     # vts requires x-axis increment fastest
@@ -110,7 +117,19 @@ def vts_dataarray(f, data, data_name=None, data_comps=None, swapaxes=True):
         tmp = data.swapaxes(0,1)
     else:
         tmp = data
-    tmp.tofile(f, sep=' ')
+
+    if output_in_binary:
+        header = np.zeros(4, dtype=np.int32)
+        header[0] = 1
+        a = tmp.tostring()
+        header[1] = len(a)
+        header[2] = len(a)
+        b = zlib.compress(a)
+        header[3] = len(b)
+        f.write(base64.standard_b64encode(header))
+        f.write(base64.standard_b64encode(b))
+    else:
+        tmp.tofile(f, sep=' ')
     f.write('\n</DataArray>\n')
     return
 
