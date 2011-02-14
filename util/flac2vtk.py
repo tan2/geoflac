@@ -40,10 +40,11 @@ def main(path, start=1, end=-1):
         tmp = np.zeros((fl.nx, fl.nz, 3), dtype=vx.dtype)
         tmp[:,:,0] = vx
         tmp[:,:,1] = vz
-        vts_dataarray(fvts, tmp, 'Velocity', 3)
+        # vts requires x-axis increment fastest, swap axes order
+        vts_dataarray(fvts, tmp.swapaxes(0,1), 'Velocity', 3)
 
         a = fl.read_temperature(i)
-        vts_dataarray(fvts, a, 'Temperature')
+        vts_dataarray(fvts, a.swapaxes(0,1), 'Temperature')
 
         fvts.write('  </PointData>\n')
 
@@ -51,25 +52,25 @@ def main(path, start=1, end=-1):
         fvts.write('  <CellData>\n')
 
         a = fl.read_srII(i)
-        vts_dataarray(fvts, a, 'Strain rate')
+        vts_dataarray(fvts, a.swapaxes(0,1), 'Strain rate')
 
         a = fl.read_eII(i)
-        vts_dataarray(fvts, a, 'eII')
+        vts_dataarray(fvts, a.swapaxes(0,1), 'eII')
 
         a = fl.read_density(i)
-        vts_dataarray(fvts, a, 'Density')
+        vts_dataarray(fvts, a.swapaxes(0,1), 'Density')
 
         a = fl.read_aps(i)
-        vts_dataarray(fvts, a, 'Plastic strain')
+        vts_dataarray(fvts, a.swapaxes(0,1), 'Plastic strain')
 
         a = fl.read_sII(i)
-        vts_dataarray(fvts, a, 'Stress')
+        vts_dataarray(fvts, a.swapaxes(0,1), 'Stress')
 
         a = fl.read_visc(i)
-        vts_dataarray(fvts, a, 'Viscosity')
+        vts_dataarray(fvts, a.swapaxes(0,1), 'Viscosity')
 
         a = fl.read_phase(i)
-        vts_dataarray(fvts, a, 'Phase')
+        vts_dataarray(fvts, a.swapaxes(0,1), 'Phase')
 
         fvts.write('  </CellData>\n')
 
@@ -78,7 +79,7 @@ def main(path, start=1, end=-1):
         tmp[:,:,0] = x
         tmp[:,:,1] = z
         fvts.write('  <Points>\n')
-        vts_dataarray(fvts, tmp, '', 3)
+        vts_dataarray(fvts, tmp.swapaxes(0,1), '', 3)
         fvts.write('  </Points>\n')
 
 
@@ -87,7 +88,7 @@ def main(path, start=1, end=-1):
     return
 
 
-def vts_dataarray(f, data, data_name=None, data_comps=None, swapaxes=True):
+def vts_dataarray(f, data, data_name=None, data_comps=None):
     if data.dtype in (int, np.int32, np.int_):
         dtype = 'Int32'
     elif data.dtype in (float, np.single, np.double, np.float,
@@ -112,16 +113,10 @@ def vts_dataarray(f, data, data_name=None, data_comps=None, swapaxes=True):
         dtype, name, ncomp, fmt)
     f.write(header)
 
-    # vts requires x-axis increment fastest
-    if swapaxes:
-        tmp = data.swapaxes(0,1)
-    else:
-        tmp = data
-
     if output_in_binary:
         header = np.zeros(4, dtype=np.int32)
         header[0] = 1
-        a = tmp.tostring()
+        a = data.tostring()
         header[1] = len(a)
         header[2] = len(a)
         b = zlib.compress(a)
@@ -129,7 +124,7 @@ def vts_dataarray(f, data, data_name=None, data_comps=None, swapaxes=True):
         f.write(base64.standard_b64encode(header))
         f.write(base64.standard_b64encode(b))
     else:
-        tmp.tofile(f, sep=' ')
+        data.tofile(f, sep=' ')
     f.write('\n</DataArray>\n')
     return
 
