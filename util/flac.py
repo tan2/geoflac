@@ -194,25 +194,30 @@ class Flac(object):
         f = open('phase.0')
         offset = (frame-1) * columns * self.nelements * sizeofint
         f.seek(offset)
-        phase = self._read_data(f, columns, count=self.nelements, dtype=int)
+        phase = self._read_data(f, columns, count=self.nelements, dtype=np.int32)
         self._reshape_elemental_fields(phase)
         return phase
 
 
     def read_markers(self, frame):
-        suffix = '.%06d.0' % frame
-        dead = self._read_data('markdead' + suffix, dtype=int)
+        # read tracer size
+        tmp = np.fromfile('_markers.0', sep=' ')
+        tmp.shape = (-1, 4)
+        n = int(tmp[frame-1,2])
 
-        tmp = self._read_data('markx' + suffix)
+        suffix = '.%06d.0' % frame
+        dead = self._read_data('markdead' + suffix, count=n, dtype=np.int32)
+
+        tmp = self._read_data('markx' + suffix, count=n)
         x = self._remove_dead_markers(tmp, dead)
 
-        tmp = self._read_data('marky' + suffix)
+        tmp = self._read_data('marky' + suffix, count=n)
         y = self._remove_dead_markers(tmp, dead)
 
-        tmp = self._read_data('markage' + suffix)
+        tmp = self._read_data('markage' + suffix, count=n)
         age = self._remove_dead_markers(tmp, dead)
 
-        tmp = self._read_data('markphase' + suffix, dtype=int)
+        tmp = self._read_data('markphase' + suffix, count=n, dtype=np.int32)
         phase = self._remove_dead_markers(tmp, dead)
 
         return x, y, age, phase

@@ -22,14 +22,14 @@ def main(path, start=1, end=-1):
         x, z, age, phase = fl.read_markers(i)
         nmarkers = len(x)
 
-        print 'Writing record #%d, model time=%.3e' % (i, fl.time[i-1])
+        print 'Writing record #%d, model time=%.3e, %d markers' % (i, fl.time[i-1], nmarkers)
         fvtp = open('flacmarker.%06d.vtp' % i, 'w')
         vtp_header(fvtp, nmarkers)
 
         # point-based data
         fvtp.write('  <PointData>\n')
         vts_dataarray(fvtp, age, 'age', 1, swapaxes=False)
-        vts_dataarray(fvtp, phase.astype(int), 'phase', 1, swapaxes=False)
+        vts_dataarray(fvtp, phase.astype(np.int32), 'phase', 1, swapaxes=False)
         fvtp.write('  </PointData>\n')
 
         # point coordinates
