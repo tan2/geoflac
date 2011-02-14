@@ -37,7 +37,10 @@ def main(path, start=1, end=-1):
         vx, vz = fl.read_vel(i)
         tmp[:,:,0] = vx
         tmp[:,:,1] = vz
-        vts_dataarray(fvts, tmp, 'velocity', 3)
+        vts_dataarray(fvts, tmp, 'Velocity', 3)
+
+        a = fl.read_temperature(i)
+        vts_dataarray(fvts, a, 'Temperature')
 
         fvts.write('  </PointData>\n')
 
