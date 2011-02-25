@@ -24,7 +24,7 @@ def main(path, start=1, end=-1):
     nex = fl.nx - 1
     nez = fl.nz - 1
     if end == -1:
-        end = fl.nrec - 1
+        end = fl.nrec
 
     for i in range(start, end+1):
         print 'Writing record #%d, model time=%.3e' % (i, fl.time[i-1])
