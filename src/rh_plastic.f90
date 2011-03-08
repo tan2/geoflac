@@ -292,8 +292,8 @@ do iph = 1, nphase
         hardn = hardn + phase_ratio(iph,j,i) * tgc
     else
 
-        phi = phi + fric2(iph)
-        coh = coh + cohesion2(iph)
+        phi = phi + phase_ratio(iph,j,i) * fric2(iph)
+        coh = coh + phase_ratio(iph,j,i) * cohesion2(iph)
         hardn = hardn + 0.
 
     endif
