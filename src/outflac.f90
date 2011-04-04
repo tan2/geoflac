@@ -179,7 +179,7 @@ endif
 if( io_sxz.eq.1 ) then
     do i = 1, nx-1
         do j = 1, nz-1
-            sxz = 0.25 * (stress0(j,i,3,1)+stress0(j,i,3,2)+stress0(j,i,3,3)+stress0(j,i,3,4)) * 1.e-8
+            sxz = 0.25 * (stress0(j,i,3,1)+stress0(j,i,3,2)+stress0(j,i,3,3)+stress0(j,i,3,4))
             De(j,i) = sxz * 1.e-8
         end do
     end do
