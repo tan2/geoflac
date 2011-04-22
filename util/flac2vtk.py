@@ -51,7 +51,9 @@ def main(path, start=1, end=-1):
         # element-based field
         fvts.write('  <CellData>\n')
 
+        # logrithm of strain rate 2nd invariant
         a = fl.read_srII(i)
+        srat = a
         vts_dataarray(fvts, a.swapaxes(0,1), 'Strain rate')
 
         a = fl.read_eII(i)
@@ -65,6 +67,10 @@ def main(path, start=1, end=-1):
 
         a = fl.read_sII(i)
         vts_dataarray(fvts, a.swapaxes(0,1), 'Stress')
+
+        # logrithm of effective viscosity
+        eff_visc = np.log10(a + 1e-45) + 8 - srat
+        vts_dataarray(fvts, eff_visc.swapaxes(0,1), 'Eff. Visc')
 
         a = fl.read_visc(i)
         vts_dataarray(fvts, a.swapaxes(0,1), 'Viscosity')
