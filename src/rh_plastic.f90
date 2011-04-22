@@ -17,12 +17,10 @@ real*8, parameter :: c2d3 = 2./3.
 ! press_add formaely was passed by a parameter. in my case it is always zero.
 real*8, parameter :: press_add = 0.
 
-real*8 sphi, spsi, anphi, anpsi, amc, e1, e2, sh2, x1, ten_max, &
+real*8 sphi, spsi, anphi, anpsi, amc, e1, e2, x1, ten_max, &
      s11i, s22i, s12i, s33i, sdif, s0, rad, si, sii, s1, s2, s3, psdif, &
      fs, alams, dep1, dep3, depm, cs2, si2, dc2, dss
 integer icase
-logical fsflg
-
 
 
 ! ------------------------------
@@ -39,7 +37,6 @@ anpsi = (1.+ spsi) / (1.- spsi)
 amc   = 2.0 * coh * sqrt (anphi)
 e1    = bulkm + c4d3 * rmu
 e2    = bulkm - c2d3 * rmu
-sh2   = 2.0 * rmu
 x1    = (e1 - e2*anpsi + e1*anphi*anpsi - e2*anphi)
 
 if (phi.eq. 0.) then
@@ -58,7 +55,7 @@ end if
 !---- and subtract pressure of the fluid
 s11i = s11 + (de22 + de33) *e2  + de11 *e1 - press_add
 s22i = s22 + (de11 + de33) *e2  + de22 *e1 - press_add
-s12i = s12 + de12 * sh2
+s12i = s12 + de12 * 2.0 * rmu
 s33i = s33 + (de11 + de22) *e2  + de33 *e1 - press_add
 sdif = s11i - s22i
 s0   = 0.5 * (s11i + s22i)
@@ -138,8 +135,7 @@ endif
 
 !- check for shear yield (if fs<0 -> plastic flow)
 fs = s1 - s3 * anphi + amc
-fsflg = fs .lt. 0.0
-if (fsflg) then
+if (fs .lt. 0.0) then
     !-- yielding in shear ----
     if (icase .eq. 1) ipls = -2
     if (icase .eq. 2) ipls = -3
