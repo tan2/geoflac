@@ -16,7 +16,7 @@ def main(path, start=1, end=-1):
 
     fl = flac.Flac()
     if end == -1:
-        end = fl.nrec - 1
+        end = fl.nrec
 
     for i in range(start, end+1):
         x, z, age, phase = fl.read_markers(i)
