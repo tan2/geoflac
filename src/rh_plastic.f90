@@ -251,14 +251,13 @@ end
 
 
 !==================================================================
-! Prepare plastic properties depending on softening or randomness
+! Prepare plastic properties depending on softening, weighted by phase ratio
 
 subroutine pre_plast (i,j,coh,phi,psi,hardn)
 use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
-include 'phases.inc'
 
 pls_curr = aps(j,i)
 
@@ -266,9 +265,11 @@ coh = 0
 phi = 0
 psi = 0
 
-! Hardening modulus
+! Strain-Hardening
 hardn = 0.
 
+! using harmonic mean on friction and cohesion
+! using arithmatic mean on dilation and hardening
 do iph = 1, nphase
     if(phase_ratio(iph,j,i) .lt. 0.01) cycle
 
@@ -278,26 +279,31 @@ do iph = 1, nphase
         pl2 = plstrain(iph)
  
         ! Friction
-        tgf = (fric2(iph)-fric1(iph))/pl2
-        phi =  phi + phase_ratio(iph,j,i) * (fric1(iph) + tgf*pls_curr)
+        tgf = (fric2(iph)-fric1(iph)) / pl2
+        phi =  phi + phase_ratio(iph,j,i) / (fric1(iph) + tgf*pls_curr)
 
-        ! Cohesion and Dilatation
-        !tgd = (dilat2(iph)-dilat1(iph))/pl2
+        ! Dilatation
+        !tgd = (dilat2(iph)-dilat1(iph)) / pl2
         !psi = psi + phase_ratio(iph,j,i) * (dilat1(iph) + tgd*pls_curr)
  
-        tgc = (cohesion2(iph)-cohesion1(iph))/pl2
-        coh = coh + phase_ratio(iph,j,i) * (cohesion1(iph) + tgc*pls_curr)
+        ! Cohesion
+        tgc = (cohesion2(iph)-cohesion1(iph)) / pl2
+        coh = coh + phase_ratio(iph,j,i) / (cohesion1(iph) + tgc*pls_curr)
 
-        ! Hardening Modulus (for Cohesion ONLY)
+        ! Hardening (for Cohesion ONLY)
         hardn = hardn + phase_ratio(iph,j,i) * tgc
     else
 
-        phi = phi + phase_ratio(iph,j,i) * fric2(iph)
-        coh = coh + phase_ratio(iph,j,i) * cohesion2(iph)
+        phi = phi + phase_ratio(iph,j,i) / fric2(iph)
+        coh = coh + phase_ratio(iph,j,i) / cohesion2(iph)
         hardn = hardn + 0.
 
     endif
 
 enddo
+
+phi = 1 / phi
+coh = 1 / coh
+
 return
-end
+end subroutine pre_plast
