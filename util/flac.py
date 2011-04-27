@@ -1,13 +1,22 @@
 #!/usr/bin/env python
 
 import sys
-
 try:
     import numpy as np
 except ImportError:
     print 'Error: Failed importing "numpy" module.'
     print 'Please install the module and add it to PYTHONPATH environment variable.'
     sys.exit(1)
+
+try:
+    # python 2.7 or later
+    from collections import Counter
+except ImportError:
+    try:
+        # backport from http://code.activestate.com/recipes/576611
+        from counter import Counter
+    except ImportError:
+        pass
 
 
 # the precision of saved file
@@ -298,6 +307,121 @@ class Flac(object):
         b = a[dead==1]
         return b
 
+
+def elem_coord(x, y):
+    '''Turning nodal coordinates to element coordinates'''
+    cx = (x[:-1, :-1] + x[:-1, 1:] + x[1:, :-1] + x[1:, 1:]) / 4
+    cy = (y[:-1, :-1] + y[:-1, 1:] + y[1:, :-1] + y[1:, 1:]) / 4
+    return cx, cy
+
+
+def make_uniform_grid(xmin, xmax, ymin, ymax, dx, dy):
+    # grid size
+    nx = (xmax - xmin) / dx + 1
+    ny = (ymax - ymin) / dy + 1
+
+    # generate uniform grid
+    xx = np.linspace(xmin, xmax, nx)
+    yy = np.linspace(ymin, ymax, ny)
+
+    x, y = np.meshgrid(xx, yy)
+    return x, y
+
+
+def nearest_neighbor_interpolation2d(x0, y0, f0, x, y):
+    '''Interpolating field f0, which is defined on (x0, y0)
+    to a new grid (x, y) using nearest neighbor method'''
+
+    if x0.shape != y0.shape:
+        raise Exception('x0 and y0 arrays have different shape')
+
+    if x0.shape != f0.shape:
+        raise Exception('x0 and f0 arrays have different shape')
+
+    if x.shape != y.shape:
+        raise Exception('x and y arrays have different shape')
+
+    dx = x[0,1] - x[0,0]
+    dy = y[1,0] - y[0,0]
+
+    ny, nx = x.shape
+    f = np.zeros(x.shape)
+    for i in range(ny):
+        for j in range(nx):
+            dist2 = ((x[i,j] - x0) / dx)**2 + ((y[i,j] - y0) / dy)**2
+            ind = np.argmin(dist2)
+            f[i,j] = f0[ind]
+
+    return f
+
+
+def neighborhood_interpolation2d(x0, y0, f0, x, y, dx, dy):
+    '''Interpolating field f0, which is defined on (x0, y0)
+    to a new grid (x, y) using neighborhood'''
+
+    if f0.dtype not in (bool, np.bool,
+                        int, np.int, np.int8, np.int16, np.int32, np.int64):
+        raise Exception('f0 must have integer value')
+
+    if x0.shape != y0.shape:
+        raise Exception('x0 and y0 arrays have different shape')
+
+    if x0.shape != f0.shape:
+        raise Exception('x0 and f0 arrays have different shape')
+
+    if x.shape != y.shape:
+        raise Exception('x and y arrays have different shape')
+
+    ny, nx = x.shape
+    f = np.zeros(x.shape, dtype=f0.dtype)
+    for i in range(ny):
+        for j in range(nx):
+            #dist2 = ((x[i,j] - x0) / dx)**2 + ((y[i,j] - y0) / dy)**2
+            #ind = np.argmin(dist2)
+            xx = x[i,j]
+            yy = y[i,j]
+            ind = (x0 >= xx-dx) * (x0 <= xx+dx) * (y0 >= yy-dy) * (y0 <= yy+dy)
+            g = f0[ind]
+            if len(g) == 0:
+                #print (i, j), (xx, yy), ind
+                #raise Exception('No point inside domain bounds. Increase (dx, dy)!')
+                f[i,j] = sys.maxint
+            else:
+                z = Counter(g).most_common(1)
+                f[i,j] = z[0][0]
+
+    return f
+
+
+def gaussian_interpolation2d(x0, y0, f0, x, y):
+    '''Interpolating field f0, which is defined on (x0, y0)
+    to a new grid (x, y) using nearest neighbor method'''
+
+    if x0.shape != y0.shape:
+        raise Exception('x0 and y0 arrays have different shape')
+
+    if x0.shape != f0.shape:
+        raise Exception('x0 and f0 arrays have different shape')
+
+    if x.shape != y.shape:
+        raise Exception('x and y arrays have different shape')
+
+    # using 1d index for x0, y0, f0
+    x0 = x0.flat
+    y0 = y0.flat
+    f0 = f0.flat
+
+    dx = 1.5 * (x[0,1] - x[0,0])
+    dy = 1.5 * (y[1,0] - y[0,0])
+
+    f = np.zeros(x.shape)
+    g = np.zeros(x.shape)
+    for i in range(len(x0)):
+        weight = np.exp(-((x - x0[i]) / dx)**2 - ((y - y0[i]) / dy)**2)
+        f += weight * f0[i]
+        g += weight
+
+    return f / g
 
 
 def printing(*args, **kwd):
