@@ -57,6 +57,7 @@ def main(path, start=1, end=-1):
         vts_dataarray(fvts, a.swapaxes(0,1), 'Strain rate')
 
         a = fl.read_eII(i)
+        eii = a
         vts_dataarray(fvts, a.swapaxes(0,1), 'eII')
 
         a = fl.read_density(i)
@@ -66,7 +67,20 @@ def main(path, start=1, end=-1):
         vts_dataarray(fvts, a.swapaxes(0,1), 'Plastic strain')
 
         a = fl.read_sII(i)
+        sii = a
         vts_dataarray(fvts, a.swapaxes(0,1), 'Stress')
+
+        a = fl.read_sxx(i)
+        vts_dataarray(fvts, a.swapaxes(0,1), 'Sxx')
+
+        a = fl.read_szz(i)
+        vts_dataarray(fvts, a.swapaxes(0,1), 'Szz')
+
+        a = fl.read_sxz(i)
+        vts_dataarray(fvts, a.swapaxes(0,1), 'Sxz')
+
+        a = fl.read_diss(i)
+        vts_dataarray(fvts, a.swapaxes(0,1), 'Dissipation')
 
         # logrithm of effective viscosity
         eff_visc = np.log10(a + 1e-45) + 8 - srat
@@ -77,6 +91,10 @@ def main(path, start=1, end=-1):
 
         a = fl.read_phase(i)
         vts_dataarray(fvts, a.swapaxes(0,1), 'Phase')
+
+        # Work done by stress
+        a = sii * 1e8 * eii
+        vts_dataarray(fvts, a.swapaxes(0,1), 'Work')
 
         fvts.write('  </CellData>\n')
 
