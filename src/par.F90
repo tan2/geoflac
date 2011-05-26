@@ -117,7 +117,6 @@ dtacc_screen = 0
 dtacc_file = 0
 dtacc_save = 0
 dtacc_tracer = 0
-nrec = 1 
 i_search = 0
 !do index_nobody_would_use=1,1
 do while( time .le. time_max )
@@ -147,7 +146,6 @@ do while( time .le. time_max )
          end do
          open (1,file='forc.0',position='append')
          write (1,'(f7.3,1x,e10.2,1x,e10.2)') time/sec_year/1.e6, force_l, force_r
-         nrec = nrec + 1
          close (1)
        endif
 
