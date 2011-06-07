@@ -10,6 +10,7 @@ integer, parameter :: kocean2 = 7
 integer, parameter :: kmant2 = 8
 integer, parameter :: kserp = 9
 integer, parameter :: ksed1 = 10
+integer, parameter :: ksed2 = 11
 integer, parameter :: kweak = 12
 integer, parameter :: keclg = 13
 integer, parameter :: karc1 = 14
