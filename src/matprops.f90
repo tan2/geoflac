@@ -39,13 +39,15 @@ function Eff_dens( j, i)
 
           dens = den(k) * ( 1 - alfa(k)*tmpr + beta(k)*press )
 
-          if(k.eq.ksed1) then
+          if(k==ksed1 .or. k==ksed2) then
               delta_den = 400.
               zefold = 6000.
-              !dens = (den(k) - delta_den*exp(zcord/zefold)) * ( 1 - alfa(k)*tmpr + beta(k)*press )
-              dens = (den(k) - delta_den*exp((zcord-0.5*(cord(1,i,2)+cord(1,i+1,2)))/zefold)) &
-                   * ( 1 - alfa(k)*tmpr + beta(k)*press )
-              if (j.eq.1.and.cord(j,i,2).gt.0.) dens = (2750.*(1.-alfa(k)*tmpr))        
+              if (j.eq.1.and.cord(j,i,2).gt.0.) then
+                  dens = den(k) * (1.-alfa(k)*tmpr)
+              else
+                  dens = (den(k) - delta_den*exp((zcord-0.5*(cord(1,i,2)+cord(1,i+1,2)))/zefold)) &
+                       * ( 1 - alfa(k)*tmpr + beta(k)*press )
+              endif
               if (dens.lt.2400.) dens = 2400.
           endif
 
