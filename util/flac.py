@@ -32,7 +32,7 @@ else:
 
 
 class Flac(object):
-    '''Read Flac data file
+    '''Read Flac data file. Most data are 2D arrays with shape (nx, nz) or (nex, nez).
     '''
 
     def __init__(self, swap_endian=False):
