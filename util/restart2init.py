@@ -10,7 +10,7 @@ orig = open('_contents.save').readline().split()
 orig[1] = '0'
 orig[2] = '0.00'
 
-open('_contents.rs', 'w').write('    '.join(orig))
+open('_contents.rs', 'w').writeline('    '.join(orig) + '\n')
 
 
 # Reset time

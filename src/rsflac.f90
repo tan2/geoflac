@@ -17,6 +17,11 @@ integer(kindi), allocatable :: dum11(:), idum2(:,:)
 real*8 rtime, rdt
 character*200 msg
 
+! TODO: include tracer information for restart
+if (iint_tracer.eq.1) then
+    stop 'Must disable tracers in restart'
+endif
+
 open( 1, file='_contents.rs', status='old' )
 read( 1, * ) nrec, nloop, time_my, nmarkers, nmtracers
 close(1)
@@ -29,6 +34,8 @@ close (1)
 time = rtime
 dt = rdt
 time_t = time
+
+dvol = 0
 
 ! Coordinates and velocities
 nwords = nz*nx*2
@@ -190,6 +197,7 @@ deallocate(dum11)
 ! recount marker phase
 nphase_counter(:,:,:) = 0
 ntopmarker(:) = 0
+itopmarker(:,:) = 0
 print *, nmarkers
 do n = 1, nmarkers
     if(mark(n)%dead .eq. 0) cycle

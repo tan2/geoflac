@@ -118,6 +118,9 @@ dtacc_file = 0
 dtacc_save = 0
 dtacc_tracer = 0
 i_search = 0
+devmax = 0
+dvmax = 0
+
 !do index_nobody_would_use=1,1
 do while( time .le. time_max )
   nloop = nloop + 1
