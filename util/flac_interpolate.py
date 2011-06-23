@@ -69,7 +69,7 @@ def interpolate(frame, field):
         raise RuntimeError('unknown field %s' % field)
 
     f = clip_topo(x, y, f, xx, yy)
-    return cx, cy, f
+    return x, y, f
 
 
 if __name__ == '__main__':
