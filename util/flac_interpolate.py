@@ -61,10 +61,10 @@ def interpolate(frame, field):
     elif field in ('temperature', 'aps', 'density', 'eII', 'sII',
                    'sxx', 'szz', 'sxz', 'srII', 'pres', 'diss', 'visc'):
         # read field
-        f = getattr(fl, 'read_'+field)(frame)
+        cf = getattr(fl, 'read_'+field)(frame)
         cx, cy = flac.elem_coord(xx, yy)
-        cx, cy, f = excluding(cx, cy,f, xmin-dx, xmax+dx, ymin-dy, ymax+dy)
-        f = flac.gaussian_interpolation2d(cx, cy, f, x, y)
+        cx, cy, cf = excluding(cx, cy, cf, xmin-dx, xmax+dx, ymin-dy, ymax+dy)
+        f = flac.gaussian_interpolation2d(cx, cy, cf, x, y)
     else:
         raise RuntimeError('unknown field %s' % field)
 
