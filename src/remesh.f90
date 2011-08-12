@@ -9,7 +9,7 @@ include 'phases.inc'
 
 common /remeshing/ pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
 cold(mnz+1,mnx+1,2),cnew(mnz+1,mnx+1,2),numtr(mnz+1,mnx+1),nzt,nxt
-allocatable :: dummy(:,:), cordo(:,:,:)
+allocatable :: dummy(:,:), cordo(:,:,:), dhnew(:)
 
 allocate(cordo(1:nz,1:nx,1:2))
 
@@ -18,6 +18,44 @@ cordo = cord
 
 ! Create The New grid (cord) using cordo(nz,i,2) for the bottom and cordo(1,i,2) for the surface
 call rem_cord(cordo)
+
+! Interpolate accumulated topo change
+allocate(dhnew(nx-1))
+dhnew(:) = 0
+
+i2 = 1
+! for each new element i
+do i = 1, nx-1
+    ! for each old node, starting from i2
+    do i1 = i2, nx-1
+        if (cordo(1,i1,1) <= cord(1,i,1)) cycle
+        if (cordo(1,i1,1) < cord(1,i+1,1)) then
+            if (i1 /= 1) then
+                if (cordo(1,i1-1,1) >= cord(1,i,1)) then
+                    dhnew(i) = dhnew(i) + dhacc(i1-1) * (cordo(1,i1,1) - cordo(1,i-1,1))
+                else
+                    dhnew(i) = dhnew(i) + dhacc(i1-1) * (cordo(1,i1,1) - cord(1,i,1))
+                end if
+            end if
+        else
+            if (i1 /= 1) then
+                dhnew(i) = dhnew(i) + dhacc(i1-1) * (cord(1,i+1,1) - cordo(1,i1-1,1))
+            end if
+            i2 = i1
+            exit
+        end if
+    end do
+end do
+! special treatment for the last new element
+i = nx - 1
+i1 = i2
+if (cordo(1,i1,1) <= cord(1,i,1)) then
+    dhnew(i) = dhnew(i) + dhacc(i1) * (cord(1,i+1,1) - cord(1,i,1))
+end if
+
+dhacc(1:nx-1) = dhnew / (cord(1,2:nx,1) - cord(1,1:nx-1,1))
+deallocate(dhnew)
+
 
 ! REMESHING FOR ELEMENT-WISE PROPERTIES
 ! Linear interpolation in baricentric coordinates defined as centers of old mesh
@@ -45,7 +83,7 @@ call rem_barcord
 
 ! Do interpolations
 
-! Interpolate Stress (in quadralaterals) 
+! Interpolate Stress (in quadralaterals)
 do k = 1,4
     do l = 1,4
         dummy(1:nzt,1:nxt) = stress0(1:nzt,1:nxt,k,l)
