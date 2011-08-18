@@ -14,6 +14,7 @@ try:
 except ImportError:
     try:
         # backport from http://code.activestate.com/recipes/576611
+        # must be installed somewhere on your PYTHONPATH
         from counter import Counter
     except ImportError:
         pass
@@ -48,8 +49,9 @@ class Flac(object):
         self.time = tmp[:,2]
         self.nrec = len(self.time)
 
-        # read grid size
+        # number of elements in x and z
         nex, nez = np.fromfile('nxnz.0', sep=' ', dtype=int)
+        # number of nodes in x and z
         self.nx, self.nz = nex+1, nez+1
         self.nnodes = self.nx * self.nz
         self.nelements = nex * nez
