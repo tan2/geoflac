@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+'''
+Read flac density and coordinate data and return gravity and topography at regular spacing.
+'''
 
 import sys
 import numpy as np
@@ -6,17 +9,14 @@ import flac
 
 gn = 6.6726e-11
 ocean_density = 1030.
-free_air_factor = 0.3086e-5  # in m/s^2
 
 
 def compute_gravity(frame):
-
     ## read data
     fl = flac.Flac()
     x, y = fl.read_mesh(frame)  # in km
     x *= 1e3
     y *= 1e3
-    rho = fl.read_density(frame)  # in kg/m^3
 
     # surface coordinates
     xx = x[:,0]
@@ -36,21 +36,34 @@ def compute_gravity(frame):
     xdiag2 = x[1:, 0:-1] - x[0:-1, 1:]
     ydiag2 = y[1:, 0:-1] - y[0:-1, 1:]
     area = 0.5 * np.abs(xdiag1*ydiag2 - xdiag2*ydiag1)
+
+
+    rho = fl.read_density(frame)  # in kg/m^3
+
+    ## benchmark case: infinite-long cylinder with radius R
+    ## buried at depth D
+    #R = 10e3
+    #D = -150e3
+    #drho = 1000
+    #rho = np.zeros(cx.shape)
+    #midx = 0.5 * (xmin + xmax)
+    #midy = 0.5 * y.min()
+    #dist2 = (x - midx)**2 + (y - D)**2
+    #rho[dist2 < R**2] = drho
+    #ocean_density = 0
+
     mass = rho * area
 
 
     ## calculate gravity at these points
     # px in uniform spacing
     px = np.linspace(xmin, xmax, num=5*fl.nx)
-    # py is 2km above the highest topography to avoid high frequency oscillation
-    py_height = np.max(yy) + 2e3
+    # py is 4km above the highest topography to avoid high frequency oscillation
+    py_height = np.max(yy) + 4e3
     py = np.ones(px.shape) * py_height
 
     # original topography defined in px grid
-    #origy = np.interp(px, x[:,0], y[:,0])
-    #py = origy.copy()
-    #py[py<0] = 0
-    #py += 2e3
+    topo = np.interp(px, x[:,0], y[:,0])
 
     ## contribution of material inside the model
     grav = np.empty(px.shape)
@@ -106,17 +119,15 @@ def compute_gravity(frame):
         angle = np.arctan2(dx, dy)
         grav += 2 * gn * sigma * (0.5*np.pi - angle)
 
-    ## free-air correction
-    grav += free_air_factor * py
-
     ##
     grav -= np.mean(grav)
 
-    return px, grav
+    return px, topo, grav
 
 
 if __name__ == '__main__':
     frame = int(sys.argv[1])
-    x, gravity = compute_gravity(frame)
+
+    x, topo, gravity = compute_gravity(frame)
 
 
