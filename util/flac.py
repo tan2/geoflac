@@ -326,7 +326,8 @@ def make_uniform_grid(xmin, xmax, ymin, ymax, dx, dy):
     xx = np.linspace(xmin, xmax, nx)
     yy = np.linspace(ymin, ymax, ny)
 
-    x, y = np.meshgrid(xx, yy)
+    # the order of argument ensures the shape of arrays is (nx, ny)
+    y, x = np.meshgrid(yy, xx)
     return x, y
 
 
