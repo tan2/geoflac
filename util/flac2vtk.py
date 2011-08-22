@@ -70,14 +70,18 @@ def main(path, start=1, end=-1):
         sii = a
         vts_dataarray(fvts, a.swapaxes(0,1), 'Stress')
 
-        a = fl.read_sxx(i)
-        vts_dataarray(fvts, a.swapaxes(0,1), 'Sxx')
+        sxx = fl.read_sxx(i)
+        vts_dataarray(fvts, sxx.swapaxes(0,1), 'Sxx')
 
-        a = fl.read_szz(i)
-        vts_dataarray(fvts, a.swapaxes(0,1), 'Szz')
+        szz = fl.read_szz(i)
+        vts_dataarray(fvts, szz.swapaxes(0,1), 'Szz')
 
-        a = fl.read_sxz(i)
-        vts_dataarray(fvts, a.swapaxes(0,1), 'Sxz')
+        sxz = fl.read_sxz(i)
+        vts_dataarray(fvts, sxz.swapaxes(0,1), 'Sxz')
+
+        # compression axis of stress
+        a = compute_p_axis(sxx, szz, sxz)
+        vts_dataarray(fvts, a.swapaxes(0,1), 'P-axis', 3)
 
         a = fl.read_diss(i)
         vts_dataarray(fvts, a.swapaxes(0,1), 'Dissipation')
@@ -110,6 +114,28 @@ def main(path, start=1, end=-1):
         vts_footer(fvts)
         fvts.close()
     return
+
+
+def compute_p_axis(sxx, szz, sxz):
+    mag = np.sqrt(0.25*(sxx - szz)**2 + sxz**2)
+    theta = 0.5 * np.arctan(2 * sxz / (sxx - szz))
+    cost = np.cos(theta)
+    sint = np.sin(theta)
+
+    ## filter out vectors of small magnitude
+    #small = mag.max() * 0.05
+    #mag[mag < small] = 0
+
+    p_axis_x = mag * cost
+    p_axis_z = mag * sint
+
+    # VTK requires vector field (velocity, coordinate) has 3 components.
+    # Allocating a 3-vector tmp array for VTK data output.
+    nx, nz = sxx.shape
+    tmp = np.zeros((nx, nz, 3), dtype=sxx.dtype)
+    tmp[:,:,0] = p_axis_x
+    tmp[:,:,1] = p_axis_z
+    return tmp
 
 
 def vts_dataarray(f, data, data_name=None, data_comps=None):
