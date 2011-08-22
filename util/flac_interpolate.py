@@ -15,31 +15,31 @@ import flac
 # domain bounds (in km)
 xmin = 300
 xmax = 700
-ymin = -150
-ymax = 10
+zmin = -150
+zmax = 10
 
 # grid resolution (in km)
 dx = .8
-dy = .2
+dz = .2
 
 
-def excluding(x, y, f, xmin, xmax, ymin, ymax):
-    '''Excluding nodes of (x, y, f) that are outside the domain bounds'''
+def excluding(x, z, f, xmin, xmax, zmin, zmax):
+    '''Excluding nodes of (x, z, f) that are outside the domain bounds'''
     # bool * bool is element-wise logical AND
-    ind = (xmin <= x) * (x <= xmax) * (ymin <= y) * (y <= ymax)
-    return x[ind], y[ind], f[ind]
+    ind = (xmin <= x) * (x <= xmax) * (zmin <= z) * (z <= zmax)
+    return x[ind], z[ind], f[ind]
 
 
-def clip_topo(x, y, f, x0, y0):
-    '''Setting f=NaN for nodes above (x0, y0).
-    x, y, f x0, y0 are 2d arrays.'''
+def clip_topo(x, z, f, x0, z0):
+    '''Setting f=NaN for nodes above (x0, z0).
+    x, z, f x0, z0 are 2d arrays.'''
     xx0 = x0[:,0]
-    yy0 = y0[:,0]
+    zz0 = z0[:,0]
     xx = x[0,:]
-    yy = np.interp(xx, xx0, yy0)
+    zz = np.interp(xx, xx0, zz0)
 
     for i in range(len(xx)):
-        ind = y[:,i] > yy[i]
+        ind = z[:,i] > zz[i]
         f[ind,i] = np.nan
     return np.ma.masked_array(f, mask=np.isnan(f))
 
@@ -47,29 +47,29 @@ def clip_topo(x, y, f, x0, y0):
 def interpolate(frame, field):
     # read coordinate of nodes
     fl = flac.Flac()
-    xx, yy = fl.read_mesh(frame)
-    x, y = flac.make_uniform_grid(xmin, xmax, ymin, ymax, dx, dy)
+    xx, zz = fl.read_mesh(frame)
+    x, z = flac.make_uniform_grid(xmin, xmax, zmin, zmax, dx, dz)
 
     if field == 'phase':
         ## phase
         # read marker location, age and phase
-        mx, my, mage, mphase = fl.read_markers(frame)
-        mx, my, mphase = excluding(mx, my, mphase, xmin-dx, xmax+dx, ymin-dy, ymax+dy)
-        ph = flac.nearest_neighbor_interpolation2d(mx, my, mphase, x, y)
-        #ph = flac.neighborhood_interpolation2d(mx, my, mphase, x, y, 7*dx, 7*dy)
+        mx, mz, mage, mphase = fl.read_markers(frame)
+        mx, mz, mphase = excluding(mx, mz, mphase, xmin-dx, xmax+dx, zmin-dz, zmax+dz)
+        ph = flac.nearest_neighbor_interpolation2d(mx, mz, mphase, x, z)
+        #ph = flac.neighborhood_interpolation2d(mx, mz, mphase, x, z, 7*dx, 7*dz)
         f = ph.astype(np.float32)
     elif field in ('temperature', 'aps', 'density', 'eII', 'sII',
                    'sxx', 'szz', 'sxz', 'srII', 'pres', 'diss', 'visc'):
         # read field
         cf = getattr(fl, 'read_'+field)(frame)
-        cx, cy = flac.elem_coord(xx, yy)
-        cx, cy, cf = excluding(cx, cy, cf, xmin-dx, xmax+dx, ymin-dy, ymax+dy)
-        f = flac.gaussian_interpolation2d(cx, cy, cf, x, y)
+        cx, cz = flac.elem_coord(xx, zz)
+        cx, cz, cf = excluding(cx, cz, cf, xmin-dx, xmax+dx, zmin-dz, zmax+dz)
+        f = flac.gaussian_interpolation2d(cx, cz, cf, x, z)
     else:
         raise RuntimeError('unknown field %s' % field)
 
-    f = clip_topo(x, y, f, xx, yy)
-    return x, y, f
+    f = clip_topo(x, z, f, xx, zz)
+    return x, z, f
 
 
 if __name__ == '__main__':
@@ -80,5 +80,5 @@ if __name__ == '__main__':
 
     frame = int(sys.argv[1])
     field = sys.argv[2].lower()
-    xx, yy, f = interpolate(frame, field)
-    flac.printing(xx, yy, f)
+    xx, zz, f = interpolate(frame, field)
+    flac.printing(xx, zz, f)
