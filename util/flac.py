@@ -223,7 +223,7 @@ class Flac(object):
         x = self._remove_dead_markers(tmp, dead)
 
         tmp = self._read_data('marky' + suffix, count=n)
-        y = self._remove_dead_markers(tmp, dead)
+        z = self._remove_dead_markers(tmp, dead)
 
         tmp = self._read_data('markage' + suffix, count=n)
         age = self._remove_dead_markers(tmp, dead)
@@ -231,7 +231,7 @@ class Flac(object):
         tmp = self._read_data('markphase' + suffix, count=n, dtype=np.int32)
         phase = self._remove_dead_markers(tmp, dead)
 
-        return x, y, age, phase
+        return x, z, age, phase
 
 
     def read_tracers(self):
@@ -246,8 +246,8 @@ class Flac(object):
         x = self._read_data('outtrackxx.0', count=n)
         x.shape = (ntracerrec, ntracers)
 
-        y = self._read_data('outtrackyy.0', count=n)
-        y.shape = (ntracerrec, ntracers)
+        z = self._read_data('outtrackyy.0', count=n)
+        z.shape = (ntracerrec, ntracers)
 
         T = self._read_data('outtracktemp.0', count=n)
         T.shape = (ntracerrec, ntracers)
@@ -261,7 +261,7 @@ class Flac(object):
         phase = self._read_data('outtrackphase.0', count=n)
         phase.shape = (ntracerrec, ntracers)
 
-        return x, y, T, p, e, phase
+        return x, z, T, p, e, phase
 
 
     def _read_data(self, fileobj, columns=1,
@@ -310,84 +310,84 @@ class Flac(object):
         return b
 
 
-def elem_coord(x, y):
+def elem_coord(x, z):
     '''Turning nodal coordinates to element coordinates'''
     cx = (x[:-1, :-1] + x[:-1, 1:] + x[1:, :-1] + x[1:, 1:]) / 4
-    cy = (y[:-1, :-1] + y[:-1, 1:] + y[1:, :-1] + y[1:, 1:]) / 4
-    return cx, cy
+    cz = (z[:-1, :-1] + z[:-1, 1:] + z[1:, :-1] + z[1:, 1:]) / 4
+    return cx, cz
 
 
-def make_uniform_grid(xmin, xmax, ymin, ymax, dx, dy):
+def make_uniform_grid(xmin, xmax, zmin, zmax, dx, dz):
     # grid size
     nx = (xmax - xmin) / dx + 1
-    ny = (ymax - ymin) / dy + 1
+    nz = (zmax - zmin) / dz + 1
 
     # generate uniform grid
     xx = np.linspace(xmin, xmax, nx)
-    yy = np.linspace(ymin, ymax, ny)
+    zz = np.linspace(zmin, zmax, nz)
 
-    # the order of argument ensures the shape of arrays is (nx, ny)
-    y, x = np.meshgrid(yy, xx)
-    return x, y
+    # the order of argument ensures the shape of arrays is (nx, nz)
+    z, x = np.meshgrid(zz, xx)
+    return x, z
 
 
-def nearest_neighbor_interpolation2d(x0, y0, f0, x, y):
-    '''Interpolating field f0, which is defined on (x0, y0)
-    to a new grid (x, y) using nearest neighbor method'''
+def nearest_neighbor_interpolation2d(x0, z0, f0, x, z):
+    '''Interpolating field f0, which is defined on (x0, z0)
+    to a new grid (x, z) using nearest neighbor method'''
 
-    if x0.shape != y0.shape:
-        raise Exception('x0 and y0 arrays have different shape')
+    if x0.shape != z0.shape:
+        raise Exception('x0 and z0 arrays have different shape')
 
     if x0.shape != f0.shape:
         raise Exception('x0 and f0 arrays have different shape')
 
-    if x.shape != y.shape:
-        raise Exception('x and y arrays have different shape')
+    if x.shape != z.shape:
+        raise Exception('x and z arrays have different shape')
 
     dx = x[0,1] - x[0,0]
-    dy = y[1,0] - y[0,0]
+    dz = z[1,0] - z[0,0]
 
-    ny, nx = x.shape
+    nz, nx = x.shape
     f = np.zeros(x.shape)
-    for i in range(ny):
+    for i in range(nz):
         for j in range(nx):
-            dist2 = ((x[i,j] - x0) / dx)**2 + ((y[i,j] - y0) / dy)**2
+            dist2 = ((x[i,j] - x0) / dx)**2 + ((z[i,j] - z0) / dz)**2
             ind = np.argmin(dist2)
             f[i,j] = f0[ind]
 
     return f
 
 
-def neighborhood_interpolation2d(x0, y0, f0, x, y, dx, dy):
-    '''Interpolating field f0, which is defined on (x0, y0)
-    to a new grid (x, y) using neighborhood'''
+def neighborhood_interpolation2d(x0, z0, f0, x, z, dx, dz):
+    '''Interpolating field f0, which is defined on (x0, z0)
+    to a new grid (x, z) using neighborhood'''
 
     if f0.dtype not in (bool, np.bool,
                         int, np.int, np.int8, np.int16, np.int32, np.int64):
         raise Exception('f0 must have integer value')
 
-    if x0.shape != y0.shape:
-        raise Exception('x0 and y0 arrays have different shape')
+    if x0.shape != z0.shape:
+        raise Exception('x0 and z0 arrays have different shape')
 
     if x0.shape != f0.shape:
         raise Exception('x0 and f0 arrays have different shape')
 
-    if x.shape != y.shape:
-        raise Exception('x and y arrays have different shape')
+    if x.shape != z.shape:
+        raise Exception('x and z arrays have different shape')
 
-    ny, nx = x.shape
+    nz, nx = x.shape
     f = np.zeros(x.shape, dtype=f0.dtype)
-    for i in range(ny):
+    for i in range(nz):
         for j in range(nx):
-            #dist2 = ((x[i,j] - x0) / dx)**2 + ((y[i,j] - y0) / dy)**2
+            #dist2 = ((x[i,j] - x0) / dx)**2 + ((z[i,j] - z0) / dz)**2
             #ind = np.argmin(dist2)
             xx = x[i,j]
-            yy = y[i,j]
-            ind = (x0 >= xx-dx) * (x0 <= xx+dx) * (y0 >= yy-dy) * (y0 <= yy+dy)
+            zz = z[i,j]
+            ind = (x0 >= xx-dx) * (x0 <= xx+dx) * (z0 >= zz-dz) * (z0 <= zz+dz)
             g = f0[ind]
             if len(g) == 0:
-                #print (i, j), (xx, yy), ind
-                #raise Exception('No point inside domain bounds. Increase (dx, dy)!')
+                #print (i, j), (xx, zz), ind
+                #raise Exception('No point inside domain bounds. Increase (dx, dz)!')
                 f[i,j] = sys.maxint
             else:
                 z = Counter(g).most_common(1)
@@ -396,31 +396,31 @@ def neighborhood_interpolation2d(x0, y0, f0, x, y, dx, dy):
     return f
 
 
-def gaussian_interpolation2d(x0, y0, f0, x, y):
-    '''Interpolating field f0, which is defined on (x0, y0)
-    to a new grid (x, y) using nearest neighbor method'''
+def gaussian_interpolation2d(x0, z0, f0, x, z):
+    '''Interpolating field f0, which is defined on (x0, z0)
+    to a new grid (x, z) using nearest neighbor method'''
 
-    if x0.shape != y0.shape:
-        raise Exception('x0 and y0 arrays have different shape')
+    if x0.shape != z0.shape:
+        raise Exception('x0 and z0 arrays have different shape')
 
     if x0.shape != f0.shape:
         raise Exception('x0 and f0 arrays have different shape')
 
-    if x.shape != y.shape:
-        raise Exception('x and y arrays have different shape')
+    if x.shape != z.shape:
+        raise Exception('x and z arrays have different shape')
 
-    # using 1d index for x0, y0, f0
+    # using 1d index for x0, z0, f0
     x0 = x0.flat
-    y0 = y0.flat
+    z0 = z0.flat
     f0 = f0.flat
 
     dx = 1.5 * (x[0,1] - x[0,0])
-    dy = 1.5 * (y[1,0] - y[0,0])
+    dz = 1.5 * (z[1,0] - z[0,0])
 
     f = np.zeros(x.shape)
     g = np.zeros(x.shape)
     for i in range(len(x0)):
-        weight = np.exp(-((x - x0[i]) / dx)**2 - ((y - y0[i]) / dy)**2)
+        weight = np.exp(-((x - x0[i]) / dx)**2 - ((z - z0[i]) / dz)**2)
         f += weight * f0[i]
         g += weight
 
@@ -464,10 +464,10 @@ if __name__ == '__main__':
     fl = Flac()
 
     # read the last record of the mesh and temperature
-    x, y = fl.read_mesh(fl.nrec-1)
+    x, z = fl.read_mesh(fl.nrec-1)
     T = fl.read_temperature(fl.nrec-1)
 
-    # print (x, y, T) to screen
-    printing(x, y, T)
+    # print (x, z, T) to screen
+    printing(x, z, T)
 
     print '# time =', fl.time[fl.nrec-1], 'Myrs'
