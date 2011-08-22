@@ -80,5 +80,5 @@ if __name__ == '__main__':
 
     frame = int(sys.argv[1])
     field = sys.argv[2].lower()
-    cx, cy, f = interpolate(frame, field)
-    flac.printing(cx, cy, f)
+    xx, yy, f = interpolate(frame, field)
+    flac.printing(xx, yy, f)
