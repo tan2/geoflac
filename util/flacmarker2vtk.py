@@ -9,6 +9,24 @@ import flac
 from flac2vtk import vts_dataarray
 
 
+# filtering markers to only those within the domain bounds (in km)
+filtering = True
+xmin = 300
+xmax = 700
+zmin = -50
+zmax = 100
+
+
+def filter_marker(x, z, age, phase):
+    # bool * bool is element-wise logical AND
+    ind = (xmin <= x) * (x <= xmax) * (zmin <= z) * (z <= zmax)
+    x = x[ind]
+    z = z[ind]
+    age = age[ind]
+    phase = phase[ind]
+    return x, z, age, phase
+
+
 def main(path, start=1, end=-1):
 
     # changing directory
@@ -20,6 +38,8 @@ def main(path, start=1, end=-1):
 
     for i in range(start, end+1):
         x, z, age, phase = fl.read_markers(i)
+        if filtering:
+            x, z, age, phase = filter_marker(x, z, age, phase)
         nmarkers = len(x)
 
         print 'Writing record #%d, model time=%.3e, %d markers' % (i, fl.time[i-1], nmarkers)
