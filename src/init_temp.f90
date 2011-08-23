@@ -86,7 +86,7 @@ case (2)
             do i = ixtb1(n), ixtb2(n)
                 do j = 1,nz
                     ! depth in km
-                    y = -cord(j,i,2) / sqrt(2. * diffusivity * age_1(n) * 1.e6 * sec_year)
+                    y = (cord(1,i,2)-cord(j,i,2)) / sqrt(2. * diffusivity * age_1(n) * 1.e6 * sec_year)
                     temp(j,i) = t_top + (t_bot - t_top) * erf(y)
                     !print *, j, age_1(n), -cord(j,i,2), temp(j,i)
                 enddo
@@ -103,7 +103,7 @@ case (2)
             do i = ixtb1(n), ixtb2(n)
                 do j = 1,nz
                     ! depth in km
-                    y = -cord(j,i,2)*1.e-3
+                    y = (cord(1,i,2)-cord(j,i,2))*1.e-3
                     !  steady state part
                     if (y.le.hc(n)) tss = t_top+(q_m/cond_c)*y*1000.+(dens_c*hs*hr*hr*1.e+6/cond_c)*exp(1.-exp(-y/hr))
                     if (y.gt.hc(n)) tss = tm + (q_m/cond_m)*1000.*(y-hc(n))
@@ -164,6 +164,7 @@ subroutine sidewalltemp(i1, i2)
   dens_c = 2700.
   dens_m = 3300.
   pi = 3.14159
+  diffusivity = 1.e-6
 
   if(nzone_age < 1) then
       stop 'nzone_age < 1, cannot determine temperature of incoming material'
@@ -177,42 +178,59 @@ subroutine sidewalltemp(i1, i2)
       n = nzone_age
   endif
 
-  tr= dens_c*hs*hr*hr*1.e+6/cond_c*exp(1.-exp(-hc(n)/hr))
-  q_m = (t_bot-t_top-tr)/((hc(n)*1000.)/cond_c+((200.e3-(hc(n))*1000.))/cond_m)
-  tm  = t_top + (q_m/cond_c)*hc(n)*1000. + tr
-  !   write(*,*) rzbo, tr, hs, hr, hc(n), q_m, tm
-  age_init = age_1(n)*3.14*1.e+7*1.e+6 + time
-  diff_m = cond_m/1000./dens_m
-  tau_d = 200.e3*200.e3/(pi*pi*diff_m)
-
-  do i = i1, i2
-      do j = 1,nz
-          ! depth in km
-          y = (cord(1,i,2)-cord(j,i,2))*1.e-3
-          !  steady state part
-          if (y.le.hc(n)) tss = t_top+(q_m/cond_c)*y*1000.+(dens_c*hs*hr*hr*1.e+6/cond_c)*exp(1.-exp(-y/hr))
-          if (y.gt.hc(n)) tss = tm + (q_m/cond_m)*1000.*(y-hc(n))
-
-          ! time-dependent part
-          tt = 0.
-          pp =-1.
-          do k = 1,100
-              an = 1.*k
-              pp = -pp
-              tt = tt +pp/(an)*exp(-an*an*age_init/tau_d)*dsin(pi*k*(200.e3-y*1000.)/(200.e3))
+  if(iph_col1(n)==kocean1 .or. iph_col1(n)==kocean2) then
+      !! Oceanic geotherm (half space cooling model)
+      do i = i1, i2
+          do j = 1,nz
+              ! depth in km
+              y = (cord(1,i,2)-cord(j,i,2)) / sqrt(2. * diffusivity * age_1(n) * 1.e6 * sec_year)
+              temp(j,i) = t_top + (t_bot - t_top) * erf(y)
+              !print *, j, age_1(n), -cord(j,i,2), temp(j,i)
           enddo
-          temp(j,i) = tss +2./pi*(t_bot-t_top)*tt
-          if(temp(j,i).gt.1330.or.y.gt.200.) temp(j,i)= 1330.
-          if (j.eq.1) temp(j,i) = t_top
-          !       write(*,*) tss,tm,q_m,cond_m,hc(n),y,tt
       enddo
+  else
+      !! Continental geotherm
+      tr= dens_c*hs*hr*hr*1.e+6/cond_c*exp(1.-exp(-hc(n)/hr))
+      q_m = (t_bot-t_top-tr)/((hc(n)*1000.)/cond_c+((200.e3-(hc(n))*1000.))/cond_m)
+      tm  = t_top + (q_m/cond_c)*hc(n)*1000. + tr
+      !   write(*,*) rzbo, tr, hs, hr, hc(n), q_m, tm
+      age_init = age_1(n)*3.14*1.e+7*1.e+6 + time
+      diff_m = cond_m/1000./dens_m
+      tau_d = 200.e3*200.e3/(pi*pi*diff_m)
 
-      if(i1 == 1) then
+      do i = i1, i2
+          do j = 1,nz
+              ! depth in km
+              y = (cord(1,i,2)-cord(j,i,2))*1.e-3
+              !  steady state part
+              if (y.le.hc(n)) tss = t_top+(q_m/cond_c)*y*1000.+(dens_c*hs*hr*hr*1.e+6/cond_c)*exp(1.-exp(-y/hr))
+              if (y.gt.hc(n)) tss = tm + (q_m/cond_m)*1000.*(y-hc(n))
+
+              ! time-dependent part
+              tt = 0.
+              pp =-1.
+              do k = 1,100
+                  an = 1.*k
+                  pp = -pp
+                  tt = tt +pp/(an)*exp(-an*an*age_init/tau_d)*dsin(pi*k*(200.e3-y*1000.)/(200.e3))
+              enddo
+              temp(j,i) = tss +2./pi*(t_bot-t_top)*tt
+              if(temp(j,i).gt.1330.or.y.gt.200.) temp(j,i)= 1330.
+              if (j.eq.1) temp(j,i) = t_top
+              !       write(*,*) tss,tm,q_m,cond_m,hc(n),y,tt
+          enddo
+      enddo
+  endif
+
+  if(i1 == 1) then
+      do i = i1, i2
           source(1:nz-1,i) = source(1:nz-1,i2+1)
-      else
+      enddo
+  else
+      do i = i1, i2
           source(1:nz-1,i) = source(1:nz-1,i1-1)
-      endif
-  enddo
+      enddo
+  endif
   return
 end subroutine sidewalltemp
 
