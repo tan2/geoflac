@@ -35,12 +35,12 @@ def clip_topo(x, z, f, x0, z0):
     x, z, f x0, z0 are 2d arrays.'''
     xx0 = x0[:,0]
     zz0 = z0[:,0]
-    xx = x[0,:]
+    xx = x[:,0]
     zz = np.interp(xx, xx0, zz0)
 
     for i in range(len(xx)):
-        ind = z[:,i] > zz[i]
-        f[ind,i] = np.nan
+        ind = z[i,:] > zz[i]
+        f[i,ind] = np.nan
     return np.ma.masked_array(f, mask=np.isnan(f))
 
 
@@ -56,7 +56,6 @@ def interpolate(frame, field):
         mx, mz, mage, mphase = fl.read_markers(frame)
         mx, mz, mphase = excluding(mx, mz, mphase, xmin-dx, xmax+dx, zmin-dz, zmax+dz)
         ph = flac.nearest_neighbor_interpolation2d(mx, mz, mphase, x, z)
-        #ph = flac.neighborhood_interpolation2d(mx, mz, mphase, x, z, 7*dx, 7*dz)
         f = ph.astype(np.float32)
     elif field in ('temperature', 'aps', 'density', 'eII', 'sII',
                    'sxx', 'szz', 'sxz', 'srII', 'pres', 'diss', 'visc'):
