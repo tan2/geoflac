@@ -146,15 +146,10 @@ dimension dh(mnx+1)
 if( topo_kappa .gt. 0. ) then             
     do i = 2, nx-1
         water_depth = 0.5*(cord(1,i+1,2)+cord(1,i,2))
-        if (water_depth.lt.0) then
-          topo_kappa2 = topo_kappa/10
-        else
-          topo_kappa2 = topo_kappa
-        endif
         snder = ( (cord(1,i+1,2)-cord(1,i  ,2))/(cord(1,i+1,1)-cord(1,i  ,1)) - &
             (cord(1,i  ,2)-cord(1,i-1,2))/(cord(1,i  ,1)-cord(1,i-1,1)) ) / &
             (cord(1,i+1,1)-cord(1,i-1,1))
-        dh(i) = topo_kappa2 * dt * snder
+        dh(i) = topo_kappa * dt * snder
     end do
 
     dh(1) = dh(2)
