@@ -344,54 +344,21 @@ def nearest_neighbor_interpolation2d(x0, z0, f0, x, z):
     if x.shape != z.shape:
         raise Exception('x and z arrays have different shape')
 
-    dx = x[0,1] - x[0,0]
-    dz = z[1,0] - z[0,0]
+    # using 1d index for x0, z0, f0
+    x0 = x0.flat
+    z0 = z0.flat
+    f0 = f0.flat
 
-    nz, nx = x.shape
+    dx = x[1,0] - x[0,0]
+    dz = z[0,1] - z[0,0]
+
+    nx, nz = x.shape
     f = np.zeros(x.shape)
-    for i in range(nz):
-        for j in range(nx):
+    for i in range(nx):
+        for j in range(nz):
             dist2 = ((x[i,j] - x0) / dx)**2 + ((z[i,j] - z0) / dz)**2
             ind = np.argmin(dist2)
             f[i,j] = f0[ind]
-
-    return f
-
-
-def neighborhood_interpolation2d(x0, z0, f0, x, z, dx, dz):
-    '''Interpolating field f0, which is defined on (x0, z0)
-    to a new grid (x, z) using neighborhood'''
-
-    if f0.dtype not in (bool, np.bool,
-                        int, np.int, np.int8, np.int16, np.int32, np.int64):
-        raise Exception('f0 must have integer value')
-
-    if x0.shape != z0.shape:
-        raise Exception('x0 and z0 arrays have different shape')
-
-    if x0.shape != f0.shape:
-        raise Exception('x0 and f0 arrays have different shape')
-
-    if x.shape != z.shape:
-        raise Exception('x and z arrays have different shape')
-
-    nz, nx = x.shape
-    f = np.zeros(x.shape, dtype=f0.dtype)
-    for i in range(nz):
-        for j in range(nx):
-            #dist2 = ((x[i,j] - x0) / dx)**2 + ((z[i,j] - z0) / dz)**2
-            #ind = np.argmin(dist2)
-            xx = x[i,j]
-            zz = z[i,j]
-            ind = (x0 >= xx-dx) * (x0 <= xx+dx) * (z0 >= zz-dz) * (z0 <= zz+dz)
-            g = f0[ind]
-            if len(g) == 0:
-                #print (i, j), (xx, zz), ind
-                #raise Exception('No point inside domain bounds. Increase (dx, dz)!')
-                f[i,j] = sys.maxint
-            else:
-                z = Counter(g).most_common(1)
-                f[i,j] = z[0][0]
 
     return f
 
@@ -414,8 +381,8 @@ def gaussian_interpolation2d(x0, z0, f0, x, z):
     z0 = z0.flat
     f0 = f0.flat
 
-    dx = 1.5 * (x[0,1] - x[0,0])
-    dz = 1.5 * (z[1,0] - z[0,0])
+    dx = 1.5 * (x[1,0] - x[0,0])
+    dz = 1.5 * (z[0,1] - z[0,0])
 
     f = np.zeros(x.shape)
     g = np.zeros(x.shape)
