@@ -157,6 +157,7 @@ subroutine sidewalltemp(i1, i2)
   include 'precision.inc'
   include 'params.inc'
   include 'arrays.inc'
+  include 'phases.inc'
 
   ! This subroutine is intended for remeshing.
   cond_c = 2.2
