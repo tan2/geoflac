@@ -201,7 +201,7 @@ subroutine resurface
               call random_number(rx)
               xx = cord(1,i,1) + rx * (cord(1,i+1,1) - cord(1,i,1))
               yy = min(cord(1,i,2), cord(1,i+1,2)) - 0.05 * elz
-              call add_marker(xx, yy, ksed1, nmarkers, 1, i, inc)
+              call add_marker(xx, yy, ksed1, time, nmarkers, 1, i, inc)
               if(inc.ne.0) exit
               write(*,*) cord(1,i:i+1,1), cord(1:2,i,2), xx, yy
           enddo

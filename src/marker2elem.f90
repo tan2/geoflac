@@ -16,6 +16,7 @@ subroutine marker2elem
           kinc = sum(nphase_counter(:,j,i))
 
           !  if there are too few markers in the element, create a new one
+          !  with age 0 (similar to initial marker)
           !if(kinc.le.4) then
           !    write(msg,*) 'marker2elem: , create a new marker in the element (i,j))', i, j
           !    call SysMsg(msg)
@@ -32,7 +33,7 @@ subroutine marker2elem
               xx = x1 + (0.5-rx)*(x2-x1)
               yy = y1 + (0.5-ry)*(y2-y1)
 
-              call add_marker(xx, yy, iphase(j,i), nmarkers, j, i, inc)
+              call add_marker(xx, yy, iphase(j,i), 0., nmarkers, j, i, inc)
               if(inc.eq.0) cycle
 
               kinc = kinc + 1

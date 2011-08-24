@@ -65,7 +65,7 @@ do i = 1 , nx-1
             xx = x_tr(l)+ddx
             yy = y_tr(l)+ddy
 
-            call add_marker(xx, yy, iphase(j,i), nmarkers, j, i, inc)
+            call add_marker(xx, yy, iphase(j,i), 0., nmarkers, j, i, inc)
             if(inc.eq.0) cycle
 
             l = l + 1
@@ -82,8 +82,8 @@ return
 end subroutine init_marker
 
 
-subroutine add_marker(x, y, iph, kk, j, i, inc)
-  ! Add a marker at physical coordinate (x, y), with phase iph, to
+subroutine add_marker(x, y, iph, age, kk, j, i, inc)
+  ! Add a marker at physical coordinate (x, y), with phase iph and age, to
   ! element (j, i). The current (before adding thsi marker) marker size
   ! is kk. If (x, y) is not within the element, inc is set to 0 and
   ! marker not added. Otherwise, marker is added to "mark" array and kk
@@ -122,7 +122,7 @@ subroutine add_marker(x, y, iph, kk, j, i, inc)
   mark(kk)%ID = kk
   mark(kk)%a1 = bar1
   mark(kk)%a2 = bar2
-  mark(kk)%age = time
+  mark(kk)%age = age
   mark(kk)%ntriag = ntr
   mark(kk)%phase = iph
 
