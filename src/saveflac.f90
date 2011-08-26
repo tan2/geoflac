@@ -98,6 +98,8 @@ deallocate(dum2)
 
 if(iint_marker.eq.1) then
 
+call bar2euler
+
 allocate(dum1(nmarkers))
 nwords= nmarkers
 ! Markers
