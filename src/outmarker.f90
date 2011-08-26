@@ -10,6 +10,8 @@ integer(kindi) D1i(nmarkers)
 
 character*100 fn
 
+call bar2euler
+
 nrec = 0
 D1d = 0.
 ! define record number and write it to contents
