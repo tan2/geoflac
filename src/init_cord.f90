@@ -51,7 +51,7 @@ include 'params.inc'
 
 !- X direction
 sizesum=0.
-nelsum =0.
+nelsum =0
 do i = 1,nzonx
     sizesum = sizesum + sizez_x(i)
     nelsum =  nelsum  + nelz_x(i)
@@ -70,7 +70,7 @@ endif
 
 !- Y direction
 sizesum=0.
-nelsum =0.
+nelsum =0
 do i = 1,nzony 
     sizesum = sizesum + sizez_y(i)
     nelsum =  nelsum  + nelz_y(i)

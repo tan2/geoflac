@@ -39,7 +39,7 @@ do kk = 1,nmtracers
     id = idtracer(kk)
     xik(kk) = float(kk)
     ! time in myrs
-    timtrk(kk) = time/sec_year/1.e6
+    timtrk(kk) = real(time/sec_year/1.e6)
 
     if(mark(id)%dead .eq. 0) then
         xtrak(kk) = 0.
@@ -55,12 +55,12 @@ do kk = 1,nmtracers
         j = mod(nn, nz-1) + 1
         i = nn/(nz-1) + 1
 
-        xtrak(kk) = mark(id)%x
-        ytrak(kk) = mark(id)%y
-        tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
-        temptrak(kk) = tmpr
-        prestrak(kk) = stressI(j,i)
-        straintrak(kk) = strainII(j,i)
+        xtrak(kk) = real(mark(id)%x)
+        ytrak(kk) = real(mark(id)%y)
+        tmpr = real(0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1)))
+        temptrak(kk) = real(tmpr)
+        prestrak(kk) = real(stressI(j,i))
+        straintrak(kk) = real(strainII(j,i))
         phtrak(kk) = int(mark(id)%phase)
     endif
 enddo

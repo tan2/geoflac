@@ -34,7 +34,7 @@ close(1)
 
 ! Time
 open (1,file='time.0',access='direct',recl=kindr)
-rtime = time
+rtime = real(time)
 write (1,rec=nrec) rtime
 close (1) 
 
@@ -43,14 +43,14 @@ close (1)
 allocate( Dn2(nz,nx,2) )
 
 nwords = nz*nx*2
-Dn2(1:nz,1:nx,1:2) = cord(1:nz,1:nx,1:2) / 1000
+Dn2(1:nz,1:nx,1:2) = real(cord(1:nz,1:nx,1:2) / 1000)
 open (1,file='mesh.0',access='direct',recl=nwords*kindr) 
 write (1,rec=nrec) Dn2
 close (1)
 
 ! Velocities in [cm/year]
 if( io_vel.eq.1 ) then
-    Dn2(1:nz,1:nx,1:2) = vel(1:nz,1:nx,1:2) * sec_year * 100
+    Dn2(1:nz,1:nx,1:2) = real(vel(1:nz,1:nx,1:2) * sec_year * 100)
     open (1,file='vel.0',access='direct',recl=nwords*kindr)
     write (1,rec=nrec) Dn2
     close (1)
@@ -59,7 +59,7 @@ endif
 ! Temperature in [Celsius]
 if( io_temp.eq.1 ) then
     nwords = nz*nx
-    Dn2(1:nz,1:nx,1) = temp(1:nz,1:nx)
+    Dn2(1:nz,1:nx,1) = real(temp(1:nz,1:nx))
     open (1,file='temperature.0',access='direct',recl=nwords*kindr)
     write (1,rec=nrec) Dn2(1:nz,1:nx,1)
     close (1)
@@ -79,7 +79,7 @@ if( io_srII.eq.1 ) then
     do i = 1, nx-1
         do j = 1, nz-1
             if( e2sr(j,i).ne.0. ) then
-                De(j,i) = dlog10( e2sr(j,i) )
+                De(j,i) = real(dlog10( e2sr(j,i) ))
             else
                 De(j,i) = 0
             endif
@@ -95,7 +95,7 @@ endif
 if( io_eII.eq.1 ) then
     do i = 1, nx-1
         do j = 1, nz-1
-            De(j,i) = strainII(j,i)
+            De(j,i) = real(strainII(j,i))
         end do
     end do
     open (1,file='eII.0',access='direct',recl=nwords*kindr) 
@@ -105,7 +105,7 @@ endif
 
     do i = 1, nx-1
         do j = 1, nz-1
-            De(j,i) = strainI(j,i)
+            De(j,i) = real(strainI(j,i))
         end do
     end do
     open (1,file='eI.0',access='direct',recl=nwords*kindr) 
@@ -116,7 +116,7 @@ endif
 if( io_mark.eq.1 ) then
    do i = 1, nx-1
    do j = 1, nz-1
-          De(j,i) = Eff_dens(j,i)
+          De(j,i) = real(Eff_dens(j,i))
    enddo
    enddo
     open (1,file='density.0',access='direct',recl=nwords*kindr)
@@ -127,7 +127,7 @@ endif
 
 ! APS
 if( io_aps.eq.1 ) then
-    De(1:nz-1,1:nx-1) = aps(1:nz-1,1:nx-1)
+    De(1:nz-1,1:nx-1) = real(aps(1:nz-1,1:nx-1))
     open (1,file='aps.0',access='direct',recl=nwords*kindr) 
     write (1,rec=nrec) De
     close (1)
@@ -138,7 +138,7 @@ endif
 if( io_sII.eq.1 ) then
     do i = 1, nx-1
         do j = 1, nz-1
-            De(j,i) = stressII(j,i) * 1.e-8
+            De(j,i) = real(stressII(j,i) * 1.e-8)
         end do
     end do
     open (1,file='sII.0',access='direct',recl=nwords*kindr) 
@@ -152,7 +152,7 @@ if( io_sxx.eq.1 ) then
     do i = 1, nx-1
         do j = 1, nz-1
             sxx = 0.25 * (stress0(j,i,1,1)+stress0(j,i,1,2)+stress0(j,i,1,3)+stress0(j,i,1,4) )
-            De(j,i) = ( sxx-stressI(j,i) ) * 1.e-8
+            De(j,i) = real(( sxx-stressI(j,i) ) * 1.e-8)
         end do
     end do
     open (1,file='sxx.0',access='direct',recl=nwords*kindr) 
@@ -166,7 +166,7 @@ if( io_szz.eq.1 ) then
     do i = 1, nx-1
         do j = 1, nz-1
             szz = 0.25 * (stress0(j,i,2,1)+stress0(j,i,2,2)+stress0(j,i,2,3)+stress0(j,i,2,4) )
-            De(j,i) = ( szz-stressI(j,i) ) * 1.e-8
+            De(j,i) = real(( szz-stressI(j,i) ) * 1.e-8)
         end do
     end do
     open (1,file='szz.0',access='direct',recl=nwords*kindr) 
@@ -180,7 +180,7 @@ if( io_sxz.eq.1 ) then
     do i = 1, nx-1
         do j = 1, nz-1
             sxz = 0.25 * (stress0(j,i,3,1)+stress0(j,i,3,2)+stress0(j,i,3,3)+stress0(j,i,3,4))
-            De(j,i) = sxz * 1.e-8
+            De(j,i) = real(sxz * 1.e-8)
         end do
     end do
     open (1,file='sxz.0',access='direct',recl=nwords*kindr) 
@@ -193,7 +193,7 @@ endif
 if( io_pres.eq.1 ) then
     do i = 1, nx-1
         do j = 1, nz-1
-            De(j,i) = stressI(j,i) * 1.e-8
+            De(j,i) = real(stressI(j,i) * 1.e-8)
         end do
     end do
     open (1,file='pres.0',access='direct',recl=nwords*kindr) 
@@ -206,7 +206,7 @@ endif
 if( io_temp.eq.1 ) then
     do i = 1, nx-1
         do j = 1, nz-1
-            De(j,i) = 0.25*( temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1) )
+            De(j,i) = real(0.25*( temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1) ))
         end do
     end do
     open (1,file='temp.0',access='direct',recl=nwords*kindr)
@@ -226,7 +226,7 @@ endif
 
 ! Viscosities (log)
 if( io_visc.eq.1 ) then
-    De(1:nz-1,1:nx-1) = dlog10( visn(1:nz-1,1:nx-1) )
+    De(1:nz-1,1:nx-1) = real(dlog10( visn(1:nz-1,1:nx-1) ))
     open (1,file='visc.0',access='direct',recl=nwords*kindr) 
     write (1,rec=nrec) De
     close (1)
@@ -236,7 +236,7 @@ endif
 
 ! Heat sources
 if( io_src.eq.1 ) then
-    De(1:nz-1,1:nx-1) = source(1:nz-1,1:nx-1)
+    De(1:nz-1,1:nx-1) = real(source(1:nz-1,1:nx-1))
     open (1,file='src.0',access='direct',recl=nwords*kindr) 
     write (1,rec=nrec) De
     close (1)
@@ -249,7 +249,7 @@ if( io_diss.eq.1 ) then
         do j = 1, nz-1
             if(ishearh.ne.0) then
                iph = iphase(j,i)
-               De(j,i) = shrheat(j,i)/den(iph)/hs
+               De(j,i) = real(shrheat(j,i)/den(iph)/hs)
             else
                De(j,i) = 0
             endif
@@ -273,7 +273,7 @@ if( io_hfl.eq.1 ) then
         ii = min(i,nx-1)
         dtmpr = temp(2,i) - temp(1,i)
         dl = -(cord(2,i,2)-cord(1,i,2))/1000
-        D1d(i) = Eff_conduct(1,ii) * dtmpr/dl
+        D1d(i) = real(Eff_conduct(1,ii) * dtmpr/dl)
     end do
     open (1,file='hfl.0',access='direct',recl=nwords*kindr)
     write (1,rec=nrec) D1d
@@ -284,7 +284,7 @@ endif
 ! Topo
 if( io_topo.eq.1 ) then
     do i = 1,nx
-        D1d(i) = cord(1,i,2)/1000
+        D1d(i) = real(cord(1,i,2)/1000)
     end do
     open (1,file='topo.0',access='direct',recl=nwords*kindr)
     write (1,rec=nrec) D1d
