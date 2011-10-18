@@ -7,20 +7,40 @@ Filling basin with sediment before computing gravity
 import sys
 import numpy as np
 import flac
-import plot1
 
 gn = 6.6726e-11
 ocean_density = 1030.
 sediment_density = 2400.
 
-def find_peaks(zz):
-    itrench = plot1.find_trench_index(z)
-    ipeaks = []
-    for i in range(itrench+1, fl.nx-2):
-        dzleft = zz[i] - zz[i-1]
-        dzright = zz[i+1] - zz[i]
-        if dzleft*dzright <= 0 and dzleft >= 0:
-            # peak
+def find_trench_index(z):
+    '''Returns the i index of trench location.'''
+    zz = z[:,0]
+    # the highest point defines the forearc
+    imax = zz.argmax()
+    # the trench is the lowest point west of forearc
+    i = zz[:imax].argmin()
+    return i
+
+
+def find_peaks(z):
+    zz = z[:,0]
+    nx, nz = z.shape
+
+    # max basin depth
+    basin_min_depth = -2000
+    itrench = find_trench_index(z)
+
+    peaks = []
+    for i in range(itrench+1, nx-1):
+        left_dz = zz[i] - zz[i-1]
+        right_dz = zz[i+1] - zz[i]
+        if left_dz * right_dz <= 0 and (left_dz > 0 or right_dz < 0):
+                peaks.append(i)
+
+    # add the right boundary as a peak
+    peaks.append(nx-1)
+    return peaks
+
 
 
 def compute_gravity(frame):
@@ -72,7 +92,7 @@ def compute_gravity(frame):
     px = np.linspace(xmin, xmax, num=5*fl.nx)
     # pz is a few km above the highest topography to avoid high frequency oscillation
     pz_height = max(0, np.max(zz)) + 4e3
-    print pz_height
+    print 'gravity evaluated at %f km' % pz_height
     pz = np.ones(px.shape) * pz_height
 
     # original topography defined in px grid
@@ -90,12 +110,25 @@ def compute_gravity(frame):
 
 
     ## contribution of sedimentary basin, only to the right of trench
+    peaks = find_peaks(z)
+    itrench = find_trench_index(z)
+    basin_depth = -2000
+    sed_density = 2200
+    sed_thickness = np.zeros(fl.nx)
+
+    for ii in range(len(peaks)-1):
+        fill_height = min((basin_depth, zz[peaks[ii]], zz[peaks[ii+1]]))
+        for i in range(peaks[ii], peaks[ii+1]):
+            if zz[i] < fill_height:
+                sed_thickness[i] = fill_height - zz[i]
+                zz[i] = fill_height
 
     for i in range(itrench, fl.nx-1):
-        midz = 0.5 * (zz[i] + zz[i+1])
-        if midz < 0:
+        sedz = 0.5 * (sed_thickness[i] + sed_thickness[i+1])
+        if sedz > 0:
+            midz = 0.5 * (zz[i] + zz[i+1])
             midx = 0.5 * (xx[i] + xx[i+1])
-            m = (xx[i+1] - xx[i]) * -midz * ocean_density
+            m = (xx[i+1] - xx[i]) * sedz * sed_density
             dx = px - midx
             dz = pz - midz
             dist2 = (dx**2 + dz**2)
@@ -105,7 +138,6 @@ def compute_gravity(frame):
     ## contribution of ocean
     for i in range(fl.nx-1):
         midz = 0.5 * (zz[i] + zz[i+1])
-        if i > itrench
         if midz < 0:
             midx = 0.5 * (xx[i] + xx[i+1])
             m = (xx[i+1] - xx[i]) * -midz * ocean_density
