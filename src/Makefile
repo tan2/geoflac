@@ -21,7 +21,7 @@ cuda = 0
 
 
 ## any customized flags
-CFLAGS =
+CFLAGS = -g
 LDFLAGS =
 
 
@@ -54,7 +54,7 @@ ifeq ($(F90), gfortran)
 	ifeq ($(debug), 0)
 		CFLAGS += -O3 -ffast-math
 	else
-		CFLAGS += -O0 -g -Wall -fbounds-check -ftrapv -fbacktrace -fdump-core \
+		CFLAGS += -O0 -Wall -fbounds-check -ftrapv -fbacktrace -fdump-core \
 			-Waliasing -Walign-commons -Wampersand -Wintrinsic-shadow \
 			-Wline-truncation -Wsurprising -Wunderflow \
 			-finit-integer=-99 -finit-real=nan -frange-check -Werror
@@ -66,8 +66,8 @@ ifeq ($(F90), gfortran)
 	endif
 
 	ifeq ($(gprof), 1)
-		CFLAGS += -pg -g
-		LDFLAGS += -pg -g
+		CFLAGS += -pg
+		LDFLAGS += -pg
 	endif
 endif
 
@@ -81,7 +81,7 @@ ifeq ($(F90), ifort)
 	ifeq ($(debug), 0)
 		CFLAGS += -fast
 	else
-	       CFLAGS += -O0 -g -no-opt-subscript-in-range -ftrapuv -check all -traceback
+	       CFLAGS += -O0 -no-opt-subscript-in-range -ftrapuv -check all -traceback
 	       LDFLAGS +=
 	endif
 endif
@@ -95,7 +95,7 @@ ifeq ($(F90), pgf90)
         ifeq ($(debug), 0)
                 CFLAGS += -O3 -fast -fastsse -Mnoframe -Mipa=fast
         else
-               CFLAGS += -O0 -g -Mbounds -Mchkstk -traceback
+               CFLAGS += -O0 -Mbounds -Mchkstk -traceback
                LDFLAGS +=
         endif
 endif
@@ -113,7 +113,7 @@ ifeq ($(F90), f90)
 	ifeq ($(debug), 0)
 		CFLAGS += -O3 -r8const -fast -xloopinfo -s -xipo
 	else
-		CFLAGS += -g -w3 -r8const -C -fpover=yes -xcheck=%all
+		CFLAGS += -w3 -r8const -C -fpover=yes -xcheck=%all
 	endif
 endif
 
