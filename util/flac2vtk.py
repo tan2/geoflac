@@ -118,16 +118,12 @@ def main(path, start=1, end=-1):
 
 def compute_p_axis(sxx, szz, sxz):
     mag = np.sqrt(0.25*(sxx - szz)**2 + sxz**2)
-    theta = 0.5 * np.arctan(2 * sxz / (sxx - szz))
+    theta = 0.5 * np.arctan2(2*sxz, sxx-szz)
     cost = np.cos(theta)
     sint = np.sin(theta)
 
-    ## filter out vectors of small magnitude
-    #small = mag.max() * 0.05
-    #mag[mag < small] = 0
-
-    p_axis_x = mag * cost
-    p_axis_z = mag * sint
+    p_axis_x = mag * sint
+    p_axis_z = mag * cost
 
     # VTK requires vector field (velocity, coordinate) has 3 components.
     # Allocating a 3-vector tmp array for VTK data output.
