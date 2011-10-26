@@ -126,7 +126,7 @@ end
 ! Gauss perturbation at the top of heterogenity 
 function itop_geom(j,ixc,iwidth,iamp) 
     
-    itop_geom = iamp*exp(-(float(j-ixc)/(0.5*float(iwidth)))**2.)
+    itop_geom = int(iamp*exp(-(float(j-ixc)/(0.5*float(iwidth)))**2.))
 
 return
 end 

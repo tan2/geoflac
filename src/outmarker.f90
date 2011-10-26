@@ -29,6 +29,7 @@ else
     nrec = 0
     10 continue
     nrec = nrec + 1
+    backspace(1) ! Neede for further writing since EOF has been reached.
 endif
 write( 1, '(i6,1x,i8,1x,i8,1x,f7.3)' ) nrec, nloop,nmarkers, time/sec_year/1.e6
 close(1)
@@ -39,7 +40,7 @@ close(1)
 ! Coordinates  [km]
 nwords = nmarkers 
 do i = 1, nmarkers
-    D1d(i)= mark(i)%x * 1e-3
+    D1d(i)= real(mark(i)%x * 1e-3)
 enddo
 write(fn,'(A,I6.6,A)') 'markx.', nrec, '.0'
 open (1,file=fn,access='direct',recl=nwords*kindr)
@@ -47,7 +48,7 @@ write (1,rec=1) D1d
 close (1)
 
 do i = 1,nmarkers
-    D1d(i)= mark(i)%y * 1e-3
+    D1d(i)= real(mark(i)%y * 1e-3)
 enddo
 write(fn,'(A,I6.6,A)') 'marky.', nrec, '.0'
 open (1,file=fn,access='direct',recl=nwords*kindr)
@@ -56,7 +57,7 @@ close (1)
 
 ! Age [Myrs]
 do i = 1,nmarkers
-    D1d(i)= mark(i)%age / sec_year / 1.e6
+    D1d(i)= real(mark(i)%age / sec_year / 1.e6)
 enddo
 write(fn,'(A,I6.6,A)') 'markage.', nrec, '.0'
 open (1,file=fn,access='direct',recl=nwords*kindr)
