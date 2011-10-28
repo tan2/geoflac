@@ -56,6 +56,7 @@ do i = 1 , nx-1
 ! randomize the new coordinates inside the element
         l = 1
         do while (l .lt. 9)
+            ! position of the marker
             call random_number(rx)
             call random_number(ry)
             rx = 0.5 - rx
@@ -107,6 +108,7 @@ subroutine add_marker(x, y, iph, age, kk, j, i, inc)
       if(ntopmarker(i) == max_markers_per_elem) then
           write(msg,*) 'Too many markers at surface elements:', i, ntopmarker(i)
           call SysMsg(msg)
+          call SysMsg('Marker skipped, not added!')
           return
       endif
       ! recording the id of markers belonging to surface elements
