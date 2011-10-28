@@ -13,7 +13,7 @@ if (movegrid .eq. 0) return
 
 ! UPDATING COORDINATES
 
-!$OMP parallel
+!$OMP parallel private(i)
 !$OMP do
 do i = 1,nx
 !    write(*,*) cord(j,i,1),cord(j,i,2),vel(j,i,1),vel(j,i,2),dt
@@ -143,9 +143,8 @@ include 'arrays.inc'
 dimension dh(mnx+1)
 
 !EROSION PROCESSES
-if( topo_kappa .gt. 0. ) then             
+if( topo_kappa .gt. 0. ) then
     do i = 2, nx-1
-        water_depth = 0.5*(cord(1,i+1,2)+cord(1,i,2))
         snder = ( (cord(1,i+1,2)-cord(1,i  ,2))/(cord(1,i+1,1)-cord(1,i  ,1)) - &
             (cord(1,i  ,2)-cord(1,i-1,2))/(cord(1,i  ,1)-cord(1,i-1,1)) ) / &
             (cord(1,i+1,1)-cord(1,i-1,1))
@@ -186,25 +185,54 @@ subroutine resurface
   dimension shp2(2,3,2)
 
   do i = 1, nx-1
-      call shape_functions(1,i,shp2)
-
-      ! add/remove markers if topo changed too much
-      surface = 0.5 * (cord(1,i,2) + cord(1,i+1,2))
-      elz = surface - 0.5 * (cord(2,i,2) + cord(2,i+1,2))
-      diff = dhacc(i)
-
+      ! averge thickness of this element
+      elz = 0.5 * (cord(1,i,2) - cord(2,i,2) + cord(1,i+1,2) - cord(2,i+1,2))
+      ! change in topo
+      dtopo = dhacc(i)
+      ! # of markers in this element
       kinc = sum(nphase_counter(:,1,i))
-      if (diff*kinc .ge. elz) then
-          ! sedimentation, add a sediment marker
-          !print *, 'add sediment', i, diff, elz
-          do while (.true.)
+
+      if (abs(dtopo*kinc) >= elz) then
+          ! add/remove markers if topo changed too much
+          if (dtopo > 0.) then
+              ! sedimentation, add a sediment marker
+              !print *, 'add sediment', i, dtopo, elz
               call random_number(rx)
               xx = cord(1,i,1) + rx * (cord(1,i+1,1) - cord(1,i,1))
-              yy = min(cord(1,i,2), cord(1,i+1,2)) - 0.05 * elz
-              call add_marker(xx, yy, ksed1, time, nmarkers, 1, i, inc)
-              if(inc.ne.0) exit
-              write(*,*) cord(1,i:i+1,1), cord(1:2,i,2), xx, yy
-          enddo
+              yy = cord(1,i,2) + rx * (cord(1,i+1,2) - cord(1,i,2)) - 0.05*elz
+              call add_marker(xx, yy, ksed2, time, nmarkers, 1, i, inc)
+              if(inc==0) then
+                  write(333,*) 'sedimentation failed: ', xx, yy, rx, elz
+                  write(333,*) '  ', cord(1,i,:)
+                  write(333,*) '  ', cord(1,i+1,:)
+                  write(333,*) '  ', cord(2,i,:)
+                  write(333,*) '  ', cord(2,i+1,:)
+                  call SysMsg('Cannot add marker for sedimentation.')
+                  stop 23
+              end if
+          else
+              ! erosion, remove the top marker
+              !print *, 'erosion', i, dtopo, elz
+              ymax = -1e30
+              nmax = 0
+              kmax = 0
+              call shape_functions(1,i,shp2)
+              do k = 1, ntopmarker(i)
+                  n = itopmarker(k, i)
+                  ntriag = mark(n)%ntriag
+                  m = mod(ntriag,2) + 1
+                  call bar2xy(mark(n)%a1, mark(n)%a2, shp2(:,:,m), x, y)
+                  if(ymax < y) then
+                      ymax = y
+                      nmax = n
+                      kmax = k
+                  endif
+              end do
+              mark(nmax)%dead = 0
+              ! replace topmarker k with last topmarker
+              itopmarker(kmax,i) = itopmarker(ntopmarker(i),i)
+              ntopmarker(i) = ntopmarker(i) - 1
+          endif
 
           dhacc(i) = 0
 
@@ -212,33 +240,8 @@ subroutine resurface
           kinc = sum(nphase_counter(:,1,i))
           phase_ratio(1:nphase,1,i) = nphase_counter(1:nphase,1,i) / float(kinc)
 
-      else if(-diff*kinc .ge. elz) then
-          ! erosion, remove the top marker
-          !print *, 'erosion', i, diff, elz
-          ymax = -1e30
-          nmax = 0
-          kmax = 0
-          do k = 1, ntopmarker(i)
-              n = itopmarker(k, i)
-              ntriag = mark(n)%ntriag
-              m = mod(ntriag,2) + 1
-              call bar2xy(mark(n)%a1, mark(n)%a2, shp2(:,:,m), x, y)
-              if(ymax < y) then
-                  ymax = y
-                  nmax = n
-                  kmax = k
-              endif
-          end do
-          mark(nmax)%dead = 0
-          ! replace topmarker k with last topmarker
-          itopmarker(k,i) = itopmarker(ntopmarker(i),i)
-          ntopmarker(i) = ntopmarker(i) - 1
-
-          dhacc(i) = 0
-
-          ! recalculate phase ratio
-          kinc = sum(nphase_counter(:,1,i))
-          phase_ratio(1:nphase,1,i) = nphase_counter(1:nphase,1,i) / float(kinc)
+      else
+          ! nothing to do
       end if
   end do
 
