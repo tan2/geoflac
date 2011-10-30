@@ -1,39 +1,43 @@
-{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
-{\fonttbl\f0\froman\fcharset0 Times-Roman;\f1\ftech\fcharset77 Symbol;\f2\fmodern\fcharset0 Courier;
-}
+{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
+{\fonttbl\f0\froman\fcharset0 Times-Roman;\f1\ftech\fcharset77 Symbol;\f2\fswiss\fcharset0 Helvetica;
+\f3\fmodern\fcharset0 Courier;}
 {\colortbl;\red255\green255\blue255;\red255\green0\blue0;}
 {\info
 {\title INPUT PARAMETER FILE FOR LUC's CODE}
-{\author Eh Tan}}\margl1440\margr1440\vieww18080\viewh14820\viewkind1\viewscale150
+{\author Eh Tan}}\margl720\margr720\margb720\margt720\vieww18080\viewh14820\viewkind1\viewscale150
 \deftab720
 \pard\pardeftab720\ri0\sl-220\qc
 
-\f0\b\fs22 \cf0 \ul \ulc0 INPUT PARAMETER FILE DESCRIPTION\
-(by David Okaya - August-2010)\
+\f0\b\fs22 \cf0 \ul \ulc0 INPUT PARAMETER FILE FOR LUC LAVIER's CODE\
+\pard\pardeftab720\ri-720\sl-220\qc
+\cf0 (by David Okaya & Eh Tan - November 2011)\
 \pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \b0 \cf0 \ulnone \
 Notes:	(1) Any number of comment lines can be present and are preceded by a semi-colon.\
 \
-	(2) In the earth mesh, #nodes = #elements + 1   (one more nodes than cells).\
+	(2) If the line contains more than one parameter, the parameters are separated by spaces and/or\
+	optional comma.\
 \
-	(3) Parameters highlighted are repeated for #lines based on prior parameter.  \
+	(3) In the earth mesh, #nodes = #cells + 1   (one more nodes than cells).\
+\
+	(4) Parameters with underline and extra indentation are repeated for #lines based on prior parameter.  \
 	E.g.,		
 \i\b nitems
 \b0 \
 
 \i0 				
-\i value1(i), value2(i),....
-\i0 		this line repeated 
+\i\b \ul value1(i), value2(i),....
+\i0\b0 \ulnone 		this line repeated 
 \i\b nitems
 \i0\b0  times.\
 	If 
 \i\b nitems
 \i0\b0 =0, then 
 \i \cf2 \ul \ulc2 NO
-\i0 \cf0 \ulnone  lines should be given.\
+\i0 \cf0 \ulnone  underlined line should be given.\
 \
-	\
+\
 ;===================================================================\
 \pard\pardeftab720\ri0\sl-220\ql\qnatural
 
@@ -46,76 +50,61 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i0  \
 					In general, it is good to have 
 \i dx = dz
-\i0  (square elements).\
+\i0  (square cells).\
 
 \b \
 \pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i \cf0 nex, nez
-\i0\b0 				
+\i0\b0 			
 \i\fs20 2 int
-\i0\fs22 	#Elements in X and Z directions.\
+\i0\fs22 	#Cells in X and Z directions.\
 
 \i\b x0, z0
 \i0\b0 				
-\i\fs20 2 R*8
+\i\fs20 2 dbl
 \i0\fs22 	Beginning coordinates (Upper Left).\
 
-\i\b rxbo, rzb
-\b0 o
-\i0 			
-\i\fs20 2 R*8
+\i\b rxbo, rzbo
+\i0\b0 			
+\i\fs20 2 dbl
 \i0\fs22 	Size: width from left (positive), vertical thickness (negative);\
 					or coordinate value of Lower Right corner (depth is negative).\
 
 \i\b nzonx
-\i0\b0   (>0 or 0)		
+\i0\b0   (>=0)			
 \i\fs20 int
 \i0\fs22 	#Zones in X-direction (0-regular grid).\
-     if(
-\i nzonx
-\i0  > 0)then 
-\i nzonx
-\i0  lines of:      (if 
-\i nzonx
-\i0  = 0, no lines are given).\
 	
-\i\b nelz_x(i), sizez_x(i)
-\i0\b0 	
-\i\fs20 int,R*8
-\i0\fs22 	#Elements/zone, size of zone (non-dimensional; percentage of 						
+\i\b \ul nelz_x(i), sizez_x(i)
+\i0\b0 \ulnone 	
+\i\fs20 int,dbl
+\i0\fs22 	#Cells/zone, size of zone (non-dimensional; percentage of 
 \i\b nx
-\i0\b0 ). Sum of all 
+\i0\b0 ). 						Sum of all 
 \i\b nelz_x(i)
-\i0\b0  must = 
+\i0\b0  must == 
 \i\b nx
 \i0\b0 ; sum of all 
 \i\b sizez_x(i)
-\i0\b0  = 1.0).\
+\i0\b0  == 1.0).\
 
 \i\b nzony
-\i0\b0   (>0 or 0)			
+\i0\b0   (>=0)			
 \i\fs20 int
 \i0\fs22 	#Zones in Z-direction (0-regular grid).\
-      if(
-\i nzony
-\i0  > 0)then 
-\i nzony
-\i0  lines of:     (if 
-\i nzonz
-\i0  = 0, no lines are given).\
 	
-\i\b nelz_y(i), sizez_y(i)
-\i0\b0 	
-\i\fs20 int,R*8
-\i0\fs22 	#Elements/zone, size of zone (non-dimensional; percentage of 						
-\i\b nz
-\i0\b0 ). Sum of all 
+\i\b \ul nelz_y(i), sizez_y(i)
+\i0\b0 \ulnone 	
+\i\fs20 int,dbl
+\i0\fs22 	#Cells/zone, size of zone (non-dimensional; percentage of 
+\i\b ny
+\i0\b0 ). 						Sum of all 
 \i\b nelz_y(i)
 \i0\b0  must = 
 \i\b nz
 \i0\b0 ; sum of all 
-\i\b sizez_yx(i)
+\i\b sizez_y(i)
 \i0\b0  = 1.0).\
 
 \i\b iint_marker, iint_trace
@@ -123,57 +112,36 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i0 		
 \i\fs20 int, int
 \i0\fs22 	Flags denoting use of markers, tracers: 0-No, 1-Yes.\
-					iint_marker 
-\i \ul MUST
-\i0 \ulnone  use 1\
+					For the current version, 
+\i\b iint_marker 
+\b0 \ul MUST
+\i0 \ulnone  be 1.\
 
 \i\b nzone_marker
-\i0\b0 			
+\i0\b0   (>=0)		
 \i\fs20 int
 \i0\fs22 	#Rectangular zones with 9 markers. \
-					For Aug-2010 code version, 
-\i \ul MUST
-\i0 \ulnone  give, but code ignores !!\
-      if(
-\i nzone_marker
-\i0  > 0)then 
-\i nzone_marker
-\i0  lines of:\
 	
-\i\b imx1(i),imy1(i),imx2(i),imy2(i)
-\i0\b0 	
+\i\b \ul imx1(i),imy1(i),imx2(i),imy2(i)
+\i0\b0 \ulnone 	
 \i\fs20 4 int
-\i0\fs22 	UL, LR corners of elements for zone markers.
+\i0\fs22 	UL, LR corners of cells for zone markers. (Ignored)
 \i \
+\pard\pardeftab720\li720\fi-720\ri0\sl-220\ql\qnatural
 
-\b nzone_tracer, dt_outtracer
+\b \cf0 \
+nzone_tracer
+\i0\b0  (>=0)
+\i\b , dt_outtracer
 \i0\b0 	
-\i\fs20 int, R*8
-\i0\fs22 	#Rectangular zones with traces (stores x,z,P,T), frequency of \
-					storage in Kyrs.\
-					For Aug-2010 code version, 
-\i \ul MUST
-\i0 \ulnone  activate; use full nx-nz size.\
-      if(
-\i nzone_tracer
-\i0  > 0)then 
-\i nzone_tracer
-\i0  lines of:\
-	
-\i\b itx1(i),ity1(i),itx2(i),ity2(i)
-\i0\b0  	
+\i\fs20 int, dbl
+\i0\fs22 	#Rectangular zones with traces (stores x,z,P,T), 							frequency of storage in Kyrs.\
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
+\cf0 	
+\i\b \ul itx1(i),ity1(i),itx2(i),ity2(i)
+\i0\b0 \ulnone  	
 \i\fs20 4 int
-\i0\fs22 	UL, LR corners of elements for zone tracers.\
-						For Aug-2010 code version, 
-\i \ul use
-\i0 \ulnone  "1,1,nx,nz" values.\
-\
----------------------------------------------------------------------------------------------------------------\
-(
-\i\b NOTE
-\i0\b0 : earlier versions of this code had input lines here for material incoming from sides.  These are totally removed for this code version).\
----------------------------------------------------------------------------------------------------------------\
-\
+\i0\fs22 	UL, LR corners of cells for zone tracers.\
 \
 \
 \pard\pardeftab720\ri0\sl-220\ql\qnatural
@@ -181,13 +149,19 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \b \cf0 ; MECHANICAL CONDITIONS\
 \pard\pardeftab720\ri0\sl-220\ql\qnatural
 
-\b0 \cf0 	These are the following forms of boundary conditions:\
-		0  - no conditions\
-		10 - velx			01 - velz\
-		20 - normal stress		02 - shear stress (x,z) plane\
-		30 - vely (strike slip version).\
-	Each side is composed of one or more segments, each with its own BC behavior.  These segments per side are defined by 
-\i nbc1(i),nbc2(i)
+\b0 \cf0 These are the following types of boundary conditions (
+\i nbc
+\i0 ):\
+	1 - velz\
+	2 - shear stress (x,z) plane\
+	10 - velx	\
+	20 - normal stress\
+	30 - vely (strike slip version). (Experimental, used at your own risk.)\
+	40 - shear stress out of the plane. (Experimental, used at your own risk.)\
+	50 - velx with visc-dep profile. (Experimental, used at your own risk.)\
+\
+There are four sides for a rectangular domain. Each side is composed of one or more segments, each with its own BC behavior.  These segments per side are defined by 
+\i nbc1(i), nbc2(i)
 \i0 .  The length of each segment is 
 \i nbc2(i)-nbc1(i)
 \i0 , and the BC function 
@@ -196,39 +170,40 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \f0\i )
 \i0  is measured along this segment as a percentage of the length (normalized as 
 \f1 \uc0\u967 
-\f0 =0-1).\
-	If the BC is a velocity in x or z, it is provided in units of meters/sec, a very small number.  For reference, 1 cm/year = 3.17E-10 m/sec and 1 km/myr = 3.17E-11.\
+\f0 =0~1).\
+\
+If the BC is a velocity in x or z, it is provided in units of meters/sec, a very small number.  For reference, 1 mm/year = 1 km/myr = 3.17E-11 m/s.\
+\
 \pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i\b \cf0 ynstressbc, ydrsides
 \i0\b0 		
-\i\fs20 2R*8
-\i0\fs22 	Stress boundary conditions, lithostatic stress BC on the sides. 						Both are 0-No, 1-Yes but R*8 not integers.\
-					Common to use "0, 0"\
+\i\fs20 2 dbl
+\i0\fs22 	Stress boundary conditions, lithostatic stress BC on the sides. 						Both are 0-No, 1-Yes.\
 
 \i\b nofbc
 \i0\b0 				
 \i\fs20 int
-\i0\fs22 	# of boundary conditions (i.e., how many sides).\
+\i0\fs22 	# of boundary conditions (i.e., how many segments).\
      
 \i nofbc
 \i0  lines of:\
 	
-\i\b nofside(i),nbc1(i),nbc2(i),nbc(i), bca(i),bcb(i),bcc(i),bcd(i),bce(i),bcf(i),bcg(i),bch(i),bci(i)\
+\i\b \ul nofside(i),nbc1(i),nbc2(i),nbc(i), bca(i),bcb(i),bcc(i),bcd(i),bce(i),bcf(i),bcg(i),bch(i),bci(i)\
 \pard\pardeftab720\ri0\sl-220\ql\qnatural
 
-\i0\b0 \cf0 				
-\i\fs20 4 int, 9R*8\
+\i0\b0 \cf0 \ulnone 				
+\i\fs20 4 int, 9 dbl\
 
 \i0\fs22 					
 \i nofside
-\i0  		which side? 1-left,2-bottom,3-right,4-top\
+\i0  		which side? 1-left, 2-bottom, 3-right, 4-top\
 					
 \i nbc1,nbc2
 \i0  	range of application of boundary cond. in nodes.\
 					
 \i nbc
-\i0 		type of boundary condition. See code above.\
+\i0 		type of boundary condition. See doc above.\
 					----------------------------------------------------------------\
 			Function of boundary conditions.\
 			
@@ -246,63 +221,73 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \fs22 \up0  + (
 \b d
 \b0  cos (2
-\f1\i0 \'b9
-\f0\i\b e 
-\f1\i0\b0 \uc0\u967 
-\f0\i ) + 
+\f1\i0 \'b9\uc0\u967 
+\f0\i\b e
+\b0 ) + 
 \b f
 \b0  sin (2
-\f1\i0 \'b9
-\f0\i\b g 
-\f1\i0\b0 \uc0\u967 
-\f0\i ))*exp\{(
+\f1\i0 \'b9\uc0\u967 
+\f0\i\b g
+\b0 ))*exp(-(
 \f1\i0 \uc0\u967 
 \f0\i -
 \b i
-\b0 )/
+\b0 )
 \b h
-\b0 \}
+\b0 )
 \fs18 \up6 2
-\fs22 \up0    \
+\fs22 \up0  \
 
 \i0 			where 
 \f1 \uc0\u967 
+\f2 \uc0\u61472 \u61472 
 \f0 is non-dimensional. i.e. 
 \f1 \uc0\u967 
-\f0\i  = (node_in_segment - nbc1) / (nbc2 - nbc1)
+\f0\i  = (node_in_segment - nbc1) / (nbc2 - nbc1)\
+
 \i0 \
 \pard\pardeftab720\ri0\sl-220\ql\qnatural
 
-\i\b \cf0 nyhydro,pisos,iphsub,drosub,damp_vis
+\i\b \cf0 nyhydro,pisos,iphsub,drosub,damp,vis
 \i0\b0 	
-\i\fs20 int,R*8,int,2R*8
+\i\fs20 int,dbl,int,2 dbl
 \i0\fs22  	\
-					Hydrostatic pressure applied at the bottom (on the depth of rzbo \
-						and TOP!!)\
+					Winkler-type boundary condition, ie. the bottom boundary is \
+					open for flow passing through in and out. Effectively, the bottom\
+					is supported by an inviscid fluid.\
 					
 \i nyhydro
-\i0  : 	0-no, 1-yes, 2-auto.\
-					
+\i0  : 	0-no, 1-yes, 2-auto. If 2, the column of cells at\
+							the right boundary will be used for the reference\
+							hydrostatic pressure.\
+\pard\pardeftab720\li720\fi-720\ri0\sl-220\ql\qnatural
+\cf0 					
 \i pisos
-\i0  : 		Pressure at compensation depth.\
-					
+\i0  : 		Hydorstatic pressure at compensation depth\
+							(used when 
+\i nyhydro
+\i0 =1).\
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
+\cf0 					
 \i iphsub
-\i0  : 	substratum phase.\
+\i0  : 	substratum phase of the inviscid fluid.\
 					
 \i drosub
-\i0  : 	additional density difference.\
+\i0  : 	additional density difference of the fluid.\
 					
 \i damp_vis
-\i0  : 	damp vis.\
-					NOTE: 8/10:  Use 
+\i0  : 	(not used.)\
+					NOTE: Use 
 \i nyhdro=2
 \i0 , typically 
 \i iphsub=8
 \i0  (mantle phase)\
+\
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
-\i\b g
+\i\b \cf0 g
 \i0\b0 				
-\i\fs20 R*8
+\i\fs20 dbl
 \i0\fs22 	Acceleration of gravity (m/sec\super 2\nosupersub ).  (typically 9.81 or 10).\
 \
 \
@@ -317,165 +302,145 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i0\fs22 	Let model equilibrate given initial state, boundaries, and \
 					conditions, by running model for 600,000 years before any\
 					BC changes are allowed (0-no, 1-yes).  Temperature, stress will\
-					redistribute, topography, roots will isostatically adjust. \
+					redistribute, topography, roots will isostatically adjust.\
 
 \i\b itherm
 \i0\b0  				
 \i\fs20 int
 \i0\fs22 	Either 1-mech+therm, 2-no mech. NOTE: usually 
 \i itherm=1
-\i0 . \
+\i0 .\
 
 \i\b istress_therm
 \i0\b0 			
 \i\fs20 int
-\i0\fs22 	Add THERMAL STRESSES (0-no, 1-yes, 2-just 1 step).  \
+\i0\fs22 	Add THERMAL STRESSES (0-no, 1-yes).\
 
 \i\b ishearh
 \i0\b0 				
 \i\fs20 int
-\i0\fs22 	Add SHEAR heating.  \
+\i0\fs22 	Add SHEAR heating.\
 
 \i\b t_top
 \i0\b0 				
-\i\fs20 R*8
-\i0\fs22 	Surface temperature in C. Boundary AND initial condition.\
+\i\fs20 dbl
+\i0\fs22 	Surface temperature in Celsius. Boundary AND initial condition.\
 
 \i\b t_bot
 \i0\b0   				
-\i\fs20 R*8
-\i0\fs22 	Bottom temperature in C. ONLY initial condition.\
+\i\fs20 dbl
+\i0\fs22 	Bottom temperature in Celsius. ONLY initial condition. (The\
+					bottom BC is given by 
+\i bot_bc
+\i0  below.)\
 
 \i\b hs, hr 
 \i0\b0 				
-\i\fs20 2 R*8
-\i0\fs22 	Radiogenic heating:  W/kg (~1.e-9),   radio_fold km.	\
+\i\fs20 2 dbl
+\i0\fs22 	Radiogenic heating of crust:  W/kg (~1.e-9), 								Radiogenic folding depth: km.\
 
 \i\b itemp_bc, bot_bc
 \i0\b0 		
-\i\fs20 int, R*8
-\i0\fs22 	 Thermal boundary conditions at the bottom (1-T, 2-Flux).  \
-						if itemp_bc = 1, bot_bc = temperature value.\
-						if itemp_bc = 2, bot_bc = flux value in milliW/m3.\
-					NOTE:  
+\i\fs20 int, dbl
+\i0\fs22 	Thermal boundary conditions at the bottom (1-T, 2-Flux).  \
+					if 
+\i itemp_bc
+\i0  = 1, 
 \i bot_bc
-\i0  is used for bottom BC during the time steps.\
+\i0  = temperature value in Celsius.\
+					if 
+\i itemp_bc
+\i0  = 2, 
+\i bot_bc
+\i0  = flux value in mW/m\super 2\nosupersub .\
 
 \i\b temp_per, ix1t, ix2t, iy1t, iy2t
 \i0\b0 	
-\i R*8, 4 int
-\i0 	Initial additional thermal perturbation 
-\f1 \uc0\u916 
-\f0 Temp\
-						rectangular Xleft,Xright, Ztop,Zbottom nodes.\
+\i dbl, 4 int
+\i0 	Initial thermal perturbation, amplitude and location\
+						between rectangular Xleft, Xright, Ztop, Zbottom nodes.\
 \
-\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
-\b \cf0 	; Predefined distributions \
-\pard\pardeftab720\ri0\sl-220\ql\qnatural
-
-\i \cf0 irtemp
+\i\b irtemp
 \i0\b0 				
 \i\fs20 int
 \i0\fs22 	Predefined thermal distributions in a file? 0-no, 1-yes.\
-     if(
-\i irtemp
-\i0  = 1)then 
-\i one
-\i0  line of:\
-	
+
 \i\b tempfile
-\i0\b0 		
+\i0\b0 			
 \i string
 \i0 	Filename containing temperature distribution.\
+					When 
+\i irtemp
+\i0 =0, this line is read but not used.\
 					File format is one column of temperatures written in blocks of \
 					nz, looping over nx.  E.g.,\
 					[outer do i = 1,nx; inner do j=1,nz, read T(j,i) ]
 \i\b \
 \pard\pardeftab720\ri0\sl-220\ql\qnatural
 
-\i0\b0 \cf0      if(
-\i irtemp
-\i0  = 0)then 
-\i one blank
-\i0  line!\
-	(blank) 				(equivalent to above but empty).\
+\i0\b0 \cf0 \
 \pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i\b \cf0 time_scale
 \i0\b0 			
-\i R*8
-\i0 	time_scale (V_numerical/V_tectonic).  This is a stability factor.\
-					NOTE:  start with 1.0 .\
+\i dbl
+\i0 	not used.\
 \
-	
-\b ; Temperature structure for ridges (3 linear segments) above linear\
+\
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
-\i iynts, tbos
+\b \cf0 ; Initial temperature structure\
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
+
+\i \cf0 iynts, tbos
 \i0\b0 			
-\i\fs20 int, R*8
+\i\fs20 int, dbl
 \i0\fs22 	
 \i iynts
-\i0 : 0-No, 1-yes.   \
+\i0 :	1 - initialize temperature by 
+\i igeotherm
+\i0  (below).\
+						2 - initialize temperature by 
+\i nzone_age
+\i0  (below).\
+						Else - linear temperature profile.\
 					
 \i tbos
 \i0 : maximum or bottom temperature (only when 
 \i iynts=1
 \i0 ). \
-				NOTE: within code, the parameter 
-\i\b iynts
-\i0\b0  indicates structure:  \
-							1 - ridge structure.\
-				(see init_phase.f90)	2 - continental and collision.  (used for initial 					continental geotherm of a given age across a box of variable age).\
-				(see init_phase.f90)	10 - continental and collision?\
-				(see init_temp.f90)	20 - this case exists in code but not explained.\
-			NOTE:  Aug-2010:  typically, use 
-\i iynts=2
-\i0 . \
 \
 			If (
 \i iynts
 \i0  = 2) Initially variable thermal age continental and oceanic lithosphere \
-			across the box (for convenience 	
-\i iph
-\i0 =1 - cont crust, \
-							
-\i iph
-\i0 =2 - oceanic crust , \
-							
-\i iph
-\i0 =3 - oceanic mantle (dry) , \
-							
-\i iph
-\i0 =4 - continental mantle (wet weak). \
+			across the box.\
 \
 
 \i\b iax1,iay1,ibx1,iby1,icx1,icy1,idx1,idy1
 \i0\b0  	
 \i\fs20 8 int
-\i0\fs22 	\cf2 NOTE: these values are never used in the code !!\cf0  							The line MUST be present; any 8 integers are OK.\
+\i0\fs22 	not used.\
+\
 
 \i\b nzone_age
 \i0\b0  			
 \i\fs20 int
-\i0\fs22 	# anomalous zones of different age (max 20). When 
+\i0\fs22 	# zones of different age (max 20). Used when 
 \i iynts=2
-\i0 .  \
-     
-\i nzone_age
-\i0  lines of:\
+\i0 . \
 	
-\i\b age_1(i),hc(i),iph_col1(i),iph_col2(i),ixtb1(i),ixtb2(i)\
+\i\b \ul age_1(i),hc(i),iph_col1(i),iph_col2(i),ixtb1(i),ixtb2(i)\
 \pard\pardeftab720\ri0\sl-220\ql\qnatural
 
-\i0\b0 \cf0 			
-\i\fs20 2R*8, 4 int
+\i0\b0 \cf0 \ulnone 			
+\i\fs20 2 dbl, 4 int
 \i0\fs22 	
 \i age_1(i)
 \i0 	Thermal age (Myrs).\
 					
 \i hc(i)
-\i0 		Radiogenic crustal thickness (km).\
+\i0 		Crustal thickness (km).\
 					
 \i iph_col1(i)
 \i0 	Crustal phase.\
@@ -486,7 +451,7 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i ixtb1(i)
 \i0 		
 \i X
-\i0  nodes 1  (left side of zone in nodes).\
+\i0  nodes 1 (left side of zone in nodes).\
 					
 \i ixtb2(i)
 \i0 		
@@ -496,88 +461,82 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \
 \pard\pardeftab720\ri0\sl-220\ql\qnatural
 
-\b \cf0 ;  RHEOLOGY\
+\b \cf0 ;  PHASES & RHEOLOGY\
 \pard\pardeftab720\ri0\sl-220\ql\qnatural
 
-\b0 \cf0 ;  Rheological Condition for a phase (rock type).  Full VEP uses irheol=12.\
-;		 1- elastic,\
-; 		 3- visco-elastic (Maxwell, Non-Newtonian) with softening\
-; 		 6- elasto-plastic (Mohr-Coulomb) with softening\
-;		11- visco-elasto-plastic (Mohr-Coulomb, Fixed Maxwell, Newtonian) with softening\
-;		12- visco-elasto-plastic (Mohr-Coulomb, Maxwell, Non-Newtonian) with softening\
-;\
-; There are 15 phases (rock types) that are defined for this code.  Users can add 5 more.   Users should not override these original 15 phases, because they are involved in phase changes that are hardcoded into version Aug-2010.\
-	1.  basalt\
-	2.  continental crust; 				(same as #6).\
-	3.  basalt (dunite) (oceanic crust)		(same as #7).\
-	4.  olivine;  (oceanic mantle)			(same as #8).\
-	5.  olivine+ (mantle) ; 		not used.\
-	6.  continental crust; 				(same as #2).\
-	7.  basalt (dunite) (oceanic crust); 		(same as #3).\
-	8.  olivine (oceanic mantle)			(same as #4, 	transformed from #9).\
-	9. weak olivine (serpentinite), 					transformed from #4-8 if 	\
-									underlying material is subducted \
-									oceanic crust (#3-7-11).  \
-									Will transform back to #4 if this \
-									goes deeper than 65 km.\
-	10. sediment #2;		not used.\
-	11. sediment #1, generated by erosion.\
-	12. weak continental crust, 					transformed from #2-6 if \
-									residing above oceanic crust \
-									#3-7-11-14.\
-	13. eclogite (more dense and viscous from #3-7)			transformed from #3-7 when \
-									T-P conditions are high enough.\
-	14.  buoyant arc. (oceanic crust)\
-	15. weak middle crust;		not used.			transformed from #3-7 if \
-									stressed and heated.\
-;\
-;  Phase changes are activated and will take place among certain of the defined phases. \
-; Rheological relationships defined in the Aug-2010 version of the code.\
-; (1) when oceanic subduction (#3-7-11-14) under continent (#2-6), this original continent crust becomes "weak".\
-;	cont. crust 			2, 6		---->	12	weak crust \
-; (2) when oceanic crust (3-7-11) is subducted under overlying mantle (#4-8) (e.g., mantle wedge), this overlying mantle will serpentinize.  This serpentinite will transform back to #4 when brought to depths > 65 km.\
-;	ocean mantle 			4-8		----> 	9	serpentinite.\
-;	serpentinite			9		---->	4	oceanic mantle > 65 km.\
-; (3) basalt (oceanic crust) will transform into eclogite when T >550
-\fs18 \up8 o
-\fs22 \up0 C and P> 0.3 GPa * 1.9E6 * T.\
-	basalt (oceanic crust)		3,7		---->	13	eclogite\
-; (4) erosion produces sediments at top layer.\
-	any phase at topmost layer			---->	11	sediment #2\
+\b0 \cf0 There are 15 phases (rock types) that are defined for this code.  Users can add 5 more. Users should not override these original 15 phases, because they are involved in phase changes (see 
+\i newphase2marker.f90
+\i0  for detail).\
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
+
+\b \cf0 \
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
+
+\b0 \cf0 	1.  basalt (not used)\
+	2.  continental crust			same as #6.\
+	3.  basalt (dunite) (oceanic crust)	same as #7.\
+	4.  olivine (mantle)			same as #8.\
+	5.  olivine+ (not used)\
+	6.  continental crust			same as #2.\
+	7.  basalt (dunite) (oceanic crust)	same as #3.\
+	8.  olivine (mantle)			same as #4.\
+	9.  serpentinite (weak mantle)		transformed from #4,#8 if underlying material is \
+						subducted oceanic crust (#3,#7,#11,#14). Will transform \
+						back to #4 when T-P conditions iare high enough.\
+	10. sediment #1 (not used)		reserved for erosion.\
+	11. sediment #2				generated by erosion.\
+	12. weak continental crust, 		transformed from continental crust (#2,#6) if residing \
+						above oceanic crust (#3,#7,#11,#14).\
+	13. eclogite 				transformed from oceanic crust (#3,#7) when \
+						T-P conditions are high enough.\
+	14. arc crust\
+	15. weak middle crust			transformed from continental crust (#3-7) if \
+						stressed and heated. Disabled.\
+\
+Phase changes are activated and will take place among certain of the defined phases. \
+	(1) when oceanic subduction (#3-7-11-14) under continent (#2-6), this original continent crust\
+		becomes "weak".\
+		cont. crust 		2, 6	---->	12	weak crust \
+	(2) when oceanic crust (3-7-11) is subducted under overlying mantle (#4-8) (e.g., mantle wedge), \
+		this overlying mantle will serpentinize.  This serpentinite will transform back to #4 when \
+		brought to greater depth.\
+		ocean mantle 		4, 8	----> 	9	serpentinite\
+		serpentinite		9	---->	4	mantle\
+	(3) basalt (oceanic crust) will transform into eclogite \
+		basalt (oceanic crust)	3,7	---->	13	eclogite\
+	(4) erosion produces sediments at top layer.\
+		any phase at topmost layer	---->	11	sediment #2\
 \
 \pard\pardeftab720\ri0\sl-220\ql\qnatural
 
-\b \cf0 	; Fundamental Rock Types \
+\b \cf0 ; Fundamental Rock Types \
 \pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i \cf0 nphase
 \i0\b0 				
 \i\fs20 int
 \i0\fs22 	Number of Different Rheologies (up to 20 possible).\
-     
-\i nphase
-\i0  lines of:\
 	
-\i\b irheol(i),visc(i),den(i),alfa(i),beta(i),pln(i),acoef(i),eactiv(i),rl(i),rm(i), \
+\i\b \ul irheol(i),visc(i),den(i),alfa(i),beta(i),pln(i),acoef(i),eactiv(i),rl(i),rm(i), \
 \pard\pardeftab720\ri0\sl-220\ql\qnatural
 
-\i0\b0 \cf0 	
-\i\b coha(i),cohdisp(i),phimean(i),phidisp(i),psia(i),conduct(i),cp(i),ts(i),tl(i),tk(i),fk(i)\
+\i0\b0 \cf0 \ulnone 	
+\i\b \ul plstrain(i),fric1(i),fric2(i),coh1(i),coh2(i),conduct(i),cp(i),ts(i),tl(i),tk(i),fk(i)\
 
-\i0\b0 			
-\i\fs20 int, 20R*8	
+\i0\b0 \ulnone 			
+\i\fs20 int, 20 dbl	
 \fs22 irheol(i)
-\i0 	Rheological condition for this phase (rock type).
+\i0 	Rheological condition for this phase (see below).
 \i \
 
 \i0 					
 \i visc(i)
-\i0 		
-\i \ul never used\ulnone \
+\i0 		not used.
+\i \
 
 \i0 					
 \i den(i)
-\i0 		Density				kg/m3
+\i0 		density, kg/m3
 \i \
 
 \i0 					
@@ -592,19 +551,12 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 
 \i0 					
 \i pln(i)
-\i0 		n	power law:  
-\f1 \uc0\u949 
-\f0 rate = 
-\f1 \uc0\u963 
-\f0\fs18 \up6 n
-\fs22 \up0 Ae
-\fs18 \up6 (-Q/RT)
-\fs22 \up0   3\ul <\ulnone n\ul <\ulnone 5
+\i0 		n for viscosity power law 3\ul <\ulnone n\ul <\ulnone 5
 \i \
 
 \i0 					
 \i acoef(i)
-\i0 		A
+\i0 		A for viscosity power law
 \i \
 
 \i0 					
@@ -614,75 +566,83 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 
 \i0 					
 \i rl(i)
-\i0 		Lame: rl - lambda
+\i0 		Lame parameter: rl - lambda
 \i \
 
 \i0 					
 \i rm(i)
-\i0 		Lame: rm - mu
+\i0 		Lame parameter: rm - mu
 \i \
 
 \i0 					
 \i plstrain(i)
-\i0 	Mohr-Coulomb: final plastic strain of weakening
-\i \
-
-\i0 					
+\i0 	Mohr-Coulomb: plastic strain of saturated 								softening \
+					
 \i fric1(i)
-\i0 		Mohr-Coulomb: friction angle (initial)
+\i0 		Mohr-Coulomb: friction angle before softening
 \i \
-\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
-\i0 \cf0 					
+\i0 					
 \i fric2(i)
-\i0 		Mohr-Coulomb: friction angle (final)
+\i0 		Mohr-Coulomb: friction angle of saturated\
+							softening, in degree
 \i \
 
 \i0 					
-\i cohesion1(i)
-\i0 	Mohr-Coulomb: cohesion (initial)
+\i coh1(i)
+\i0 		Mohr-Coulomb: cohesion before softening
 \i \
 
 \i0 					
-\i cohesion2(i)
-\i0 	Mohr-Coulomb: cohesion (final)
+\i coh2(i)
+\i0 		Mohr-Coulomb: cohesion of saturated \
+							softening, in Pa
 \i \
-\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
-\i0 \cf0 					
+\i0 					
 \i conduct(i)
-\i0 	thermal property: conductivity
+\i0 	thermal conductivity
 \i \
 
 \i0 					
 \i cp(i)
-\i0 		thermal property: specific heat	J/(kg oC)
+\i0 		heat capacity at constant pressure, J/(kg C)
 \i \
 
 \i0 					
 \i ts(i)
-\i0 		Ts	latent heat solidus temperature 
+\i0 		solidus temperature 
 \i \
 
 \i0 					
 \i tl(i)
-\i0 		Tl	latent heat liquidus temperature 
+\i0 		liquidus temperature 
 \i \
 
 \i0 					
 \i tk(i)
-\i0 		Tk	latent heat of fusion temperature
+\i0 		latent heat of fusion temperature
 \i \
 
 \i0 					
 \i fk(i)
-\i0 		fk	coeff of latent heat of fusion?
+\i0 		coeff of latent heat of fusion?
 \i \
 
-\i0 \
-	
-\b ; INITIAL PHASE DISTRIBUTION\
-	; Define model rock type distribution via external file or by horizontal layers 
+\i0 ;  Rheological Condition for a phase (rock type):\
+;
+\i  irheol(i):
+\i0 	 1- elastic,\
+; 		 3- visco-elastic (Maxwell, Non-Newtonian) \
+; 		 6- elasto-plastic (Mohr-Coulomb) \
+;		11- visco-elasto-plastic (Mohr-Coulomb, Fixed Maxwell, Newtonian) \
+;		12- visco-elasto-plastic (Mohr-Coulomb, Maxwell, Non-Newtonian)\
+\
+\
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
+
+\b \cf0 ; INITIAL PHASE DISTRIBUTION\
+; Define model rock type distribution via external file or by horizontal layers 
 \b0 \
 \pard\pardeftab720\ri0\sl-220\ql\qnatural
 
@@ -690,109 +650,101 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i0\b0 				
 \i\fs20 int
 \i0\fs22 	Flag to take initial phase distribution from a file: 0-N, 1-Y.\
-    if(
-\i irphase
-\i0  = 1)then 
-\i one
-\i0  line of:\
-	
+
 \i\b phasefile
-\i0\b0 		
+\i0\b0 			
 \i string
-\i0 	Filename containing phase distribution. One column of phaseid\
-					by element (not by node). Vertical fast, horz slow dimensions.
+\i0 	Filename containing phase distribution. \
+					If 
+\i irphase
+\i0 =0, this line is read but not used.\
+					One column of phase id by cell (not by node). \
+					Vertical fast, horz slow dimensions.
 \i\b \
 \pard\pardeftab720\ri0\sl-220\ql\qnatural
 
-\i0\b0 \cf0      if(
-\i irphase
-\i0  = 0)then 
-\i one blank
-\i0  line!\
-    	(blank) 				(equivalent to above but empty).\
-\
+\i0\b0 \cf0 \
 \pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i\b \cf0 mphase
 \i0\b0 				
 \i\fs20 int
-\i0\fs22 	Main phase\
+\i0\fs22 	Main phase. The most abundant phase.\
 
 \i\b nphasl
 \i0\b0 				
 \i\fs20 int
-\i0\fs22 	Number of horizontal layers with other phases\
-     
-\i nphasl
-\i0  lines of:\
+\i0\fs22 	Number of horizontal layers for phases.\
+					Note: when 
+\i nzone_age
+\i0 >0, the phase structure is determined by\
+					
+\i iph_col1, iph_col2
+\i0  there.\
 	
-\i\b ltop(i), lbottom(i), lphase(i)\
+\i\b \ul ltop(i), lbottom(i), lphase(i)\
 \pard\pardeftab720\ri0\sl-220\ql\qnatural
 
-\i0\b0 \cf0 				
+\i0\b0 \cf0 \ulnone 				
 \i\fs20 3 int
 \i0\fs22 	
 \i ltop(i)
-\i0 		vertical nodes of top of this layer.\
+\i0 		vertical cells of top of this layer.\
 					
 \i lbottom(i)
-\i0 	vertical nodes of bototm of this layer.\
+\i0 	vertical cells of bototm of this layer.\
 					
 \i lphase(i)
-\i0 	phase ID of this layer (between 1 - 
+\i0 	phase ID of this layer (between 1 ~ 
 \i nphase
 \i0 )\
+\
 \pard\pardeftab720\ri0\sl-220\ql\qnatural
 
-\b \cf0 	; Define rock type anomolies.
+\b \cf0 ; Define rock type anomolies.
 \b0 \
 		Geometries of inhomogeneities:		0 -    rectangular \
-							1,2 - Gauss shape\
+							1,2 - Gauss shape (not tested, don\'92t use)\
 							3 - diagonal line\
 							4 - diagonal line plus init. plastic strain\
-		if rectangular, upper left corner is ix1-iy1, lower right corner is ix2-iy2 (in nodes).\
+		if rectangular, upper left corner is ix1-iy1, lower right corner is ix2-iy2 (in cells).\
 		if diagonal line, ix1 < ix2, but the vertical iy1-iy2 can be any values, in order to define\
 			diagonal slope polarity (e.g., iy1>1y2 for dipping towards left).\
-	
-\b ; inclusions\
 \pard\pardeftab720\ri0\sl-220\ql\qnatural
 
-\i \cf0 inhom
+\i\b \cf0 inhom
 \i0\b0 				
 \i\fs20 int
 \i0\fs22 	Number of rock type inclusions (up to 9).\
-     
-\i inhom
-\i0  lines of:\
 	
-\i\b ix1(i), ix2(i), iy1(i), iy2(i), inphase(i), igeom(i), xinitaps\
+\i\b \ul ix1(i), ix2(i), iy1(i), iy2(i), inphase(i), igeom(i), xinitaps\
 \pard\pardeftab720\ri0\sl-220\ql\qnatural
 
-\i0\b0 \cf0 			
-\i\fs20 6 int R*8
-\i0\fs22 	
+\i0\b0 \cf0 \ulnone 			
+\i\fs20 6 int, dbl
+\i0\fs22 		
 \i ix1(i)
-\i0 		Inclusion left horizontal node.  
-\i Rectangle or\
+\i0 		Inclusion left horizontal cell.  
+\i \
 
 \i0 					
 \i ix2(i)
-\i0 		Inclusion right horizontal node.           
-\i linear\
+\i0 		Inclusion right horizontal cell.
+\i \
 
 \i0 					
 \i iy1(i)
-\i0 		Inclusion top vertical node.            
-\i endpoints.\
+\i0 		Inclusion top vertical cell
+\i .\
 
 \i0 					
 \i iy2(i)
-\i0 		Inclusion bottom vertical node. 
+\i0 		Inclusion bottom vertical cell. 
 \i \
 
 \i0 					
 \i inphase(i)
-\i0 	phase ID of this inclusion (1 - 
+\i0 	phase ID of this inclusion (1~
 \i nphase
 \i0 ). \
 					
@@ -802,39 +754,39 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 
 \i0 					
 \i xinitaps	
-\i0 initial plastic strain. E.g., 15 = very weak. \
+\i0 	initial plastic strain. E.g., 15 = very weak. \
 \
 \pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i\b \cf0 ten_off
 \i0\b0 				
-\i\fs20 R*8
+\i\fs20 dbl
 \i0\fs22 	Tension cut-off.   E.g., 1.E9\
 
 \i\b tau_heal
 \i0\b0 			
-\i\fs20 R*8
-\i0\fs22 	Linear healing parameter.    Plastic strain decreases with time;\
-								time value (in sec). 3e15 = 100 myr.  \
-								For healing, use 3e13 ~ 1 myr.\
+\i\fs20 dbl
+\i0\fs22 	Linear healing parameter. Plastic strain decreases with time;\
+								time value (in sec). 1e15 = 30 myr.  \
+								For healing, use 1e13 ~ 0.3 myr.\
 
 \i\b v_min, v_max, ivis_shape, efoldc 
 \i0\b0 	Viscosity limits\
 
 \i\b 			
-\b0\fs20 2R*8, int, R*8
+\b0\fs20 2 dbl, int, dbl
 \i0\fs22 	
 \i v_min
-\i0 			Minimum viscosity.   E.g., 1E19\
+\i0 		Minimum viscosity.   E.g., 1E19\
 					
 \i v_max
-\i0 			Maximum viscosity.   E.g., 3E27
+\i0 		Maximum viscosity.   E.g., 3E27
 \i \
 \pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i0 \cf0 					
 \i  ivis_shape
-\i0 		Viscosity shape (0-2; see below)
+\i0 	Initial viscosity shape (0-2; see below)
 \i \
 
 \i0 ;						= 0  constant: 
@@ -849,35 +801,36 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i0 \nosupersub \
 					
 \i efoldc
-\i0 			description?\
+\i0 			folding depth of viscosity in meter.\
+\
 \pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i\b \cf0 igeotherm, g_x0, g_y0c, g_amplitude, g_width  	
 \i0\b0 	\
 			
-\i\fs20  int, 4 R*8
+\i\fs20  int, 4 dbl
 \i0\fs22 	
 \i igeotherm
-\i0 		0-constant, 1-gaussian, 2-linear\
+\i0 	0-constant, 1-gaussian, 2-linear\
 					
 \i g_x0
-\i0 			see below.
+\i0 		see below.
 \i \
 \pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i0 \cf0 					
 \i g_y0c
-\i0 			see below.
-\i \
-
-\i0 					
-\i g_amplitude
 \i0 		see below.
 \i \
 
 \i0 					
+\i g_amplitude
+\i0 	see below.
+\i \
+
+\i0 					
 \i g_width  
-\i0 		see below.\
+\i0 	see below.\
 	; Used only in viscosity reset calculations when 
 \i iynts=1
 \i0  or 
@@ -890,17 +843,19 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i iynts=1
 \i0 ) and crust viscosity condition.\
 	;  =0	
-\f2\fs16 geoth = g_y0c
+\f3\fs16 geoth = g_y0c
 \f0\fs22 \
 	;  =1	
-\f2\fs16 geoth = g_y0c + g_amplitude*exp(-((xc-g_x0)/g_width)**2.)\
+\f3\fs16 geoth = g_y0c + g_amplitude*exp(-((xc-g_x0)/g_width)**2.)\
 
 \f0\fs22 	;  =2	
-\f2\fs16 if (abs(g_x0-xc).lt.g_width) geoth = g_y0c+ g_amplitude*(1.-abs(g_x0-xc)/g_width)\
-		if (abs(g_x0-xc).ge.g_width) geoth = g_y0c\
+\f3\fs16 if (abs(g_x0-xc).lt.g_width) geoth = g_y0c+ g_amplitude*(1.-abs(g_x0-xc)/g_width)\
+		if (abs(g_x0-xc).ge.g_width) geoth = g_y0c
+\f0 \
+\
 \pard\pardeftab720\ri0\sl-220\ql\qnatural
 
-\f0\i\b\fs22 \cf0 ny_inject, nelem_inject, rate_inject 
+\i\b\fs22 \cf0 ny_inject, nelem_inject, rate_inject 
 \i0\b0 				Magma injection / Accretionary.  This \
 								line for mid-ocean ridge problem. There\
 								are thermal parameters that are \
@@ -911,18 +866,18 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \b0 \cf0 			
-\i\fs20 2 int, R*8
+\i\fs20 2 int, dbl	
 \i0\fs22 	
 \i ny_inject
-\i0 		0-no, 1-left, 2-center\
+\i0 	0-no, 1-left, 2-center\
 					
 \i nelem_inject
-\i0 		vertical element to inject.
+\i0 	vertical cell to inject.
 \i \
 
 \i0 					
 \i rate_inject
-\i0 			see below.\
+\i0 	\
 \
 \
 \pard\pardeftab720\ri0\sl-220\ql\qnatural
@@ -934,8 +889,8 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i \cf0 ny_rem, mode_rem, ntest_rem, angle_rem
 \i0\b0 	\
 			
-\i\fs20 3 int, R*8
-\i0\fs22 	
+\i\fs20 3 int, dbl
+\i0\fs22 		
 \i ny_rem
 \i0 			Activate remeshing? 0-no, 1-yes.\
 					
@@ -943,7 +898,7 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i0 		Mode\
 									=1 keep 4 sides as is. \
 									=3 L,R,B restored to initial sides\
-										topography as is.\
+										top as is.\
 									=11 L,R restored to initial sides,\
 										top,bottom as is.\
 					
@@ -962,27 +917,21 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 
 \i\b \cf0 dx_rem
 \i0\b0 				
-\i\fs20 R*8
-\i0\fs22 	! 
-\i dx_rem
-\i0  - remeshing criteria for mode_rem=11  (Luc note)\
-					\cf2 NOTE: there is no code that checks for mode_rem=11.\
-					rem_test.f90: if remeshing with adding material on the sides \
-							then remesh at pre-given shortening.\
-							! dx_rem*dx - critical distance of shortnening.\
-						This is for cases mode_rem=3 or 4.\
-\pard\pardeftab720\ri0\sl-220\ql\qnatural
-\cf0 					Nominal size = 
+\i\fs20 dbl
+\i0\fs22 	remeshing criteria for 
+\i mode_rem
+\i0 =3 or 11\
+					Normalized size = 
 \i rxb0/(nx-1)
 \i0 .  
 \i dx_rem
-\i0  = 0-1; %nominal size.\
-\pard\pardeftab720\ri0\sl-220\ql\qnatural
+\i0  = 0~1\
 
-\i\b \cf0 topo_kappa, bottom_kappa
+\i\b \
+topo_kappa, bottom_kappa
 \i0\b0 	
-\i\fs20 2 R*8
-\i0\fs22 	Erosion diffusion of topography:  diffusivity top, bottom.  \
+\i\fs20 2 dbl
+\i0\fs22 	Erosion diffusion of topography: diffusivity for top, bottom 						boundaries. Use 0 for no erosion, 1E-5 for strong erosion.\
 \
 \
 \pard\pardeftab720\ri0\sl-220\ql\qnatural
@@ -1004,14 +953,24 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 
 \i\b dt_scale, strain_inert
 \i0\b0 		
-\i\fs20 2 R*8
-\i0\fs22 	dt_scale (used if scale =1), tolerance=Vbc/Vsound (if scale=2)\
+\i\fs20 2 dbl
+\i0\fs22 	control of time step size; 
+\i dt_scale
+\i0  is used if 
+\i idt_scale
+\i0  =1.\
+					
+\i strain_inert
+\i0  is used if 
+\i idt_scale
+\i0 =2. Decrease it if the model\
+					gives NaN or Inf result.\
 
 \i\b i_rey,xReyn
 \i0\b0  			
 \i\fs20 int,
 \i0\fs22  
-\i\fs20 R*8
+\i\fs20 dbl
 \i0\fs22 	Buoyancy + Reynolds (no-0,yes-1), Reynolds number\
 
 \i\b ifreq_rmasses
@@ -1033,25 +992,26 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i0\b0 			
 \i\fs20 int
 \i0\fs22 	navgsr - freq. averaging strain rate and dissipation\
-		
-\b ; Acceleration Parameters (Cundall, 1982)\
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
 
-\i amul, ratl, ratu
+\b \cf0 \
+; Acceleration Parameters (Cundall, 1982)\
+\pard\pardeftab720\ri0\sl-220\ql\qnatural
+
+\i \cf0 amul, ratl, ratu
 \i0\b0 			
-\i\fs20 3 R*8
+\i\fs20 3 dbl
 \i0\fs22 	Internal adaptive time scaling.\
 
 \i\b frac, fracm
 \i0\b0 			
-\i\fs20 2 R*8
-\i0\fs22 	\cf2 ? 
-\i frac_elastic, frac_maxwell
-\i0  - calculate time step scales?\cf0 \
+\i\fs20 2 dbl
+\i0\fs22 	calculate time step scales\
 
 \i\b n_boff_cutoff
 \i0\b0 			
 \i\fs20 int
-\i0\fs22 	\cf2 Related to bottom boundary somehow. \cf0  \
+\i0\fs22 	force balance cut-off.\cf2  \cf0  \
 \pard\pardeftab720\ri0\sl-240\ql\qnatural
 
 \i\b \cf0 movegrid, ndim
@@ -1068,10 +1028,10 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i\b \cf0 demf, mix_strain, mix_stress
 \i0\b0 	\
 			
-\i\fs20 R*8 2 int
+\i\fs20 dbl 2 int
 \i0\fs22  	
 \i demf
-\i0 		damping \
+\i0 		damping coefficient\
 					Mixing Procedures:	
 \i mix_strain
 \i0  	0-no, 1-yes.\
@@ -1083,22 +1043,22 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \b \cf0 ; OUTPUT PARAMETERS    \
-	; Time parameters below are in thousands years\
+; Time parameters below are in thousands years\
 \pard\pardeftab720\ri0\sl-220\ql\qnatural
 
 \i \cf0 time_max
 \i0\b0 			
-\i\fs20 R*8
+\i\fs20 dbl
 \i0\fs22 	Max time of calculations (in Kyrs).\
 
 \i\b dtout_screen
 \i0\b0 			
-\i\fs20 R*8
+\i\fs20 dbl
 \i0\fs22 	Time interval for screen output of calc. progress.\
 
 \i\b dtout_file
 \i0\b0 			
-\i\fs20 R*8
+\i\fs20 dbl
 \i0\fs22 	Time interval for file output (frequency of output)\
 	
 \b ; Variables to print to file:   0-no, 1-yes\
@@ -1109,79 +1069,74 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 
 \i0\b0 \cf0 			
 \i 19 int	io_vel
-\i0 		Velocity (Vx,Vz) in cm/year.		        
+\i0 	Velocity (Vx,Vz) in cm/year.			        		
 \i vx.0,vz.0
 \i0 \
 				
 \i io_srII
-\i0 		Strain Rate - second invariant, log
+\i0 	Deviatoric strain rate - second invariant, log
 \fs16 \dn4 10
 \fs22 \up0 (). 		
 \i srII.0
 \i0 \
 				
 \i io_eII
-\i0 		Strain - second invariant, first invariant.	      
+\i0 	Dev. strain - second invariant, first invariant.	      		
 \i eII.0, eI.0
 \i0 \
 				
 \i io_aps
-\i0 		Total accumulated plastic strain			
+\i0 	Total accumulated plastic strain				
 \i aps.0
 \i0 \
 				
 \i io_sII
-\i0 		Stress - sqrt(second invariant), 	in kbars		
+\i0 	Dev. stress - sqrt(second invariant), in kbars			
 \i sII.0
 \i0 \
 				
 \i io_sxx
-\i0 		Stress - xx, 			in kbars		
+\i0 	Dev. stress \'96 xx component, in kbars				
 \i sxx.0
 \i0 \
 				
 \i io_szz
-\i0 		Stress - zz, 			in kbars		
+\i0 		Dev. stress \'96 zz component, in kbars			
 \i szz.0
 \i0 \
 				
 \i io_sxz
-\i0 		Stress - xz (shear),  		in kbars		
+\i0 		Stress - xz (shear) component,  in kbars		
 \i sxz.0
 \i0 \
 				
 \i io_pres
-\i0 		Pressure,			in kbars		
+\i0 		Pressure, in kbars					
 \i pres.0\
 				io_temp
-\i0 		Temperature			in oC		
+\i0 		Temperatur, in Celsius				
 \i temp.0
 \i0 \
 				
 \i io_phase
-\i0 	Phase # (1-n as defined in input file).		
+\i0 	Phase # (1-n as defined in input file).			
 \i phase.0
 \i0 \
 				
 \i io_visc
-\i0 		Viscosity 			, log
+\i0 		Viscosity, log
 \fs16 \dn4 10
-\fs22 \up0 (Pa-s)	
+\fs22 \up0 (Pa-s)					
 \i visc.0
 \i0 \
 				
-\i io_density
-\i0 	Density				in kg/m	           
+\i io_mark
+\i0 	Density, in kg/m					
 \i density.0
 \i0 \
 				
-\i io_mark
-\i0 	Used for phase (Eff_density) !!			
-\i phas.0
-\i0 \
-				
 \i io_src
-\i0 		Heat source.					
+\i0 		Heat source.						
 \i src.0
 \i0 \
 				
@@ -1191,7 +1146,7 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i0 \
 				
 \i io_forc
-\i0 		Force: at left,right boundaries			
+\i0 		Force: at left, right boundaries				
 \i forc.0
 \i0 \
 				
@@ -1201,19 +1156,19 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i0 \
 				
 \i io_topo	
-\i0 	Topography (1-D)		in km		
+\i0 Topography (1-D), in km				
 \i topo.0
 \i0 \
 \
 				By default, these always produced:\
-						Time of each output panel	in sec		
+						Time of each output panel	in sec			
 \i time.0
 \i0 \
 						Mesh coordinates (z,x)
 \fs16 \dn4 x
 \fs22 \up0 , (z,x)
 \fs16 \dn4 z
-\fs22 \up0 	in km		
+\fs22 \up0 	in km			
 \i mesh.0
 \i0 \
 \
@@ -1227,7 +1182,7 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 
 \i\b dtsave_file
 \i0\b0 			
-\i\fs20 R*8
+\i\fs20 dbl
 \i0\fs22 	Time interval for process saving (in Kyrs). For restart *.rs files.\
 
 \i\b lastsave
@@ -1236,7 +1191,6 @@ Notes:	(1) Any number of comment lines can be present and are preceded by a semi
 \i0 	Saving the last step only (1) or each nsave step (0)\
 \
 					To restart, 	(a) copy _contents.save -> _contents.rs\
-							(b) flac\
+							(b) rerun flac with the same input parameters\
 \
-;========================================================\
-}
+; END OF FILE}
