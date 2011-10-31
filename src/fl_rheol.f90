@@ -51,8 +51,10 @@ if (ny_inject.gt.0) then
 endif
 
 irh_mark = 0
+old_devmax = devmax
+old_dvmax = dvmax
 
-!$OMP Parallel Private(i,j,k,iph,irh,bulkm,rmu,coh,phi,psi, &
+!$OMP Parallel Private(i,j,k,iph,irh,irh_mark,bulkm,rmu,coh,phi,psi, &
 !$OMP                  stherm,hardn,vis, &
 !$OMP                  de11,de22,de12,de33,dv, &
 !$OMP                  s11p,s22p,s12p,s33p, &
@@ -60,7 +62,7 @@ irh_mark = 0
 !$OMP                  depl,ipls,diss, &
 !$OMP                  sII_plas,sII_visc, &
 !$OMP                  quad_area,s0a,s0b,s0)
-!$OMP do schedule(guided)
+!$OMP do schedule(guided) reduction(max: devmax, dvmax)
 do 3 i = 1,nx-1
     do 3 j = 1,nz-1
         ! iphase (j,i) is number of a phase NOT a rheology
@@ -252,6 +254,9 @@ do 3 i = 1,nx-1
 3 continue
 !$OMP end do
 !$OMP end parallel
+
+devmax = max(devmax, old_devmax)
+dvmax = max(dvmax, old_dvmax)
 
 return
 end
