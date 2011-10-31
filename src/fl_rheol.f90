@@ -232,21 +232,24 @@ do 3 i = 1,nx-1
             stress0(j,i,2,4) = stress0(j,i,2,4) - s0b + s0
         endif
 
-        !  ACCUMULATED PLASTIC STRAIN
-        ! Average the strain for pair of the triangles
-        ! Note that area (n,it) is inverse of double area !!!!!
-        aps(j,i) = aps(j,i) &
-            + 0.5*( depl(1)*area(j,i,2)+depl(2)*area(j,i,1) ) / (area(j,i,1)+area(j,i,2)) &
-            + 0.5*( depl(3)*area(j,i,4)+depl(4)*area(j,i,3) ) / (area(j,i,3)+area(j,i,4))
-        if( aps(j,i) .lt. 0. ) aps(j,i) = 0.
+        if (irh.eq.6 .or. irh.ge.11) then
+            !  ACCUMULATED PLASTIC STRAIN
+            ! Average the strain for pair of the triangles
+            ! Note that area (n,it) is inverse of double area !!!!!
+            aps(j,i) = aps(j,i) &
+                 + 0.5*( depl(1)*area(j,i,2)+depl(2)*area(j,i,1) ) / (area(j,i,1)+area(j,i,2)) &
+                 + 0.5*( depl(3)*area(j,i,4)+depl(4)*area(j,i,3) ) / (area(j,i,3)+area(j,i,4))
+            if( aps(j,i) .lt. 0. ) aps(j,i) = 0.
 
-!	write(*,*) depl(1),depl(2),depl(3),depl(4),area(j,i,1),area(j,i,2),area(j,i,3),area(j,i,4)
+            !	write(*,*) depl(1),depl(2),depl(3),depl(4),area(j,i,1),area(j,i,2),area(j,i,3),area(j,i,4)
 
-        ! LINEAR HEALING OF THE PLASTIC STRAIN
-        if (tau_heal .ne. 0.) &
-            aps (j,i) = aps (j,i)/(1.+dt/tau_heal) 
-        if (ny_inject.gt.0.and.i.eq.iinj) aps (j,i) = 0.
-        ! TOTAL FINITE STRAIN  
+            ! LINEAR HEALING OF THE PLASTIC STRAIN
+            if (tau_heal .ne. 0.) &
+                 aps (j,i) = aps (j,i)/(1.+dt/tau_heal)
+            if (ny_inject.gt.0.and.i.eq.iinj) aps (j,i) = 0.
+        end if
+
+        ! TOTAL FINITE STRAIN
         strain(j,i,1) = strain(j,i,1) + 0.25*dt*(strainr(1,1,j,i)+strainr(1,2,j,i)+strainr(1,3,j,i)+strainr(1,4,j,i))
         strain(j,i,2) = strain(j,i,2) + 0.25*dt*(strainr(2,1,j,i)+strainr(2,2,j,i)+strainr(2,3,j,i)+strainr(2,4,j,i))
         strain(j,i,3) = strain(j,i,3) + 0.25*dt*(strainr(3,1,j,i)+strainr(3,2,j,i)+strainr(3,3,j,i)+strainr(3,4,j,i))
