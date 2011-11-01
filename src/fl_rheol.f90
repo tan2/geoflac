@@ -51,8 +51,10 @@ if (ny_inject.gt.0) then
 endif
 
 irh_mark = 0
-old_devmax = devmax
-old_dvmax = dvmax
+
+! max. deviatoric strain and area change of current time step
+curr_devmax = devmax
+curr_dvmax = dvmax
 
 !$OMP Parallel Private(i,j,k,iph,irh,irh_mark,bulkm,rmu,coh,phi,psi, &
 !$OMP                  stherm,hardn,vis, &
@@ -62,7 +64,7 @@ old_dvmax = dvmax
 !$OMP                  depl,ipls,diss, &
 !$OMP                  sII_plas,sII_visc, &
 !$OMP                  quad_area,s0a,s0b,s0)
-!$OMP do schedule(guided) reduction(max: devmax, dvmax)
+!$OMP do schedule(guided) reduction(max: curr_devmax, curr_dvmax)
 do 3 i = 1,nx-1
     do 3 j = 1,nz-1
         ! iphase (j,i) is number of a phase NOT a rheology
@@ -131,7 +133,7 @@ do 3 i = 1,nx-1
             elseif (irh.eq.3) then
                 ! viscous
                 call maxwell(bulkm,rmu,vis,s11v(k),s22v(k),s33v(k),s12v(k),de11,de22,de33,de12,dv,&
-                     ndim,dt,devmax,dvmax)
+                     ndim,dt,curr_devmax,curr_dvmax)
                 irheol_fl(j,i) = -1  
                 stress0(j,i,1,k) = s11v(k)
                 stress0(j,i,2,k) = s22v(k)
@@ -156,7 +158,7 @@ do 3 i = 1,nx-1
                         ten_off,ndim,irh_mark)
                     call maxwell(bulkm,rmu,vis,s11v(k),s22v(k),s33v(k),s12v(k),&
                         de11,de22,de33,de12,dv,&
-                        ndim,dt,devmax,dvmax)
+                        ndim,dt,curr_devmax,curr_dvmax)
                 else ! use previously defined rheology
                     if( irheol_fl(j,i) .eq. 1 ) then
                         call plastic(bulkm,rmu,coh,phi,psi,depl(k),ipls,diss,hardn,&
@@ -169,7 +171,7 @@ do 3 i = 1,nx-1
                     else  ! irheol_fl(j,i) = -1
                         call maxwell(bulkm,rmu,vis,s11v(k),s22v(k),s33v(k),s12v(k),&
                             de11,de22,de33,de12,dv,&
-                            ndim,dt,devmax,dvmax)
+                            ndim,dt,curr_devmax,curr_dvmax)
                         stress0(j,i,1,k) = s11v(k)
                         stress0(j,i,2,k) = s22v(k)
                         stress0(j,i,3,k) = s12v(k)
@@ -258,8 +260,8 @@ do 3 i = 1,nx-1
 !$OMP end do
 !$OMP end parallel
 
-devmax = max(devmax, old_devmax)
-dvmax = max(dvmax, old_dvmax)
+devmax = max(devmax, curr_devmax)
+dvmax = max(dvmax, curr_dvmax)
 
 return
 end
