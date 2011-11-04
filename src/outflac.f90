@@ -23,7 +23,7 @@ else
         read( 1, *, end=10 ) nrec
     end do
 5   continue
-    open (1,file='_contents.0')
+    open (1,file='_contents.0',position='append')
     nrec = 0
 10  continue
     nrec = nrec + 1
