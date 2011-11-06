@@ -197,19 +197,19 @@ subroutine resurface
           if (dtopo > 0.) then
               ! sedimentation, add a sediment marker
               !print *, 'add sediment', i, dtopo, elz
-              call random_number(rx)
-              xx = cord(1,i,1) + rx * (cord(1,i+1,1) - cord(1,i,1))
-              yy = cord(1,i,2) + rx * (cord(1,i+1,2) - cord(1,i,2)) - 0.05*elz
-              call add_marker(xx, yy, ksed2, time, nmarkers, 1, i, inc)
-              if(inc==0) then
-                  write(333,*) 'sedimentation failed: ', xx, yy, rx, elz
-                  write(333,*) '  ', cord(1,i,:)
-                  write(333,*) '  ', cord(1,i+1,:)
-                  write(333,*) '  ', cord(2,i,:)
-                  write(333,*) '  ', cord(2,i+1,:)
-                  call SysMsg('Cannot add marker for sedimentation.')
-                  stop 23
-              end if
+              do while(.true.)
+                  call random_number(rx)
+                  xx = cord(1,i,1) + rx * (cord(1,i+1,1) - cord(1,i,1))
+                  yy = cord(1,i,2) + rx * (cord(1,i+1,2) - cord(1,i,2)) - 0.05*elz
+                  call add_marker(xx, yy, ksed2, time, nmarkers, 1, i, inc)
+                  if(inc==1) exit
+                  !write(333,*) 'sedimentation failed: ', xx, yy, rx, elz
+                  !write(333,*) '  ', cord(1,i,:)
+                  !write(333,*) '  ', cord(1,i+1,:)
+                  !write(333,*) '  ', cord(2,i,:)
+                  !write(333,*) '  ', cord(2,i+1,:)
+                  !call SysMsg('Cannot add marker for sedimentation.')
+              end do
           else
               ! erosion, remove the top marker
               !print *, 'erosion', i, dtopo, elz
