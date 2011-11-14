@@ -65,52 +65,6 @@ else ! file does not exist - new start
 end if
 
 
-#ifdef USE_CUDA
-! copy variables to C and CUDA
-call cu_copy_param( &
-     irheol, visc, &
-     den, alfa, beta, &
-     pln, acoef, eactiv, &
-     rl, rm, coha, cohdisp, &
-     phimean, phidisp, psia, &
-     conduct, cp, &
-     ts, tl, tk, fk, &
-     g, pisos, drosub, &
-     rzbo, demf, &
-     sec_year, ynstressbc, &
-     dt_scale, frac, fracm, &
-     strain_inert, vbc, &
-     lphase, &
-     nyhydro, iphsub, &
-     n_boff_cutoff, i_prestress, &
-     iint_marker, nphasl, idt_scale &
-     )
-
-if(.false.) then
-    ! Copy and paste the arguments to here
-    ! Otherwise, the compiler won't be able to detect typo with debug build
-    write(*,*) &
-         irheol, visc, &
-         den, alfa, beta, &
-         pln, acoef, eactiv, &
-         rl, rm, coha, cohdisp, &
-         phimean, phidisp, psia, &
-         conduct, cp, &
-         ts, tl, tk, fk, &
-         g, pisos, drosub, &
-         rzbo, demf, &
-         sec_year, ynstressbc, &
-         dt_scale, frac, fracm, &
-         strain_inert, vbc, &
-         lphase, &
-         nyhydro, iphsub, &
-         n_boff_cutoff, i_prestress, &
-         iint_marker, nphasl, idt_scale
-endif
-
-#endif
-
-
 !      ****************** running ********************************
 ireset = 1
 dtacc_screen = 0

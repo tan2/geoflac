@@ -11,13 +11,11 @@
 ## omp = 1: enable openmp support
 ## coverage = 1: enable code coverage analysis (used for debugging)
 ## gprof = 1: enable profiling (used for tuning optimization)
-## cuda = 0: f90 only; 1: cuda runtime; 2: cuda emulation
 
 debug = 0
 omp = 1
 coverage = 0
 gprof = 0
-cuda = 0
 
 
 ## any customized flags
@@ -118,52 +116,10 @@ ifeq ($(F90), f90)
 endif
 
 
-#### CUDA C compiler, compiler flags, linker flags
-ifneq ($(cuda), 0)
-
-	ifdef TACC_CUDA_DIR
-		CUDAHOME = $(TACC_CUDA_DIR)
-		CUDALIB = $(TACC_CUDA_LIB)
-	else
-		CUDAHOME = $(HOME)/cuda
-		CUDALIB = $(CUDAHOME)/lib64
-	endif
-
-	CFLAGS += -DUSE_CUDA
-	LDFLAGS += -L$(CUDALIB) -lstdc++ -Xlinker -rpath $(CUDALIB)
-
-	NVCC = $(CUDAHOME)/bin/nvcc
-	NVCCFLAGS = -use_fast_math --ptxas-options=-v -arch sm_13 # for double precision
-
-	ifeq ($(debug), 0)
-		NVCCFLAGS += -O2
-	else
-		NVCCFLAGS += -g
-	endif
-
-	ifeq ($(cuda), 2)
-		NVCCFLAGS += -g -deviceemu
-		LDFLAGS += -lcudartemu
-	else
-		LDFLAGS += -lcudart
-	endif
-endif
-
-
-## command to invoke mercurial VCS
-HG = hg
-
-
 MODULE_SRCS = \
+	arrays.f90 \
 	marker_data.f90
 
-# f90 source code with preprocessor directives (#if ... #endif)
-CPP_SRCS = \
-	arrays.F90 \
-	flac.F90 \
-	par.F90
-
-# f90 source code without preprocessor directives
 SRCS =	\
 	bar2euler.f90 \
 	bc_update.f90 \
@@ -175,6 +131,7 @@ SRCS =	\
 	fl_rheol.f90 \
 	fl_srate.f90 \
 	fl_therm.f90 \
+	flac.f90 \
 	functions.f90 \
 	init_areas.f90 \
 	init_bc.f90 \
@@ -192,6 +149,7 @@ SRCS =	\
 	outflac.f90 \
 	outmarker.f90 \
 	outtracer.f90 \
+	par.f90 \
 	read_params.f90 \
 	rem_cord.f90 \
 	remesh.f90 \
@@ -206,31 +164,17 @@ SRCS =	\
 	user_ab.f90 \
 	user_luc.f90
 
-CUDAFLAC_SRC = \
-	cu_flac.cu
 
 MODULES = $(MODULE_SRCS:.f90=.mod)
 MODULE_OBJS = $(MODULE_SRCS:.f90=.o)
 OBJS = $(SRCS:.f90=.o)
-OBJS2 = $(CPP_SRCS:.F90=.o)
-CUDAFLAC_OBJS = $(CUDAFLAC_SRC:.cu=.o)
 
 EXE = flac
-CUEXE = cuflac
 
-ifeq ($(cuda), 0)
 all: $(EXE)
-else
-all: $(CUEXE)
-endif
 
-$(EXE): $(MODULE_OBJS) $(OBJS2) $(OBJS)
-	$(F90) $(LDFLAGS) $(MODULE_OBJS) $(OBJS) $(OBJS2) -o $@
-	@which hg &> /dev/null && (hg summary && hg diff) > 0.patch
-
-$(CUEXE): $(MODULES_OBJS) $(OBJS2) $(OBJS) $(CUDAFLAC_OBJS)
-	$(F90) $(LDFLAGS) $(MODULE_OBJS) $(OBJS) $(OBJS2) $(CUDAFLAC_OBJS) -o $@
-	@which hg &> /dev/null && (hg summary && hg diff) > 0.patch
+$(EXE): $(MODULE_OBJS) $(OBJS)
+	$(F90) $(LDFLAGS) $(MODULE_OBJS) $(OBJS) -o $@
 
 $(MODULE_OBJS): %.o : %.f90
 	$(F90) $(CFLAGS) -c $<
@@ -238,17 +182,8 @@ $(MODULE_OBJS): %.o : %.f90
 $(OBJS): %.o : %.f90
 	$(F90) $(CFLAGS) -c $<
 
-$(OBJS2): %.o : %.F90
-	$(F90) $(CFLAGS) -c $<
-
-$(CUDAFLAC_OBJS): %.o : %.cu
-	$(NVCC) $(NVCCFLAGS) -L$(CUDALIB) -c $<
-
-touch:
-	@rm -f $(OBJS2)
-
 clean:
-	@rm -f $(MODULES) $(MODULE_OBJS) $(OBJS) $(OBJS2) $(CUDAFLAC_OBJS) $(EXE)
+	@rm -f $(MODULES) $(MODULE_OBJS) $(OBJS) $(EXE)
 
 clean-data:
 	@rm -f *.0 *.rs sys.msg marker_init.asc vbc.s area.dat output.asc temp0.dat
