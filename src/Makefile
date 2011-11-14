@@ -12,18 +12,10 @@
 ## coverage = 1: enable code coverage analysis (used for debugging)
 ## gprof = 1: enable profiling (used for tuning optimization)
 
-debug = 0
-omp = 1
-coverage = 0
-gprof = 0
 
-
-## any customized flags
-CFLAGS = -g
-LDFLAGS =
-
-
+########################################################################
 ## Select default fortran 90 compiler
+########################################################################
 
 ## GNU version >= 4.2, otherwise openmp won't work
 F90 = gfortran
@@ -36,6 +28,22 @@ F90 = gfortran
 
 ## Sun
 #F90 = f90
+
+
+########################################################################
+## any customized flags
+########################################################################
+CFLAGS = -g
+LDFLAGS =
+
+
+########################################################################
+## default command line options
+########################################################################
+debug = 0
+omp = 1
+coverage = 0
+gprof = 0
 
 
 ########################################################################
@@ -104,10 +112,12 @@ ifeq ($(F90), f90)
 		CFLAGS += -xopenmp=parallel
 		LDFLAGS += -xopenmp
 	endif
-	# -r8const: Promote single precision const to double precision.
-	# -C: Enable runtime subscript range checking
-	# -fpover=yes: Provide run-time overflow check during READ
-	# -xcheck=%all: Enable all run-time check
+
+# Explanation of flags --
+# -r8const: Promote single precision const to double precision.
+# -C: Enable runtime subscript range checking
+# -fpover=yes: Provide run-time overflow check during READ
+# -xcheck=%all: Enable all run-time check
 	ifeq ($(debug), 0)
 		CFLAGS += -O3 -r8const -fast -xloopinfo -s -xipo
 	else
@@ -116,6 +126,11 @@ ifeq ($(F90), f90)
 endif
 
 
+########################################################################
+## list of source files
+########################################################################
+
+# module files have to be compiled before other f90 files
 MODULE_SRCS = \
 	arrays.f90 \
 	marker_data.f90
@@ -170,6 +185,11 @@ MODULE_OBJS = $(MODULE_SRCS:.f90=.o)
 OBJS = $(SRCS:.f90=.o)
 
 EXE = flac
+
+
+########################################################################
+## actions
+########################################################################
 
 all: $(EXE)
 
