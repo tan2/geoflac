@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 '''
-Read flac density and coordinate data and return gravity and topography at regular spacing.
-Filling basin with sediment before computing gravity
+Read flac density and coordinate data and return gravity and topography at
+regular spacing.
+Filling basin with sediment (to 2km below sea level) and erode forearc height
+to sea level before computing gravity.
 '''
 
 import sys
@@ -12,9 +14,8 @@ gn = 6.6726e-11
 ocean_density = 1030.
 sediment_density = 2400.
 
-def find_trench_index(z):
+def find_trench_index(zz):
     '''Returns the i index of trench location.'''
-    zz = z[:,0]
     # the highest point defines the forearc
     imax = zz.argmax()
     # the trench is the lowest point west of forearc
@@ -22,13 +23,12 @@ def find_trench_index(z):
     return i
 
 
-def find_peaks(z):
-    zz = z[:,0]
-    nx, nz = z.shape
+def find_peaks(zz):
+    nx = zz.shape[0]
 
     # max basin depth
     basin_min_depth = -2000
-    itrench = find_trench_index(z)
+    itrench = find_trench_index(zz)
 
     peaks = []
     for i in range(itrench+1, nx-1):
@@ -72,6 +72,9 @@ def compute_gravity(frame):
 
     rho = fl.read_density(frame)  # in kg/m^3
 
+    # anything above sea level is removed
+    rho[cz > 0] = 0
+
     ## benchmark case: infinite-long cylinder with radius R
     ## buried at depth D
     #R = 10e3
@@ -110,8 +113,8 @@ def compute_gravity(frame):
 
 
     ## contribution of sedimentary basin, only to the right of trench
-    peaks = find_peaks(z)
-    itrench = find_trench_index(z)
+    peaks = find_peaks(zz)
+    itrench = find_trench_index(zz)
     basin_depth = -2000
     sed_density = 2200
     sed_thickness = np.zeros(fl.nx)
@@ -179,15 +182,44 @@ def compute_gravity(frame):
         angle = np.arctan2(dx, dz)
         grav += 2 * gn * sigma * (0.5*np.pi - angle)
 
-    ##
-    grav -= np.mean(grav)
+    ## set reference gravity
+    ## far right gravity to 0
+    grav -= grav[-1]
 
     return px, topo, grav
+
+
+def modify_topo(topo):
+    peaks = find_peaks(topo)
+    itrench = find_trench_index(topo)
+    basin_depth = -2000
+
+    topomod = topo.copy()
+
+    # erode forearc height to sea level
+    topomod[topo > 0] = 0
+
+    # fill basin
+    for ii in range(len(peaks)-1):
+        fill_height = min((basin_depth, topo[peaks[ii]], topo[peaks[ii+1]]))
+        for i in range(peaks[ii], peaks[ii+1]):
+            if topo[i] < fill_height:
+                topomod[i] = fill_height
+
+    return topomod
+
+
+def compute_gravity2(frame):
+    '''Similar to compute_gravity(), but also return modified topo'''
+    px, topo, grav = compute_gravity(frame)
+    topomod = modify_topo(topo)
+
+    return px, topo, topomod, grav
 
 
 if __name__ == '__main__':
     frame = int(sys.argv[1])
 
-    px, topo, gravity = compute_gravity(frame)
+    px, topo, topomod, gravity = compute_gravity2(frame)
 
 
