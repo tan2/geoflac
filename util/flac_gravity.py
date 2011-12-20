@@ -129,5 +129,5 @@ if __name__ == '__main__':
     frame = int(sys.argv[1])
 
     px, topo, gravity = compute_gravity(frame)
-
+    flac.printing(px, topo, gravity)
 
