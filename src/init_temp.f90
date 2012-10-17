@@ -86,7 +86,7 @@ case (2)
             do i = ixtb1(n), ixtb2(n)
                 do j = 1,nz
                     ! depth in km
-                    y = (cord(1,i,2)-cord(j,i,2)) / sqrt(2. * diffusivity * age_1(n) * 1.e6 * sec_year)
+                    y = (cord(1,i,2)-cord(j,i,2)) / sqrt(4 * diffusivity * age_1(n) * 1.e6 * sec_year)
                     temp(j,i) = t_top + (t_bot - t_top) * erf(y)
                     !print *, j, age_1(n), -cord(j,i,2), temp(j,i)
                 enddo
@@ -184,7 +184,7 @@ subroutine sidewalltemp(i1, i2)
       do i = i1, i2
           do j = 1,nz
               ! depth in km
-              y = (cord(1,i,2)-cord(j,i,2)) / sqrt(2. * diffusivity * age_1(n) * 1.e6 * sec_year)
+              y = (cord(1,i,2)-cord(j,i,2)) / sqrt(4 * diffusivity * age_1(n) * 1.e6 * sec_year)
               temp(j,i) = t_top + (t_bot - t_top) * erf(y)
               !print *, j, age_1(n), -cord(j,i,2), temp(j,i)
           enddo
