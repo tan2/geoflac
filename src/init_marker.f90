@@ -66,7 +66,7 @@ do i = 1 , nx-1
             xx = x_tr(l)+ddx
             yy = y_tr(l)+ddy
 
-            call add_marker(xx, yy, iphase(j,i), 0., nmarkers, j, i, inc)
+            call add_marker(xx, yy, iphase(j,i), 0.d0, nmarkers, j, i, inc)
             if(inc.eq.0) cycle
 
             l = l + 1
