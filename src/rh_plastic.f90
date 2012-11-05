@@ -257,44 +257,43 @@ include 'arrays.inc'
 
 pls_curr = aps(j,i)
 
-coh = 0
 phi = 0
+coh = 0
 psi = 0
 
 ! Strain-Hardening
-hardn = 0.
+hardn = 0
 
-! using harmonic mean on friction and cohesion
-! using arithmatic mean on dilation and hardening
 do iph = 1, nphase
     if(phase_ratio(iph,j,i) .lt. 0.01) cycle
 
-    ! Find current properties from linear interpolation
-    if(pls_curr < plstrain(iph)) then
-
-        pl2 = plstrain(iph)
- 
-        ! Friction
-        tgf = (fric2(iph)-fric1(iph)) / pl2
-        phi =  phi + phase_ratio(iph,j,i) / (fric1(iph) + tgf*pls_curr)
-
-        ! Dilatation
-        !tgd = (dilat2(iph)-dilat1(iph)) / pl2
-        !psi = psi + phase_ratio(iph,j,i) * (dilat1(iph) + tgd*pls_curr)
- 
-        ! Cohesion
-        tgc = (cohesion2(iph)-cohesion1(iph)) / pl2
-        coh = coh + phase_ratio(iph,j,i) / (cohesion1(iph) + tgc*pls_curr)
-
-        ! Hardening (for Cohesion ONLY)
-        hardn = hardn + phase_ratio(iph,j,i) * tgc
+    if(pls_curr < plstrain1(iph)) then
+        ! no weakening yet
+        f = fric1(iph)
+        c = cohesion1(iph)
+        d = dilat1(iph)
+        h = 0
+    else if (pls_curr < plstrain2(iph)) then
+        ! Find current properties from linear interpolation
+        dpl = (pls_curr - plstrain1(iph)) / (plstrain2(iph) - plstrain1(iph))
+        f =  fric1(iph) + (fric2(iph) - fric1(iph)) * dpl
+        d = dilat1(iph) + (dilat2(iph) - dilat1(iph)) * dpl
+        c = cohesion1(iph) + (cohesion2(iph) - cohesion1(iph)) * dpl
+        h = (cohesion2(iph) - cohesion1(iph)) / (plstrain2(iph) - plstrain1(iph))
     else
-
-        phi = phi + phase_ratio(iph,j,i) / fric2(iph)
-        coh = coh + phase_ratio(iph,j,i) / cohesion2(iph)
-        hardn = hardn + 0.
-
+        ! saturated weakening
+        f = fric2(iph)
+        c = cohesion2(iph)
+        d = dilat2(iph)
+        h = 0
     endif
+
+    ! using harmonic mean on friction and cohesion
+    ! using arithmatic mean on dilation and hardening
+    phi = phi + phase_ratio(iph,j,i) / f
+    coh = coh + phase_ratio(iph,j,i) / c
+    psi = psi + phase_ratio(iph,j,i) * d
+    hardn = hardn + phase_ratio(iph,j,i) * h
 
 enddo
 

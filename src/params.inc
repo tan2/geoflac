@@ -25,7 +25,8 @@ common /inout/ dtout_screen,dtout_file,dtsave_file,lastsave,lastout, &
      irphase,irtemp,phasefile,tempfile,irh_mark
 
 common /rheol/ visc(20),den(20),alfa(20),beta(20),pln(20),acoef(20),eactiv(20),rl(20),rm(20), &
-     plstrain(20),fric1(20),fric2(20),cohesion1(20),cohesion2(20), &
+     plstrain1(20),plstrain2(20),fric1(20),fric2(20),cohesion1(20),cohesion2(20), &
+     dilat1(20),dilat2(20), &
      conduct(20),cp(20), &
      ts(20),tl(20),tk(20),fk(20), &
      ten_off,tau_heal, &
