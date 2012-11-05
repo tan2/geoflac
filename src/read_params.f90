@@ -148,8 +148,10 @@ read(4,*) nphase
 do i = 1, nphase 
     call AdvanceToNextInputLine( 4 )
     read(4,*) irheol(i),visc(i),den(i),alfa(i),beta(i),pln(i),acoef(i),eactiv(i),rl(i),rm(i), &
-         plstrain(i),fric1(i),fric2(i),cohesion1(i),cohesion2(i), &
+         plstrain1(i),plstrain2(i),fric1(i),fric2(i),cohesion1(i),cohesion2(i), &
+         dilat1(i),dilat2(i), &
          conduct(i),cp(i),ts(i),tl(i),tk(i),fk(i)
+    print *, i
 end do
 ! Flag to take initial phase distribution from a file
 call AdvanceToNextInputLine( 4 )
