@@ -40,8 +40,8 @@ function Eff_dens( j, i)
           dens = den(k) * ( 1 - alfa(k)*tmpr + beta(k)*press )
 
           if(k==ksed1 .or. k==ksed2) then
-              min_sed_density = 2400.
-              delta_den = den(k) - min_sed_density
+              sed_min_density = 2400.
+              delta_den = den(k) - sed_min_density
               zefold = 6000.
               if (j==1 .and. cord(j,i,2)>0.) then
                   ! sediment above ground is already compacted
@@ -51,7 +51,7 @@ function Eff_dens( j, i)
                   dens = (den(k) - delta_den*exp((zcord-0.5*(cord(1,i,2)+cord(1,i+1,2)))/zefold)) &
                        * ( 1 - alfa(k)*tmpr + beta(k)*press )
               endif
-              if (dens < min_sed_density) dens = min_sed_density
+              if (dens < sed_min_density) dens = sed_min_density
           endif
 
           ! Effect of melt
