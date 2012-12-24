@@ -17,12 +17,12 @@ common /flac_ctrl/ dt_scale,strain_inert,vbc,amul,ratl,ratu,frac, &
      ivis_present,n_boff_cutoff,idt_scale,ifreq_imasses,ifreq_rmasses, &
      movegrid,ndim,ifreq_visc,nmtracers
     
-character phasefile*20,tempfile*20
+character phasefile*20,tempfile*20,coordfile*20
 common /inout/ dtout_screen,dtout_file,dtsave_file,lastsave,lastout, &
      io_vel,io_srII,io_eII,io_aps,io_sII,io_sxx,io_szz, &
      io_sxz,io_pres,io_temp,io_melt,io_visc,io_phas,io_mark, &
      io_src,io_diss,io_forc,io_hfl,io_topo, &
-     irphase,irtemp,phasefile,tempfile,irh_mark
+     irh_mark,irphase,irtemp,ircoord,phasefile,tempfile,coordfile
 
 common /rheol/ visc(20),den(20),alfa(20),beta(20),pln(20),acoef(20),eactiv(20),rl(20),rm(20), &
      plstrain1(20),plstrain2(20),fric1(20),fric2(20),cohesion1(20),cohesion2(20), &

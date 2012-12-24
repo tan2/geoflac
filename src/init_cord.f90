@@ -9,6 +9,28 @@ include 'params.inc'
 include 'arrays.inc'
 
 dimension rmesh1(nx+nz)
+
+if (ircoord .gt. 0) then
+    ! read the coordinates from file
+    open(1, file=coordfile, status='old', err=101)
+
+    do i = 1,nx
+        do j = 1,nz
+            read(1, *, err=102) x, y
+            cord(j,i,1) = x
+            cord(j,i,2) = y
+        end do
+    end do
+
+    close(1)
+    go to 200
+
+101 call SysMsg('INIT_CORD: Cannot open file with initial coordinates!')
+    stop 21
+102 call SysMsg('INIT_CORD: Error reading file with initial coordinates!')
+    stop 21
+end if
+
 ! Check dimensions for the mesh (number of elements and sizes)  
 call test_grid
 !  X - component 
@@ -32,6 +54,8 @@ do i = 1,nx
 !        write(*,*) i,j,cord(j,i,1),cord(j,i,2)
     end do
 end do
+
+200 continue
 
 dx_init = abs(cord(1,2,1)-cord(1,1,1))
 dhacc(1:nx) = 0.d0
