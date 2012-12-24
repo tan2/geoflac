@@ -31,7 +31,19 @@ read(4,*) x0, z0
 call AdvanceToNextInputLine( 4 )
 read(4,*) rxbo, rzbo
 call AdvanceToNextInputLine( 4 )
-read(4,*) nzonx 
+read(4,*) ircoord, coordfile
+if (ircoord .gt. 0) then
+    ! ignore next two lines
+    call AdvanceToNextInputLine( 4 )
+    read(4,*) nzonx
+    if (nzonx .ne. 0) stop 'ircoord is set, but nzonx is not 0!'
+    call AdvanceToNextInputLine( 4 )
+    read(4,*) nzony
+    if (nzony .ne. 0) stop 'ircoord is set, but nzony is not 0!'
+    go to 177
+endif
+call AdvanceToNextInputLine( 4 )
+read(4,*) nzonx
 if (nzonx .eq.0) then
     nzonx = 1
     nelz_x(1) = nx - 1
