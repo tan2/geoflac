@@ -10,6 +10,8 @@
 0.e+3,  0.           x0,z0 begin.coord
 200.e+3, -40.e+3    rxbo,rzbo (size of the region, rxbo > 0, rzbo < 0)
 ;
+0, points.xy    ircoord, coordfile: read init. coordinates from the file
+;
 ; X direction
 0     Number zones X-direction (0 - regular grid)
 ; nelem per zone,   size(non-dimen, must sum to 1.0)
