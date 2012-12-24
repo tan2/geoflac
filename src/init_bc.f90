@@ -61,6 +61,8 @@ subroutine init_bc
           if (nbc(i).eq.nbc(i-1).and.nofside(i).eq.nofside(i-1)) then
               ndbc1 = ndbc
               ndbc = (ndbc)+nbc2(i) - nbc1(i) + 1
+          else
+              ndbc = nbc2(i) - nbc1(i) + 1
           endif
       else
           ndbc = nbc2(i) - nbc1(i) +1
