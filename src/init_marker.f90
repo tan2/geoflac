@@ -7,9 +7,10 @@ include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 
-real(8), dimension(9) :: x_tr,y_tr
-parameter( onesixth = 0.1666666666666666666666)
-parameter( fivesixth = 0.8333333333333333333333)
+double precision :: a(3,2), b(3,2), points(9,2)
+double precision, parameter :: half = 0.5d0
+double precision, parameter :: onesixth = 0.1666666666666666666666d0
+double precision, parameter :: fivesixth = 0.8333333333333333333333d0
 
 nphase_counter = 0
 ntopmarker(:) = 0
@@ -28,30 +29,46 @@ nmarkers = 0
 
 do i = 1 , nx-1
     do j = 1 , nz-1
-        dx = cord(j,i+1,1)-cord(j,i,1)
-        dy = cord(j+1,i,2)-cord(j,i,2)
+        ! Alog the edge of an element; a and b are the nodes
+        !   a - o -- x -- v - b
+        !
+        ! x is located at the midpint
+        !   x = a / 2 + b / 2
+        !
+        ! o is located at a distance of 1/6 length
+        !   o = 5/6 * a + 1/6 * b
+        !
+        ! v is located at a distance of 5/6 length
+        !   o = 1/6 * a + 5/6 * b
+        !
+        ! Considering two elements
+        !   a - o1 -- x1 -- v1 - b - o2 -- x2 -- v2 - c
+        !
+        ! o1, x1, v1, o2, x2, v2 will be equi-distant
+        !
 
-        x_tr(1) = cord(j,i,1) + dx*onesixth
-        y_tr(1) = cord(j,i,2) + dy*onesixth
-        x_tr(2) = cord(j,i,1) + dx*0.5
-        y_tr(2) = cord(j,i,2) + dy*onesixth
-        x_tr(3) = cord(j,i,1) + dx*fivesixth
-        y_tr(3) = cord(j,i,2) + dy*onesixth
+        a(1,:) = cord(j,i,:)*fivesixth + cord(j+1,i,:)*onesixth
+        a(2,:) = cord(j,i,:)*half + cord(j+1,i,:)*half
+        a(3,:) = cord(j,i,:)*onesixth + cord(j+1,i,:)*fivesixth
 
-        x_tr(4) = cord(j,i,1) + dx*onesixth
-        y_tr(4) = cord(j,i,2) + dy*0.5
-        x_tr(5) = cord(j,i,1) + dx*0.5
-        y_tr(5) = cord(j,i,2) + dy*0.5
-        x_tr(6) = cord(j,i,1) + dx*fivesixth
-        y_tr(6) = cord(j,i,2) + dy*0.5
+        b(1,:) = cord(j,i+1,:)*fivesixth + cord(j+1,i+1,:)*onesixth
+        b(2,:) = cord(j,i+1,:)*half + cord(j+1,i+1,:)*half
+        b(3,:) = cord(j,i+1,:)*onesixth + cord(j+1,i+1,:)*fivesixth
 
-        x_tr(7) = cord(j,i,1) + dx*onesixth
-        y_tr(7) = cord(j,i,2) + dy*fivesixth
-        x_tr(8) = cord(j,i,1) + dx*0.5
-        y_tr(8) = cord(j,i,2) + dy*fivesixth
-        x_tr(9) = cord(j,i,1) + dx*fivesixth
-        y_tr(9) = cord(j,i,2) + dy*fivesixth
+        points(1,:) = a(1,:)*fivesixth + b(1,:)*onesixth
+        points(2,:) = a(1,:)*half + b(1,:)*half
+        points(3,:) = a(1,:)*onesixth + b(1,:)*fivesixth
 
+        points(4,:) = a(2,:)*fivesixth + b(2,:)*onesixth
+        points(5,:) = a(2,:)*half + b(2,:)*half
+        points(6,:) = a(2,:)*onesixth + b(2,:)*fivesixth
+
+        points(7,:) = a(3,:)*fivesixth + b(3,:)*onesixth
+        points(8,:) = a(3,:)*half + b(3,:)*half
+        points(9,:) = a(3,:)*onesixth + b(3,:)*fivesixth
+
+        dx = cord(j,i+1,1) - cord(j,i,1)
+        dy = cord(j+1,i,2) - cord(j,i,2)
 
 ! randomize the new coordinates inside the element
         l = 1
@@ -63,8 +80,8 @@ do i = 1 , nx-1
             ry = 0.5 - ry
             ddx = dx*rx/3
             ddy = dy*ry/3
-            xx = x_tr(l)+ddx
-            yy = y_tr(l)+ddy
+            xx = points(l,1) + ddx
+            yy = points(l,2) + ddy
 
             call add_marker(xx, yy, iphase(j,i), 0.d0, nmarkers, j, i, inc)
             if(inc.eq.0) cycle
