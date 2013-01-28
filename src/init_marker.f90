@@ -72,7 +72,7 @@ do i = 1 , nx-1
 
 ! randomize the new coordinates inside the element
         l = 1
-        do while (l .lt. 9)
+        do while (l .le. 9)
             ! position of the marker
             call random_number(rx)
             call random_number(ry)
