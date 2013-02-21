@@ -231,7 +231,10 @@ class Flac(object):
         tmp = self._read_data('markphase' + suffix, count=n, dtype=np.int32)
         phase = self._remove_dead_markers(tmp, dead)
 
-        return x, z, age, phase
+        tmp = np.arange(n)
+        ID = self._remove_dead_markers(tmp, dead)
+
+        return x, z, age, phase, ID
 
 
     def read_tracers(self):

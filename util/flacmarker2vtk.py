@@ -17,14 +17,14 @@ zmin = -50
 zmax = 100
 
 
-def filter_marker(x, z, age, phase):
+def filter_marker(x, z, age, phase, ID):
     # bool * bool is element-wise logical AND
     ind = (xmin <= x) * (x <= xmax) * (zmin <= z) * (z <= zmax)
     x = x[ind]
     z = z[ind]
     age = age[ind]
     phase = phase[ind]
-    return x, z, age, phase
+    return x, z, age, phase, ID
 
 
 def main(path, start=1, end=-1):
@@ -37,9 +37,9 @@ def main(path, start=1, end=-1):
         end = fl.nrec
 
     for i in range(start, end+1):
-        x, z, age, phase = fl.read_markers(i)
+        x, z, age, phase, ID = fl.read_markers(i)
         if filtering:
-            x, z, age, phase = filter_marker(x, z, age, phase)
+            x, z, age, phase, ID = filter_marker(x, z, age, phase, ID)
         nmarkers = len(x)
 
         print 'Writing record #%d, model time=%.3e, %d markers' % (i, fl.time[i-1], nmarkers)
@@ -50,6 +50,7 @@ def main(path, start=1, end=-1):
         fvtp.write('  <PointData>\n')
         vts_dataarray(fvtp, age, 'age', 1)
         vts_dataarray(fvtp, phase.astype(np.int32), 'phase', 1)
+        vts_dataarray(fvtp, ID.astype(np.int32), 'ID', 1)
         fvtp.write('  </PointData>\n')
 
         # point coordinates
