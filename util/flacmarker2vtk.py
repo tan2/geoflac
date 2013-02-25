@@ -24,6 +24,7 @@ def filter_marker(x, z, age, phase, ID):
     z = z[ind]
     age = age[ind]
     phase = phase[ind]
+    ID = ID[ind]
     return x, z, age, phase, ID
 
 
