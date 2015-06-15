@@ -117,7 +117,7 @@ do kk = 1 , nmarkers
     case (kmant1, kmant2)
         ! subuducted oceanic crust below mantle, mantle is serpentinized
         if(depth > max_basalt_depth) cycle
-        do jbelow = min(j+1,nz-1), min(j+3,nz-1)
+        do jbelow = min(j+1,nz-1), min(j+6,nz-1)
             if(phase_ratio(kocean1,jbelow,i) > 0.8 .or. &
                 phase_ratio(kocean2,jbelow,i) > 0.8 .or. &
                 phase_ratio(ksed1,jbelow,i) > 0.8) then
