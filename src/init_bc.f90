@@ -57,16 +57,9 @@ subroutine init_bc
 
   nnop = 0
   do i = 1, nofbc
-      if(i.gt.1) then
-          if (nbc(i).eq.nbc(i-1).and.nofside(i).eq.nofside(i-1)) then
-              ndbc1 = ndbc
-              ndbc = (ndbc)+nbc2(i) - nbc1(i) + 1
-          else
-              ndbc = nbc2(i) - nbc1(i) + 1
-          endif
-      else
-          ndbc = nbc2(i) - nbc1(i) +1
-      endif
+      ! # of bc nodes
+      ndbc = nbc2(i) - nbc1(i) +1
+
       !
       ! Number of bc for stresses
       !
@@ -88,20 +81,14 @@ subroutine init_bc
           x2 = cord ( nbc2(i),1, 2)
 
           do n = 1,ndbc
-              k = i
-              if(i.gt.1) then
-                  if(nbc(i).eq.nbc(i-1).and.nofside(i).eq.nofside(i-1).and.n.le.ndbc1)then
-                      k=i-1
-                  endif
-              endif
-              numbp  = n   
+              numbp = n + nbc1(i)
               x  = (cord (numbp,1,2)  - x1)/(x2-x1)
               if (nbc(i).eq.1.or.nbc(i).eq.10.or.nbc(i).eq.30)  &
-                   call velbc (k,numbp,x)  
+                   call velbc (i,numbp,x)
 
               if (nbc(i).eq.2.or.nbc(i).eq.20.or.nbc(i).eq.40) then
                   nnop = nnop + 1
-                  numbp1 = n + 1
+                  numbp1 = numbp + 1
                   xn = (cord (numbp1,1,2) - x1)/(x2-x1)
                   xa = 0.5 * (x+xn)
                   call stressbc (i,nnop,numbp,numbp1,xa)  
@@ -122,17 +109,11 @@ subroutine init_bc
           x2 = cord (nz, nbc2(i), 1)
 
           do n = 1,ndbc
-              k = i
-              if(i.gt.1) then
-                  if(nbc(i).eq.nbc(i-1).and.nofside(i).eq.nofside(i-1).and.n.le.ndbc1)then
-                      k=i-1
-                  endif
-              endif
               numbp  = n
               x = (cord (nz,numbp,1) - x1)/(x2-x1)
 
               if (nbc(i).eq.1.or.nbc(i).eq.10.or.nbc(i).eq.30)  &
-                   call velbc (k,numbp,x)
+                   call velbc (i,numbp,x)
               if (nbc(i).eq.2.or.nbc(i).eq.20.or.nbc(i).eq.40) then
                   nnop = nnop + 1
                   numbp1 = n + 1
@@ -154,22 +135,15 @@ subroutine init_bc
           x2 = cord ( nbc2(i),nx, 2)
 
           do n = 1,ndbc
-              k = i
-              if(i.gt.1) then
-                  if(nbc(i).eq.nbc(i-1).and.nofside(i).eq.nofside(i-1).and.n.le.ndbc1)then
-                      k=i-1
-                  endif
-              endif
-
-              numbp  =  n
+              numbp = n + nbc1(i)
               x  = (cord (numbp,nx,2) - x1)/(x2-x1)
 
               if (nbc(i).eq.1.or.nbc(i).eq.10.or.nbc(i).eq.30)  &
-                   call velbc (k,numbp,x)
+                   call velbc (i,numbp,x)
 
               if (nbc(i).eq.2.or.nbc(i).eq. 20.or.nbc(i).eq.40) then
                   nnop = nnop + 1
-                  numbp1 = n + 1
+                  numbp1 = numbp + 1
                   xn = (cord (numbp1,nx,2) - x1)/(x2-x1)
                   xa = 0.5 * (x+xn)
                   call stressbc (i,nnop,numbp,numbp1,xa)
@@ -189,22 +163,15 @@ subroutine init_bc
           x2 = cord ( 1,nbc2(i), 1)
 
           do n = 1,ndbc
-              k = i
-              if(i.gt.1) then
-                  if(nbc(i).eq.nbc(i-1).and.nofside(i).eq.nofside(i-1).and.n.le.ndbc1)then
-                      k=i-1
-                  endif
-              endif
-
-              numbp  = n
+              numbp = n + nbc1(i)
               x = (cord (1,numbp,1) - x1)/(x2-x1)
 
               if (nbc(i).eq.1.or.nbc(i).eq.10.or.nbc(i).eq.30)   &
-                   call velbc (k,numbp,x)
+                   call velbc (i,numbp,x)
 
               if (nbc(i).eq.2.or.nbc(i).eq.20.or.nbc(i).eq.40) then
                   nnop = nnop + 1
-                  numbp1 = n + 1
+                  numbp1 = numbp + 1
                   xn = (cord (1,numbp1,1) - x1)/(x2-x1)
                   xa = 0.5 * (x+xn)
                   call stressbc (i,nnop,numbp,numbp1,xa)
