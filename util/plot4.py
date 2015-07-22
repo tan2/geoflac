@@ -14,7 +14,7 @@ right = 250
 up = 10
 down = -200
 dx = 4
-dz = 1.5
+dz = 2.5
 
 def find_trench_index(z):
     '''Returns the i index of trench location.'''
