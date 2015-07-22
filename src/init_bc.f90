@@ -81,7 +81,7 @@ subroutine init_bc
           x2 = cord ( nbc2(i),1, 2)
 
           do n = 1,ndbc
-              numbp = n + nbc1(i)
+              numbp = n + nbc1(i) - 1
               x  = (cord (numbp,1,2)  - x1)/(x2-x1)
               if (nbc(i).eq.1.or.nbc(i).eq.10.or.nbc(i).eq.30)  &
                    call velbc (i,numbp,x)
@@ -109,7 +109,7 @@ subroutine init_bc
           x2 = cord (nz, nbc2(i), 1)
 
           do n = 1,ndbc
-              numbp  = n
+              numbp = n + nbc1(i) - 1
               x = (cord (nz,numbp,1) - x1)/(x2-x1)
 
               if (nbc(i).eq.1.or.nbc(i).eq.10.or.nbc(i).eq.30)  &
@@ -135,7 +135,7 @@ subroutine init_bc
           x2 = cord ( nbc2(i),nx, 2)
 
           do n = 1,ndbc
-              numbp = n + nbc1(i)
+              numbp = n + nbc1(i) - 1
               x  = (cord (numbp,nx,2) - x1)/(x2-x1)
 
               if (nbc(i).eq.1.or.nbc(i).eq.10.or.nbc(i).eq.30)  &
@@ -163,7 +163,7 @@ subroutine init_bc
           x2 = cord ( 1,nbc2(i), 1)
 
           do n = 1,ndbc
-              numbp = n + nbc1(i)
+              numbp = n + nbc1(i) - 1
               x = (cord (1,numbp,1) - x1)/(x2-x1)
 
               if (nbc(i).eq.1.or.nbc(i).eq.10.or.nbc(i).eq.30)   &
