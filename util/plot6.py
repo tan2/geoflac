@@ -40,6 +40,36 @@ def interpolate_phase(frame, xtrench):
     xx, zz, ph = fi.interpolate(frame, 'phase')
     return xx, zz, ph
 
+def interpolate_srII(frame, xtrench):
+   # domain bounds in km
+   fi.xmin = xtrench + left
+   fi.xmax = xtrench + right
+   fi.zmin = down
+   fi.zmax = up
+
+   # resolution in km
+   fi.dx = dx
+   fi.dz = dz
+
+   srx, srz, sr = fi.interpolate(frame, 'srII')
+   return srx, srz, sr
+
+def interpolate_sII(frame, xtrench):
+   # domain bounds in km
+   fi.xmin = xtrench + left
+   fi.xmax = xtrench + right
+   fi.zmin = down
+   fi.zmax = up
+
+   # resolution in km
+   fi.dx = dx
+   fi.dz = dz
+
+   sx, sz, s = fi.interpolate(frame, 'sII')
+   return sx, sz, s
+
+
+
 
 ###############################################
 
@@ -68,6 +98,44 @@ else:
     zz = tmp[:,:,1]
     ph = tmp[:,:,2]
     f.close()
+
+# get interpolated strain_rate either from previous run or from original data
+strain_ratefile = 'intp3-srII.%d' % frame
+if not os.path.exists(strain_ratefile):
+    srx, srz, sr = interpolate_srII(frame, xtrench)
+    f = open(strain_ratefile, 'w')
+    f.write('%d %d\n' % srx.shape)
+    flac.printing(srx, srz, sr, stream=f)
+    f.close()
+else:
+    f = open(strain_ratefile)
+    nx, nz = np.fromfile(f, sep=' ', count=2)
+    strr = np.fromfile(f, sep=' ')
+    strr.shape = (nx, nz, 3)
+    srx = strr[:,:,0]
+    srz = strr[:,:,1]
+    sr = strr[:,:,2]
+    f.close()
+
+
+# get interpolated phase either from previous run or from original data
+stressfile = 'intp3-sII.%d' % frame
+if not os.path.exists(stressfile):
+    sx, sz, s = interpolate_sII(frame, xtrench)
+    f = open(stressfile, 'w')
+    f.write('%d %d\n' % xx.shape)
+    flac.printing(sx, sz, s, stream=f)
+    f.close()
+else:
+    f = open(stressfile)
+    nx, nz = np.fromfile(f, sep=' ', count=2)
+    str = np.fromfile(f, sep=' ')
+    str.shape = (nx, nz, 3)
+    sx = str[:,:,0]
+    sz = str[:,:,1]
+    s = str[:,:,2]
+    f.close()
+
 
 
 # get interpolated T either from previous run or from original data
@@ -105,8 +173,12 @@ model = os.path.split(os.getcwd())[-1]
 psfile = 'result3.%d.ps' % frame
 pngfile = 'result3.%d.png' % frame
 phgrd = 'phase3.%d.grd' % frame
+strrgrd = 'strain_rate3.%d.grd' %frame
+strgrd = 'stress3.%d.grd' %frame
 tgrd = 'temperature3.%d.grd' % frame
 phcpt = '/home/summer-tan2/flac/util/phase15.cpt'
+strrcpt= '/home/summer-tan2/flac/util/strain_rate.cpt'
+strcpt= '/home/summer-tan2/flac/util/stress.cpt'
 
 xmin = xtrench + left
 xmax = xtrench + right
@@ -115,7 +187,7 @@ zmax = up
 aspect_ratio = float(up - down) / (right - left)
 width = 6.5
 height = width * aspect_ratio
-shiftz = height + 0.3
+shiftz = height + 1
 
 # height of gravity plot
 height2 = 1.0
@@ -138,6 +210,19 @@ if not os.path.exists(phgrd):
     #print cmd
     os.system(cmd)
 
+
+if not os.path.exists(strrgrd):
+    cmd = 'tail -n +2 %(strain_ratefile)s | xyz2grd -G%(strrgrd)s -I%(dx)f/%(dz)f -R%(xmin)f/%(xmax)f/%(zmin)f/%(zmax)f' % locals()
+    #print cmd
+    os.system(cmd)
+
+
+if not os.path.exists(strgrd):
+    cmd = 'tail -n +2 %(stressfile)s | xyz2grd -G%(strgrd)s -I%(dx)f/%(dz)f -R%(xmin)f/%(xmax)f/%(zmin)f/%(zmax)f' % locals()
+    #print cmd
+    os.system(cmd)
+
+
 if not os.path.exists(tgrd):
     cmd = 'tail -n +2 %(tfile)s | surface -G%(tgrd)s -Ll0 -I%(dx)f/%(dz)f -R%(xmin)f/%(xmax)f/%(zmin)f/%(zmax)f' % locals()
     #print cmd
@@ -148,9 +233,23 @@ rm -f .gmtcommands* .gmtdefaults*
 
 gmtset MEASURE_UNIT = inch
 gmtset LABEL_FONT_SIZE=14 ANNOT_FONT_SIZE_PRIMARY=10
+gmtset PAPER_MEDIA A4 
 
 # axis annotation
-psbasemap -JX%(width)f/%(height)f -Ba100f10/a20f5::WSne -R%(left)f/%(right)f/%(zmin)f/%(zmax)f -X0.9 -Y4 -P -K > %(psfile)s
+psbasemap -JX%(width)f/%(height)f -Ba100f10/a20f5::WSne:."stress": -R%(left)f/%(right)f/%(zmin)f/%(zmax)f -X0.9 -P -K > %(psfile)s
+
+# stress plot
+grdimage %(strgrd)s -C%(strcpt)s -R%(xmin)f/%(xmax)f/%(zmin)f/%(zmax)f -J -P -O -K >> %(psfile)s
+
+
+# axis annotation
+psbasemap -JX%(width)f/%(height)f -Ba100f10/a20f5::WSne:."strain rate": -R%(left)f/%(right)f/%(zmin)f/%(zmax)f -Y4.5 -P -O -K >> %(psfile)s
+
+# strain_rate plot
+grdimage %(strrgrd)s -C%(strrcpt)s -R%(xmin)f/%(xmax)f/%(zmin)f/%(zmax)f -J -P -O -K >> %(psfile)s
+
+# axis annotation
+psbasemap -JX%(width)f/%(height)f -Ba100f10/a20f5::WSne:."phase": -R%(left)f/%(right)f/%(zmin)f/%(zmax)f -Y4.5 -P -O -K >> %(psfile)s
 
 # phase plot
 grdimage %(phgrd)s -C%(phcpt)s -R%(xmin)f/%(xmax)f/%(zmin)f/%(zmax)f -J -P -O -K >> %(psfile)s

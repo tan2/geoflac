@@ -13,8 +13,8 @@ left = -200
 right = 250
 up = 10
 down = -200
-dx = 1.5
-dz = 0.6
+dx = 4
+dz = 1.5
 
 def find_trench_index(z):
     '''Returns the i index of trench location.'''
@@ -26,7 +26,7 @@ def find_trench_index(z):
     return i
 
 
-def interpolate_phase(frame, xtrench):
+def interpolate_srII(frame, xtrench):
     # domain bounds in km
     fi.xmin = xtrench + left
     fi.xmax = xtrench + right
@@ -37,7 +37,7 @@ def interpolate_phase(frame, xtrench):
     fi.dx = dx
     fi.dz = dz
 
-    xx, zz, ph = fi.interpolate(frame, 'phase')
+    xx, zz, ph = fi.interpolate(frame, 'srII')
     return xx, zz, ph
 
 
@@ -51,26 +51,26 @@ x, z = fl.read_mesh(frame)
 itrench = find_trench_index(z)
 xtrench = x[itrench,0]
 
-# get interpolated phase either from previous run or from original data
-phasefile = 'intp3-phase.%d' % frame
-if not os.path.exists(phasefile):
-    xx, zz, ph = interpolate_phase(frame, xtrench)
-    f = open(phasefile, 'w')
+# get interpolated strain_rate either from previous run or from original data
+strain_ratefile = 'intp3-srII.%d' % frame
+if not os.path.exists(strain_ratefile):
+    xx, zz, ph = interpolate_srII(frame, xtrench)
+    f = open(strain_ratefile, 'w')
     f.write('%d %d\n' % xx.shape)
     flac.printing(xx, zz, ph, stream=f)
     f.close()
 else:
-    f = open(phasefile)
+    f = open(strain_ratefile)
     nx, nz = np.fromfile(f, sep=' ', count=2)
-    tmp = np.fromfile(f, sep=' ')
-    tmp.shape = (nx, nz, 3)
-    xx = tmp[:,:,0]
-    zz = tmp[:,:,1]
-    ph = tmp[:,:,2]
+    strr = np.fromfile(f, sep=' ')
+    strr.shape = (nx, nz, 3)
+    xx = strr[:,:,0]
+    zz = strr[:,:,1]
+    ph = strr[:,:,2]
     f.close()
 
 
-# get interpolated T either from previous run or from original data
+ # get interpolated T either from previous run or from original data
 tfile = 'intp3-T.%d' % frame
 if not os.path.exists(tfile):
     T = fl.read_temperature(frame)
@@ -104,9 +104,9 @@ f.close()
 model = os.path.split(os.getcwd())[-1]
 psfile = 'result3.%d.ps' % frame
 pngfile = 'result3.%d.png' % frame
-phgrd = 'phase3.%d.grd' % frame
+strrgrd = 'strain_rate3.%d.grd' % frame
 tgrd = 'temperature3.%d.grd' % frame
-phcpt = '/home/summer-tan2/flac/util/phase15.cpt'
+strain_ratecpt = '/home/summer-tan2/flac/util/strain_rate.cpt'
 
 xmin = xtrench + left
 xmax = xtrench + right
@@ -133,8 +133,8 @@ topoann = max(abs(tpmin), abs(tpmax))
 # interval of temperature contours
 cint = 200
 
-if not os.path.exists(phgrd):
-    cmd = 'tail -n +2 %(phasefile)s | xyz2grd -G%(phgrd)s -I%(dx)f/%(dz)f -R%(xmin)f/%(xmax)f/%(zmin)f/%(zmax)f' % locals()
+if not os.path.exists(strrgrd):
+    cmd = 'tail -n +2 %(strain_ratefile)s | xyz2grd -G%(strrgrd)s -I%(dx)f/%(dz)f -R%(xmin)f/%(xmax)f/%(zmin)f/%(zmax)f' % locals()
     #print cmd
     os.system(cmd)
 
@@ -152,8 +152,8 @@ gmtset LABEL_FONT_SIZE=14 ANNOT_FONT_SIZE_PRIMARY=10
 # axis annotation
 psbasemap -JX%(width)f/%(height)f -Ba100f10/a20f5::WSne -R%(left)f/%(right)f/%(zmin)f/%(zmax)f -X0.9 -Y4 -P -K > %(psfile)s
 
-# phase plot
-grdimage %(phgrd)s -C%(phcpt)s -R%(xmin)f/%(xmax)f/%(zmin)f/%(zmax)f -J -P -O -K >> %(psfile)s
+# strain_rate plot
+grdimage %(strrgrd)s -C%(strain_ratecpt)s -R%(xmin)f/%(xmax)f/%(zmin)f/%(zmax)f -J -P -O -K >> %(psfile)s
 
 # temperature contours
 grdcontour %(tgrd)s -C%(cint)f -A200 -W1p -J -R -P -K -O >> %(psfile)s
