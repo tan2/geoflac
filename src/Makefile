@@ -203,7 +203,7 @@ $(EXE): $(MODULE_OBJS) $(OBJS)
 $(MODULE_OBJS): %.o : %.f90
 	$(F90) $(CFLAGS) -c $<
 
-$(OBJS): %.o : %.f90
+$(OBJS): %.o : %.f90 params.inc arrays.inc
 	$(F90) $(CFLAGS) -c $<
 
 take-snapshot:
