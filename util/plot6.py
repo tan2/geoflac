@@ -233,7 +233,7 @@ rm -f .gmtcommands* .gmtdefaults*
 
 gmtset MEASURE_UNIT = inch
 gmtset LABEL_FONT_SIZE=14 ANNOT_FONT_SIZE_PRIMARY=10
-gmtset PAPER_MEDIA A4 
+gmtset PAPER_MEDIA A3 
 
 # axis annotation
 psbasemap -JX%(width)f/%(height)f -Ba100f10/a20f5::WSne:."stress": -R%(left)f/%(right)f/%(zmin)f/%(zmax)f -X0.9 -P -K > %(psfile)s
@@ -274,6 +274,13 @@ cut -f1,2 %(gfile)s | \
 psxy -JX%(width)f/%(height2)f -R%(xmin)f/%(xmax)f/-%(topoann)f/%(topoann)f -B/a%(topoann)ff%(topogridsize)f:"@;$color;km@;;":W -A -Wthin,$color -P -K -O >> %(psfile)s
 cut -f1,4 %(gfile)s | \
 psxy -J -R -A -Wthin,$color,-- -P -K -O >> %(psfile)s
+
+# colorbar
+
+psscale -C%(phcpt)s -D6.75/-2.5/2.5/0.3 -Ba1f0.5 -V -O -K >> %(psfile)s
+psscale -C%(strrcpt)s -D6.75/-7/2.5/0.3 -Ba1f0.5 -V -O -K >> %(psfile)s
+psscale -C%(strcpt)s -D6.75/-11.5/2.5/0.3 -Ba2f0.5 -V -O -K >> %(psfile)s
+
 
 echo %(xmin)f %(topogridsize)d 14 0 1 LB "Model=%(model)s   Frame=%(frame)d   Trench location=%(xtrench).3f km" | \
 pstext -D0/1 -N -J -R -P -O >> %(psfile)s
