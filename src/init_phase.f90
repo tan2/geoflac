@@ -41,8 +41,17 @@ else
             do i = ixtb1(n), ixtb2(n)
                 do j = 1, nz-1
                     y = (cord(1,i,2)-cord(j,i,2))*1.e-3
-                    if (y.lt.hc(n)) iphase(j,i) = iph_col1(n)
-                    if (y.ge.hc(n)) iphase(j,i) = iph_col2(n)
+                    if (y.lt.hc1(n)) then
+                        iphase(j,i) = iph_col1(n)
+                    else if (y.lt.hc2(n)) then
+                        iphase(j,i) = iph_col2(n)
+                    else if (y.lt.hc3(n)) then
+                        iphase(j,i) = iph_col3(n)
+                    else if (y.lt.hc4(n)) then
+                        iphase(j,i) = iph_col4(n)
+                    else
+                        iphase(j,i) = iph_col5(n)
+                    end if
                 enddo
             enddo
         enddo

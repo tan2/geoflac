@@ -107,11 +107,12 @@ proftemp.dat   temperature profile dat.file
 240 55 300 27 301 27 361 55
 ; If (iynts = 2) Initially Variable thermal age crust and mantle accross the box 
 5              - nzone_age (number of zones of different age max 20)
- 60., 7.5, 3, 4,  1, 58    - Thermal age (Myr.), radiogenic crustal thick (km), crustal phase, mantle phase, x nodes 1 and 2
- 50.,15.0,14, 4, 59, 75
- 50.,20.0,14, 4, 76, 83
- 50.,25.0,14, 4, 84, 90
- 60.,35.0,14, 4, 91,186
+;Thermal age (Myr.), layer1 depth (km), layer2 depth, layer3 depth (also Moho depth), layer4 depth, layer1 phase, layer2 phase, layer3 phase, layer4 phase, layer5 phase, x nodes 1 and 2
+ 60., 1.5, 7.5, 7.5, 7.5, 11,  3,  3,  4,  4,  1, 58
+ 50.,15.0,  15,  15,  15, 14, 14, 14,  4,  4, 59, 75
+ 50.,20.0,  25,  25,  25, 14, 14, 14,  4,  4, 76, 83
+ 50.,25.0,  25,  25,  25, 14, 14, 14,  4,  4, 84, 90
+ 60.,35.0,  25,  25,  25, 14, 14, 14,  4,  4, 91,186
 ;
 ;===================================================================
 ;                     R h e o l o g y
@@ -175,10 +176,10 @@ phasedat.inp   ; file with distribution of phase on the 2D grid (phasedat)
 ; 4- diagonal line plus init.plastic strain
 4  - inhom(number of inhomogenities)
 ; ix1   ix2   iy1   iy2   phase   geometry    init.pl.strain
-   50    73    1    18     3       4          1.
-   51    74    1    18     3       4          1.
-   52    75    1    18	  -1       4          1.
-   53    76    1    18	  -1       4          1.
+   50    73    2    18     3       4          1.
+   51    74    2    18     3       4          1.
+   52    75    2    18	  -1       4          1.
+   53    76    2    18	  -1       4          1.
 ;
 ; Tension cut off
 1.e+9

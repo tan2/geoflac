@@ -81,7 +81,7 @@ case (2)
     pi = 3.14159
     diffusivity = 1.e-6
     do n = 1, nzone_age
-        if(iph_col1(n)==kocean1 .or. iph_col1(n)==kocean2) then
+        if(iph_col3(n)==kocean1 .or. iph_col3(n)==kocean2) then
             !! Oceanic geotherm (half space cooling model)
             do i = ixtb1(n), ixtb2(n)
                 do j = 1,nz
@@ -93,10 +93,10 @@ case (2)
             enddo
         else
             !! Continental geotherm
-            tr= dens_c*hs*hr*hr*1.e+6/cond_c*exp(1.-exp(-hc(n)/hr))
-            q_m = (t_bot-t_top-tr)/((hc(n)*1000.)/cond_c+((200.e3-(hc(n))*1000.))/cond_m)
-            tm  = t_top + (q_m/cond_c)*hc(n)*1000. + tr
-            !   write(*,*) rzbo, tr, hs, hr, hc(n), q_m, tm
+            tr= dens_c*hs*hr*hr*1.e+6/cond_c*exp(1.-exp(-hc3(n)/hr))
+            q_m = (t_bot-t_top-tr)/((hc3(n)*1000.)/cond_c+((200.e3-(hc3(n))*1000.))/cond_m)
+            tm  = t_top + (q_m/cond_c)*hc3(n)*1000. + tr
+            !   write(*,*) rzbo, tr, hs, hr, hc3(n), q_m, tm
             age_init = age_1(n)*3.14*1.e+7*1.e+6
             diff_m = cond_m/1000./dens_m
             tau_d = 200.e3*200.e3/(pi*pi*diff_m)
@@ -105,8 +105,8 @@ case (2)
                     ! depth in km
                     y = (cord(1,i,2)-cord(j,i,2))*1.e-3
                     !  steady state part
-                    if (y.le.hc(n)) tss = t_top+(q_m/cond_c)*y*1000.+(dens_c*hs*hr*hr*1.e+6/cond_c)*exp(1.-exp(-y/hr))
-                    if (y.gt.hc(n)) tss = tm + (q_m/cond_m)*1000.*(y-hc(n))
+                    if (y.le.hc3(n)) tss = t_top+(q_m/cond_c)*y*1000.+(dens_c*hs*hr*hr*1.e+6/cond_c)*exp(1.-exp(-y/hr))
+                    if (y.gt.hc3(n)) tss = tm + (q_m/cond_m)*1000.*(y-hc3(n))
 
                     ! time-dependent part
                     tt = 0.
@@ -119,7 +119,7 @@ case (2)
                     temp(j,i) = tss +2./pi*(t_bot-t_top)*tt
                     if(temp(j,i).gt.1330.or.y.gt.200.) temp(j,i)= 1330.
                     if (j.eq.1) temp(j,i) = t_top
-                    !       write(*,*) tss,tm,q_m,cond_m,hc(n),y,tt
+                    !       write(*,*) tss,tm,q_m,cond_m,hc3(n),y,tt
                 enddo
             enddo
         endif
@@ -179,7 +179,7 @@ subroutine sidewalltemp(i1, i2)
       n = nzone_age
   endif
 
-  if(iph_col1(n)==kocean1 .or. iph_col1(n)==kocean2) then
+  if(iph_col3(n)==kocean1 .or. iph_col3(n)==kocean2) then
       !! Oceanic geotherm (half space cooling model)
       do i = i1, i2
           do j = 1,nz
@@ -191,10 +191,10 @@ subroutine sidewalltemp(i1, i2)
       enddo
   else
       !! Continental geotherm
-      tr= dens_c*hs*hr*hr*1.e+6/cond_c*exp(1.-exp(-hc(n)/hr))
-      q_m = (t_bot-t_top-tr)/((hc(n)*1000.)/cond_c+((200.e3-(hc(n))*1000.))/cond_m)
-      tm  = t_top + (q_m/cond_c)*hc(n)*1000. + tr
-      !   write(*,*) rzbo, tr, hs, hr, hc(n), q_m, tm
+      tr= dens_c*hs*hr*hr*1.e+6/cond_c*exp(1.-exp(-hc3(n)/hr))
+      q_m = (t_bot-t_top-tr)/((hc3(n)*1000.)/cond_c+((200.e3-(hc3(n))*1000.))/cond_m)
+      tm  = t_top + (q_m/cond_c)*hc3(n)*1000. + tr
+      !   write(*,*) rzbo, tr, hs, hr, hc3(n), q_m, tm
       age_init = age_1(n)*3.14*1.e+7*1.e+6 + time
       diff_m = cond_m/1000./dens_m
       tau_d = 200.e3*200.e3/(pi*pi*diff_m)
@@ -204,8 +204,8 @@ subroutine sidewalltemp(i1, i2)
               ! depth in km
               y = (cord(1,i,2)-cord(j,i,2))*1.e-3
               !  steady state part
-              if (y.le.hc(n)) tss = t_top+(q_m/cond_c)*y*1000.+(dens_c*hs*hr*hr*1.e+6/cond_c)*exp(1.-exp(-y/hr))
-              if (y.gt.hc(n)) tss = tm + (q_m/cond_m)*1000.*(y-hc(n))
+              if (y.le.hc3(n)) tss = t_top+(q_m/cond_c)*y*1000.+(dens_c*hs*hr*hr*1.e+6/cond_c)*exp(1.-exp(-y/hr))
+              if (y.gt.hc3(n)) tss = tm + (q_m/cond_m)*1000.*(y-hc3(n))
 
               ! time-dependent part
               tt = 0.
@@ -218,7 +218,7 @@ subroutine sidewalltemp(i1, i2)
               temp(j,i) = tss +2./pi*(t_bot-t_top)*tt
               if(temp(j,i).gt.1330.or.y.gt.200.) temp(j,i)= 1330.
               if (j.eq.1) temp(j,i) = t_top
-              !       write(*,*) tss,tm,q_m,cond_m,hc(n),y,tt
+              !       write(*,*) tss,tm,q_m,cond_m,hc3(n),y,tt
           enddo
       enddo
   endif
