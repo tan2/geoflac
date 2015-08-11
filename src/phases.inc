@@ -5,6 +5,7 @@
 integer, parameter :: kcont1 = 2
 integer, parameter :: kmant1 = 4
 integer, parameter :: kocean1 = 3
+integer, parameter :: kmetased = 5
 integer, parameter :: kcont2 = 6
 integer, parameter :: kocean2 = 7
 integer, parameter :: kmant2 = 8
