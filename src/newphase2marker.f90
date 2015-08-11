@@ -161,6 +161,18 @@ do kk = 1 , nmarkers
         jchanged(nchanged) = j
         !$OMP end critical (change_phase1)
         mark(kk)%phase = kmant1
+    case (ksed1, ksed2)
+        ! dehydration, sediment -> schist/gneiss
+        ! from sediment solidus in Nichols et al., Nature, 1994
+        if (tmpr < 650 .or. depth < 20e3) cycle
+        !$OMP critical (change_phase1)
+        nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
+        nphase_counter(kmetased,j,i) = nphase_counter(kmetased,j,i) + 1
+        nchanged = nchanged + 1
+        ichanged(nchanged) = i
+        jchanged(nchanged) = j
+        !$OMP end critical (change_phase1)
+        mark(kk)%phase = kmetased
     end select
 
     if(nchanged >= 100*mnx) stop 38
