@@ -2,6 +2,7 @@
 
 !! Phases the got special treatment in the code
 
+integer, parameter :: kocean0 = 1 ! basalt without dehydration
 integer, parameter :: kcont1 = 2
 integer, parameter :: kmant1 = 4
 integer, parameter :: kocean1 = 3
