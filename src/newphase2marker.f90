@@ -135,7 +135,7 @@ do kk = 1 , nmarkers
                 exit
             endif
         enddo
-    case (kocean1, kocean2)
+    case (kocean0, kocean1, kocean2)
         ! basalt -> eclogite
         ! phase change pressure
         trpres = -0.3e9 + 2.2e6*tmpr
