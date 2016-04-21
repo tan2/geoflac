@@ -46,6 +46,8 @@ class Flac(object):
         # read record number
         tmp = np.fromfile('_contents.0', sep=' ')
         tmp.shape = (-1, 3)
+        self.frames = tmp[:,0]
+        self.steps = tmp[:,1]
         self.time = tmp[:,2]
         self.nrec = len(self.time)
 
