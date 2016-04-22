@@ -10,6 +10,13 @@ function Eff_dens( j, i)
   zcord = 0.25*(cord(j,i,2)+cord(j+1,i,2)+cord(j,i+1,2)+cord(j+1,i+1,2))
   tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
 
+  ! 660-km phase change with clapeyron slope 600C/50km
+  if (zcord < -660e3 + (tmpr - t_bot) * 500./6) then
+      Eff_dens = 3450 * (1 - 2e-5 * tmpr)  ! ~6% density jump
+      return
+  endif
+
+
   press = 0
   do ii = 1, 4
       press = press - (stress0(j,i,1,ii)+stress0(j,i,2,ii)+stress0(j,i,4,ii))
