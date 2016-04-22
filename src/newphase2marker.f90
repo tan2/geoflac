@@ -50,6 +50,37 @@ real*8, parameter :: mantle_density = 3000.
 ! temperature (C) of serpentine phase transition
 real*8, parameter :: serpentine_temp = 550.
 
+! temperature (C) and depth (m) of 10% partial melting of upper mantle.
+real*8, parameter :: partial_melt_temp = 1100.
+real*8, parameter :: partial_melt_depth = -70.e3
+! thickness of new crust
+real*8, parameter :: new_crust_thickness = 7.e3
+
+
+! search the element for melting
+do i = 1, nx-1
+  do j = 1, nz-1
+    iph = iphase(j,i)
+    if (iph==kmant1 .or. iph==kmant2) then
+      tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
+      dep = 0.25*(cord(j,i,2)+cord(j+1,i,2)+cord(j,i+1,2)+cord(j+1,i+1,2))
+      if (dep - cord(1,i,2) > partial_melt_depth .and. tmpr > partial_melt_temp) then
+        ! search for crustal depth
+        do jj = 1, nz-1
+          dep2 = 0.25*(cord(jj,i,2)+cord(jj+1,i,2)+cord(jj,i+1,2)+cord(jj+1,i+1,2))
+          if (cord(1,i,2) - dep2 >= new_crust_thickness) then
+            exit
+          end if
+        end do
+        call newphase2marker(1,jj-1,i,i,kocean1)
+        exit
+      end if
+    end if
+
+  end do
+end do
+
+
 ! nelem_inject was used for magma injection, reused here for serpentization
 nelem_serp = nelem_inject
 
