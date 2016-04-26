@@ -51,33 +51,28 @@ real*8, parameter :: mantle_density = 3000.
 real*8, parameter :: serpentine_temp = 550.
 
 ! temperature (C) and depth (m) of 10% partial melting of upper mantle.
-real*8, parameter :: partial_melt_temp = 1100.
-real*8, parameter :: partial_melt_depth = -70.e3
+real*8, parameter :: partial_melt_temp = 600.
+!real*8, parameter :: partial_melt_depth = -70.e3
 ! thickness of new crust
 real*8, parameter :: new_crust_thickness = 7.e3
 
 
 ! search the element for melting
-do i = 1, nx-1
-  do j = 1, nz-1
-    iph = iphase(j,i)
-    if (iph==kmant1 .or. iph==kmant2) then
-      tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
-      dep = 0.25*(cord(j,i,2)+cord(j+1,i,2)+cord(j,i+1,2)+cord(j+1,i+1,2))
-      if (dep - cord(1,i,2) > partial_melt_depth .and. tmpr > partial_melt_temp) then
-        ! search for crustal depth
-        do jj = 1, nz-1
-          dep2 = 0.25*(cord(jj,i,2)+cord(jj+1,i,2)+cord(jj,i+1,2)+cord(jj+1,i+1,2))
-          if (cord(1,i,2) - dep2 >= new_crust_thickness) then
-            exit
-          end if
-        end do
-        call newphase2marker(1,jj-1,i,i,kocean1)
-        exit
-      end if
-    end if
+do jj = 1, nz-1
+   ! search for crustal depth
+   dep2 = 0.25*(cord(jj,1,2)+cord(jj+1,1,2)+cord(jj,2,2)+cord(jj+1,2,2))
+   if (cord(1,1,2) - dep2 >= new_crust_thickness) exit
+end do
+j = max(2, jj)
 
-  end do
+do i = 1, nx-1
+  iph = iphase(j,i)
+  if (iph==kmant1 .or. iph==kmant2) then
+    tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
+    if (tmpr > partial_melt_temp) then
+      call newphase2marker(1,j-1,i,i,kocean1)
+    end if
+  end if
 end do
 
 
