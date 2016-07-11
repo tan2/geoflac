@@ -83,7 +83,63 @@ do i = 1 , nx-1
             xx = points(l,1) + ddx
             yy = points(l,2) + ddy
 
-            call add_marker(xx, yy, iphase(j,i), 0.d0, nmarkers, j, i, inc)
+            ! phase of the marker
+            ! smooth transition of marker phase
+            do n = 1, nzone_age
+                if (i<ixtb1(n) .or. i>ixtb2(n)) cycle
+
+                ! layer
+                yyy = yy * (-1e-3)
+                if (yyy.lt.hc1(n)) then
+                    zr = hc1(n)
+                    if (n.ne.1) zl = hc1(n-1)
+                    kup = iph_col1(n)
+                    kdn = iph_col2(n)
+                else if (yyy.lt.hc2(n)) then
+                    zr = hc2(n)
+                    if (n.ne.1) zl = hc2(n-1)
+                    kup = iph_col2(n)
+                    kdn = iph_col3(n)
+                else if (yyy.lt.hc3(n)) then
+                    zr = hc3(n)
+                    if (n.ne.1) zl = hc3(n-1)
+                    kup = iph_col3(n)
+                    kdn = iph_col4(n)
+                else if (yyy.lt.hc4(n)) then
+                    zr = hc4(n)
+                    if (n.ne.1) zl = hc4(n-1)
+                    kup = iph_col4(n)
+                    kdn = iph_col5(n)
+                else
+                    zr = 0
+                    zl = 0
+                    kup = iph_col5(n)
+                    kdn = iph_col5(n)
+                end if
+
+                kph = kup
+
+                if (n.eq.1) exit
+
+                if (iph_col1(n-1) .ne. iph_col1(n) .or. &
+                    iph_col2(n-1) .ne. iph_col2(n) .or. &
+                    iph_col3(n-1) .ne. iph_col3(n) .or. &
+                    iph_col4(n-1) .ne. iph_col4(n) .or. &
+                    iph_col5(n-1) .ne. iph_col5(n)) exit
+
+                hc0 = zl + (xx-cord(1,ixtb1(n),1))*(zr-zl)/(cord(1,ixtb1(n+1),1)-cord(1,ixtb1(n),1))
+                if (yyy .lt. hc0) then
+                    kph = kup
+                else
+                    kph = kdn
+                endif
+
+                !print *, xx, yy, n, kph, kup, kdn, hc0
+                exit
+            end do
+
+            call add_marker(xx, yy, kph, 0.d0, nmarkers, j, i, inc)
+            !call add_marker(xx, yy, iphase(j,i), 0.d0, nmarkers, j, i, inc)
             if(inc.eq.0) cycle
 
             l = l + 1
