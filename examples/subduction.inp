@@ -61,7 +61,7 @@
 ;----------------------------------------------------------------
 ;  Function of boundary conditions:
 ;------------------------------------------------------------------
-;f = a + bx + cx**2 + (d cos (2pi ex) + f sin (2pi gx))*exp((x-i)/h)^2
+;f = a + bx + cx**2 + (d cos (2pi ex) + f sin (2pi gx))*exp((x-i)*h)^2
 ;Dependence on time:   f(time) = f*(1 + df1*nstep) + df2*nstep
 ;------------------------------------------------------------------
 ;where x is undimensional. i.e. x = (x - x(na1)) / (x(na2) - x(na1))
