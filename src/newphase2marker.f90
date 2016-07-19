@@ -101,9 +101,9 @@ do kk = 1 , nmarkers
     !XXX: Some quick checks to skip markers that won't change phase. Might
     !     not be accurate!
 
-    ! If temperature of this element is too high, this marker is already
+    ! If location of this element is too deep, this marker is already
     ! too deep in the mantle, where there is no significant phase change.
-    if (tmpr > 1000.) cycle
+    if (depth < -200.e3) cycle
 
     iph = mark(kk)%phase
 
