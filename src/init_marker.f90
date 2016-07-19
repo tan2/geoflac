@@ -148,6 +148,56 @@ do i = 1 , nx-1
     enddo
 enddo
 
+!   Put initial heterogeneities
+do i = 1,inhom
+    ! Rectangular shape:
+    if (igeom(i) .eq.0) then
+        call newphase2marker(iy1(i),iy2(i),ix1(i),ix2(i),inphase(i))
+    endif
+
+    ! Gauss shape:
+    if (igeom(i).eq.1.or.igeom(i).eq.2) then
+        ! symmetric case:
+        if (igeom(i).eq.1) then
+            ixc  = (ix1(i)+ix2(i))/2
+            iwidth = (ix2(i)-ix1(i))
+        else
+            ixc    = ix1(i)
+            iwidth = ix2(i)-ix1(i)
+        endif
+
+        iamp = iy2(i)-iy1(i)
+
+        do j = ix1(i),ix2(i)
+            itop = itop_geom(j,ixc,iwidth,iamp)
+            do k = iy1(i),iy2(i)
+                if (k .ge. (iy2(i)-itop)) then
+                    call newphase2marker(k,k,j,j,inphase(i))
+                endif
+            end do
+        end do
+    endif
+
+    ! weak zone at 45 degree
+    if (igeom (i) .eq.3) then
+        do j = ix1(i),ix2(i)
+            k = nint(float(iy2(i)-iy1(i))/float(ix2(i)-ix1(i))*(j-ix1(i))) + iy1(i)
+            call newphase2marker(k,k,j,j,inphase(i))
+        end do
+    endif
+
+    ! Weak zone in accumulated plastic strain at 45 degree
+    if (igeom (i).eq.4) then
+        do j =ix1(i),ix2(i)
+            k1 = floor(float(iy2(i)-iy1(i))/float(ix2(i)-ix1(i))*(j-ix1(i))) + iy1(i)
+            k2 = ceiling(float(iy2(i)-iy1(i))/float(ix2(i)-ix1(i))*(j-ix1(i))) + iy1(i)
+            if( inphase(i) .ge. 0) then
+                call newphase2marker(k1,k2,j,j,inphase(i))
+            endif
+        end do
+    endif
+end do
+
 write(333,*) '# of markers', nmarkers
 
 call marker2elem
