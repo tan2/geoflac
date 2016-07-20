@@ -90,24 +90,40 @@ do i = 1 , nx-1
 
                 ! layer
                 yyy = yy * (-1e-3)
+
+                if (n.eq.1) then
+                    if (yyy.lt.hc1(n)) then
+                        kph = iph_col1(n)
+                    else if (yyy.lt.hc2(n)) then
+                        kph = iph_col2(n)
+                    else if (yyy.lt.hc3(n)) then
+                        kph = iph_col3(n)
+                    else if (yyy.lt.hc4(n)) then
+                        kph = iph_col4(n)
+                    else
+                        kph = iph_col5(n)
+                    end if
+                    exit
+                end if
+
                 if (yyy.lt.hc1(n)) then
                     zr = hc1(n)
-                    if (n.ne.1) zl = hc1(n-1)
+                    zl = hc1(n-1)
                     kup = iph_col1(n)
                     kdn = iph_col2(n)
                 else if (yyy.lt.hc2(n)) then
                     zr = hc2(n)
-                    if (n.ne.1) zl = hc2(n-1)
+                    zl = hc2(n-1)
                     kup = iph_col2(n)
                     kdn = iph_col3(n)
                 else if (yyy.lt.hc3(n)) then
                     zr = hc3(n)
-                    if (n.ne.1) zl = hc3(n-1)
+                    zl = hc3(n-1)
                     kup = iph_col3(n)
                     kdn = iph_col4(n)
                 else if (yyy.lt.hc4(n)) then
                     zr = hc4(n)
-                    if (n.ne.1) zl = hc4(n-1)
+                    zl = hc4(n-1)
                     kup = iph_col4(n)
                     kdn = iph_col5(n)
                 else
@@ -119,15 +135,13 @@ do i = 1 , nx-1
 
                 kph = kup
 
-                if (n.eq.1) exit
-
                 if (iph_col1(n-1) .ne. iph_col1(n) .or. &
                     iph_col2(n-1) .ne. iph_col2(n) .or. &
                     iph_col3(n-1) .ne. iph_col3(n) .or. &
                     iph_col4(n-1) .ne. iph_col4(n) .or. &
                     iph_col5(n-1) .ne. iph_col5(n)) exit
 
-                hc0 = zl + (xx-cord(1,ixtb1(n),1))*(zr-zl)/(cord(1,ixtb1(n+1),1)-cord(1,ixtb1(n),1))
+                hc0 = zl + (xx-cord(1,ixtb2(n-1),1))*(zr-zl)/(cord(1,ixtb2(n),1)-cord(1,ixtb2(n-1),1))
                 if (yyy .lt. hc0) then
                     kph = kup
                 else
