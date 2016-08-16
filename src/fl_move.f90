@@ -228,10 +228,12 @@ subroutine resurface
                       kmax = k
                   endif
               end do
-              mark(nmax)%dead = 0
-              ! replace topmarker k with last topmarker
-              itopmarker(kmax,i) = itopmarker(ntopmarker(i),i)
-              ntopmarker(i) = ntopmarker(i) - 1
+              if (nmax .ne. 0) then
+                  mark(nmax)%dead = 0
+                  ! replace topmarker k with last topmarker
+                  itopmarker(kmax,i) = itopmarker(ntopmarker(i),i)
+                  ntopmarker(i) = ntopmarker(i) - 1
+              endif
           endif
 
           dhacc(i) = 0
