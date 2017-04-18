@@ -154,6 +154,35 @@ do i = 1, nzone_age
       read (4,*) age_1(i),hc1(i),hc2(i),hc3(i),hc4(i),iph_col1(i),iph_col2(i), &
            iph_col3(i),iph_col4(i),iph_col5(i),ixtb1(i),ixtb2(i)
 enddo
+! check smooth nzone_age
+do i = 1, nzone_age-1
+    iph_col_trans(i) = 0
+    if (ixtb2(i) == -1) then
+        if (ixtb1(i+1) /= -1) then
+            print *, 'Error: ixtb1 is not -1 at', i+1, 'column!'
+        endif
+        if (iph_col1(i) /= iph_col1(i+1)) then
+            print *, 'Error: iph_col1 at', i, i+1, 'columns are not equal!'
+        endif
+        if (iph_col2(i) /= iph_col2(i+1)) then
+            print *, 'Error: iph_col2 at', i, i+1, 'columns are not equal!'
+        endif
+        if (iph_col3(i) /= iph_col3(i+1)) then
+            print *, 'Error: iph_col3 at', i, i+1, 'columns are not equal!'
+        endif
+        if (iph_col4(i) /= iph_col4(i+1)) then
+            print *, 'Error: iph_col4 at', i, i+1, 'columns are not equal!'
+        endif
+        if (iph_col5(i) /= iph_col5(i+1)) then
+            print *, 'Error: iph_col5 at', i, i+1, 'columns are not equal!'
+        endif
+        ! flag indicates smotth transition
+        iph_col_trans(i) = 1
+        ! remove '-1' for
+        ixtb2(i) = ixtb2(i+1)
+        ixtb1(i+1) = ixtb1(i)
+    endif
+enddo
 
 ! RHEOLOGY
 call AdvanceToNextInputLine( 4 )

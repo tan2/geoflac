@@ -42,7 +42,7 @@ common /therm/ t_top,t_bot,hs,hr,temp_per,bot_bc,time_t,dt_therm, &
      itherm,istress_therm,initial_geoth,itemp_bc,ix1t,ix2t,iy1t,iy2t,ishearh, &
      ntherm,hc1(20),hc2(20),hc3(20),hc4(20), &
      age_1(20),ixtb1(20),ixtb2(20),nzone_age,i_prestress, &
-     iph_col1(20),iph_col2(20),iph_col3(20),iph_col4(20),iph_col5(20)
+     iph_col1(20),iph_col2(20),iph_col3(20),iph_col4(20),iph_col5(20),iph_col_trans(20)
 
 common /stress/ g,pisos,drosub,damp_vis,nyhydro,iphsub
 
