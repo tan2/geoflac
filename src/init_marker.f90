@@ -87,68 +87,36 @@ do i = 1 , nx-1
             ! smooth transition of marker phase
             do n = 1, nzone_age
                 if (i<ixtb1(n) .or. i>ixtb2(n)) cycle
+                if (n /= 1 .and. iph_col_trans(n-1) == 1) cycle
+
+                ycol1 = hc1(n)
+                ycol2 = hc2(n)
+                ycol3 = hc3(n)
+                ycol4 = hc4(n)
+                if (iph_col_trans(n) == 1) then
+                    i1 = ixtb1(n)
+                    i2 = ixtb2(n)
+                    r = (cord(1,i,1) - cord(1,i1,1)) / (cord(1,i2,1) - cord(1,i1,1))
+                    ycol1 = hc1(n) + (hc1(n+1) - hc1(n)) * r
+                    ycol2 = hc2(n) + (hc2(n+1) - hc2(n)) * r
+                    ycol3 = hc3(n) + (hc3(n+1) - hc3(n)) * r
+                    ycol4 = hc4(n) + (hc4(n+1) - hc4(n)) * r
+                endif
 
                 ! layer
                 yyy = yy * (-1e-3)
 
-                if (n.eq.1) then
-                    if (yyy.lt.hc1(n)) then
-                        kph = iph_col1(n)
-                    else if (yyy.lt.hc2(n)) then
-                        kph = iph_col2(n)
-                    else if (yyy.lt.hc3(n)) then
-                        kph = iph_col3(n)
-                    else if (yyy.lt.hc4(n)) then
-                        kph = iph_col4(n)
-                    else
-                        kph = iph_col5(n)
-                    end if
-                    exit
-                end if
-
-                if (yyy.lt.hc1(n)) then
-                    zr = hc1(n)
-                    zl = hc1(n-1)
-                    kup = iph_col1(n)
-                    kdn = iph_col2(n)
-                else if (yyy.lt.hc2(n)) then
-                    zr = hc2(n)
-                    zl = hc2(n-1)
-                    kup = iph_col2(n)
-                    kdn = iph_col3(n)
-                else if (yyy.lt.hc3(n)) then
-                    zr = hc3(n)
-                    zl = hc3(n-1)
-                    kup = iph_col3(n)
-                    kdn = iph_col4(n)
-                else if (yyy.lt.hc4(n)) then
-                    zr = hc4(n)
-                    zl = hc4(n-1)
-                    kup = iph_col4(n)
-                    kdn = iph_col5(n)
+                if (yyy.lt.ycol1) then
+                    kph = iph_col1(n)
+                else if (yyy.lt.ycol2) then
+                    kph = iph_col2(n)
+                else if (yyy.lt.ycol3) then
+                    kph = iph_col3(n)
+                else if (yyy.lt.ycol4) then
+                    kph = iph_col4(n)
                 else
-                    zr = 0
-                    zl = 0
-                    kup = iph_col5(n)
-                    kdn = iph_col5(n)
+                    kph = iph_col5(n)
                 end if
-
-                kph = kup
-
-                if (iph_col1(n-1) .ne. iph_col1(n) .or. &
-                    iph_col2(n-1) .ne. iph_col2(n) .or. &
-                    iph_col3(n-1) .ne. iph_col3(n) .or. &
-                    iph_col4(n-1) .ne. iph_col4(n) .or. &
-                    iph_col5(n-1) .ne. iph_col5(n)) exit
-
-                hc0 = zl + (xx-cord(1,ixtb2(n-1),1))*(zr-zl)/(cord(1,ixtb2(n),1)-cord(1,ixtb2(n-1),1))
-                if (yyy .lt. hc0) then
-                    kph = kup
-                else
-                    kph = kdn
-                endif
-
-                !print *, xx, yy, n, kph, kup, kdn, hc0
                 exit
             end do
 

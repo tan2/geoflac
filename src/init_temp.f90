@@ -81,14 +81,24 @@ case (2)
     pi = 3.14159
     diffusivity = 1.e-6
     do n = 1, nzone_age
-        if(iph_col3(n)==kocean1 .or. iph_col3(n)==kocean2) then
+        if (n /= 1 .and. iph_col_trans(n-1) == 1) cycle
+
+        if(iph_col1(n)==kocean1 .or. iph_col1(n)==kocean2   &
+            .or. iph_col2(n)==kocean1 .or. iph_col2(n)==kocean2  &
+            .or. iph_col3(n)==kocean1 .or. iph_col3(n)==kocean2) then
             !! Oceanic geotherm (half space cooling model)
             do i = ixtb1(n), ixtb2(n)
+                age = age_1(n)
+                if (iph_col_trans(n) == 1) then
+                    i1 = ixtb1(n)
+                    i2 = ixtb2(n)
+                    age = age_1(n) + (age_1(n+1) - age_1(n)) * (cord(1,i,1) - cord(1,i1,1)) / (cord(1,i2,1) - cord(1,i1,1))
+                endif
                 do j = 1,nz
                     ! depth in km
-                    y = (cord(1,i,2)-cord(j,i,2)) / sqrt(4 * diffusivity * age_1(n) * 1.e6 * sec_year)
+                    y = (cord(1,i,2)-cord(j,i,2)) / sqrt(4 * diffusivity * age * 1.e6 * sec_year)
                     temp(j,i) = t_top + (t_bot - t_top) * erf(y)
-                    !print *, j, age_1(n), -cord(j,i,2), temp(j,i)
+                    !print *, j, age, -cord(j,i,2), temp(j,i)
                 enddo
             enddo
         else
@@ -97,10 +107,16 @@ case (2)
             q_m = (t_bot-t_top-tr)/((hc3(n)*1000.)/cond_c+((200.e3-(hc3(n))*1000.))/cond_m)
             tm  = t_top + (q_m/cond_c)*hc3(n)*1000. + tr
             !   write(*,*) rzbo, tr, hs, hr, hc3(n), q_m, tm
-            age_init = age_1(n)*3.14*1.e+7*1.e+6
             diff_m = cond_m/1000./dens_m
             tau_d = 200.e3*200.e3/(pi*pi*diff_m)
             do i = ixtb1(n), ixtb2(n)
+                age = age_1(n)
+                if (iph_col_trans(n) == 1) then
+                    i1 = ixtb1(n)
+                    i2 = ixtb2(n)
+                    age = age_1(n) + (age_1(n+1) - age_1(n)) * (cord(1,i,1) - cord(1,i1,1)) / (cord(1,i2,1) - cord(1,i1,1))
+                endif
+                age_init = age*3.14*1.e+7*1.e+6
                 do j = 1,nz
                     ! depth in km
                     y = (cord(1,i,2)-cord(j,i,2))*1.e-3
