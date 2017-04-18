@@ -79,6 +79,9 @@ def main(path, start=1, end=-1):
         sxz = fl.read_sxz(i)
         vts_dataarray(fvts, sxz.swapaxes(0,1), 'Sxz')
 
+        pressure = fl.read_pres(i)
+        vts_dataarray(fvts, pressure.swapaxes(0,1), 'Pressure')
+
         # compression axis of stress
         a = compute_p_axis(sxx, szz, sxz)
         vts_dataarray(fvts, a.swapaxes(0,1), 'P-axis', 3)
