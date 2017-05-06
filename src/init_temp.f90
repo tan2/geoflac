@@ -161,6 +161,21 @@ if( temp_per.ne.0. ) then
     temp(iy1t:iy2t,ix1t:ix2t) = temp(iy1t:iy2t,ix1t:ix2t) + temp_per
 endif              
 
+do i = 1, inhom
+    ! Initial gaussian temperature perturbation
+    if (igeom(i).eq.11) then
+        ixc  = (ix1(i)+ix2(i))/2
+        iwidth = (ix2(i)-ix1(i))
+        amp = xinitaps(i)
+        do j = ix1(i),ix2(i)
+            pert = amp*exp(-(float(j-ixc)/(0.25*float(iwidth)))**2.)
+            do k = iy1(i),iy2(i)
+                pert2 = 1.0*(k-iy1(i)) / (iy2(i) - iy1(i))
+                temp(k,j) = min(t_bot, temp(k,j)+pert*pert2)
+            enddo
+        enddo
+    endif
+enddo
 
 !call RedefineTemp
 
