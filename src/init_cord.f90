@@ -55,6 +55,26 @@ do i = 1,nx
     end do
 end do
 
+! topo perturbation
+do i = 1, inhom
+    if (igeom(i).eq.20) then
+        ! table mountain
+        amp = xinitaps(i)
+        cord(1, ix1(i):ix2(i), 2) = cord(1, ix1(i):ix2(i), 2) + amp
+    elseif (igeom(i).eq.21) then
+        ! trapzoidal mountain
+        amp = xinitaps(i)
+        do j = ix1(i), ix2(i)-1
+            cord(1,j,2) = cord(1,j,2) + amp*real(j-ix1(i))/(ix2(i)-ix1(i))
+        enddo
+        cord(1, ix2(i):iy1(i), 2) = cord(1, ix2(i):iy1(i), 2) + amp
+        do j = iy1(i)+1, iy2(i)
+            cord(1,j,2) = cord(1,j,2) + amp*real(iy2(i)-j)/(iy2(i)-iy1(i))
+        enddo 
+    endif
+enddo
+
+
 200 continue
 
 dx_init = abs(cord(1,2,1)-cord(1,1,1))
