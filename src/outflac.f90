@@ -289,6 +289,13 @@ if( io_topo.eq.1 ) then
     open (1,file='topo.0',access='direct',recl=nwords*kindr)
     write (1,rec=nrec) D1d
     close (1)
+
+    do i = 1,nx
+        D1d(i) = real(dtopo(i)/dt*1000*sec_year)  ! mm/yr
+    end do
+    open (1,file='dtopo.0',access='direct',recl=nwords*kindr)
+    write (1,rec=nrec) D1d
+    close (1)
 endif
 
 deallocate( D1d )
