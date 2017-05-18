@@ -140,29 +140,27 @@ include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 
-dimension dh(mnx+1)
-
 !EROSION PROCESSES
 if( topo_kappa .gt. 0. ) then
     do i = 2, nx-1
         snder = ( (cord(1,i+1,2)-cord(1,i  ,2))/(cord(1,i+1,1)-cord(1,i  ,1)) - &
             (cord(1,i  ,2)-cord(1,i-1,2))/(cord(1,i  ,1)-cord(1,i-1,1)) ) / &
             (cord(1,i+1,1)-cord(1,i-1,1))
-        dh(i) = topo_kappa * dt * snder
+        dtopo(i) = topo_kappa * dt * snder
     end do
 
-    dh(1) = dh(2)
-    dh(nx) = dh(nx-1)
-    cord(1,1:nx,2) = cord(1,1:nx,2) + dh(1:nx)
+    dtopo(1) = dtopo(2)
+    dtopo(nx) = dtopo(nx-1)
+    cord(1,1:nx,2) = cord(1,1:nx,2) + dtopo(1:nx)
 
     ! accumulated topo change since last resurface
-    dhacc(1:nx-1) = dhacc(1:nx-1) + 0.5 * (dh(1:nx-1) + dh(2:nx))
+    dhacc(1:nx-1) = dhacc(1:nx-1) + 0.5 * (dtopo(1:nx-1) + dtopo(2:nx))
 
     ! adjust markers
     if(mod(nloop, 100) .eq. 0) then
 !!$        print *, 'max sed/erosion rate (m/yr):' &
-!!$             , maxval(dh(1:nx)) * 3.16e7 / dt &
-!!$             , minval(dh(1:nx)) * 3.16e7 / dt
+!!$             , maxval(dtopo(1:nx)) * 3.16e7 / dt &
+!!$             , minval(dtopo(1:nx)) * 3.16e7 / dt
         call resurface
     end if
 endif
@@ -188,15 +186,15 @@ subroutine resurface
       ! averge thickness of this element
       elz = 0.5 * (cord(1,i,2) - cord(2,i,2) + cord(1,i+1,2) - cord(2,i+1,2))
       ! change in topo
-      dtopo = dhacc(i)
+      chgtopo = dhacc(i)
       ! # of markers in this element
       kinc = sum(nphase_counter(:,1,i))
 
-      if (abs(dtopo*kinc) >= elz) then
+      if (abs(chgtopo*kinc) >= elz) then
           ! add/remove markers if topo changed too much
-          if (dtopo > 0.) then
+          if (chgtopo > 0.) then
               ! sedimentation, add a sediment marker
-              !print *, 'add sediment', i, dtopo, elz
+              !print *, 'add sediment', i, chgtopo, elz
               do while(.true.)
                   call random_number(rx)
                   xx = cord(1,i,1) + rx * (cord(1,i+1,1) - cord(1,i,1))
@@ -212,7 +210,7 @@ subroutine resurface
               end do
           else
               ! erosion, remove the top marker
-              !print *, 'erosion', i, dtopo, elz
+              !print *, 'erosion', i, chgtopo, elz
               ymax = -1e30
               nmax = 0
               kmax = 0
