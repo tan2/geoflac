@@ -140,13 +140,24 @@ include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
 
+dimension tkappa(mnx+1)
+
 !EROSION PROCESSES
 if( topo_kappa .gt. 0. ) then
+
+    topomean = sum(cord(1,:,2)) / nx
+    tkappa = topo_kappa
+    ! higher elevation has higher erosion rate
+    do i = 1, nx
+        if (cord(1,i,1) > topomean) tkappa(i) = topo_kappa * (1 + (cord(1,i,1) - topomean) / 1e3)
+    enddo
+
     do i = 2, nx-1
-        snder = ( (cord(1,i+1,2)-cord(1,i  ,2))/(cord(1,i+1,1)-cord(1,i  ,1)) - &
-            (cord(1,i  ,2)-cord(1,i-1,2))/(cord(1,i  ,1)-cord(1,i-1,1)) ) / &
+
+        snder = ( tkappa(i+1)*(cord(1,i+1,2)-cord(1,i  ,2))/(cord(1,i+1,1)-cord(1,i  ,1)) - &
+            tkappa(i-1)*(cord(1,i  ,2)-cord(1,i-1,2))/(cord(1,i  ,1)-cord(1,i-1,1)) ) / &
             (cord(1,i+1,1)-cord(1,i-1,1))
-        dtopo(i) = topo_kappa * dt * snder
+        dtopo(i) = dt * snder
     end do
 
     dtopo(1) = dtopo(2)
