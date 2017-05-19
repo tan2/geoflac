@@ -149,7 +149,7 @@ if( topo_kappa .gt. 0. ) then
     tkappa = topo_kappa
     ! higher elevation has higher erosion rate
     do i = 1, nx
-        if (cord(1,i,1) > topomean) tkappa(i) = topo_kappa * (1 + (cord(1,i,1) - topomean) / 1e3)
+        if (cord(1,i,1) > topomean) tkappa(i) = topo_kappa * (1 + (cord(1,i,1) - topomean) * fac_kappa)
     enddo
 
     do i = 2, nx-1

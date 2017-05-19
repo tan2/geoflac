@@ -1,7 +1,7 @@
 ! -*- F90 -*-
 
 common /mesh/ x0,z0,rxbo,rzbo,sizez_x(10),sizez_y(10), &
-     dx_rem,angle_rem,anglemin1,anglemint,topo_kappa,bottom_kappa, &
+     dx_rem,angle_rem,anglemin1,anglemint,topo_kappa,fac_kappa, &
      velbc_l,velbc_r,nx,nz,nq,nzonx,nzony,nelz_x(10),nelz_y(10), &
      ny_rem,mode_rem,ntest_rem,v_min,v_max,ivis_shape,igeotherm,efoldc, &
      g_x0,g_y0c,g_amplitude,g_width,ydrsides,ynstressbc, &
