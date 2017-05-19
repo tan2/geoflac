@@ -209,8 +209,8 @@ phasedat.inp   ; file with distribution of phase on the 2D grid (phasedat)
 ; dx_rem (if mode_rem=11 defines critical shortening for remeshing in dx-units)
 1.3
 ;
-; Diffusion of topography(1) and (when-2) also bottom boundary
-; topo_removal_rate     bottom_kappa
+; Diffusion of topography(1) and amplification factor for high elevation
+; topo_removal_rate     fac_kappa
 1.0e-6	                     0.
 ;
 ;=================================================================
