@@ -87,8 +87,9 @@ do i = 1 , nx-1
             ! smooth transition of marker phase
             do n = 1, nzone_age
                 if (i<ixtb1(n) .or. i>ixtb2(n)) cycle
-                if (n /= 1 .and. iph_col_trans(n-1) == 1) cycle
-
+                if (n /= 1) then
+                    if (iph_col_trans(n-1) == 1) cycle
+                endif
                 ycol1 = hc1(n)
                 ycol2 = hc2(n)
                 ycol3 = hc3(n)
