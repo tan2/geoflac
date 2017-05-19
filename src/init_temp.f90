@@ -81,7 +81,9 @@ case (2)
     pi = 3.14159
     diffusivity = 1.e-6
     do n = 1, nzone_age
-        if (n /= 1 .and. iph_col_trans(n-1) == 1) cycle
+        if (n /= 1) then
+            if (iph_col_trans(n-1) == 1) cycle
+        endif
 
 !!$        if(iph_col1(n)==kocean1 .or. iph_col1(n)==kocean2   &
 !!$            .or. iph_col2(n)==kocean1 .or. iph_col2(n)==kocean2  &
