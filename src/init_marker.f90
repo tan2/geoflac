@@ -133,6 +133,8 @@ enddo
 
 !   Put initial heterogeneities
 do i = 1,inhom
+    if (inphase(i) < 0) cycle  ! skip
+
     ! Rectangular shape:
     if (igeom(i) .eq.0) then
         call newphase2marker(iy1(i),iy2(i),ix1(i),ix2(i),inphase(i))
