@@ -30,13 +30,15 @@ common /rheol/ visc(20),den(20),alfa(20),beta(20),pln(20),acoef(20),eactiv(20),r
      conduct(20),cp(20), &
      ts(20),tl(20),tk(20),fk(20), &
      ten_off,tau_heal, &
-     xinitaps(20),dt_outtracer, &
+     dt_outtracer, &
      nphase,mphase,irheol(20), &
-     inhom,ix1(20),ix2(20),iy1(20),iy2(20),inphase(20),igeom(20), &
      ltop(20),lbottom(20),lphase(20), &
      imx1(20),imx2(20),imy1(20),imy2(20), &
      itx1(20),itx2(20),ity1(20),ity2(20), &
      nphasl,nzone_marker,nmarkers, iint_marker,iint_tracer,nzone_tracer
+
+common /inhomog/ ix1(50),ix2(50),iy1(50),iy2(50),inphase(50),igeom(50), &
+     xinitaps(50), inhom
 
 common /therm/ t_top,t_bot,hs,hr,temp_per,bot_bc,time_t,dt_therm, &
      itherm,istress_therm,initial_geoth,itemp_bc,ix1t,ix2t,iy1t,iy2t,ishearh, &
