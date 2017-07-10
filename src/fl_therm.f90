@@ -80,7 +80,8 @@ do i = 1,nx-1
 
         ! Additional sources - radiogenic and shear heating
         tmpr = 0.25*(t1 + t2 + t3 + t4)
-        add_source(j,i) = ( source(j,i) + dissip/den(iph) - 600.*cp_eff*Eff_melt(iph,tmpr)) / cp_eff
+        !add_source(j,i) = ( source(j,i) + dissip/den(iph) - 600.*cp_eff*Eff_melt(iph,tmpr)) / cp_eff
+        add_source(j,i) = ( source(j,i) + dissip/den(iph) ) / cp_eff
 
         ! (1) A element:
         flux(j,i,1,1) = -diff * ( t1*(y2-y3)+t2*(y3-y1)+t3*(y1-y2) ) * area(j,i,1)
