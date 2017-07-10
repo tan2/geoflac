@@ -112,35 +112,35 @@ include 'arrays.inc'
 HeatLatent = 420000.
 
 iph = iphase(j,i)
-!Eff_cp = cp(iph)
+Eff_cp = cp(iph)
 
 
-tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
-if( tmpr .lt. ts(iph) ) then
-    Eff_cp = cp(iph)
-elseif( tmpr .lt. tk(iph) ) then
-    Eff_cp = cp(iph) + HeatLatent * fk(iph)/(tk(iph)-ts(iph))
-elseif( tmpr .lt. tl(iph) ) then
-    Eff_cp = cp(iph) + HeatLatent * (1.-fk(iph))/(tl(iph)-tk(iph))
-else
-    Eff_cp = cp(iph)
-endif
-
-
-! HOOK
-! Intrusions - melting effect - see user_ab.f90
-if( if_intrus .eq. 1 ) then
-    HeatLatent = 420000.
-
-    tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
-    if( tmpr .lt. ts(iph) ) then
-        Eff_cp = cp(iph)
-    elseif( tmpr .lt. tl(iph)+1 ) then
-        Eff_cp = cp(iph) + HeatLatent/(tl(iph)-ts(iph))
-    else
-        Eff_cp = cp(iph)
-    endif
-endif
+!!$tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
+!!$if( tmpr .lt. ts(iph) ) then
+!!$    Eff_cp = cp(iph)
+!!$elseif( tmpr .lt. tk(iph) ) then
+!!$    Eff_cp = cp(iph) + HeatLatent * fk(iph)/(tk(iph)-ts(iph))
+!!$elseif( tmpr .lt. tl(iph) ) then
+!!$    Eff_cp = cp(iph) + HeatLatent * (1.-fk(iph))/(tl(iph)-tk(iph))
+!!$else
+!!$    Eff_cp = cp(iph)
+!!$endif
+!!$
+!!$
+!!$! HOOK
+!!$! Intrusions - melting effect - see user_ab.f90
+!!$if( if_intrus .eq. 1 ) then
+!!$    HeatLatent = 420000.
+!!$
+!!$    tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
+!!$    if( tmpr .lt. ts(iph) ) then
+!!$        Eff_cp = cp(iph)
+!!$    elseif( tmpr .lt. tl(iph)+1 ) then
+!!$        Eff_cp = cp(iph) + HeatLatent/(tl(iph)-ts(iph))
+!!$    else
+!!$        Eff_cp = cp(iph)
+!!$    endif
+!!$endif
 
 return
 end function Eff_cp
