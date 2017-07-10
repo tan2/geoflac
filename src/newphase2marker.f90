@@ -176,7 +176,7 @@ do kk = 1 , nmarkers
         !$OMP end critical (change_phase1)
         mark(kk)%phase = keclg
     case (kserp)
-        ! dehydration, serpentinite -> normal mantle
+        ! dehydration, serpentinite -> hydrated mantle
         ! Phase diagram taken from Ulmer and Trommsdorff, Nature, 1995
         ! Fixed points (730 C, 2.1 GPa) (500 C, 7.5 GPa)
         trpres = 2.1e9 + (7.5e9 - 2.1e9) * (tmpr - 730.) / (500. - 730.)
@@ -184,12 +184,12 @@ do kk = 1 , nmarkers
         if (tmpr < serpentine_temp .or. press < trpres) cycle
         !$OMP critical (change_phase1)
         nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
-        nphase_counter(kmant1,j,i) = nphase_counter(kmant1,j,i) + 1
+        nphase_counter(khydmant,j,i) = nphase_counter(khydmant,j,i) + 1
         nchanged = nchanged + 1
         ichanged(nchanged) = i
         jchanged(nchanged) = j
         !$OMP end critical (change_phase1)
-        mark(kk)%phase = kmant1
+        mark(kk)%phase = khydmant
     case (ksed1, ksed2)
         ! dehydration, sediment -> schist/gneiss
         ! from sediment solidus in Nichols et al., Nature, 1994
