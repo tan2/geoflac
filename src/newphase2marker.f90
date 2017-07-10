@@ -63,7 +63,7 @@ do jj = 1, nz-1
    dep2 = 0.25*(cord(jj,1,2)+cord(jj+1,1,2)+cord(jj,2,2)+cord(jj+1,2,2))
    if (cord(1,1,2) - dep2 >= new_crust_thickness) exit
 end do
-j = max(2, jj)
+j = min(max(2, jj), nz-1)
 
 do i = 1, nx-1
   iph = iphase(j,i)
