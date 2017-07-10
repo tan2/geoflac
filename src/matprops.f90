@@ -73,31 +73,31 @@ function Eff_dens( j, i)
 end function Eff_dens
 
 
-!==============================================
-! Melt fraction
-!==============================================
-function Eff_melt(iph, tmpr)
-include 'precision.inc'
-include 'params.inc'
-
-if( tmpr .lt. ts(iph) ) then
-    ! below solidus
-    fm = 0.
-elseif( tmpr .lt. tk(iph) ) then
-    fm = fk(iph)/(tk(iph)-ts(iph)) * (tmpr-ts(iph))
-    fm = min(max(fm, 0.), 1.)
-elseif( tmpr .lt. tl(iph) ) then
-    fm = (1.-fk(iph))/(tl(iph)-tk(iph))*(tmpr-tk(iph)) + fk(iph)
-    fm = min(max(fm, 0.), 1.)
-else
-    fm = 1.
-endif
-
-Eff_melt = fm
-
-return
-end function Eff_melt
-
+!!$!==============================================
+!!$! Melt fraction
+!!$!==============================================
+!!$function Eff_melt(iph, tmpr)
+!!$include 'precision.inc'
+!!$include 'params.inc'
+!!$
+!!$if( tmpr .lt. ts(iph) ) then
+!!$    ! below solidus
+!!$    fm = 0.
+!!$elseif( tmpr .lt. tk(iph) ) then
+!!$    fm = fk(iph)/(tk(iph)-ts(iph)) * (tmpr-ts(iph))
+!!$    fm = min(max(fm, 0.), 1.)
+!!$elseif( tmpr .lt. tl(iph) ) then
+!!$    fm = (1.-fk(iph))/(tl(iph)-tk(iph))*(tmpr-tk(iph)) + fk(iph)
+!!$    fm = min(max(fm, 0.), 1.)
+!!$else
+!!$    fm = 1.
+!!$endif
+!!$
+!!$Eff_melt = fm
+!!$
+!!$return
+!!$end function Eff_melt
+!!$
 
 !=================================================
 ! Effective Heat Capacity incorporating latent heat
