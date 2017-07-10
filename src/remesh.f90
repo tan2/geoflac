@@ -9,7 +9,7 @@ include 'phases.inc'
 
 common /remeshing/ pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
 cold(mnz+1,mnx+1,2),cnew(mnz+1,mnx+1,2),numtr(mnz+1,mnx+1),nzt,nxt
-allocatable :: dummy(:,:), cordo(:,:,:), dhnew(:)
+allocatable :: dummy(:,:), cordo(:,:,:), dhnew(:), extnew(:)
 
 allocate(cordo(1:nz,1:nx,1:2))
 
@@ -20,8 +20,9 @@ cordo = cord
 call rem_cord(cordo)
 
 ! Interpolate accumulated topo change
-allocate(dhnew(nx-1))
+allocate(dhnew(nx-1), extnew(nx-1))
 dhnew(:) = 0
+extnew(:) = 0
 
 i2 = 1
 ! for each new element i
@@ -33,13 +34,16 @@ do i = 1, nx-1
             if (i1 /= 1) then
                 if (cordo(1,i1-1,1) >= cord(1,i,1)) then
                     dhnew(i) = dhnew(i) + dhacc(i1-1) * (cordo(1,i1,1) - cordo(1,i-1,1))
+                    extnew(i) = extnew(i) + extrusion(i1-1) * (cordo(1,i1,1) - cordo(1,i-1,1))
                 else
                     dhnew(i) = dhnew(i) + dhacc(i1-1) * (cordo(1,i1,1) - cord(1,i,1))
+                    extnew(i) = extnew(i) + extrusion(i1-1) * (cordo(1,i1,1) - cord(1,i,1))
                 end if
             end if
         else
             if (i1 /= 1) then
                 dhnew(i) = dhnew(i) + dhacc(i1-1) * (cord(1,i+1,1) - cordo(1,i1-1,1))
+                extnew(i) = extnew(i) + extrusion(i1-1) * (cord(1,i+1,1) - cordo(1,i1-1,1))
             end if
             i2 = i1
             exit
@@ -51,11 +55,12 @@ i = nx - 1
 i1 = i2
 if (cordo(1,i1,1) <= cord(1,i,1)) then
     dhnew(i) = dhnew(i) + dhacc(i1) * (cord(1,i+1,1) - cord(1,i,1))
+    extnew(i) = extnew(i) + extrusion(i1) * (cord(1,i+1,1) - cord(1,i,1))
 end if
 
 dhacc(1:nx-1) = dhnew / (cord(1,2:nx,1) - cord(1,1:nx-1,1))
-deallocate(dhnew)
-
+extrusion(1:nx-1) = extnew / (cord(1,2:nx,1) - cord(1,1:nx-1,1))
+deallocate(dhnew, extnew)
 
 ! REMESHING FOR ELEMENT-WISE PROPERTIES
 ! Linear interpolation in baricentric coordinates defined as centers of old mesh

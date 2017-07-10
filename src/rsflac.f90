@@ -48,6 +48,10 @@ open (1,file='dhacc.rs',access='direct',recl=(nx-1)*kindr)
 read (1,rec=nrec) dhacc(1:nx-1)
 close (1)
 
+open (1,file='extrusion.rs',access='direct',recl=(nx-1)*kindr)
+read (1,rec=nrec) extrusion(1:nx-1)
+close (1)
+
 open (1,file='vel.rs',access='direct',recl=nwords*kindr) 
 read (1,rec=nrec) vel
 close (1)
