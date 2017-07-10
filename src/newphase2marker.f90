@@ -202,6 +202,18 @@ do kk = 1 , nmarkers
         jchanged(nchanged) = j
         !$OMP end critical (change_phase1)
         mark(kk)%phase = kmetased
+    case (khydmant)
+        if (tmpr > ts(khydmant)) then
+            extrusion(i) = extrusion(i) + 1  !!! TODO
+            !$OMP critical (change_phase1)
+            nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
+            nphase_counter(kmant1,j,i) = nphase_counter(kmant1,j,i) + 1
+            nchanged = nchanged + 1
+            ichanged(nchanged) = i
+            jchanged(nchanged) = j
+            !$OMP end critical (change_phase1)
+            mark(kk)%phase = kmant1
+        endif
     end select
 
     if(nchanged >= 100*mnx) stop 38

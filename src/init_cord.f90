@@ -79,6 +79,7 @@ enddo
 
 dx_init = abs(cord(1,2,1)-cord(1,1,1))
 dhacc(1:nx) = 0.d0
+extrusion(1:nx) = 0.d0
 
 return
 end
