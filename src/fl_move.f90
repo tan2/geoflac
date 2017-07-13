@@ -266,6 +266,9 @@ subroutine resurface
           ! nothing to do
       end if
 
+      ! change in topo
+      chgtopo2 = extr_acc(i)
+
       if (chgtopo2*kinc >= elz) then
           ! add/remove markers if topo changed too much
           ! extrusion, add an arc marker
