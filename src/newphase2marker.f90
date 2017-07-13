@@ -78,6 +78,9 @@ end do
 
 ! nelem_inject was used for magma injection, reused here for serpentization
 nelem_serp = nelem_inject
+! rate_inject was used for magma injection, reused here for dehydration melting
+vol_frac_melt = rate_inject
+andesitic_melt_vol(1:nx-1) = 0
 
 nchanged = 0
 
@@ -97,6 +100,9 @@ do kk = 1 , nmarkers
 
     ! depth below the surface in m
     depth = (cord(1,i,2) - 0.5*(cord(j,i,2)+cord(j+1,i,2)))
+
+    ! # of markers inside quad
+    kinc = sum(nphase_counter(:,j,i))
 
     !XXX: Some quick checks to skip markers that won't change phase. Might
     !     not be accurate!
@@ -206,7 +212,10 @@ do kk = 1 , nmarkers
         mark(kk)%phase = kmetased
     case (khydmant)
         if (tmpr > ts(khydmant)) then
-            extrusion(i) = extrusion(i) + 1  !!! TODO
+            ! area(j,i) is INVERSE of "real" DOUBLE area (=1./det)
+            quad_area = 1./(area(j,i,1)+area(j,i,2))
+            andesitic_melt_vol(i) = andesitic_melt_vol(i) + quad_area * vol_frac_melt / kinc
+
             !$OMP critical (change_phase1)
             nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
             nphase_counter(kmant1,j,i) = nphase_counter(kmant1,j,i) + 1

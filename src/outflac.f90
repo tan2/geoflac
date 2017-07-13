@@ -304,7 +304,6 @@ if( io_topo.eq.1 ) then
     open (1,file='extrusion.0',access='direct',recl=(nwords-1)*kindr)
     write (1,rec=nrec) D1d(1:nx-1)
     close (1)
-    extrusion(1:nx-1) = 0
 endif
 
 

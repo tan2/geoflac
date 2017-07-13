@@ -176,6 +176,17 @@ if( topo_kappa .gt. 0. ) then
     end if
 endif
 
+! magma extrusion
+if ( .true. ) then
+    ! grid spacing in x
+    extrusion(1:nx-1) = cord(1,2:nx,1) - cord(1,1:nx-1,1)
+    ! height of extrusion = volume of extrusion / grid spacing in x
+    extrusion(1:nx-1) = andesitic_melt_vol(1:nx-1) / extrusion(1:nx-1)
+    extr_acc(1:nx-1) = extr_acc(1:nx-1) + extrusion(1:nx-1)
+
+    cord(1,1:nx-1,2) = cord(1,1:nx-1,2) + extrusion(1:nx-1)
+    cord(1,2:nx  ,2) = cord(1,2:nx  ,2) + extrusion(1:nx-1)
+endif
 
 return
 end subroutine diff_topo
@@ -253,6 +264,32 @@ subroutine resurface
 
       else
           ! nothing to do
+      end if
+
+      if (chgtopo2*kinc >= elz) then
+          ! add/remove markers if topo changed too much
+          ! extrusion, add an arc marker
+          !print *, 'add arc', i, chgtopo2, elz
+          do while(.true.)
+              call random_number(rx)
+              xx = cord(1,i,1) + rx * (cord(1,i+1,1) - cord(1,i,1))
+              yy = cord(1,i,2) + rx * (cord(1,i+1,2) - cord(1,i,2)) - 0.05*elz
+              call add_marker(xx, yy, karc1, time, nmarkers, 1, i, inc)
+              if(inc==1) exit
+              !write(333,*) 'extrusion failed: ', xx, yy, rx, elz
+              !write(333,*) '  ', cord(1,i,:)
+              !write(333,*) '  ', cord(1,i+1,:)
+              !write(333,*) '  ', cord(2,i,:)
+              !write(333,*) '  ', cord(2,i+1,:)
+              !call SysMsg('Cannot add marker for extrusion.')
+          end do
+
+          extr_acc(i) = 0
+
+          ! recalculate phase ratio
+          kinc = sum(nphase_counter(:,1,i))
+          phase_ratio(1:nphase,1,i) = nphase_counter(1:nphase,1,i) / float(kinc)
+
       end if
   end do
 
