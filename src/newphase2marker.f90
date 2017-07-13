@@ -180,8 +180,10 @@ do kk = 1 , nmarkers
         ! Phase diagram taken from Ulmer and Trommsdorff, Nature, 1995
         ! Fixed points (730 C, 2.1 GPa) (500 C, 7.5 GPa)
         trpres = 2.1e9 + (7.5e9 - 2.1e9) * (tmpr - 730.) / (500. - 730.)
+        ! Fixed points (650 C, 0.2 GPa) (500 C, 7.5 GPa)
+        trpres2 = 0.2e9 + (7.5e9 - 0.2e9) * (tmpr - 650.) / (500. - 650.)
         press = mantle_density * g * depth
-        if (tmpr < serpentine_temp .or. press < trpres) cycle
+        if (tmpr < serpentine_temp .or. (press < trpres .and. press > trpres2)) cycle
         !$OMP critical (change_phase1)
         nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
         nphase_counter(khydmant,j,i) = nphase_counter(khydmant,j,i) + 1
