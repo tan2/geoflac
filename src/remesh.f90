@@ -34,16 +34,16 @@ do i = 1, nx-1
             if (i1 /= 1) then
                 if (cordo(1,i1-1,1) >= cord(1,i,1)) then
                     dhnew(i) = dhnew(i) + dhacc(i1-1) * (cordo(1,i1,1) - cordo(1,i-1,1))
-                    extnew(i) = extnew(i) + extrusion(i1-1) * (cordo(1,i1,1) - cordo(1,i-1,1))
+                    extnew(i) = extnew(i) + extr_acc(i1-1) * (cordo(1,i1,1) - cordo(1,i-1,1))
                 else
                     dhnew(i) = dhnew(i) + dhacc(i1-1) * (cordo(1,i1,1) - cord(1,i,1))
-                    extnew(i) = extnew(i) + extrusion(i1-1) * (cordo(1,i1,1) - cord(1,i,1))
+                    extnew(i) = extnew(i) + extr_acc(i1-1) * (cordo(1,i1,1) - cord(1,i,1))
                 end if
             end if
         else
             if (i1 /= 1) then
                 dhnew(i) = dhnew(i) + dhacc(i1-1) * (cord(1,i+1,1) - cordo(1,i1-1,1))
-                extnew(i) = extnew(i) + extrusion(i1-1) * (cord(1,i+1,1) - cordo(1,i1-1,1))
+                extnew(i) = extnew(i) + extr_acc(i1-1) * (cord(1,i+1,1) - cordo(1,i1-1,1))
             end if
             i2 = i1
             exit
@@ -55,11 +55,11 @@ i = nx - 1
 i1 = i2
 if (cordo(1,i1,1) <= cord(1,i,1)) then
     dhnew(i) = dhnew(i) + dhacc(i1) * (cord(1,i+1,1) - cord(1,i,1))
-    extnew(i) = extnew(i) + extrusion(i1) * (cord(1,i+1,1) - cord(1,i,1))
+    extnew(i) = extnew(i) + extr_acc(i1) * (cord(1,i+1,1) - cord(1,i,1))
 end if
 
 dhacc(1:nx-1) = dhnew / (cord(1,2:nx,1) - cord(1,1:nx-1,1))
-extrusion(1:nx-1) = extnew / (cord(1,2:nx,1) - cord(1,1:nx-1,1))
+extr_acc(1:nx-1) = extnew / (cord(1,2:nx,1) - cord(1,1:nx-1,1))
 deallocate(dhnew, extnew)
 
 ! REMESHING FOR ELEMENT-WISE PROPERTIES

@@ -6,7 +6,8 @@ parameter(max_markers_per_elem=32)
 
 common /phase_arrays/ iphase(mnz,mnx), nphase_counter(20,mnz,mnx), phase_ratio(20,mnz,mnx)
 
-common /topo_arrays/ dtopo(mnx+1), dhacc(mnx+1), extrusion(mnx+1), &
+common /topo_arrays/ dtopo(mnx+1), dhacc(mnx+1), extrusion(mnx), &
+     andesitic_melt_vol(mnx), extr_acc(mnx), &
      ntopmarker(mnx), itopmarker(max_markers_per_elem,mnx)
 
 common /all_arrays/ strainr(3,4,mnz,mnx)
