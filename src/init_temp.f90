@@ -165,6 +165,13 @@ endif
 
 do i = 1, inhom
     ! Initial gaussian temperature perturbation
+
+    ! vertical gaussian
+    ! x between (ix1, ix2), y between (iy1, iy2)
+    ! gaussian dist. in x direction
+    ! linear dist in y direction
+    ! xinitaps: amplitude of gaussian
+    ! inphase: not used
     if (igeom(i).eq.11) then
         ixc  = (ix1(i)+ix2(i))/2
         iwidth = (ix2(i)-ix1(i))
@@ -174,6 +181,44 @@ do i = 1, inhom
             do k = iy1(i),iy2(i)
                 pert2 = 1.0*(k-iy1(i)) / (iy2(i) - iy1(i))
                 temp(k,j) = min(t_bot, temp(k,j)+pert*pert2)
+            enddo
+        enddo
+    endif
+
+    ! slant gaussian
+    ! x between (ix1, ix2) at top, shift 1-grid to right for every depth grid
+    ! z between (iy1, iy2)
+    ! xinitaps: amplitude of gaussian
+    ! inphase: not used
+    if (igeom(i).eq.13) then
+        ixc  = (ix1(i)+ix2(i))/2
+        iwidth = (ix2(i)-ix1(i))
+        amp = xinitaps(i)
+        do k = iy1(i),iy2(i)
+            kk = k - iy1(i)
+            do j = ix1(i),ix2(i)
+                pert = amp*exp(-(float(j-ixc)/(0.25*float(iwidth)))**2.)
+                temp(k,j+kk) = max(t_top, min(t_bot, temp(k,j+kk)+pert))
+                !print *, k, j, pert
+            enddo
+        enddo
+    endif
+
+    ! slant gaussian
+    ! x between (ix1, ix2) at top, shift 1-grid to left for every depth grid
+    ! z between (iy1, iy2)
+    ! xinitaps: amplitude of gaussian
+    ! inphase: not used
+    if (igeom(i).eq.14) then
+        ixc  = (ix1(i)+ix2(i))/2
+        iwidth = (ix2(i)-ix1(i))
+        amp = xinitaps(i)
+        do k = iy1(i),iy2(i)
+            kk = k - iy1(i)
+            do j = ix1(i),ix2(i)
+                pert = amp*exp(-(float(j-ixc)/(0.25*float(iwidth)))**2.)
+                temp(k,j-kk) = max(t_top, min(t_bot, temp(k,j-kk)+pert))
+                !print *, k, j, pert
             enddo
         enddo
     endif
