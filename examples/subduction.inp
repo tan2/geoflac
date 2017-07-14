@@ -176,12 +176,13 @@ phasedat.inp   ; file with distribution of phase on the 2D grid (phasedat)
 ; 1,2- Gauss shape
 ; 3- diagonal line
 ; 4- diagonal line plus init.plastic strain
-4  - inhom(number of inhomogenities)
+5  - inhom(number of inhomogenities)
 ; ix1   ix2   iy1   iy2   phase   geometry    init.pl.strain
-   50    73    2    18     3       4          1.
-   51    74    2    18     3       4          1.
-   52    75    2    18	  -1       4          1.
-   53    76    2    18	  -1       4          1.
+   50    66    2    18     3       4          1.     ; subducted oceanic crust
+   51    67    2    18     3       4          1.
+   52    68    2    18	  -1       4          1.     ; weak zone
+   53    69    2    18	  -1       4          1.
+   45    57    2    19     0       13         -500   ; cold slab
 ;
 ; Tension cut off
 1.e+9
