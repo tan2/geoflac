@@ -85,7 +85,7 @@ andesitic_melt_vol(1:nx-1) = 0
 nchanged = 0
 
 
-!$OMP parallel private(kk,i,j,k,n,tmpr,depth,iph,press,jbelow,trpres,kinc,kph,ratio)
+!$OMP parallel private(kk,i,j,k,n,tmpr,depth,iph,press,jbelow,trpres,trpres2,kinc,quad_area)
 !$OMP do schedule(guided)
 do kk = 1 , nmarkers
     if (mark(kk)%dead.eq.0) cycle
