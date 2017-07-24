@@ -152,6 +152,13 @@ do kk = 1 , nmarkers
     case (kmant1, kmant2)
         ! subuducted oceanic crust below mantle, mantle is serpentinized
         if(depth > max_basalt_depth) cycle
+        ! Phase diagram taken from Ulmer and Trommsdorff, Nature, 1995
+        ! Fixed points (730 C, 2.1 GPa) (500 C, 7.5 GPa)
+        trpres = 2.1e9 + (7.5e9 - 2.1e9) * (tmpr - 730.) / (500. - 730.)
+        ! Fixed points (730 C, 2.1 GPa) (650 C, 0.2 GPa)
+        trpres2 = 2.1e9 + (0.2e9 - 2.1e9) * (tmpr - 730.) / (650. - 730.)
+        press = mantle_density * g * depth
+        if (.not. (press < trpres .and. press > trpres2)) cycle
         do jbelow = min(j+1,nz-1), min(j+nelem_serp,nz-1)
             if(phase_ratio(kocean1,jbelow,i) > 0.8 .or. &
                 phase_ratio(kocean2,jbelow,i) > 0.8 .or. &
