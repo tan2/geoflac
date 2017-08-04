@@ -9,6 +9,8 @@ include 'arrays.inc'
 
 dimension flux(mnz,mnx,2,2), add_source(mnz,mnx)
 
+heat_latent_magma = 4.2d5  ! J/kg, latent heat of freezing magma
+
 ! real_area = 0.5* (1./area(n,t))
 ! Calculate Fluxes in every triangle
 !      flux (j,i,num_triangle, direction(x,y)
@@ -41,9 +43,23 @@ dt_therm = dt
 !    return
 !endif
 
-!$OMP Parallel private(i,j,iph,cp_eff,cond_eff,dissip,diff, &
+!$OMP Parallel private(i,j,iph,cp_eff,cond_eff,dissip,diff,quad_area, &
 !$OMP                  x1,x2,x3,x4,y1,y2,y3,y4,t1,t2,t3,t4,tmpr, &
 !$OMP                  qs,real_area13,area_n,rhs)
+!$OMP do
+do i = 1,nx-1
+    j = 1  ! top
+    !iph = iphase(j,i)
+    cp_eff = Eff_cp( j,i )
+
+    ! area(j,i) is INVERSE of "real" DOUBLE area (=1./det)
+    quad_area = 1./(area(j,i,1)+area(j,i,2))
+
+    temp(j,i  ) = temp(j,i  ) + andesitic_melt_vol(i  ) * heat_latent_magma / quad_area / cp_eff
+    temp(j,i+1) = temp(j,i+1) + andesitic_melt_vol(i+1) * heat_latent_magma / quad_area / cp_eff
+end do
+!$OMP end do
+
 !$OMP do
 do i = 1,nx-1
     do j = 1,nz-1
