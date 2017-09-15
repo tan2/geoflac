@@ -111,6 +111,27 @@ class Flac(object):
         return density
 
 
+    def read_strain(self, frame):
+        columns = 1
+        f = open('exx.0')
+        offset = (frame-1) * columns * self.nelements * sizeoffloat
+        f.seek(offset)
+        exx = self._read_data(f, columns, count=self.nelements)
+        self._reshape_elemental_fields(exx)
+
+        f = open('ezz.0')
+        offset = (frame-1) * columns * self.nelements * sizeoffloat
+        f.seek(offset)
+        ezz = self._read_data(f, columns, count=self.nelements)
+        self._reshape_elemental_fields(ezz)
+
+        f = open('exz.0')
+        offset = (frame-1) * columns * self.nelements * sizeoffloat
+        f.seek(offset)
+        exz = self._read_data(f, columns, count=self.nelements)
+        self._reshape_elemental_fields(exz)
+        return exx, ezz, exz
+
 
     def read_eII(self, frame):
         columns = 1
