@@ -60,6 +60,10 @@ def main(path, start=1, end=-1):
         eii = a
         vts_dataarray(fvts, a.swapaxes(0,1), 'eII')
 
+        exx, ezz, exz = fl.read_strain(i)
+        e1 = compute_p_axis(exx, ezz, exz)
+        vts_dataarray(fvts, e1.swapaxes(0,1), 'Strain 1-axis', 3)
+
         a = fl.read_density(i)
         vts_dataarray(fvts, a.swapaxes(0,1), 'Density')
 
