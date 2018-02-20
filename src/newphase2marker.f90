@@ -109,7 +109,7 @@ do kk = 1 , nmarkers
 
     ! If location of this element is too deep, this marker is already
     ! too deep in the mantle, where there is no significant phase change.
-    if (depth < -200.e3) cycle
+    if (depth > 200.e3) cycle
 
     iph = mark(kk)%phase
 
