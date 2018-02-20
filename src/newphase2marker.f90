@@ -85,7 +85,7 @@ andesitic_melt_vol(1:nx-1) = 0
 nchanged = 0
 
 
-!$OMP parallel private(kk,i,j,k,n,tmpr,depth,iph,press,jbelow,trpres,trpres2,kinc,quad_area)
+!$OMP parallel private(kk,i,j,k,n,tmpr,depth,iph,press,jbelow,trpres,trpres2,kinc,quad_area,yy)
 !$OMP do schedule(guided)
 do kk = 1 , nmarkers
     if (mark(kk)%dead.eq.0) cycle
@@ -96,10 +96,16 @@ do kk = 1 , nmarkers
     j = mod((n - k) / 2, nz-1) + 1
     i = (n - k) / 2 / (nz - 1) + 1
 
-    tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
+    if (k .eq. 1) then
+       yy = cord(j,i,2)*mark(kk)%a1 + cord(j+1,i,2)*mark(kk)%a2 + cord(j,i+1,2)*(1-mark(kk)%a1-mark(kk)%a2)
+       tmpr = temp(j,i)*mark(kk)%a1 + temp(j+1,i)*mark(kk)%a2 + temp(j,i+1)*(1-mark(kk)%a1-mark(kk)%a2)
+    else
+       yy = cord(j,i+1,2)*mark(kk)%a1 + cord(j+1,i,2)*mark(kk)%a2 + cord(j+1,i+1,2)*(1-mark(kk)%a1-mark(kk)%a2)
+       tmpr = temp(j,i+1)*mark(kk)%a1 + temp(j+1,i)*mark(kk)%a2 + temp(j+1,i+1)*(1-mark(kk)%a1-mark(kk)%a2)
+    endif
 
     ! depth below the surface in m
-    depth = (cord(1,i,2) - 0.5*(cord(j,i,2)+cord(j+1,i,2)))
+    depth = -yy
 
     ! # of markers inside quad
     kinc = sum(nphase_counter(:,j,i))
