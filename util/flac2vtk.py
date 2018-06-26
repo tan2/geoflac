@@ -2,7 +2,7 @@
 
 '''Convert the binary output of flac to VTK (vts) files.
 '''
-
+from __future__ import print_function
 import sys, os
 import zlib, base64
 import numpy as np
@@ -27,7 +27,7 @@ def main(path, start=1, end=-1):
         end = fl.nrec
 
     for i in range(start, end+1):
-        print 'Writing record #%d, model time=%.3e' % (i, fl.time[i-1])
+        print('Writing record #%d, model time=%.3e' % (i, fl.time[i-1]))
         fvts = open('flac.%06d.vts' % i, 'w')
         vts_header(fvts, nex, nez)
 
@@ -172,8 +172,8 @@ def vts_dataarray(f, data, data_name=None, data_comps=None):
         header[2] = len(a)
         b = zlib.compress(a)
         header[3] = len(b)
-        f.write(base64.standard_b64encode(header))
-        f.write(base64.standard_b64encode(b))
+        f.write(base64.standard_b64encode(header).decode('ascii'))
+        f.write(base64.standard_b64encode(b).decode('ascii'))
     else:
         data.tofile(f, sep=' ')
     f.write('\n</DataArray>\n')
@@ -202,11 +202,11 @@ def vts_footer(f):
 if __name__ == '__main__':
 
     if len(sys.argv) < 2:
-        print '''usage: flac2vtk.py path [step_min [step_max]]
+        print('''usage: flac2vtk.py path [step_min [step_max]]
 
 Processing flac data output to VTK format.
 If step_max is not given, processing to latest steps
-If both step_min and step_max are not given, processing all steps'''
+If both step_min and step_max are not given, processing all steps''')
         sys.exit(1)
 
     path = sys.argv[1]
