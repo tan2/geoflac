@@ -128,7 +128,8 @@ def compute_p_axis(sxx, szz, sxz):
 
     xl = sxz
     zl = mag - 0.5*(sxx - szz)
-    tangentl = np.hypot(xl, zl)
+    tiny = 1e-40  # small number to prevent overflow upon division
+    tangentl = np.hypot(xl, zl) + tiny
     
     # VTK requires vector field (velocity, coordinate) has 3 components.
     # Allocating a 3-vector tmp array for VTK data output.
