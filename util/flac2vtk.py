@@ -27,7 +27,7 @@ def main(path, start=1, end=-1):
         end = fl.nrec
 
     for i in range(start, end+1):
-        print('Writing record #%d, model time=%.3e' % (i, fl.time[i-1]))
+        print('Writing record #%d, model time=%.3e' % (i, fl.time[i-1]), end='\r')
         fvts = open('flac.%06d.vts' % i, 'w')
         vts_header(fvts, nex, nez)
 
@@ -120,6 +120,8 @@ def main(path, start=1, end=-1):
 
         vts_footer(fvts)
         fvts.close()
+
+    print()
     return
 
 
