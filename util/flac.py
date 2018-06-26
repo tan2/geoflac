@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 import sys
 try:
     import numpy as np
 except ImportError:
-    print 'Error: Failed importing "numpy" module.'
-    print 'Please install the module and add it to PYTHONPATH environment variable.'
+    print('Error: Failed importing "numpy" module.')
+    print('Please install the module and add it to PYTHONPATH environment variable.')
     sys.exit(1)
 
 try:
@@ -445,7 +446,7 @@ def printing(*args, **kwd):
     fmt = '%.15e' + '\t%.15e'*(narg-1)
 
     for items in zip(*args):
-        print >> stream, fmt % tuple(items)
+        print(fmt % tuple(items), file=stream)
     return
 
 
@@ -463,4 +464,4 @@ if __name__ == '__main__':
     # print (x, z, T) to screen
     printing(x, z, T)
 
-    print '# time =', fl.time[fl.nrec-1], 'Myrs'
+    print('# time =', fl.time[fl.nrec-1], 'Myrs')
