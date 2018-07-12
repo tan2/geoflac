@@ -227,9 +227,11 @@ if (zcord < -660e3) then
     ! T-dep. viscosity
     ! eta=1e22 when T=1330 Celsius, inc. 10x when T is 200 deg lower
     Eff_visc = 1e22 * exp( -0.0115 * (tmpr - 1330))
+    vis = min(v_max, max(v_min, vis))
     return
 elseif (zcord < -410e3) then
     Eff_visc = 1e21 * exp( -0.0115 * (tmpr - 1330))
+    vis = min(v_max, max(v_min, vis))
     return
 endif
 
