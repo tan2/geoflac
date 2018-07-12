@@ -30,7 +30,7 @@ def main(path, start=1, end=-1):
         print('Writing record #%d, model time=%.3e' % (i, fl.time[i-1]), end='\r')
         sys.stdout.flush()
         fvts = open('flac.%06d.vts' % i, 'w')
-        vts_header(fvts, nex, nez)
+        vts_header(fvts, nex, nez, fl.time[i-1], fl.steps[i-1])
 
         # node-based field
         fvts.write('  <PointData>\n')
@@ -184,13 +184,21 @@ def vts_dataarray(f, data, data_name=None, data_comps=None):
     return
 
 
-def vts_header(f, nex, nez):
+def vts_header(f, nex, nez, time, step):
     f.write(
 '''<?xml version="1.0"?>
 <VTKFile type="StructuredGrid" version="0.1" byte_order="LittleEndian" compressor="vtkZLibDataCompressor">
 <StructuredGrid WholeExtent="0 {0} 0 {1} 0 0">
+<FieldData>
+  <DataArray type="Float32" Name="TIME" NumberOfTuples="1" format="ascii">
+    {2}
+  </DataArray>
+  <DataArray type="Float32" Name="CYCLE" NumberOfTuples="1" format="ascii">
+    {3}
+  </DataArray>
+</FieldData>
 <Piece Extent="0 {0} 0 {1} 0 0">
-'''.format(nex, nez))
+'''.format(nex, nez, time, step))
     return
 
 
