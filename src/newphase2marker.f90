@@ -16,14 +16,14 @@ do kk = 1 , nmarkers
 
     if(j>=j1 .and. j<=j2 .and. i>=i1 .and. i<=i2) then
         nphase_counter(mark(kk)%phase,j,i) = nphase_counter(mark(kk)%phase,j,i) - 1
-        iphase(j,i) = iph
         mark(kk)%phase = iph
         nphase_counter(iph,j,i) = nphase_counter(iph,j,i) + 1
     endif
 enddo
 
-phase_ratio(:,j,i) = 0.d0
-phase_ratio(iph,j,i) = 1.d0
+iphase(j1:j2,i1:i2) = iph
+phase_ratio(:,j1:j2,i1:i2) = 0.d0
+phase_ratio(iph,j1:j2,i1:i2) = 1.d0
 
 return
 end subroutine newphase2marker
