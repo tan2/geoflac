@@ -45,6 +45,7 @@ dimension ratio(20)
 real*8, parameter :: max_basalt_depth = 150.e3
 ! min. temperature (C) of eclogite phase transition
 real*8, parameter :: min_eclogite_temp = 500.
+real*8, parameter :: min_eclogite_depth = 20e3
 real*8, parameter :: mantle_density = 3000.
 
 ! temperature (C) of serpentine phase transition
@@ -105,7 +106,7 @@ do kk = 1 , nmarkers
     endif
 
     ! depth below the surface in m
-    depth = -yy
+    depth = 0.5*(cord(1,i,2)+cord(1,i+1,2)) - yy
 
     ! # of markers inside quad
     kinc = sum(nphase_counter(:,j,i))
@@ -185,7 +186,7 @@ do kk = 1 , nmarkers
         ! phase change pressure
         trpres = -0.3e9 + 2.2e6*tmpr
         press = mantle_density * g * depth
-        if (tmpr < min_eclogite_temp .or. press < trpres) cycle
+        if (tmpr < min_eclogite_temp .or. depth < min_eclogite_depth .or. press < trpres) cycle
         !$OMP critical (change_phase1)
         nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
         nphase_counter(keclg,j,i) = nphase_counter(keclg,j,i) + 1
