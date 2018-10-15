@@ -209,9 +209,9 @@ $(OBJS): %.o : %.f90 params.inc arrays.inc
 take-snapshot:
 	@# snapshot of the code for building the executable
 	@echo Flags used to compile the code: > snapshot.diff
-	@echo '  '  CXX=$(CXX) opt=$(opt) openmp=$(openmp) >> snapshot.diff
-	@echo '  '  PATH=$(PATH) >> snapshot.diff
-	@echo '  '  LD_LIBRARY_PATH=$(LD_LIBRARY_PATH) >> snapshot.diff
+	@echo '  '  CXX=$(CXX) debug=$(debug) openmp=$(omp) >> snapshot.diff
+	@echo '  '  PATH=`pwd ${PATH}` >> snapshot.diff
+	@echo '  '  LD_LIBRARY_PATH=`pwd ${LD_LIBRARY_PATH}` >> snapshot.diff
 ifneq (HAS_HG),)
 	@echo >> snapshot.diff
 	@echo >> snapshot.diff
