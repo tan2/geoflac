@@ -73,6 +73,9 @@ do i = 1 , nx-1
 ! randomize the new coordinates inside the element
         l = 1
         do while (l .le. 9)
+            ! initialize kph in case nzone_age = 0
+            kph = iphase(j,i)
+
             ! position of the marker
             call random_number(rx)
             call random_number(ry)
