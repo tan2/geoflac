@@ -13,7 +13,7 @@ module arrays
   ! temporary array
   real*8, pointer, save :: junk2(:,:)
 
-
+  !$acc declare create(cord, temp, vel, stress0, force, balance, amass, rmass, area, dvol, strain, bc, ncod, junk2)
 contains
 
   subroutine allocate_arrays(nz, nx)
