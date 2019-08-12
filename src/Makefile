@@ -9,6 +9,7 @@
 ##
 ## debug = 0: optimized build; 1: debugging build
 ## omp = 1: enable openmp support
+## acc = 1: enable openacc support
 ## coverage = 1: enable code coverage analysis (used for debugging)
 ## gprof = 1: enable profiling (used for tuning optimization)
 
@@ -18,13 +19,13 @@
 ########################################################################
 
 ## GNU version >= 4.2, otherwise openmp won't work
-F90 = gfortran
+#F90 = gfortran
 
 ## Intel, tested with v11.1
 #F90 = ifort
 
 ## PGI group
-#F90 = pgf90
+F90 = pgfortran
 
 ## Sun
 #F90 = f90
@@ -41,7 +42,8 @@ LDFLAGS =
 ## default command line options
 ########################################################################
 debug = 0
-omp = 1
+omp = 0
+acc = 1
 coverage = 0
 gprof = 0
 
@@ -93,13 +95,17 @@ ifeq ($(F90), ifort)
 endif
 
 ## for PGI
-ifeq ($(F90), pgf90)
+ifeq ($(F90), pgfortran)
+	ifeq ($(acc), 1)
+		CFLAGS += -acc -ta=tesla:managed
+		LDFLAGS += -acc -ta=tesla:managed
+	endif
 	ifeq ($(omp), 1)
 		CFLAGS += -mp
 		LDFLAGS += -mp
 	endif
         ifeq ($(debug), 0)
-                CFLAGS += -O3 -fast -fastsse -Mnoframe -Mipa=fast
+                CFLAGS += -O3 -fast -fastsse -Mnoframe -Minfo=accel
         else
                CFLAGS += -O0 -Mbounds -Mchkstk -traceback
                LDFLAGS +=
