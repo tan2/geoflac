@@ -13,6 +13,22 @@ module arrays
   ! temporary array
   real*8, pointer, save :: junk2(:,:)
 
+  !!! maximum number of ELEMENTS !!!
+  integer, parameter :: mnz=200, mnx=700, max_markers_per_elem=32
+
+  integer :: iphase(mnz,mnx), nphase_counter(20,mnz,mnx), &
+      ntopmarker(mnx), itopmarker(max_markers_per_elem,mnx), &
+      irheol_fl(mnz,mnx), &
+      nopbou((mnz+mnx)*2,4), ncodbou((mnz+mnx)*2,3)
+
+  real*8 :: phase_ratio(20,mnz,mnx), &
+      dtopo(mnx+1), dhacc(mnx+1), extrusion(mnx), &
+      andesitic_melt_vol(mnx), extr_acc(mnx), &
+      strainr(3,4,mnz,mnx), &
+      aps(mnz,mnx),visn(mnz,mnx),e2sr(mnz,mnx), &
+      temp0(mnz+1,mnx+1),source(mnz,mnx),shrheat(mnz,mnx), &
+      bcstress((mnz+mnx)*2,3)
+
   !$acc declare create(cord, temp, vel, stress0, force, balance, amass, rmass, area, dvol, strain, bc, ncod, junk2)
 contains
 
