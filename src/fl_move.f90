@@ -3,11 +3,13 @@
 
 subroutine fl_move
 use arrays
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
+use params
+implicit none
 
-
+integer :: i, j
+double precision :: x1,y1,x2,y2,x3,y3,x4,y4, &
+                    vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4, &
+                    det,dw12,s11,s22,s12
 ! Move Grid
 if (movegrid .eq. 0) return
 
@@ -136,11 +138,11 @@ end subroutine fl_move
 !============================================================
 subroutine diff_topo
 use arrays
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
+use params
+implicit none
 
-dimension tkappa(mnx+1)
+double precision :: tkappa(mnx+1), snder, topomean
+integer :: i
 
 !EROSION PROCESSES
 if( topo_kappa .gt. 0. ) then
@@ -197,12 +199,15 @@ end subroutine diff_topo
 subroutine resurface
   use marker_data
   use arrays
-  include 'precision.inc'
-  include 'params.inc'
-  include 'arrays.inc'
+  use params
+  implicit none
   include 'phases.inc'
 
-  dimension shp2(2,3,2)
+
+  double precision :: shp2(2,3,2)
+  integer :: i, ii, k, kinc, kmax, m, n, n_to_add, nmax, ntriag
+  double precision :: snder, topomean, chgtopo, chgtopo2, dz, elz, &
+                      x, y, ymax
 
   do i = 1, nx-1
       ! averge thickness of this element
