@@ -1,10 +1,13 @@
 subroutine euler2bar(x,y,bar1,bar2,ntr,ii,jj,inc)
 
 use arrays
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
+use params
+implicit none
 
+integer :: ntr, ii, jj, inc
+double precision :: x, y, bar1, bar2
+
+integer :: i, j, ibeg, iend, jbeg, jend
 !character*200 msg
 
 ! find the triangle in which the marker belongs
@@ -72,12 +75,14 @@ end subroutine euler2bar
 
 subroutine check_inside(x,y,bar1,bar2,ntr,i,j,inc)
   use arrays
+  use params
+  implicit none
 
-  include 'precision.inc'
-  include 'params.inc'
-
-  dimension xxmpt(2,3)
-
+  integer :: ntr, i, j, inc
+  double precision :: x, y, bar1, bar2
+  double precision :: xxmpt(2,3)
+  integer :: k, ninters
+  double precision :: x1, x2, x3, y1, y2, y3, det
 
   inc = 0
 
