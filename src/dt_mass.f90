@@ -16,12 +16,16 @@
 subroutine dt_mass
 
 use arrays
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
+use params
+use matprops
+implicit none
 
-
-real*8, parameter :: c1d12 = 1./12.
+double precision :: dlmin_prop
+double precision, parameter :: c1d12 = 1.d0/12.d0
+integer i, j, k, iph
+double precision :: dlmin, vel_max, dt_m, diff
+double precision :: pwave, dens, vel_sound, rho_inert, rho_inert2, am3, dte, dtt
+double precision :: rmu, visc_cut
 
 ! minimal propagation distance
 dlmin = dlmin_prop()
@@ -144,10 +148,12 @@ end
 
 function dlmin_prop()
 use arrays
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
+use params
+implicit none
+double precision :: dlmin_prop
 
+integer :: i, j
+double precision :: dlmin, dl, dlm
 dlmin = 1.e+28
 
 do 1 i = 1,nx-1
