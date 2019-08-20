@@ -2,9 +2,8 @@
 !  Calculations of forces from stresses
 subroutine fl_node
 use arrays
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
+use params
+implicit none
 
 !  1 - 3
 !  |   |
@@ -28,6 +27,14 @@ include 'arrays.inc'
 !
 !    assemblage of forces is COUNTRE CLOCK-WISE !
 !
+
+integer :: i, j, k
+double precision :: drat, fx, fy, &
+                  p_est, rosubg, &
+                  press_norm_l, dlx_l, dly_l, &
+                  press_norm_r, dlx_r, dly_r, &
+                  iunknown, rho_water_g, water_depth
+
 
 boff = 0
 
