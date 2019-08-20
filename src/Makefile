@@ -19,13 +19,13 @@
 ########################################################################
 
 ## GNU version >= 4.2, otherwise openmp won't work
-#F90 = gfortran
+F90 = gfortran
 
 ## Intel, tested with v11.1
 #F90 = ifort
 
 ## PGI group
-F90 = pgfortran
+#F90 = pgfortran
 
 ## Sun
 #F90 = f90
@@ -138,6 +138,7 @@ endif
 
 # module files have to be compiled before other f90 files
 MODULE_SRCS = \
+	params.f90 \
 	arrays.f90 \
 	marker_data.f90
 
@@ -209,7 +210,7 @@ $(EXE): $(MODULE_OBJS) $(OBJS)
 $(MODULE_OBJS): %.o : %.f90
 	$(F90) $(CFLAGS) -c $<
 
-$(OBJS): %.o : %.f90 params.inc arrays.inc
+$(OBJS): %.o : %.f90 params.inc arrays.inc $(MODULE_OBJS)
 	$(F90) $(CFLAGS) -c $<
 
 take-snapshot:
