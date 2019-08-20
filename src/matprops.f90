@@ -1,11 +1,19 @@
+module matprops
+
+contains
+
 !==============================================
 ! Density
 function Eff_dens( j, i)
   use arrays
-  include 'precision.inc'
-  include 'params.inc'
-  include 'arrays.inc'
+  use params
+  implicit none
   include 'phases.inc'
+
+  double precision :: Eff_dens
+  integer :: j, i, ii, iph, k
+  double precision :: zcord, tmpr, press, dens, ratio
+  double precision :: sed_min_density, delta_den, zefold
 
   zcord = 0.25*(cord(j,i,2)+cord(j+1,i,2)+cord(j,i+1,2)+cord(j+1,i+1,2))
   tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
@@ -104,12 +112,12 @@ end function Eff_dens
 !=================================================
 function Eff_cp( j, i )
 use arrays
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
+use params
+implicit none
+double precision :: Eff_cp
 
-
-HeatLatent = 420000.
+double precision :: HeatLatent = 420000.
+integer :: iph, j, i
 
 iph = iphase(j,i)
 Eff_cp = cp(iph)
@@ -151,10 +159,12 @@ end function Eff_cp
 !=================================================
 function Eff_conduct( j, i )
 use arrays
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
+use params
+implicit none
+double precision :: Eff_conduct
 
+integer :: iph, k, j, i
+double precision :: cond
 
 if (iint_marker.ne.1) then
     iph = iphase(j,i)
@@ -168,9 +178,9 @@ if (iint_marker.ne.1) then
 
     ! HOOK
     ! Hydrothermal alteration of thermal diffusivity  - see user_luc.f90
-    if( if_hydro .eq. 1 ) then
-        cond = HydroDiff(j,i)*den(iph)*cp(iph)
-    endif
+    !if( if_hydro .eq. 1 ) then
+    !    cond = HydroDiff(j,i)*den(iph)*cp(iph)
+    !endif
     Eff_conduct = cond
 
 else
@@ -190,9 +200,9 @@ else
 
         ! HOOK
         ! Hydrothermal alteration of thermal diffusivity  - see user_luc.f90
-        if( if_hydro .eq. 1 ) then
-            cond = HydroDiff(j,i)*den(k)*cp(k)
-        endif
+        !if( if_hydro .eq. 1 ) then
+        !    cond = HydroDiff(j,i)*den(k)*cp(k)
+        !endif
         Eff_conduct = Eff_conduct + phase_ratio(k,j,i)*cond
     enddo
 endif
@@ -213,10 +223,14 @@ end function Eff_conduct
 
 function Eff_visc( j, i )
 use arrays
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
+use params
+implicit none
 include 'phases.inc'
+double precision :: Eff_visc
+
+integer :: j, i, ii, iph, k
+double precision :: r, vis, srat, pow, pow1
+double precision :: zcord, tmpr, press
 
 Eff_visc = 0.
 r=8.31448e0
@@ -317,3 +331,5 @@ endif
 
 return
 end function Eff_visc
+
+end module matprops

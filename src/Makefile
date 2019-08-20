@@ -140,7 +140,8 @@ endif
 MODULE_SRCS = \
 	params.f90 \
 	arrays.f90 \
-	marker_data.f90
+	marker_data.f90 \
+	matprops.f90
 
 SRCS =	\
 	bar2euler.f90 \
@@ -166,7 +167,6 @@ SRCS =	\
 	init_visc.f90 \
 	lpeuler2bar.f90 \
 	marker2elem.f90 \
-	matprops.f90 \
 	newphase2marker.f90 \
 	outflac.f90 \
 	outmarker.f90 \
