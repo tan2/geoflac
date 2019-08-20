@@ -7,9 +7,7 @@ subroutine bc_update
   !----------------------- determ. boundary conditions -----------
 
   use arrays
-  include 'precision.inc'
-  include 'arrays.inc'
-  include 'params.inc'
+  use params
 
   ! -------------------------------------------------------------
   !      LEFT BOUNDARY
