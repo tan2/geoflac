@@ -5,20 +5,25 @@
 !--------------------------------------------------------------------
 subroutine bc_update  
   !----------------------- determ. boundary conditions -----------
-
   use arrays
   use params
+  use matprops
+  implicit none
+
+  integer :: j, i, ii1, ii2, iph, jj1, jj2
+  double precision :: densT, dh, dh1, dh2, dlx, dly, dP, dPT, &
+    press, press_norm, rogh, s_normal, s_shear
 
   ! -------------------------------------------------------------
   !      LEFT BOUNDARY
   !   Update for hydrostatic force (normal to the surface)
   !   Shear component = 0 (perfect fluid)
   ! -------------------------------------------------------------
-  force = 0.0
-  balance = 0.0
+  force = 0.0d0
+  balance = 0.0d0
 
   if (ydrsides.eq. 1.) then
-      rogh = 0.      
+      rogh = 0.d0
       do j=1,nz-1
           iph = iphase(j,1)
           densT = Eff_dens(j,1)
@@ -53,7 +58,7 @@ subroutine bc_update
       !   Update for hydrostatic force (normal to the surface)
       !   Shear component = 0 (perfect fluid)
       ! -------------------------------------------------------------
-      rogh = 0.
+      rogh = 0.d0
       do j=1,nz-1
           iph = iphase(j,nx-1)
           densT = Eff_dens(j,nx-1)
