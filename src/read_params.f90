@@ -1,11 +1,12 @@
 ! Reads problem parameters from input file
 
 subroutine read_params(inputfile)
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
+implicit none
+use arrays
+use params
 
 character*200 inputfile
+integer :: iu, nq
 
 iu =4 
 open( iu, file=inputfile )
