@@ -1,9 +1,11 @@
 ! ---- Choice of the time step  
  
 subroutine dt_adjust
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
+use params
+use arrays
+implicit none
+
+double precision :: dt_min
 
 dt_min = min(dt_elastic, dt_maxwell)
 
