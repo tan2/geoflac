@@ -3,8 +3,6 @@
 function strainI(iz,ix)
 use arrays
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 
 strainI = 0.5 * ( strain(iz,ix,1) + strain(iz,ix,2) )
 
@@ -17,8 +15,6 @@ end function strainI
 function strainII(iz,ix)
 use arrays
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 
 strainII = 0.5 * sqrt((strain(iz,ix,1)-strain(iz,ix,2))**2 + 4*strain(iz,ix,3)**2)
 
@@ -29,9 +25,8 @@ end function strainII
 !================================
 ! Second invariant of strain rate
 function srateII(iz,ix)
+use arrays
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 
 s11 = 0.25 * (strainr(1,1,iz,ix)+strainr(1,2,iz,ix)+strainr(1,3,iz,ix)+strainr(1,4,iz,ix))
 s22 = 0.25 * (strainr(2,1,iz,ix)+strainr(2,2,iz,ix)+strainr(2,3,iz,ix)+strainr(2,4,iz,ix))
@@ -47,8 +42,6 @@ end function srateII
 function stressI(iz,ix)
 use arrays
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 
 s11 = 0.25 * (stress0(iz,ix,1,1)+stress0(iz,ix,1,2)+stress0(iz,ix,1,3)+stress0(iz,ix,1,4))
 s22 = 0.25 * (stress0(iz,ix,2,1)+stress0(iz,ix,2,2)+stress0(iz,ix,2,3)+stress0(iz,ix,2,4))
@@ -64,8 +57,6 @@ end function stressI
 function stressII(iz,ix)
 use arrays
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 
 s11 = 0.25 * (stress0(iz,ix,1,1)+stress0(iz,ix,1,2)+stress0(iz,ix,1,3)+stress0(iz,ix,1,4))
 s22 = 0.25 * (stress0(iz,ix,2,1)+stress0(iz,ix,2,2)+stress0(iz,ix,2,3)+stress0(iz,ix,2,4))
@@ -92,8 +83,8 @@ end subroutine eigen2x2
 
   !==================================================
 subroutine SysMsg( message )
+use params
 include 'precision.inc'
-include 'params.inc'
 character* (*) message
 
 !$OMP critical (sysmsg1)

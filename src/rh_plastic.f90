@@ -251,9 +251,8 @@ end
 
 subroutine pre_plast (i,j,coh,phi,psi,hardn)
 use arrays
+use params
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 
 pls_curr = aps(j,i)
 

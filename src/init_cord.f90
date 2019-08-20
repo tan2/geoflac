@@ -4,9 +4,8 @@
 
 subroutine init_cord
 use arrays
+use params
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 
 dimension rmesh1(nx+nz)
 
@@ -90,8 +89,8 @@ end
 !------Test for mesh dimensions (check size and num. of elem)
 
 subroutine test_grid
+use params
 include 'precision.inc'
-include 'params.inc'
 
 
 !- X direction
@@ -139,8 +138,8 @@ end
 ! ONE-D mesh
 !==========================================================================
 subroutine mesh1 (x1,x2,xmesh,nzon,nelz,sizez)
+use params
 include 'precision.inc'
-include 'params.inc'
 
 dimension sizez(10),nelz(10),xmesh(nx+nz)
    

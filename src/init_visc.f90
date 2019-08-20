@@ -1,9 +1,9 @@
 
 subroutine init_visc
   use arrays
+  use params
   include 'precision.inc'
-  include 'params.inc'
-  include 'arrays.inc'
+
   irh = irheol(mphase) 
   do i = 1,nx-1  
       do j = 1,nz-1

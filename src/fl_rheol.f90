@@ -4,9 +4,8 @@
     
 subroutine fl_rheol
 use arrays
+use params
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 
 dimension depl(4)
 dimension s11p(4),s22p(4),s12p(4),s33p(4),s11v(4),s22v(4),s12v(4),s33v(4)

@@ -132,7 +132,9 @@ endif
 
 # module files have to be compiled before other f90 files
 MODULE_SRCS = \
+	params.f90 \
 	arrays.f90 \
+	phases.f90 \
 	marker_data.f90
 
 SRCS =	\
@@ -207,7 +209,7 @@ $(EXE): $(MODULE_OBJS) $(OBJS)
 $(MODULE_OBJS): %.o : %.f90
 	$(F90) $(CFLAGS) -c $<
 
-$(OBJS): %.o : %.f90 params.inc arrays.inc
+$(OBJS): %.o : %.f90 $(MODULES)
 	$(F90) $(CFLAGS) -c $<
 
 take-snapshot:

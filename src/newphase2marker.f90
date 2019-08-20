@@ -1,9 +1,8 @@
 subroutine newphase2marker (j1, j2, i1, i2, iph)
 USE marker_data
 use arrays
+use params
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 
 ! reset the markers within elements in the rectangular region
 
@@ -32,10 +31,9 @@ end subroutine newphase2marker
 subroutine change_phase
 USE marker_data
 use arrays
+use params
+use phases
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
-include 'phases.inc'
 
 integer ichanged(100*mnx), jchanged(100*mnx)
 integer kph(1)

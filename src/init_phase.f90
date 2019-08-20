@@ -4,9 +4,8 @@
 
 subroutine init_phase
 use arrays
+use params
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 
 
 ! Main phase

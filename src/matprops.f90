@@ -2,10 +2,9 @@
 ! Density
 function Eff_dens( j, i)
   use arrays
+  use params
+  use phases
   include 'precision.inc'
-  include 'params.inc'
-  include 'arrays.inc'
-  include 'phases.inc'
 
   zcord = 0.25*(cord(j,i,2)+cord(j+1,i,2)+cord(j,i+1,2)+cord(j+1,i+1,2))
   tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
@@ -104,9 +103,8 @@ end function Eff_dens
 !=================================================
 function Eff_cp( j, i )
 use arrays
+use params
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 
 
 HeatLatent = 420000.
@@ -151,9 +149,8 @@ end function Eff_cp
 !=================================================
 function Eff_conduct( j, i )
 use arrays
+use params
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 
 
 if (iint_marker.ne.1) then
@@ -213,10 +210,8 @@ end function Eff_conduct
 
 function Eff_visc( j, i )
 use arrays
+use params
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
-include 'phases.inc'
 
 Eff_visc = 0.
 r=8.31448e0

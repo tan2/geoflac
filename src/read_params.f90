@@ -1,9 +1,9 @@
 ! Reads problem parameters from input file
 
 subroutine read_params(inputfile)
+use arrays
+use params
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 
 character*200 inputfile
 

@@ -2,10 +2,8 @@
 
 subroutine init_temp
 use arrays
+use params
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
-include 'phases.inc'
 
 !  Read distribution of temperatures from the dat file
 if (irtemp .gt. 0) then
@@ -231,11 +229,9 @@ end subroutine init_temp
 
 
 subroutine sidewalltemp(i1, i2)
-  use arrays, only : temp, cord
+  use arrays, only : temp, cord, source
+  use params
   include 'precision.inc'
-  include 'params.inc'
-  include 'arrays.inc'
-  include 'phases.inc'
 
   ! This subroutine is intended for remeshing.
   cond_c = 2.2
@@ -325,9 +321,8 @@ end
 
 function htgen( j )
 use arrays
+use params
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 
 y = - cord(j,1,2)*1.e-3
 
@@ -342,8 +337,6 @@ end
 !=========================================================
 subroutine RedefineTemp
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 
 write(*,*) 'ATTENTION! Special form of initial temperature distribution !'
 

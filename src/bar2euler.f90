@@ -1,10 +1,9 @@
 subroutine bar2euler
 use arrays
+use params
 USE marker_data
 
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 common /markers/ xmpt(2,3,mnz*mnx*2)
 double precision :: shp2(2,3,2)
 
@@ -43,7 +42,6 @@ subroutine shape_functions(j, i, shp2)
   use arrays
 
   include 'precision.inc'
-  include 'params.inc'
   double precision, intent(out) :: shp2(2,3,2)
 
   do k = 1 , 2
@@ -81,7 +79,6 @@ subroutine shape_functions1(j, i, k, shp)
   use arrays
 
   include 'precision.inc'
-  include 'params.inc'
   double precision, intent(out) :: shp(2,3)
 
   if (k.eq.1) then

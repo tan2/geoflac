@@ -7,9 +7,8 @@
 
 subroutine init_areas
 use arrays
+use params
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 
 
 do 13 i = 1,nx-1
@@ -76,9 +75,8 @@ end
 
 function total_area( iph )
 use arrays
+use params
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 
 area_t = 0
 do i = 1,nx-1

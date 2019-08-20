@@ -3,9 +3,8 @@
 
 subroutine rmasses
 use arrays
+use params
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 
 
 real*8, parameter :: c1d12 = 1./12.

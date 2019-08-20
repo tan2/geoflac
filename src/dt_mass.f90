@@ -16,9 +16,8 @@
 subroutine dt_mass
 
 use arrays
+use params
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 
 
 real*8, parameter :: c1d12 = 1./12.
@@ -144,9 +143,8 @@ end
 
 function dlmin_prop()
 use arrays
+use params
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 
 dlmin = 1.e+28
 

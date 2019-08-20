@@ -4,9 +4,8 @@
 subroutine init_bc
 
   use arrays
+  use params
   include 'precision.inc'
-  include 'arrays.inc'
-  include 'params.inc'
   !
   !      ---- bc(nh*2)-for each nodal degree-of-freedom this is assigned zero
   !      value,unless a boundary condition is applied,in which case it is
@@ -202,9 +201,8 @@ end subroutine init_bc
 subroutine stressbc (i,n,numbp,numbp1,x)      
 
   use arrays
+  use params
   include 'precision.inc'
-  include 'arrays.inc'
-  include 'params.inc'
 
   pi2 = 2. * 3.14159
 
@@ -260,9 +258,8 @@ end subroutine stressbc
 subroutine velbc (i,numbp,x)  
 
   use arrays
+  use params
   include 'precision.inc' 
-  include 'arrays.inc'
-  include 'params.inc'
 
   pi2 = 2. * 3.14159 
 
@@ -317,9 +314,8 @@ end subroutine velbc
 subroutine velbc_visc(i)
 
   use arrays
+  use params
   include 'precision.inc'
-  include 'arrays.inc'
-  include 'params.inc'
 
   if (nofside(i).eq.1) then
       ii = 1
@@ -360,9 +356,8 @@ end subroutine velbc_visc
 subroutine vbcal 
 
   use arrays
+  use params
   include 'precision.inc'
-  include 'arrays.inc'
-  include 'params.inc'
 
   vbc = 0.
 

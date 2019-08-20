@@ -4,10 +4,9 @@
 
 subroutine init_stress
 use arrays
+use params
+use phases
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
-include 'phases.inc'
 
 pi = 3.14159265358979323846
 degrad = pi/180.

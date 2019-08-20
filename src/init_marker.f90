@@ -3,9 +3,8 @@ subroutine init_marker
 USE marker_data
 
 use arrays
+use params
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 
 double precision :: a(3,2), b(3,2), points(9,2)
 double precision, parameter :: half = 0.5d0
@@ -206,9 +205,8 @@ subroutine add_marker(x, y, iph, age, kk, j, i, inc)
 
   USE marker_data
   use arrays
+  use params
   include 'precision.inc'
-  include 'params.inc'
-  include 'arrays.inc'
 
   character*200 msg
 

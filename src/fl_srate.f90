@@ -4,9 +4,8 @@
 
 subroutine fl_srate
 use arrays
+use params
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 
 ! following block is needed for averaging
 dimension se2sr(mnz,mnx), sshrheat(mnz,mnx)

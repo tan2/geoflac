@@ -4,7 +4,6 @@
 !=======================================================
 subroutine ReadHydro()
 include 'precision.inc'
-include 'params.inc'
 common /hydroth/ xenhc,xwidth,xmaxstr,xmaxdepth,xmaxt,ixh1t
 
 open( 9, file='hydrother.inp',status='old',err=2001 )
@@ -22,12 +21,10 @@ end
 function HydroDiff( j, i )
 use arrays
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 common /hydroth/ xenhc,xwidth,xmaxstr,xmaxdepth,xmaxt,ixh1t
 
     iph = iphase(j,i)
-    diff = conduct(iph)/den(iph)/cp(iph) 
+    diff = Eff_conduct(iph)/Eff_dens(iph)/Eff_cp(iph)
    if(i.gt.ixh1t+1.and.i.lt.nx-ixh1t-1) then
     do 10 k= i-ixh1t,i
     tmpr = 0.25*(temp(j,k)+temp(j+1,k)+temp(j,k+1)+temp(j+1,k+1))
@@ -70,8 +67,6 @@ end
 subroutine rem_stress_alt()
 use arrays
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 
 common /remeshing/ pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
 cold(mnz+1,mnx+1,2),cnew(mnz+1,mnx+1,2),numtr(mnz+1,mnx+1),nzt,nxt

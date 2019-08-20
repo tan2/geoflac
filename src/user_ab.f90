@@ -5,7 +5,6 @@
 
 subroutine ReadIntrusions()
 include 'precision.inc'
-include 'params.inc'
 
 type intr_type
     sequence
@@ -61,8 +60,6 @@ end
 subroutine MakeIntrusions()
 use arrays
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 
 type intr_type
     sequence

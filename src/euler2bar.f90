@@ -1,9 +1,8 @@
 subroutine euler2bar(x,y,bar1,bar2,ntr,ii,jj,inc)
 
 use arrays
+use params
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 
 !character*200 msg
 
@@ -72,9 +71,9 @@ end subroutine euler2bar
 
 subroutine check_inside(x,y,bar1,bar2,ntr,i,j,inc)
   use arrays
+  use params
 
   include 'precision.inc'
-  include 'params.inc'
 
   dimension xxmpt(2,3)
 

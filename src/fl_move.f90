@@ -3,9 +3,8 @@
 
 subroutine fl_move
 use arrays
+use params
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 
 
 ! Move Grid
@@ -136,9 +135,8 @@ end subroutine fl_move
 !============================================================
 subroutine diff_topo
 use arrays
+use params
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 
 dimension tkappa(mnx+1)
 
@@ -197,10 +195,9 @@ end subroutine diff_topo
 subroutine resurface
   use marker_data
   use arrays
+  use params
+  use phases
   include 'precision.inc'
-  include 'params.inc'
-  include 'arrays.inc'
-  include 'phases.inc'
 
   dimension shp2(2,3,2)
 

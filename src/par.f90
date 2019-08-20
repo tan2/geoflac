@@ -2,9 +2,8 @@
 
 program DREZINA
 use arrays
+use params
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 
 character*200 inputfile
 real*4 secnds,time0

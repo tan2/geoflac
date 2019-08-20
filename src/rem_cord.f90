@@ -1,8 +1,7 @@
 subroutine rem_cord(cordo)
 use arrays
+use params
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 
 dimension cordo(nz,nx,2)
 dimension rmesh1(mnx+1)

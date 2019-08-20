@@ -3,11 +3,10 @@
 
 subroutine rsflac
 use arrays
+use params
 USE marker_data
 
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 
 
 parameter( kindr=8, kindi=4 )

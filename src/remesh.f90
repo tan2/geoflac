@@ -1,11 +1,9 @@
  
 subroutine remesh
 use arrays
+use params
 
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
-include 'phases.inc'
 
 common /remeshing/ pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
 cold(mnz+1,mnx+1,2),cnew(mnz+1,mnx+1,2),numtr(mnz+1,mnx+1),nzt,nxt
@@ -308,8 +306,8 @@ end
 ! parameters of triangles of a grid
 !===============================================
 subroutine rem_trpars
+use arrays
 include 'precision.inc'
-include 'arrays.inc'
 
 common /remeshing/ pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
 cold(mnz+1,mnx+1,2),cnew(mnz+1,mnx+1,2),numtr(mnz+1,mnx+1),nzt,nxt
@@ -366,8 +364,8 @@ end
 ! baricentric coordinates of new mesh in old triangles
 !===============================================
 subroutine rem_barcord
+use arrays
 include 'precision.inc'
-include 'arrays.inc'
 
 common /remeshing/ pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
 cold(mnz+1,mnx+1,2),cnew(mnz+1,mnx+1,2),numtr(mnz+1,mnx+1),nzt,nxt
@@ -501,9 +499,9 @@ end
 ! interpolation
 !===============================================
 subroutine rem_interpolate( arr )
+use arrays
+use params
 include 'precision.inc'
-include 'arrays.inc'
-include 'params.inc'
 common /remeshing/ pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
 cold(mnz+1,mnx+1,2),cnew(mnz+1,mnx+1,2),numtr(mnz+1,mnx+1),nzt,nxt
 dimension dummy(nzt,nxt),arr(nzt,nxt)

@@ -4,9 +4,8 @@
 
 function vis_creep(j,i)
 use arrays
+use params
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 
 r=8.31448e0
 iph = iphase(j,i)

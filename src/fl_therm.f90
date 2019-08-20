@@ -3,9 +3,8 @@
 
 subroutine fl_therm
 use arrays
+use params
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 
 dimension flux(mnz,mnx,2,2), add_source(mnz,mnx)
 

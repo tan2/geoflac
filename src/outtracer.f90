@@ -1,10 +1,9 @@
 subroutine outtracer
 USE marker_data
 use arrays
+use params
 
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 parameter( kindr=4 )
 real xik(nmtracers),timtrk(nmtracers),xtrak(nmtracers),ytrak(nmtracers),temptrak(nmtracers),phtrak(nmtracers)
 real prestrak(nmtracers),straintrak(nmtracers)

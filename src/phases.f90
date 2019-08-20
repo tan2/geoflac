@@ -1,5 +1,5 @@
 ! -*- F90 -*-
-
+module phases
 !! Phases the got special treatment in the code
 
 integer, parameter :: kocean0 = 1 ! basalt without dehydration
@@ -18,3 +18,5 @@ integer, parameter :: keclg = 13
 integer, parameter :: karc1 = 14
 integer, parameter :: kweakmc = 15
 integer, parameter :: khydmant = 16
+
+end module phases

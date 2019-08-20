@@ -8,9 +8,8 @@
  
 integer function itest_mesh()
   use arrays
+  use params
   include 'precision.inc'
-  include 'params.inc'
-  include 'arrays.inc'
   dimension iv(4),jv(4),angle(3)
 
 

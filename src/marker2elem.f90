@@ -1,8 +1,7 @@
 subroutine marker2elem 
   use arrays
+  use params
   include 'precision.inc'
-  include 'params.inc'
-  include 'arrays.inc'
   integer kph(1)
 
   !character*200 msg

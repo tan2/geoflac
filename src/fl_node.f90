@@ -2,9 +2,8 @@
 !  Calculations of forces from stresses
 subroutine fl_node
 use arrays
+use params
 include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 
 !  1 - 3
 !  |   |
