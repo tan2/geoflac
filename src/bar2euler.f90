@@ -1,12 +1,13 @@
 subroutine bar2euler
 use arrays
+use params
 USE marker_data
+implicit none
 
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
-common /markers/ xmpt(2,3,mnz*mnx*2)
+double precision :: xmpt(2,3,mnz*mnx*2)
 double precision :: shp2(2,3,2)
+integer :: i, j, n
+double precision :: ba1, ba2, x, y
 
 ! calculate the new paramters for the triangles
 
@@ -41,10 +42,11 @@ end subroutine bar2euler
 
 subroutine shape_functions(j, i, shp2)
   use arrays
-
-  include 'precision.inc'
-  include 'params.inc'
+  use params
+  implicit none
+  integer :: j, i, k
   double precision, intent(out) :: shp2(2,3,2)
+  double precision :: x1, x2, x3, y1, y2, y3, det
 
   do k = 1 , 2
       if (k.eq.1) then
@@ -79,10 +81,11 @@ end subroutine shape_functions
 
 subroutine shape_functions1(j, i, k, shp)
   use arrays
-
-  include 'precision.inc'
-  include 'params.inc'
+  use params
+  implicit none
+  integer :: j, i, k
   double precision, intent(out) :: shp(2,3)
+  double precision :: x1, x2, x3, y1, y2, y3, det
 
   if (k.eq.1) then
      x1 = cord(j  ,i  ,1)
@@ -122,9 +125,9 @@ end subroutine shape_functions1
 ! solve for x and y
 subroutine bar2xy(ba1, ba2, shp, x, y)
   use arrays
-
-  include 'precision.inc'
-  double precision :: shp(2,3)
+  implicit none
+  double precision :: ba1, ba2, shp(2,3), x, y
+  double precision :: xnum, xdem
 
   xnum = ba2*shp(1,3) - shp(2,1)*shp(1,3) - shp(2,3)*ba1 + shp(2,3)*shp(1,1)
   xdem = shp(1,3)*shp(2,2) - shp(2,3)*shp(1,2)
