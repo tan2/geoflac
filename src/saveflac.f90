@@ -5,14 +5,14 @@
 subroutine saveflac
 use arrays
 USE marker_data
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
+use params
+implicit none
 
-parameter( kindr=8, kindi=4 )
+integer, parameter :: kindr=8, kindi=4
 real(kindr), allocatable :: dum1(:),dum2(:,:)
 integer(kindi), allocatable :: dum11(:), idum2(:,:)
 real*8 rtime, rdt
+integer :: i, nrec, nwords
 
 ! define record number and write it to contents
 
