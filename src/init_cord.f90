@@ -4,11 +4,11 @@
 
 subroutine init_cord
 use arrays
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
-
-dimension rmesh1(nx+nz)
+use params
+implicit none
+double precision :: rmesh1(nx+nz)
+integer :: i, j
+double precision :: amp, x, y
 
 if (ircoord .gt. 0) then
     ! read the coordinates from file
