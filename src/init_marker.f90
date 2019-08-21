@@ -3,15 +3,16 @@ subroutine init_marker
 USE marker_data
 
 use arrays
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
-
+use params
+implicit none
 double precision :: a(3,2), b(3,2), points(9,2)
 double precision, parameter :: half = 0.5d0
 double precision, parameter :: onesixth = 0.1666666666666666666666d0
 double precision, parameter :: fivesixth = 0.8333333333333333333333d0
-
+integer :: i, j, i1, i2, iamp, inc, itop, iwidth, ixc, k, k1, k2, kph, n, l, &
+           itop_geom
+double precision :: ddx, ddy, dx, dy, r, rx, ry, xx, ycol1, ycol2, ycol3, ycol4, &
+                    yy, yyy
 nphase_counter = 0
 ntopmarker(:) = 0
 itopmarker(:,:) = 0
@@ -206,9 +207,12 @@ subroutine add_marker(x, y, iph, age, kk, j, i, inc)
 
   USE marker_data
   use arrays
-  include 'precision.inc'
-  include 'params.inc'
-  include 'arrays.inc'
+  use params
+  implicit none
+  integer :: iph, kk, j, i, inc
+  double precision :: x, y, age
+  integer :: ntr
+  double precision :: bar1, bar2
 
   character*200 msg
 
