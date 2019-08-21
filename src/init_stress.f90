@@ -4,13 +4,14 @@
 
 subroutine init_stress
 use arrays
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
+use params
+implicit none
 include 'phases.inc'
 
-pi = 3.14159265358979323846
-degrad = pi/180.
+double precision, parameter :: pi = 3.14159265358979323846
+double precision, parameter :: degrad = pi/180.
+integer n, i, j, ii, iph
+double precision :: tmpr, densT, dh1, dh2, dh, dPT, dP, press, rogh
 
 n = 0
 do 51 i = 1,nx-1
