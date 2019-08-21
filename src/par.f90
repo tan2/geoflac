@@ -2,12 +2,15 @@
 
 program DREZINA
 use arrays
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
+use params
+implicit none
 
 character*200 inputfile
 real*4 secnds,time0
+integer :: narg, i_search, j, itest_mesh
+double precision :: area_diff, dl, dtacc_file, dtacc_save, dtacc_screen, dtacc_tracer, &
+                    force_l, force_r, sxx, sxxd, &
+                    total_area, stressI
 
 narg = iargc()
 if(narg /= 1) then
