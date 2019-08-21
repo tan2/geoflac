@@ -1,9 +1,12 @@
 
 subroutine init_visc
   use arrays
-  include 'precision.inc'
-  include 'params.inc'
-  include 'arrays.inc'
+  use params
+  use matprops
+  implicit none
+
+  integer :: irh, i, j
+  double precision :: xc, yc, geoth, vis0
   irh = irheol(mphase) 
   do i = 1,nx-1  
       do j = 1,nz-1
