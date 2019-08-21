@@ -286,8 +286,10 @@ end subroutine resurface
 
 subroutine add_marker_at_top(i, dz_ratio, elz, kph, nmarkers)
   use arrays
-  include 'precision.inc'
-
+  use params, only : time
+  implicit none
+  integer :: i, kph, nmarkers, inc
+  double precision :: dz_ratio, elz, xx, yy, rx
   do while(.true.)
      call random_number(rx)
      xx = cord(1,i,1) + rx * (cord(1,i+1,1) - cord(1,i,1))
