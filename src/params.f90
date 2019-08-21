@@ -29,8 +29,11 @@ integer :: nx,nz,nq,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
      iph_col5(maxph),iph_col_trans(maxph), &
      if_intrus,if_hydro, &
      nyhydro,iphsub, &
-     nloop_restarted,nloop,irestart,ifreq_avgsr,ireset, &
-     devmax, dvmax
+     movegrid,ndim,ifreq_visc,nmtracers,i_rey,iac_rem, &
+     iph_int,incoming_left,incoming_right, &
+     iynts,tbos, iax1,iay1,ibx1,iby1,icx1,icy1,idx1,idy1, &
+     ivis_present,n_boff_cutoff,idt_scale,ifreq_imasses,ifreq_rmasses, &
+     nloop_restarted,nloop,irestart,ifreq_avgsr,ireset
 
 real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
      dx_rem,angle_rem,anglemin1,anglemint,topo_kappa,fac_kappa, &
@@ -42,10 +45,6 @@ real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
      dt_scale,strain_inert,vbc,amul,ratl,ratu,frac, &
      dtmax_therm,dt_maxwell,fracm,srate0, &
      dt_elastic,dt_elastic0,demf,boff, &
-     ivis_present,n_boff_cutoff,idt_scale,ifreq_imasses,ifreq_rmasses, &
-     movegrid,ndim,ifreq_visc,nmtracers,i_rey,iac_rem, &
-     iph_int,incoming_left,incoming_right, &
-     iynts,tbos, iax1,iay1,ibx1,iby1,icx1,icy1,idx1,idy1, &
      dtout_screen,dtout_file,dtsave_file, &
      visc(maxph),den(maxph),alfa(maxph),beta(maxph),pln(maxph), &
      acoef(maxph),eactiv(maxph),rl(maxph),rm(maxph), &
@@ -58,7 +57,8 @@ real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
      t_top,t_bot,hs,hr,temp_per,bot_bc,time_t,dt_therm, &
      hc1(maxph),hc2(maxph),hc3(maxph),hc4(maxph), &
      age_1(maxph),g,pisos,drosub,damp_vis, &
-     sec_year,time,dt,time_max
+     sec_year,time,dt,time_max, devmax, dvmax
+
 
 character phasefile*20,tempfile*20,coordfile*20
 
