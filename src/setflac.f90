@@ -3,10 +3,8 @@
 
 subroutine setflac
 use arrays
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
-
+use params
+implicit none
 
 nloop = 0
 time = 0.
