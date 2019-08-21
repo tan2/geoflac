@@ -8,10 +8,11 @@
  
 integer function itest_mesh()
   use arrays
-  include 'precision.inc'
-  include 'params.inc'
-  include 'arrays.inc'
-  dimension iv(4),jv(4),angle(3)
+  use params
+  implicit none
+  integer :: iv(4), jv(4), i, ii, imint, j, jmint, k
+  double precision :: angle(3), testcr, shortening, dx_accr, &
+                      pi, raddeg, degrad, xa, xb, xxal, xxbl, ya, yb
 
 
   itest_mesh = 0
