@@ -1,13 +1,12 @@
 subroutine init_tracer
 USE marker_data
+use arrays
+use params
+implicit none
 
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
+integer :: idtracer(2*mnz*mnx), ielem(mnz,mnx), &
+           i, j, k, kk, n, nn
 
-common /tracers/ idtracer(2*mnz*mnx)
-
-dimension ielem(mnz,mnx)
 
 ielem = 0
 nmtracers = 0
