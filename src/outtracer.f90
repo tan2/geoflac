@@ -1,16 +1,15 @@
 subroutine outtracer
 USE marker_data
 use arrays
-
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
-parameter( kindr=4 )
+use params
+implicit none
+integer, parameter :: kindr=4
 real xik(nmtracers),timtrk(nmtracers),xtrak(nmtracers),ytrak(nmtracers),temptrak(nmtracers),phtrak(nmtracers)
 real prestrak(nmtracers),straintrak(nmtracers)
-real(kindr) D1d(nmtracers)
+real(kindr) D1d(nmtracers), tmpr, stressI, strainII
 
-common /tracers/ idtracer(2*mnz*mnx)
+integer :: idtracer(2*mnz*mnx), i, id, j, k, kk, n, nn, nrec, nwords
+common /tracers/ idtracer
 
 nrec = 0
 ! define record number and write it to contents
