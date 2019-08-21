@@ -4,13 +4,21 @@
     
 subroutine fl_rheol
 use arrays
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
+use params
+use matprops
+implicit none
 
-dimension depl(4)
-dimension s11p(4),s22p(4),s12p(4),s33p(4),s11v(4),s22v(4),s12v(4),s33v(4)
-logical rh_sel
+double precision :: depl(4)
+double precision :: s11p(4),s22p(4),s12p(4),s33p(4),s11v(4),s22v(4),s12v(4),s33v(4)
+logical :: rh_sel
+double precision :: bulkm,rmu,coh,phi,psi, &
+                    stherm,hardn,vis, &
+                    de11,de22,de12,de33,dv, &
+                    curr_devmax, curr_dvmax, diss, dxinj, poiss, &
+                    quad_area, s0, s0a,s0b, &
+                    sarc1, sarc2, sII_plas, sII_visc, young
+integer :: i, j, k, iph, irh, &
+           ipls, jinj
 
 !if( mod(nloop,10).eq.0 .OR. ireset.eq.1 ) then
 !    rh_sel = .true.
