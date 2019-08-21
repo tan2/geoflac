@@ -7,10 +7,11 @@
 
 subroutine init_areas
 use arrays
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
+use params
+implicit none
 
+integer :: i, j
+double precision :: x1, x2, x3, x4, y1, y2, y3, y4, det, det1
 
 do 13 i = 1,nx-1
     do 13 j = 1,nz-1
@@ -76,9 +77,11 @@ end
 
 function total_area( iph )
 use arrays
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
+use params
+implicit none
+
+integer :: iph, i, j
+double precision :: total_area, area_t, x1, x2, x3, x4, y1, y2, y3, y4, det
 
 area_t = 0
 do i = 1,nx-1
