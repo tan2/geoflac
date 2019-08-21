@@ -3,13 +3,17 @@
 
 subroutine fl_therm
 use arrays
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
+use params
+use matprops
+implicit none
 
-dimension flux(mnz,mnx,2,2), add_source(mnz,mnx)
+double precision :: flux(mnz,mnx,2,2), add_source(mnz,mnx)
+double precision, parameter :: heat_latent_magma = 4.2d5  ! J/kg, latent heat of freezing magma
 
-heat_latent_magma = 4.2d5  ! J/kg, latent heat of freezing magma
+integer :: i,j,iph
+double precision :: cp_eff,cond_eff,dissip,diff,quad_area, &
+                  x1,x2,x3,x4,y1,y2,y3,y4,t1,t2,t3,t4,tmpr, &
+                  qs,real_area13,area_n,rhs
 
 ! real_area = 0.5* (1./area(n,t))
 ! Calculate Fluxes in every triangle
