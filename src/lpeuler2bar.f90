@@ -1,11 +1,11 @@
 subroutine lpeuler2bar
 USE marker_data
 use arrays
+use params
+implicit none
 
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
-
+integer :: n, k, i, j, ntr, inc
+double precision :: xx, yy, bar1, bar2
 character*200 msg
 
 nphase_counter(:,:,:) = 0
