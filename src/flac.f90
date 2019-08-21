@@ -5,9 +5,7 @@
 subroutine flac
 
 use arrays
-include 'precision.inc' 
-include 'params.inc'
-include 'arrays.inc'
+use params
 
 ! Update Thermal State
 ! Skip the therm calculations if itherm = 3
