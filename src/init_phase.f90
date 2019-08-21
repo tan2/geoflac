@@ -4,10 +4,11 @@
 
 subroutine init_phase
 use arrays
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
+use params
+implicit none
 
+integer :: i, j, k, ixc, iwidth, iamp, itop, k1, k2, iph, ii, jj, n, itop_geom
+double precision :: y
 
 ! Main phase
 iphase = mphase
@@ -138,7 +139,9 @@ end
 !==========================================================
 ! Gauss perturbation at the top of heterogenity 
 function itop_geom(j,ixc,iwidth,iamp) 
-    
+    implicit none
+    integer :: j, ixc, iwidth, iamp
+    integer :: itop_geom
     itop_geom = int(iamp*exp(-(float(j-ixc)/(0.5*float(iwidth)))**2.))
 
 return
