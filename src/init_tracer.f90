@@ -6,6 +6,7 @@ implicit none
 
 integer :: idtracer(2*mnz*mnx), ielem(mnz,mnx), &
            i, j, k, kk, n, nn
+common /tracers/ idtracer
 
 
 ielem = 0
