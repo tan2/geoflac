@@ -4,9 +4,11 @@
 subroutine init_bc
 
   use arrays
-  include 'precision.inc'
-  include 'arrays.inc'
-  include 'params.inc'
+  use params
+  implicit none
+
+  integer :: i, nnop, ndbc, numbp, numbp1, nebou, n
+  double precision :: x1, x2, xn, xa, x
   !
   !      ---- bc(nh*2)-for each nodal degree-of-freedom this is assigned zero
   !      value,unless a boundary condition is applied,in which case it is
@@ -202,11 +204,12 @@ end subroutine init_bc
 subroutine stressbc (i,n,numbp,numbp1,x)      
 
   use arrays
-  include 'precision.inc'
-  include 'arrays.inc'
-  include 'params.inc'
+  use params
+  implicit none
 
-  pi2 = 2. * 3.14159
+  integer :: i, n, numbp, numbp1
+  double precision :: x, fun
+  double precision, parameter :: pi2 = 2. * 3.14159
 
   fun =  bca(i) + bcb(i)*x + bcc(i)*x*x  & 
        + (bcd(i)*cos (pi2*bce(i)*x) + bcf(i)*sin (pi2*bcg(i)*x))  &
@@ -260,11 +263,13 @@ end subroutine stressbc
 subroutine velbc (i,numbp,x)  
 
   use arrays
-  include 'precision.inc' 
-  include 'arrays.inc'
-  include 'params.inc'
-
-  pi2 = 2. * 3.14159 
+  use params
+  implicit none
+  integer :: i, numbp
+  double precision :: x
+  double precision, parameter :: pi2 = 2. * 3.14159 
+  double precision :: fun
+  integer :: ii1, jj1
 
   fun =  bca(i) + bcb(i)*x + bcc(i)*x*x   & 
        + (bcd(i)*cos (pi2*bce(i)*x) + bcf(i)*sin (pi2*bcg(i)*x))    &
@@ -317,9 +322,11 @@ end subroutine velbc
 subroutine velbc_visc(i)
 
   use arrays
-  include 'precision.inc'
-  include 'arrays.inc'
-  include 'params.inc'
+  use params
+  use matprops
+  implicit none
+  integer :: i, ii, ie, jj
+  double precision :: tmp, tmp1
 
   if (nofside(i).eq.1) then
       ii = 1
@@ -360,9 +367,9 @@ end subroutine velbc_visc
 subroutine vbcal 
 
   use arrays
-  include 'precision.inc'
-  include 'arrays.inc'
-  include 'params.inc'
+  use params
+  implicit none
+  integer :: i, j, k
 
   vbc = 0.
 
