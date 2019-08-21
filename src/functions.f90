@@ -2,9 +2,9 @@
 ! First invariant of strain
 function strainI(iz,ix)
 use arrays
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
+implicit none
+double precision :: strainI
+integer :: iz, ix
 
 strainI = 0.5 * ( strain(iz,ix,1) + strain(iz,ix,2) )
 
@@ -16,9 +16,9 @@ end function strainI
 ! Second invariant of strain
 function strainII(iz,ix)
 use arrays
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
+implicit none
+double precision :: strainII
+integer :: iz, ix
 
 strainII = 0.5 * sqrt((strain(iz,ix,1)-strain(iz,ix,2))**2 + 4*strain(iz,ix,3)**2)
 
@@ -29,9 +29,11 @@ end function strainII
 !================================
 ! Second invariant of strain rate
 function srateII(iz,ix)
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
+use arrays
+implicit none
+double precision :: srateII
+integer :: iz, ix
+double precision :: s11, s22, s12
 
 s11 = 0.25 * (strainr(1,1,iz,ix)+strainr(1,2,iz,ix)+strainr(1,3,iz,ix)+strainr(1,4,iz,ix))
 s22 = 0.25 * (strainr(2,1,iz,ix)+strainr(2,2,iz,ix)+strainr(2,3,iz,ix)+strainr(2,4,iz,ix))
@@ -46,9 +48,10 @@ end function srateII
 ! First invariant of stress (pressure)
 function stressI(iz,ix)
 use arrays
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
+implicit none
+double precision :: stressI
+integer :: iz, ix
+double precision :: s11, s22, s33
 
 s11 = 0.25 * (stress0(iz,ix,1,1)+stress0(iz,ix,1,2)+stress0(iz,ix,1,3)+stress0(iz,ix,1,4))
 s22 = 0.25 * (stress0(iz,ix,2,1)+stress0(iz,ix,2,2)+stress0(iz,ix,2,3)+stress0(iz,ix,2,4))
@@ -63,9 +66,10 @@ end function stressI
 ! Second invariant of stress
 function stressII(iz,ix)
 use arrays
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
+implicit none
+double precision :: stressII
+integer :: iz, ix
+double precision :: s11, s22, s12, s33
 
 s11 = 0.25 * (stress0(iz,ix,1,1)+stress0(iz,ix,1,2)+stress0(iz,ix,1,3)+stress0(iz,ix,1,4))
 s22 = 0.25 * (stress0(iz,ix,2,1)+stress0(iz,ix,2,2)+stress0(iz,ix,2,3)+stress0(iz,ix,2,4))
@@ -81,7 +85,9 @@ end function stressII
 ! Get the largest eigenvalue and its eigenvector (with its x-component
 ! fixed to 1) of the deviatoric of a symmetric 2x2 matrix
 subroutine eigen2x2(a11, a22, a12, eigval1, eigvecy1)
-include 'precision.inc'
+implicit none
+double precision :: a11, a22, a12, eigval1, eigvecy1
+double precision :: adif
 
 adif = 0.5 * (a11 - a22)
 eigval1 = sqrt(adif**2 + a12**2)
@@ -92,8 +98,8 @@ end subroutine eigen2x2
 
   !==================================================
 subroutine SysMsg( message )
-include 'precision.inc'
-include 'params.inc'
+use params
+implicit none
 character* (*) message
 
 !$OMP critical (sysmsg1)
@@ -109,7 +115,9 @@ end
 
 !=======================================
 FUNCTION ERFCC(X)
-include 'precision.inc'
+implicit none
+double precision :: ERFCC
+double precision :: X, Z, T
 
 Z=ABS(X)      
 T=1./(1.+0.5*Z)
@@ -125,7 +133,8 @@ END FUNCTION ERFCC
 !===========================================
 ! Protected dlog10
 function dlog10ab( val )
-include 'precision.inc'
+implicit none
+double precision :: dlog10ab, val
 
 if ( val .le. 0. ) then
     dlog10ab = 1.e-30
@@ -141,9 +150,12 @@ end function dlog10ab
 ! Gaussian elemination
 !===============================
 subroutine Gauss(A,N,B)
-include 'precision.inc'
-dimension A(N,N),B(N),IPIV(N),INDXR(N),INDXC(N)
-   
+implicit none
+integer :: N
+double precision :: A(N,N),B(N)
+integer :: IPIV(N),INDXR(N),INDXC(N)
+double precision :: BIG, dum, pivinv
+integer :: i, j, k, icol, irow, l, ll
 ipiv = 0      
 
 do i=1,N
