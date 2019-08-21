@@ -2,10 +2,14 @@
 
 subroutine init_temp
 use arrays
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
+use params
+implicit none
 include 'phases.inc'
+
+integer :: i, j, i1, i2, iwidth, ixc, k, kk, n
+double precision :: xc, yc, geoth, age, amp, &
+                    cond_c, cond_m, dens_c, dens_m, diffusivity, &
+                    pert, pert2, pi, y
 
 !  Read distribution of temperatures from the dat file
 if (irtemp .gt. 0) then
@@ -231,11 +235,13 @@ end subroutine init_temp
 
 
 subroutine sidewalltemp(i1, i2)
-  use arrays, only : temp, cord
-  include 'precision.inc'
-  include 'params.inc'
-  include 'arrays.inc'
+  use arrays, only : temp, cord, source
+  use params
+  implicit none
   include 'phases.inc'
+
+  integer :: i1, i2, n, i, j
+  double precision :: cond_c, cond_m, dens_c, dens_m, pi, diffusivity, y
 
   ! This subroutine is intended for remeshing.
   cond_c = 2.2
@@ -315,7 +321,10 @@ end subroutine sidewalltemp
 
 
 function cnd( j )
-include 'precision.inc'
+use matprops
+implicit none
+integer j
+double precision :: cnd
 
 cnd = Eff_conduct(j,1)
 
@@ -325,9 +334,10 @@ end
 
 function htgen( j )
 use arrays
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
+use params
+implicit none
+integer :: j, iph
+double precision :: htgen, y
 
 y = - cord(j,1,2)*1.e-3
 
@@ -341,9 +351,6 @@ end
 
 !=========================================================
 subroutine RedefineTemp
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
 
 write(*,*) 'ATTENTION! Special form of initial temperature distribution !'
 
