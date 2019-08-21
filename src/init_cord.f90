@@ -90,9 +90,11 @@ end
 !------Test for mesh dimensions (check size and num. of elem)
 
 subroutine test_grid
-include 'precision.inc'
-include 'params.inc'
+use params
+implicit none
 
+double precision :: sizesum
+integer :: nelsum, i
 
 !- X direction
 sizesum=0.
@@ -139,11 +141,11 @@ end
 ! ONE-D mesh
 !==========================================================================
 subroutine mesh1 (x1,x2,xmesh,nzon,nelz,sizez)
-include 'precision.inc'
-include 'params.inc'
-
-dimension sizez(10),nelz(10),xmesh(nx+nz)
-   
+use params
+implicit none
+double precision :: x1, x2, xmesh(nx+nz), sizez(10)
+integer :: nzon, nelz(10), k, i, nel
+double precision :: xbeg, xend, elemsize
 nel = 1
 xmesh(nel) = x1
 
