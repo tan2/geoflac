@@ -206,7 +206,7 @@ subroutine resurface
 
   double precision :: shp2(2,3,2)
   integer :: i, ii, k, kinc, kmax, m, n, n_to_add, nmax, ntriag
-  double precision :: snder, topomean, chgtopo, chgtopo2, dz, elz, &
+  double precision :: chgtopo, chgtopo2, dz, elz, &
                       x, y, ymax
 
   do i = 1, nx-1
