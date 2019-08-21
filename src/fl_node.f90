@@ -33,7 +33,7 @@ double precision :: drat, fx, fy, &
                   p_est, rosubg, &
                   press_norm_l, dlx_l, dly_l, &
                   press_norm_r, dlx_r, dly_r, &
-                  iunknown, rho_water_g, water_depth
+                  rho_water_g, water_depth
 
 
 boff = 0
