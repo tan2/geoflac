@@ -4,14 +4,14 @@
 
 subroutine outflac
 use arrays
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
-
-parameter( kindr=4, kindi=4 )
+use params
+use matprops
+integer, parameter :: kindr=4, kindi=4
 
 real(kindr), allocatable :: D1d(:),De(:,:),Dn2(:,:,:)
 real(kindr) rtime
+integer :: nwords
+double precision :: sxx, szz, sxz, dtmpr, dl
 
 ! define record number and write it to contents
 if( lastout .eq. 1 ) then
