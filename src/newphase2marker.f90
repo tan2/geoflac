@@ -1,9 +1,11 @@
 subroutine newphase2marker (j1, j2, i1, i2, iph)
 USE marker_data
 use arrays
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
+use params
+implicit none
+
+integer :: j1, j2, i1, i2, iph, &
+           kk, n, k, j, i
 
 ! reset the markers within elements in the rectangular region
 
@@ -32,14 +34,15 @@ end subroutine newphase2marker
 subroutine change_phase
 USE marker_data
 use arrays
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
+use params
+implicit none
 include 'phases.inc'
 
-integer ichanged(100*mnx), jchanged(100*mnx)
-integer kph(1)
-dimension ratio(20)
+integer :: ichanged(100*mnx), jchanged(100*mnx)
+integer :: kph(1), jj, j, i, iph, nelem_serp, nchanged, &
+           jbelow, k, kinc, kk, n
+double precision :: ratio(20), yy, dep2, depth, press, quad_area, &
+                    tmpr, trpres, trpres2, vol_frac_melt
 
 ! max. depth (m) of eclogite phase transition
 real*8, parameter :: max_basalt_depth = 150.e3
