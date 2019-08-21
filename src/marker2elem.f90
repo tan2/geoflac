@@ -1,9 +1,10 @@
 subroutine marker2elem 
   use arrays
-  include 'precision.inc'
-  include 'params.inc'
-  include 'arrays.inc'
-  integer kph(1)
+  use params
+  implicit none
+
+  integer :: kph(1), i, j, kinc, inc
+  double precision :: x1, x2, y1, y2, xx, yy, rx, ry
 
   !character*200 msg
 
