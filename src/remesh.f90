@@ -1,16 +1,18 @@
  
 subroutine remesh
 use arrays
-
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
+use params
+implicit none
 include 'phases.inc'
 
-common /remeshing/ pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
-cold(mnz+1,mnx+1,2),cnew(mnz+1,mnx+1,2),numtr(mnz+1,mnx+1),nzt,nxt
-allocatable :: dummy(:,:), cordo(:,:,:), dhnew(:), extnew(:)
-
+double precision :: pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
+            cold(mnz+1,mnx+1,2),cnew(mnz+1,mnx+1,2)
+integer :: numtr(mnz+1,mnx+1), nzt,nxt
+common /remeshing/ pt,barcord,cold,cnew,numtr,nzt,nxt
+double precision, allocatable :: dummy(:,:), cordo(:,:,:), dhnew(:), extnew(:)
+integer :: i, i1, i2, idist, ii, j, jj, k, l, iph
+double precision :: densT, dh, dh1, dh2, dp, dpt, &
+                    press, rogh, tmpr
 allocate(cordo(1:nz,1:nx,1:2))
 
 ! Save old mesh for interpolations
@@ -308,12 +310,14 @@ end
 ! parameters of triangles of a grid
 !===============================================
 subroutine rem_trpars
-include 'precision.inc'
-include 'arrays.inc'
-
-common /remeshing/ pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
-cold(mnz+1,mnx+1,2),cnew(mnz+1,mnx+1,2),numtr(mnz+1,mnx+1),nzt,nxt
-
+use arrays
+implicit none
+double precision :: pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
+            cold(mnz+1,mnx+1,2),cnew(mnz+1,mnx+1,2)
+integer :: numtr(mnz+1,mnx+1), nzt,nxt
+common /remeshing/ pt,barcord,cold,cnew,numtr,nzt,nxt
+integer :: i, j, k, n
+double precision :: x1, x2, x3, y1, y2, y3, det
 
 do i = 1,nxt-1
     do j = 1,nzt-1
@@ -366,12 +370,15 @@ end
 ! baricentric coordinates of new mesh in old triangles
 !===============================================
 subroutine rem_barcord
-include 'precision.inc'
-include 'arrays.inc'
+use arrays
+implicit none
+double precision :: pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
+            cold(mnz+1,mnx+1,2),cnew(mnz+1,mnx+1,2)
+integer :: numtr(mnz+1,mnx+1), nzt,nxt
+common /remeshing/ pt,barcord,cold,cnew,numtr,nzt,nxt
 
-common /remeshing/ pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
-cold(mnz+1,mnx+1,2),cnew(mnz+1,mnx+1,2),numtr(mnz+1,mnx+1),nzt,nxt
-
+integer :: i, j, l, lt, io, jo, k, n, nmin, numqu
+double precision :: perr, xx, yy, amodmin, amod, a1, a2, a3, dist1, dist2, dist3
 
 perr = 1.e-4
 
@@ -501,12 +508,16 @@ end
 ! interpolation
 !===============================================
 subroutine rem_interpolate( arr )
-include 'precision.inc'
-include 'arrays.inc'
-include 'params.inc'
-common /remeshing/ pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
-cold(mnz+1,mnx+1,2),cnew(mnz+1,mnx+1,2),numtr(mnz+1,mnx+1),nzt,nxt
-dimension dummy(nzt,nxt),arr(nzt,nxt)
+use arrays
+use params
+implicit none
+double precision :: pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
+            cold(mnz+1,mnx+1,2),cnew(mnz+1,mnx+1,2)
+integer :: numtr(mnz+1,mnx+1), nzt,nxt
+common /remeshing/ pt,barcord,cold,cnew,numtr,nzt,nxt
+double precision :: dummy(nzt,nxt),arr(nzt,nxt)
+integer :: i, j, io, jo, numq
+double precision :: f1, f2, f3
 
 
 dummy = arr
