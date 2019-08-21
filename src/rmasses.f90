@@ -3,13 +3,13 @@
 
 subroutine rmasses
 use arrays
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
-
+use params
+use matprops
+implicit none
 
 real*8, parameter :: c1d12 = 1./12.
-
+integer :: i, j
+double precision :: dens
 
 !   Calcualtion of the TRUE GRAVITATIONAL ZONE MASSES
 !-----------------------------------
