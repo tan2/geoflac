@@ -4,18 +4,16 @@
 subroutine rsflac
 use arrays
 USE marker_data
+use params
+implicit none
 
-include 'precision.inc'
-include 'params.inc'
-include 'arrays.inc'
-
-
-parameter( kindr=8, kindi=4 )
+integer, parameter :: kindr=8, kindi=4
 
 real(kindr), allocatable :: dum1(:),dum2(:,:)
 integer(kindi), allocatable :: dum11(:), idum2(:,:)
-real*8 rtime, rdt
+real*8 rtime, rdt, time_my
 character*200 msg
+integer :: i, iph, j, k, n, nrec, nwords
 
 ! TODO: include tracer information for restart
 if (iint_tracer.eq.1) then
