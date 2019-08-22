@@ -218,7 +218,7 @@ $(EXE): $(MODULE_OBJS) $(OBJS)
 $(MODULE_OBJS): %.o : %.f90
 	$(F90) $(CFLAGS) -c $<
 
-$(OBJS): %.o : %.f90 $(MODULE_OBJS)
+$(OBJS): %.o : %.f90 $(MODULES)
 	$(F90) $(CFLAGS) -c $<
 
 take-snapshot:
