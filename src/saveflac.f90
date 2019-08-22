@@ -108,31 +108,31 @@ allocate(dum1(nmarkers))
 nwords= nmarkers
 ! Markers
 do i = 1,nmarkers
-dum1(i) = mark(i)%x
+dum1(i) = mark%x(i)
 enddo
 open (1,file='xmarker.rs',access='direct',recl=nwords*kindr) 
 write (1,rec=nrec) dum1 
 close (1)
 do i = 1,nmarkers
-dum1(i) = mark(i)%y
+dum1(i) = mark%y(i)
 enddo
 open (1,file='ymarker.rs',access='direct',recl=nwords*kindr) 
 write (1,rec=nrec) dum1 
 close (1)
 do i = 1,nmarkers
-dum1(i) = mark(i)%a1
+dum1(i) = mark%a1(i)
 enddo
 open (1,file='xa1marker.rs',access='direct',recl=nwords*kindr) 
 write (1,rec=nrec) dum1 
 close (1)
 do i = 1,nmarkers
-dum1(i) = mark(i)%a2
+dum1(i) = mark%a2(i)
 enddo
 open (1,file='xa2marker.rs',access='direct',recl=nwords*kindr) 
 write (1,rec=nrec) dum1 
 close (1)
 do i = 1,nmarkers
-dum1(i) = mark(i)%age
+dum1(i) = mark%age(i)
 enddo
 open (1,file='xagemarker.rs',access='direct',recl=nwords*kindr)
 write (1,rec=nrec) dum1 
@@ -141,26 +141,26 @@ deallocate(dum1)
 
 allocate(dum11(nmarkers))
 do i = 1,nmarkers
-dum11(i) = mark(i)%ID
+dum11(i) = mark%ID(i)
 enddo
 open (1,file='xIDmarker.rs',access='direct',recl=nwords*kindi) 
 write (1,rec=nrec) dum11 
 close (1)
 do i = 1,nmarkers
-dum11(i) = mark(i)%ntriag
-!write(*,*) mark(i)%ntriag,dum11(i)
+dum11(i) = mark%ntriag(i)
+!write(*,*) mark%ntriag(i),dum11(i)
 enddo
 open (1,file='xntriagmarker.rs',access='direct',recl=nwords*kindi) 
 write (1,rec=nrec) dum11 
 close (1)
 do i = 1,nmarkers
-dum11(i) = mark(i)%phase
+dum11(i) = mark%phase(i)
 enddo
 open (1,file='xphasemarker.rs',access='direct',recl=nwords*kindi) 
 write (1,rec=nrec) dum11 
 close (1)
 do i = 1,nmarkers
-dum11(i) = mark(i)%dead
+dum11(i) = mark%dead(i)
 enddo
 open (1,file='xdeadmarker.rs',access='direct',recl=nwords*kindi)
 write (1,rec=nrec) dum11

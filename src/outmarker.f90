@@ -40,7 +40,7 @@ close(1)
 ! Coordinates  [km]
 nwords = nmarkers 
 do i = 1, nmarkers
-    D1d(i)= real(mark(i)%x * 1e-3)
+    D1d(i)= real(mark%x(i) * 1e-3)
 enddo
 write(fn,'(A,I6.6,A)') 'markx.', nrec, '.0'
 open (1,file=fn,access='direct',recl=nwords*kindr)
@@ -48,7 +48,7 @@ write (1,rec=1) D1d
 close (1)
 
 do i = 1,nmarkers
-    D1d(i)= real(mark(i)%y * 1e-3)
+    D1d(i)= real(mark%y(i) * 1e-3)
 enddo
 write(fn,'(A,I6.6,A)') 'marky.', nrec, '.0'
 open (1,file=fn,access='direct',recl=nwords*kindr)
@@ -57,7 +57,7 @@ close (1)
 
 ! Age [Myrs]
 do i = 1,nmarkers
-    D1d(i)= real(mark(i)%age / sec_year / 1.e6)
+    D1d(i)= real(mark%age(i) / sec_year / 1.e6)
 enddo
 write(fn,'(A,I6.6,A)') 'markage.', nrec, '.0'
 open (1,file=fn,access='direct',recl=nwords*kindr)
@@ -67,7 +67,7 @@ close (1)
 
 D1i = 0
 do l = 1,nmarkers
-    D1i(l)= mark(l)%phase
+    D1i(l)= mark%phase(l)
 enddo
 write(fn,'(A,I6.6,A)') 'markphase.', nrec, '.0'
 open (1,file=fn,access='direct',recl=nwords*kindr)
@@ -76,7 +76,7 @@ close (1)
 
 
 do l = 1,nmarkers
-    D1i(l)= mark(l)%dead
+    D1i(l)= mark%dead(l)
 enddo
 write(fn,'(A,I6.6,A)') 'markdead.', nrec, '.0'
 open (1,file=fn,access='direct',recl=nwords*kindr)
