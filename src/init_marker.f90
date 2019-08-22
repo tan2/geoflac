@@ -130,7 +130,7 @@ do i = 1 , nx-1
             if(inc.eq.0) cycle
 
             l = l + 1
-            !print *, xx, yy, mark%a1(kk), mark%a2(kk), mark%ntriag(kk)
+            !print *, xx, yy, mark_a1(kk), mark_a2(kk), mark_ntriag(kk)
         enddo
     enddo
 enddo
@@ -233,15 +233,15 @@ subroutine add_marker(x, y, iph, age, kk, j, i, inc)
 
   kk = kk + 1
 
-  mark%x(kk) = x
-  mark%y(kk) = y
-  mark%dead(kk) = 1
-  mark%ID(kk) = kk
-  mark%a1(kk) = bar1
-  mark%a2(kk) = bar2
-  mark%age(kk) = age
-  mark%ntriag(kk) = ntr
-  mark%phase(kk) = iph
+  mark_x(kk) = x
+  mark_y(kk) = y
+  mark_dead(kk) = 1
+  mark_ID(kk) = kk
+  mark_a1(kk) = bar1
+  mark_a2(kk) = bar2
+  mark_age(kk) = age
+  mark_ntriag(kk) = ntr
+  mark_phase(kk) = iph
 
   nphase_counter(iph,j,i) = nphase_counter(iph,j,i) + 1
 

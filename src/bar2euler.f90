@@ -25,14 +25,14 @@ enddo
 
 !$OMP do
 do i = 1 , nmarkers
-     if (mark%dead(i).eq.0) cycle
-     n = mark%ntriag(i)
-     ba1 = mark%a1(i)
-     ba2 = mark%a2(i)
+     if (mark_dead(i).eq.0) cycle
+     n = mark_ntriag(i)
+     ba1 = mark_a1(i)
+     ba2 = mark_a2(i)
      ! Calculate eulerian from barycentic coordinates
      call bar2xy(ba1, ba2, xmpt(:,:,n), x, y)
-     mark%x(i) = x
-     mark%y(i) = y
+     mark_x(i) = x
+     mark_y(i) = y
 enddo
 !$OMP end do
 !$OMP end parallel

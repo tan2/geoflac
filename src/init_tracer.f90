@@ -13,7 +13,7 @@ ielem = 0
 nmtracers = 0
 
 do kk = 1,nmarkers
-    n = mark%ntriag(kk)
+    n = mark_ntriag(kk)
     nn = (n-1)/2
     k = mod(n-1, 2) + 1
     j = mod(nn, nz-1) + 1

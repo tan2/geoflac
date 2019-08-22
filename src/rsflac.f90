@@ -127,7 +127,7 @@ open (1,file='xmarker.rs',access='direct',recl=nwords*kindr)
 read (1,rec=nrec) dum1
 close (1)
 do i = 1,nmarkers
-mark%x(i) = dum1(i)
+mark_x(i) = dum1(i)
 enddo
 
 
@@ -135,7 +135,7 @@ open (1,file='ymarker.rs',access='direct',recl=nwords*kindr)
 read (1,rec=nrec) dum1
 close (1)
 do i = 1,nmarkers
-mark%y(i) = dum1(i)
+mark_y(i) = dum1(i)
 enddo
 
 
@@ -143,7 +143,7 @@ open (1,file='xa1marker.rs',access='direct',recl=nwords*kindr)
 read (1,rec=nrec) dum1
 close (1)
 do i = 1,nmarkers
-mark%a1(i) = dum1(i)
+mark_a1(i) = dum1(i)
 enddo
 
 
@@ -151,7 +151,7 @@ open (1,file='xa2marker.rs',access='direct',recl=nwords*kindr)
 read (1,rec=nrec) dum1
 close (1)
 do i = 1,nmarkers
-mark%a2(i) = dum1(i)
+mark_a2(i) = dum1(i)
 enddo
 
 
@@ -159,7 +159,7 @@ open (1,file='xagemarker.rs',access='direct',recl=nwords*kindr)
 read (1,rec=nrec) dum1
 close (1)
 do i = 1,nmarkers
-mark%age(i) = dum1(i)
+mark_age(i) = dum1(i)
 enddo
 
 
@@ -169,7 +169,7 @@ open (1,file='xIDmarker.rs',access='direct',recl=nwords*kindi)
 read (1,rec=nrec) dum11
 close (1)
 do i = 1,nmarkers
-mark%ID(i) = dum11(i)
+mark_ID(i) = dum11(i)
 enddo
 
 
@@ -177,21 +177,21 @@ open (1,file='xntriagmarker.rs',access='direct',recl=nwords*kindi)
 read (1,rec=nrec) dum11
 close (1)
 do i = 1,nmarkers
-mark%ntriag(i) = dum11(i)
+mark_ntriag(i) = dum11(i)
 enddo
 
 open (1,file='xphasemarker.rs',access='direct',recl=nwords*kindi)
 read (1,rec=nrec) dum11
 close (1)
 do i = 1,nmarkers
-mark%phase(i) = dum11(i)
+mark_phase(i) = dum11(i)
 enddo
 
 open (1,file='xdeadmarker.rs',access='direct',recl=nwords*kindi)
 read (1,rec=nrec) dum11
 close (1)
 do i = 1,nmarkers
-mark%dead(i) = dum11(i)
+mark_dead(i) = dum11(i)
 enddo
 
 deallocate(dum11)
@@ -202,19 +202,19 @@ ntopmarker(:) = 0
 itopmarker(:,:) = 0
 print *, nmarkers
 do n = 1, nmarkers
-    if(mark%dead(n) .eq. 0) cycle
+    if(mark_dead(n) .eq. 0) cycle
 
-     if(mark%ntriag(n).lt.1 .or. mark%ntriag(n).gt.2*(nx-1)*(nz-1)) then
-         print *, 'Wrong marker ntriag', mark%ID(n), mark%ntriag(n)
+     if(mark_ntriag(n).lt.1 .or. mark_ntriag(n).gt.2*(nx-1)*(nz-1)) then
+         print *, 'Wrong marker ntriag', mark_ID(n), mark_ntriag(n)
          stop 999
      endif
 
     ! from ntriag, get element number
-    k = mod(mark%ntriag(n) - 1, 2) + 1
-    j = mod((mark%ntriag(n) - k) / 2, nz-1) + 1
-    i = (mark%ntriag(n) - k) / 2 / (nz - 1) + 1
+    k = mod(mark_ntriag(n) - 1, 2) + 1
+    j = mod((mark_ntriag(n) - k) / 2, nz-1) + 1
+    i = (mark_ntriag(n) - k) / 2 / (nz - 1) + 1
 
-    !if(mark%ntriag(n) .ne. 2 * ( (nz-1)*(i-1)+j-1) + k) write(*,*), mark%ntriag(n), i,j,k
+    !if(mark_ntriag(n) .ne. 2 * ( (nz-1)*(i-1)+j-1) + k) write(*,*), mark_ntriag(n), i,j,k
 
     if(j == 1) then
         if(ntopmarker(i) == max_markers_per_elem) then
@@ -227,7 +227,7 @@ do n = 1, nmarkers
         itopmarker(ntopmarker(i), i) = n + 1
     end if
 
-    nphase_counter(mark%phase(n),j,i) = nphase_counter(mark%phase(n),j,i) + 1
+    nphase_counter(mark_phase(n),j,i) = nphase_counter(mark_phase(n),j,i) + 1
 
 enddo
 
