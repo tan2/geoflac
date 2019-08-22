@@ -3,31 +3,33 @@
 module arrays
   implicit none
 
+  save
+
   ! fortran array pointer
-  real*8, pointer, save :: cord(:,:,:), temp(:,:), vel(:,:,:), stress0(:,:,:,:), &
+  real*8, pointer:: cord(:,:,:), temp(:,:), vel(:,:,:), stress0(:,:,:,:), &
        force(:,:,:), balance(:,:,:), amass(:,:), rmass(:,:), &
        area(:,:,:), dvol(:,:,:), strain(:,:,:), bc(:,:,:)
 
-  integer, pointer, save :: ncod(:,:,:)
+  integer, pointer:: ncod(:,:,:)
 
   ! temporary array
-  real*8, pointer, save :: junk2(:,:)
+  real*8, pointer :: junk2(:,:)
 
   !!! maximum number of ELEMENTS !!!
   integer, parameter :: mnz=200, mnx=700, max_markers_per_elem=32
 
-  integer :: iphase(mnz,mnx), nphase_counter(20,mnz,mnx), &
-      ntopmarker(mnx), itopmarker(max_markers_per_elem,mnx), &
-      irheol_fl(mnz,mnx), &
-      nopbou((mnz+mnx)*2,4), ncodbou((mnz+mnx)*2,3)
+  integer, pointer :: iphase(:,:), nphase_counter(:,:,:), &
+      ntopmarker(:), itopmarker(:,:), &
+      irheol_fl(:,:), &
+      nopbou(:,:), ncodbou(:,:)
 
-  real*8 :: phase_ratio(20,mnz,mnx), &
-      dtopo(mnx+1), dhacc(mnx+1), extrusion(mnx), &
-      andesitic_melt_vol(mnx), extr_acc(mnx), &
-      strainr(3,4,mnz,mnx), &
-      aps(mnz,mnx),visn(mnz,mnx),e2sr(mnz,mnx), &
-      temp0(mnz+1,mnx+1),source(mnz,mnx),shrheat(mnz,mnx), &
-      bcstress((mnz+mnx)*2,3)
+  real*8, pointer :: phase_ratio(:,:,:), &
+      dtopo(:), dhacc(:), extrusion(:), &
+      andesitic_melt_vol(:), extr_acc(:), &
+      strainr(:,:,:,:), &
+      aps(:,:),visn(:,:),e2sr(:,:), &
+      temp0(:,:),source(:,:),shrheat(:,:), &
+      bcstress(:,:)
 
 contains
 
@@ -50,6 +52,28 @@ contains
     allocate(bc(nz, nx, 2))
 
     allocate(ncod(nz, nx, 2))
+    allocate(iphase(nz, nx))
+    allocate(nphase_counter(20, nz, nx))
+    allocate(ntopmarker(nx))
+    allocate(itopmarker(max_markers_per_elem, nx))
+    allocate(irheol_fl(nz, nx))
+    allocate(nopbou((nz+nx)*2, 4))
+    allocate(ncodbou((nz+nx)*2, 3))
+
+    allocate(phase_ratio(20, nz, nx))
+    allocate(dtopo(nx+1))
+    allocate(dhacc(nx+1))
+    allocate(extrusion(nx))
+    allocate(andesitic_melt_vol(nx))
+    allocate(extr_acc(nx))
+    allocate(strainr(3, 4, nz, nx))
+    allocate(aps(nz, nx))
+    allocate(visn(nz, nx))
+    allocate(e2sr(nz, nx))
+    allocate(temp0(nz+1, nx+1))
+    allocate(source(nz, nx))
+    allocate(shrheat(nz, nx))
+    allocate(bcstress((nz+nx)*2, 3))
 
     allocate(junk2(nz, nx))
 
