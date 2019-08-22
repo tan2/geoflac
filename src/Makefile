@@ -150,7 +150,8 @@ MODULE_SRCS = \
 	params.f90 \
 	arrays.f90 \
 	marker_data.f90 \
-	matprops.f90
+	matprops.f90 \
+	phases.f90
 
 SRCS =	\
 	bar2euler.f90 \

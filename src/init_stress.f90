@@ -5,8 +5,9 @@
 subroutine init_stress
 use arrays
 use params
+use phases
 implicit none
-include 'phases.inc'
+
 
 double precision, parameter :: pi = 3.14159265358979323846
 double precision, parameter :: degrad = pi/180.

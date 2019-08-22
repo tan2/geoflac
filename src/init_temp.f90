@@ -3,8 +3,8 @@
 subroutine init_temp
 use arrays
 use params
+use phases
 implicit none
-include 'phases.inc'
 
 integer :: i, j, i1, i2, iwidth, ixc, k, kk, n
 double precision :: xc, yc, geoth, age, amp, &
@@ -237,8 +237,8 @@ end subroutine init_temp
 subroutine sidewalltemp(i1, i2)
   use arrays, only : temp, cord, source
   use params
+  use phases
   implicit none
-  include 'phases.inc'
 
   integer :: i1, i2, n, i, j
   double precision :: cond_c, cond_m, dens_c, dens_m, pi, diffusivity, y

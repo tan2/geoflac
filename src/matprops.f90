@@ -7,8 +7,9 @@ contains
 function Eff_dens( j, i)
   use arrays
   use params
+  use phases
+
   implicit none
-  include 'phases.inc'
 
   double precision :: Eff_dens
   integer :: j, i, ii, iph, k
@@ -224,8 +225,8 @@ end function Eff_conduct
 function Eff_visc( j, i )
 use arrays
 use params
+use phases
 implicit none
-include 'phases.inc'
 double precision :: Eff_visc
 
 integer :: j, i, iph, k

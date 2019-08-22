@@ -200,8 +200,8 @@ subroutine resurface
   use marker_data
   use arrays
   use params
+  use phases
   implicit none
-  include 'phases.inc'
 
 
   double precision :: shp2(2,3,2)

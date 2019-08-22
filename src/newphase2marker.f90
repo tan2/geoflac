@@ -35,8 +35,9 @@ subroutine change_phase
 USE marker_data
 use arrays
 use params
+use phases
+
 implicit none
-include 'phases.inc'
 
 integer :: ichanged(100*mnx), jchanged(100*mnx)
 integer :: kph(1), jj, j, i, iph, nelem_serp, nchanged, &

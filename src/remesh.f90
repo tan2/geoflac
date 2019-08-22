@@ -2,8 +2,8 @@
 subroutine remesh
 use arrays
 use params
+use phases
 implicit none
-include 'phases.inc'
 
 double precision :: pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
             cold(mnz+1,mnx+1,2),cnew(mnz+1,mnx+1,2)
