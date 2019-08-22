@@ -31,7 +31,7 @@ integer :: nx,nz,nq,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
      nyhydro,iphsub, &
      movegrid,ndim,ifreq_visc,nmtracers,i_rey,iac_rem, &
      iph_int,incoming_left,incoming_right, &
-     iynts,tbos, iax1,iay1,ibx1,iby1,icx1,icy1,idx1,idy1, &
+     iynts, iax1,iay1,ibx1,iby1,icx1,icy1,idx1,idy1, &
      ivis_present,n_boff_cutoff,idt_scale,ifreq_imasses,ifreq_rmasses, &
      nloop_restarted,nloop,irestart,ifreq_avgsr,ireset
 
@@ -39,7 +39,7 @@ real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
      dx_rem,angle_rem,anglemin1,anglemint,topo_kappa,fac_kappa, &
      velbc_l,velbc_r,v_min,v_max,efoldc, &
      g_x0,g_y0c,g_amplitude,g_width,ydrsides,ynstressbc, &
-     rate_inject, &
+     rate_inject,tbos, &
      bca(maxbc),bcb(maxbc),bcc(maxbc),dx_init,xReyn, &
      bcd(maxbc),bce(maxbc),bcf(maxbc),bcg(maxbc),bch(maxbc),bci(maxbc), &
      dt_scale,strain_inert,vbc,amul,ratl,ratu,frac, &
