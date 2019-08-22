@@ -326,6 +326,7 @@ end
 
 !========================================================
 subroutine AdvanceToNextInputLine( iu )
+integer :: iu
 character*1 buf
 
 10    read(iu, '(A1)') buf

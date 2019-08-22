@@ -10,8 +10,9 @@ integer, parameter :: kindr=4, kindi=4
 
 real(kindr), allocatable :: D1d(:),De(:,:),Dn2(:,:,:)
 real(kindr) rtime
-integer :: nwords
+integer :: i, ii, iph, j, nrec, nwords
 double precision :: sxx, szz, sxz, dtmpr, dl
+double precision :: strainI, strainII, stressI, stressII
 
 ! define record number and write it to contents
 if( lastout .eq. 1 ) then

@@ -6,7 +6,7 @@ use params
 integer, parameter :: kindr=4, kindi=4
 real(kindr) :: D1d(nmarkers)
 integer(kindi) :: D1i(nmarkers)
-integer :: i
+integer :: i, l, nrec, nwords
 
 character*100 fn
 

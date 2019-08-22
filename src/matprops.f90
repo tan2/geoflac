@@ -116,7 +116,7 @@ use params
 implicit none
 double precision :: Eff_cp
 
-double precision :: HeatLatent = 420000.
+!double precision :: HeatLatent = 420000.
 integer :: iph, j, i
 
 iph = iphase(j,i)
@@ -228,9 +228,9 @@ implicit none
 include 'phases.inc'
 double precision :: Eff_visc
 
-integer :: j, i, ii, iph, k
+integer :: j, i, iph, k
 double precision :: r, vis, srat, pow, pow1
-double precision :: zcord, tmpr, press
+double precision :: zcord, tmpr
 
 Eff_visc = 0.
 r=8.31448e0
