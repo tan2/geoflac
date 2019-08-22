@@ -191,9 +191,7 @@ SRCS =	\
 	rmasses.f90 \
 	rsflac.f90 \
 	saveflac.f90 \
-	setflac.f90 \
-	user_ab.f90 \
-	user_luc.f90
+	setflac.f90
 
 
 MODULES = $(MODULE_SRCS:.f90=.mod)

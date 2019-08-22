@@ -269,9 +269,9 @@ end do
 time_t = time
 
 
-! HOOK
-! Intrusions - see user_ab.f90
-if( if_intrus.eq.1 ) call MakeIntrusions
+! ! HOOK
+! ! Intrusions - see user_ab.f90
+! if( if_intrus.eq.1 ) call MakeIntrusions
 
 return
 end 
