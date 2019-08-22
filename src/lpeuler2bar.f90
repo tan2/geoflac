@@ -12,35 +12,35 @@ ntopmarker(:) = 0
 
 !$OMP parallel do private(n,k,j,i,xx,yy,bar1,bar2,ntr,inc)
 do n = 1 , nmarkers
-    if (mark(n)%dead.eq.0) cycle
+    if (mark%dead(n).eq.0) cycle
 
     ! from ntriag, get element number
-    k = mod(mark(n)%ntriag - 1, 2) + 1
-    j = mod((mark(n)%ntriag - k) / 2, nz-1) + 1
-    i = (mark(n)%ntriag - k) / 2 / (nz - 1) + 1
+    k = mod(mark%ntriag(n) - 1, 2) + 1
+    j = mod((mark%ntriag(n) - k) / 2, nz-1) + 1
+    i = (mark%ntriag(n) - k) / 2 / (nz - 1) + 1
 
-    xx = mark(n)%x
-    yy = mark(n)%y
+    xx = mark%x(n)
+    yy = mark%y(n)
     call euler2bar(xx,yy,bar1,bar2,ntr,i,j,inc)
     if (inc.eq.0) then
         !write(*,*) i,j,ntr,xx,yy
-        mark(n)%dead = 0
+        mark%dead(n) = 0
         cycle
     endif
 
-    mark(n)%a1 = bar1
-    mark(n)%a2 = bar2
-    mark(n)%ntriag = ntr
+    mark%a1(n) = bar1
+    mark%a2(n) = bar2
+    mark%ntriag(n) = ntr
 
     !$OMP critical (lpeulerbar1)
-    nphase_counter(mark(n)%phase,j,i) = nphase_counter(mark(n)%phase,j,i) + 1
+    nphase_counter(mark%phase(n),j,i) = nphase_counter(mark%phase(n),j,i) + 1
     !$OMP end critical (lpeulerbar1)
 
     if(j == 1) then
         if(ntopmarker(i) == max_markers_per_elem) then
             write(msg,*) 'Too many markers at surface elements in lpeuler2bar:', i, n
             call SysMsg(msg)
-            mark(n)%dead = 0
+            mark%dead(n) = 0
             cycle
         endif
         !$OMP critical (lpeulerbar2)

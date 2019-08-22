@@ -224,9 +224,9 @@ subroutine resurface
               call shape_functions(1,i,shp2)
               do k = 1, ntopmarker(i)
                   n = itopmarker(k, i)
-                  ntriag = mark(n)%ntriag
+                  ntriag = mark%ntriag(n)
                   m = mod(ntriag,2) + 1
-                  call bar2xy(mark(n)%a1, mark(n)%a2, shp2(:,:,m), x, y)
+                  call bar2xy(mark%a1(n), mark%a2(n), shp2(:,:,m), x, y)
                   if(ymax < y) then
                       ymax = y
                       nmax = n
@@ -234,7 +234,7 @@ subroutine resurface
                   endif
               end do
               if (nmax .ne. 0) then
-                  mark(nmax)%dead = 0
+                  mark%dead(nmax) = 0
                   ! replace topmarker k with last topmarker
                   itopmarker(kmax,i) = itopmarker(ntopmarker(i),i)
                   ntopmarker(i) = ntopmarker(i) - 1
