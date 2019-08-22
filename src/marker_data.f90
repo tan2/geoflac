@@ -1,17 +1,12 @@
 MODULE marker_data
   integer, parameter :: max_markers = 10000000
   SAVE
-  type marker
-     sequence
-     real(8) :: a1(max_markers), a2(max_markers) ! baricentric coordinates
-     real(8) :: x(max_markers), y(max_markers)   ! Euler coordinates
-     real(8) :: age(max_markers)           ! creation time
-     integer(4) :: dead(max_markers)
-     integer(4) :: ntriag(max_markers)     ! number of FE-triangle
-     integer(4) :: phase(max_markers)
-     integer(4) :: ID(max_markers)         ! unique ID-number
-  end type marker
-
-  type(marker) :: mark
+  real(8) :: mark_a1(max_markers), mark_a2(max_markers) ! baricentric coordinates
+  real(8) :: mark_x(max_markers), mark_y(max_markers)   ! Euler coordinates
+  real(8) :: mark_age(max_markers)           ! creation time
+  integer(4) :: mark_dead(max_markers)
+  integer(4) :: mark_ntriag(max_markers)     ! number of FE-triangle
+  integer(4) :: mark_phase(max_markers)
+  integer(4) :: mark_ID(max_markers)         ! unique ID-number
 
 END MODULE marker_data

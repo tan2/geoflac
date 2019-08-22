@@ -7,15 +7,15 @@ include 'precision.inc'
 ! reset the markers within elements in the rectangular region
 
 do kk = 1 , nmarkers
-    if (mark%dead(kk).eq.0) cycle
-    n = mark%ntriag(kk)
+    if (mark_dead(kk).eq.0) cycle
+    n = mark_ntriag(kk)
     k = mod(n - 1, 2) + 1
     j = mod((n - k) / 2, nz-1) + 1
     i = (n - k) / 2 / (nz - 1) + 1
 
     if(j>=j1 .and. j<=j2 .and. i>=i1 .and. i<=i2) then
-        nphase_counter(mark%phase(kk),j,i) = nphase_counter(mark%phase(kk),j,i) - 1
-        mark%phase(kk) = iph
+        nphase_counter(mark_phase(kk),j,i) = nphase_counter(mark_phase(kk),j,i) - 1
+        mark_phase(kk) = iph
         nphase_counter(iph,j,i) = nphase_counter(iph,j,i) + 1
     endif
 enddo
@@ -87,20 +87,20 @@ nchanged = 0
 !$OMP parallel private(kk,i,j,k,n,tmpr,depth,iph,press,jbelow,trpres,trpres2,kinc,quad_area,yy)
 !$OMP do schedule(guided)
 do kk = 1 , nmarkers
-    if (mark%dead(kk).eq.0) cycle
+    if (mark_dead(kk).eq.0) cycle
 
     ! from ntriag, get element number
-    n = mark%ntriag(kk)
+    n = mark_ntriag(kk)
     k = mod(n - 1, 2) + 1
     j = mod((n - k) / 2, nz-1) + 1
     i = (n - k) / 2 / (nz - 1) + 1
 
     if (k .eq. 1) then
-       yy = cord(j,i,2)*mark%a1(kk) + cord(j+1,i,2)*mark%a2(kk) + cord(j,i+1,2)*(1-mark%a1(kk)-mark%a2(kk))
-       tmpr = temp(j,i)*mark%a1(kk) + temp(j+1,i)*mark%a2(kk) + temp(j,i+1)*(1-mark%a1(kk)-mark%a2(kk))
+       yy = cord(j,i,2)*mark_a1(kk) + cord(j+1,i,2)*mark_a2(kk) + cord(j,i+1,2)*(1-mark_a1(kk)-mark_a2(kk))
+       tmpr = temp(j,i)*mark_a1(kk) + temp(j+1,i)*mark_a2(kk) + temp(j,i+1)*(1-mark_a1(kk)-mark_a2(kk))
     else
-       yy = cord(j,i+1,2)*mark%a1(kk) + cord(j+1,i,2)*mark%a2(kk) + cord(j+1,i+1,2)*(1-mark%a1(kk)-mark%a2(kk))
-       tmpr = temp(j,i+1)*mark%a1(kk) + temp(j+1,i)*mark%a2(kk) + temp(j+1,i+1)*(1-mark%a1(kk)-mark%a2(kk))
+       yy = cord(j,i+1,2)*mark_a1(kk) + cord(j+1,i,2)*mark_a2(kk) + cord(j+1,i+1,2)*(1-mark_a1(kk)-mark_a2(kk))
+       tmpr = temp(j,i+1)*mark_a1(kk) + temp(j+1,i)*mark_a2(kk) + temp(j+1,i+1)*(1-mark_a1(kk)-mark_a2(kk))
     endif
 
     ! depth below the surface in m
@@ -116,7 +116,7 @@ do kk = 1 , nmarkers
     ! too deep in the mantle, where there is no significant phase change.
     if (depth > 200.e3) cycle
 
-    iph = mark%phase(kk)
+    iph = mark_phase(kk)
 
     ! Rules of phase changes
     select case(iph)
@@ -135,7 +135,7 @@ do kk = 1 , nmarkers
                 ichanged(nchanged) = i
                 jchanged(nchanged) = j
                 !$OMP end critical (change_phase1)
-                mark%phase(kk) = kweak
+                mark_phase(kk) = kweak
                 exit
             endif
         enddo
@@ -151,7 +151,7 @@ do kk = 1 , nmarkers
         !    ichanged(nchanged) = i
         !    jchanged(nchanged) = j
         !    !$OMP end critical (change_phase1)
-        !    mark%phase(kk) = kweakmc
+        !    mark_phase(kk) = kweakmc
         !endif
 
     case (kmant1, kmant2)
@@ -175,7 +175,7 @@ do kk = 1 , nmarkers
                 ichanged(nchanged) = i
                 jchanged(nchanged) = j
                 !$OMP end critical (change_phase1)
-                mark%phase(kk) = kserp
+                mark_phase(kk) = kserp
                 exit
             endif
         enddo
@@ -192,7 +192,7 @@ do kk = 1 , nmarkers
         ichanged(nchanged) = i
         jchanged(nchanged) = j
         !$OMP end critical (change_phase1)
-        mark%phase(kk) = keclg
+        mark_phase(kk) = keclg
     case (kserp)
         ! dehydration, serpentinite -> hydrated mantle
         ! Phase diagram taken from Ulmer and Trommsdorff, Nature, 1995
@@ -209,7 +209,7 @@ do kk = 1 , nmarkers
         ichanged(nchanged) = i
         jchanged(nchanged) = j
         !$OMP end critical (change_phase1)
-        mark%phase(kk) = khydmant
+        mark_phase(kk) = khydmant
     case (ksed1, ksed2)
         ! dehydration, sediment -> schist/gneiss
         ! from sediment solidus in Nichols et al., Nature, 1994
@@ -221,7 +221,7 @@ do kk = 1 , nmarkers
         ichanged(nchanged) = i
         jchanged(nchanged) = j
         !$OMP end critical (change_phase1)
-        mark%phase(kk) = kmetased
+        mark_phase(kk) = kmetased
     case (khydmant)
         if (tmpr > ts(khydmant)) then
             ! area(j,i) is INVERSE of "real" DOUBLE area (=1./det)
@@ -235,7 +235,7 @@ do kk = 1 , nmarkers
             ichanged(nchanged) = i
             jchanged(nchanged) = j
             !$OMP end critical (change_phase1)
-            mark%phase(kk) = kmant1
+            mark_phase(kk) = kmant1
         endif
     end select
 
