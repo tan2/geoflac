@@ -55,6 +55,8 @@ gprof = 0
 
 ## for GNU gfortran >= 4.2
 ifeq ($(F90), gfortran)
+	# No implicit typing is allowed
+	CFLAGS += -fimplicit-none
 	ifeq ($(omp), 1)
 		CFLAGS += -fopenmp
 		LDFLAGS += -fopenmp
@@ -81,7 +83,10 @@ endif
 
 ## for Intel v11.1
 ifeq ($(F90), ifort)
+	# Assume units for the record  length in unformatted files are in  bytes
 	CFLAGS += -assume byterecl
+	# Enables warnings about any  undeclared  names
+	CFLAGS +=-warn declarations
 	ifeq ($(omp), 1)
 		CFLAGS += -fopenmp
 		LDFLAGS += -fopenmp
@@ -96,6 +101,8 @@ endif
 
 ## for PGI
 ifeq ($(F90), pgfortran)
+	# Check that all variables are declared
+	CFLAGS += -Mdclchk
 	ifeq ($(acc), 1)
 		CFLAGS += -acc -ta=tesla:managed
 		LDFLAGS += -acc -ta=tesla:managed
@@ -114,6 +121,8 @@ endif
 
 ## for Solaris
 ifeq ($(F90), f90)
+	# Report on undeclared variables
+	CFLAGS += -u
 	ifeq ($(omp), 1)
 		CFLAGS += -xopenmp=parallel
 		LDFLAGS += -xopenmp
@@ -210,7 +219,7 @@ $(EXE): $(MODULE_OBJS) $(OBJS)
 $(MODULE_OBJS): %.o : %.f90
 	$(F90) $(CFLAGS) -c $<
 
-$(OBJS): %.o : %.f90 params.inc arrays.inc $(MODULE_OBJS)
+$(OBJS): %.o : %.f90 $(MODULE_OBJS)
 	$(F90) $(CFLAGS) -c $<
 
 take-snapshot:
