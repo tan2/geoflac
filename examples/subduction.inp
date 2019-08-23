@@ -254,10 +254,10 @@ phasedat.inp   ; file with distribution of phase on the 2D grid (phasedat)
 24001  ;  24 Myrs
 ;
 ; Time interval for screen output of calc. progress (in Kyr)
-200
+20
 ;
 ; Time interval for file output (in Kyr)
-200
+20
 ;
 ; Variables to print
 ; vel srII eII aps sII sxx szz sxz pres temp melt visc phas mark src diss forc hfl topo
