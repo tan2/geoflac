@@ -2,13 +2,13 @@
 subroutine remesh
 use arrays
 use params
+implicit none
 
-include 'precision.inc'
-
-common /remeshing/ pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
-cold(mnz+1,mnx+1,2),cnew(mnz+1,mnx+1,2),numtr(mnz+1,mnx+1),nzt,nxt
-allocatable :: dummy(:,:), cordo(:,:,:), dhnew(:), extnew(:)
-
+integer :: nzt,nxt
+double precision, allocatable :: dummy(:,:), cordo(:,:,:), dhnew(:), extnew(:)
+integer :: i, i1, i2, idist, ii, j, jj, k, l, iph
+double precision :: densT, dh, dh1, dh2, dp, dpt, &
+                    press, rogh, tmpr
 allocate(cordo(1:nz,1:nx,1:2))
 
 ! Save old mesh for interpolations
@@ -78,10 +78,10 @@ do i = 1, nx-1
 enddo
 
 ! Calculate parameters of old-mesh triangles
-call rem_trpars
+call rem_trpars(nzt, nxt)
 
 ! Baricentric coordinates of new-elements centers
-call rem_barcord
+call rem_barcord(nzt, nxt)
 
 
 ! Do interpolations
@@ -90,7 +90,7 @@ call rem_barcord
 do k = 1,4
     do l = 1,4
         dummy(1:nzt,1:nxt) = stress0(1:nzt,1:nxt,k,l)
-        call rem_interpolate( dummy )
+        call rem_interpolate( nzt, nxt, dummy )
         stress0(1:nzt,1:nxt,k,l) = dummy(1:nzt,1:nxt)
     end do
 end do
@@ -103,14 +103,14 @@ end do
 ! Interpolate strains
 do k = 1, 3
     dummy(1:nzt,1:nxt) = strain(1:nzt,1:nxt,k)
-    call rem_interpolate( dummy )
+    call rem_interpolate( nzt, nxt, dummy )
     strain(1:nzt,1:nxt,k) = dummy(1:nzt,1:nxt)
 end do
 
 
 ! plastic strain
 dummy(1:nzt,1:nxt) = aps(1:nzt,1:nxt)
-call rem_interpolate( dummy )
+call rem_interpolate( nzt, nxt, dummy )
 do i = 1, nxt
     do j = 1, nzt
         if( dummy(j,i) .ge. 0. ) then
@@ -124,7 +124,7 @@ end do
         
 ! viscosity
 dummy(1:nzt,1:nxt) = visn(1:nzt,1:nxt)
-call rem_interpolate( dummy )
+call rem_interpolate( nzt, nxt, dummy )
 visn(1:nzt,1:nxt) = dummy(1:nzt,1:nxt)
 
 ! phases
@@ -201,7 +201,7 @@ endif
 
 ! sources
 dummy(1:nzt,1:nxt) = source(1:nzt,1:nxt)
-call rem_interpolate( dummy )
+call rem_interpolate( nzt, nxt, dummy )
 source(1:nzt,1:nxt) = dummy(1:nzt,1:nxt)
 
 
@@ -221,23 +221,23 @@ temp0(1:nz,1:nx) = temp(1:nz,1:nx)
 cnew(1:nz,1:nx,1:2) = cord(1:nz,1:nx,1:2)
 if (iac_rem.eq.1) cold(1:nz,1:nx,1:2) = cnew(1:nz,1:nx,1:2)
 ! Calculate parameters of triangles of this mesh
-call rem_trpars
+call rem_trpars(nzt,nxt)
 
 ! Baricentric coordinates of new-elements centers
-call rem_barcord
+call rem_barcord(nzt,nxt)
 
 ! Do node-wise interpolations
 
 ! Velocities (in nodes)
 do k = 1, 2
     dummy(1:nzt,1:nxt) = vel(1:nzt,1:nxt,k)
-    call rem_interpolate( dummy )
+    call rem_interpolate( nzt, nxt, dummy )
     vel(1:nzt,1:nxt,k) = dummy(1:nzt,1:nxt)
 end do
 
 ! Temperatures (in nodes) 
 dummy(1:nzt,1:nxt) = temp(1:nzt,1:nxt)
-call rem_interpolate( dummy )
+call rem_interpolate( nzt, nxt, dummy )
 temp(1:nzt,1:nxt) = dummy(1:nzt,1:nxt)
 deallocate( dummy )
 
@@ -305,13 +305,12 @@ end
 !===============================================
 ! parameters of triangles of a grid
 !===============================================
-subroutine rem_trpars
+subroutine rem_trpars(nzt,nxt)
 use arrays
-include 'precision.inc'
-
-common /remeshing/ pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
-cold(mnz+1,mnx+1,2),cnew(mnz+1,mnx+1,2),numtr(mnz+1,mnx+1),nzt,nxt
-
+implicit none
+integer :: nzt,nxt
+integer :: i, j, k, n
+double precision :: x1, x2, x3, y1, y2, y3, det
 
 do i = 1,nxt-1
     do j = 1,nzt-1
@@ -363,12 +362,10 @@ end
 !===============================================
 ! baricentric coordinates of new mesh in old triangles
 !===============================================
-subroutine rem_barcord
+subroutine rem_barcord(nzt,nxt)
 use arrays
 include 'precision.inc'
-
-common /remeshing/ pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
-cold(mnz+1,mnx+1,2),cnew(mnz+1,mnx+1,2),numtr(mnz+1,mnx+1),nzt,nxt
+integer :: nzt,nxt
 
 
 perr = 1.e-4
@@ -498,13 +495,14 @@ end
 !===============================================
 ! interpolation
 !===============================================
-subroutine rem_interpolate( arr )
+subroutine rem_interpolate( nzt, nxt, arr )
 use arrays
 use params
-include 'precision.inc'
-common /remeshing/ pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
-cold(mnz+1,mnx+1,2),cnew(mnz+1,mnx+1,2),numtr(mnz+1,mnx+1),nzt,nxt
-dimension dummy(nzt,nxt),arr(nzt,nxt)
+implicit none
+integer :: nzt,nxt
+double precision :: dummy(nzt,nxt),arr(nzt,nxt)
+integer :: i, j, io, jo, numq
+double precision :: f1, f2, f3
 
 
 dummy = arr

@@ -31,6 +31,11 @@ module arrays
       temp0(:,:),source(:,:),shrheat(:,:), &
       bcstress(:,:)
 
+  ! remeshing arrays
+  real*8, allocatable :: pt(:,:,:), barcord(:,:,:), &
+            cold(:,:,:), cnew(:,:,:)
+  integer, allocatable :: numtr(:,:)
+
 
 contains
 
@@ -76,6 +81,10 @@ contains
     allocate(source(nz-1, nx-1))
     allocate(shrheat(nz-1, nx-1))
     allocate(bcstress(((nz-1)+(nx-1))*2, 3))
+
+    allocate(pt((nz-1)*(nx-1)*2, 2, 3), barcord(nz, nx, 3), &
+             cold(nz, nx, 2), cnew(nz, nx, 2))
+    allocate(numtr(nz, nx))
 
     ! tmp arrays used in subroutines
     allocate(junk2(nz, nx))
