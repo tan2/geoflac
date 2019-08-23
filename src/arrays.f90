@@ -16,7 +16,7 @@ module arrays
   real*8, allocatable :: junk2(:,:), xmpt(:,:,:), tkappa(:)
 
   !!! maximum number of ELEMENTS !!!
-  integer, parameter :: mnz=200, mnx=700, max_markers_per_elem=32
+  integer, parameter :: max_markers_per_elem=32
 
   integer, allocatable :: iphase(:,:), nphase_counter(:,:,:), &
       ntopmarker(:), itopmarker(:,:), &

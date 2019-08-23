@@ -73,8 +73,7 @@ end
 ! include 'params.inc'
 ! include 'arrays.inc'
 
-! common /remeshing/ pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
-! cold(mnz+1,mnx+1,2),cnew(mnz+1,mnx+1,2),numtr(mnz+1,mnx+1),nzt,nxt
+! common /remeshing/ nzt,nxt 
 
 ! do i = 1,nx-1
 !     do j = 1,nz-1
