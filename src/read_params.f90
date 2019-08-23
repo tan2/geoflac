@@ -17,11 +17,6 @@ open(11,file='nxnz.0')
 write(11,*) nx, nz
 close(11)
 
-if((nx.gt.mnx) .or. (nz.gt.mnz)) then
-    write(*,*) '# of elements exceed maximum. Increase mnx and mnz in "arrays.inc".'
-    stop 1
-endif
-
 nq = nx*nz
 nx = nx+1
 nz = nz+1
