@@ -59,8 +59,8 @@ do i = 1,nx-1
     ! area(j,i) is INVERSE of "real" DOUBLE area (=1./det)
     quad_area = 1./(area(j,i,1)+area(j,i,2))
 
-    temp(j,i  ) = temp(j,i  ) + andesitic_melt_vol(i  ) * heat_latent_magma / quad_area / cp_eff
-    temp(j,i+1) = temp(j,i+1) + andesitic_melt_vol(i+1) * heat_latent_magma / quad_area / cp_eff
+    temp(j,i  ) = temp(j,i  ) + andesitic_melt_vol(i) * heat_latent_magma / quad_area / cp_eff
+    temp(j,i+1) = temp(j,i+1) + andesitic_melt_vol(i) * heat_latent_magma / quad_area / cp_eff
 end do
 !$OMP end do
 
