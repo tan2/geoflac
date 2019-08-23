@@ -13,7 +13,7 @@ module arrays
   integer, allocatable:: ncod(:,:,:)
 
   ! temporary array
-  real*8, allocatable :: junk2(:,:)
+  real*8, allocatable :: junk2(:,:), xmpt(:,:,:), tkappa(:)
 
   !!! maximum number of ELEMENTS !!!
   integer, parameter :: mnz=200, mnx=700, max_markers_per_elem=32
@@ -29,7 +29,8 @@ module arrays
       strainr(:,:,:,:), &
       aps(:,:),visn(:,:),e2sr(:,:), &
       temp0(:,:),source(:,:),shrheat(:,:), &
-      bcstress(:,:), xmpt(:,:,:)
+      bcstress(:,:)
+
 
   !$acc declare create(cord, temp, vel, stress0, force, balance, amass, rmass, area, dvol, strain, bc, ncod, junk2)
 contains
@@ -75,9 +76,11 @@ contains
     allocate(source(nz, nx))
     allocate(shrheat(nz, nx))
     allocate(bcstress((nz+nx)*2, 3))
-    allocate(xmpt(2,3,nz*nx*2))
 
+    ! tmp arrays used in subroutines
     allocate(junk2(nz, nx))
+    allocate(xmpt(2,3,nz*nx*2))
+    allocate(tkappa(nx+1))
 
   end subroutine allocate_arrays
 

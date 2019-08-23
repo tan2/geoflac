@@ -141,7 +141,7 @@ use arrays
 use params
 implicit none
 
-double precision :: tkappa(mnx+1), snder, topomean
+double precision :: snder, topomean
 integer :: i
 
 !EROSION PROCESSES
