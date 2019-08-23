@@ -5,10 +5,8 @@ use params
 use phases
 implicit none
 
-double precision :: pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
-            cold(mnz+1,mnx+1,2),cnew(mnz+1,mnx+1,2)
-integer :: numtr(mnz+1,mnx+1), nzt,nxt
-common /remeshing/ pt,barcord,cold,cnew,numtr,nzt,nxt
+integer :: nzt,nxt
+common /remeshing/ nzt,nxt
 double precision, allocatable :: dummy(:,:), cordo(:,:,:), dhnew(:), extnew(:)
 integer :: i, i1, i2, idist, ii, j, jj, k, l, iph
 double precision :: densT, dh, dh1, dh2, dp, dpt, &
@@ -312,10 +310,8 @@ end
 subroutine rem_trpars
 use arrays
 implicit none
-double precision :: pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
-            cold(mnz+1,mnx+1,2),cnew(mnz+1,mnx+1,2)
-integer :: numtr(mnz+1,mnx+1), nzt,nxt
-common /remeshing/ pt,barcord,cold,cnew,numtr,nzt,nxt
+integer :: nzt,nxt
+common /remeshing/ nzt,nxt
 integer :: i, j, k, n
 double precision :: x1, x2, x3, y1, y2, y3, det
 
@@ -372,10 +368,8 @@ end
 subroutine rem_barcord
 use arrays
 implicit none
-double precision :: pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
-            cold(mnz+1,mnx+1,2),cnew(mnz+1,mnx+1,2)
-integer :: numtr(mnz+1,mnx+1), nzt,nxt
-common /remeshing/ pt,barcord,cold,cnew,numtr,nzt,nxt
+integer :: nzt,nxt
+common /remeshing/ nzt,nxt
 
 integer :: i, j, l, lt, io, jo, k, n, nmin, numqu
 double precision :: perr, xx, yy, amodmin, amod, a1, a2, a3, dist1, dist2, dist3
@@ -511,10 +505,8 @@ subroutine rem_interpolate( arr )
 use arrays
 use params
 implicit none
-double precision :: pt(mnz*mnx*2,2,3),barcord(mnz+1,mnx+1,3), &
-            cold(mnz+1,mnx+1,2),cnew(mnz+1,mnx+1,2)
-integer :: numtr(mnz+1,mnx+1), nzt,nxt
-common /remeshing/ pt,barcord,cold,cnew,numtr,nzt,nxt
+integer :: nzt,nxt
+common /remeshing/ nzt,nxt
 double precision :: dummy(nzt,nxt),arr(nzt,nxt)
 integer :: i, j, io, jo, numq
 double precision :: f1, f2, f3
