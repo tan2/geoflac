@@ -5,25 +5,25 @@ module arrays
 
   save
 
-  ! fortran array pointer
-  real*8, pointer:: cord(:,:,:), temp(:,:), vel(:,:,:), stress0(:,:,:,:), &
+  ! fortran array allocatable
+  real*8, allocatable:: cord(:,:,:), temp(:,:), vel(:,:,:), stress0(:,:,:,:), &
        force(:,:,:), balance(:,:,:), amass(:,:), rmass(:,:), &
        area(:,:,:), dvol(:,:,:), strain(:,:,:), bc(:,:,:)
 
-  integer, pointer:: ncod(:,:,:)
+  integer, allocatable:: ncod(:,:,:)
 
   ! temporary array
-  real*8, pointer :: junk2(:,:)
+  real*8, allocatable :: junk2(:,:)
 
   !!! maximum number of ELEMENTS !!!
   integer, parameter :: mnz=200, mnx=700, max_markers_per_elem=32
 
-  integer, pointer :: iphase(:,:), nphase_counter(:,:,:), &
+  integer, allocatable :: iphase(:,:), nphase_counter(:,:,:), &
       ntopmarker(:), itopmarker(:,:), &
       irheol_fl(:,:), &
       nopbou(:,:), ncodbou(:,:)
 
-  real*8, pointer :: phase_ratio(:,:,:), &
+  real*8, allocatable :: phase_ratio(:,:,:), &
       dtopo(:), dhacc(:), extrusion(:), &
       andesitic_melt_vol(:), extr_acc(:), &
       strainr(:,:,:,:), &
