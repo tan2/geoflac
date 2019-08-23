@@ -6,9 +6,8 @@ use arrays
 use params
 include 'precision.inc'
 
-dimension flux(mnz,mnx,2,2), add_source(mnz,mnx)
-
-heat_latent_magma = 4.2d5  ! J/kg, latent heat of freezing magma
+double precision :: flux(nz-1,nx-1,2,2), add_source(nz-1,nx-1)
+double precision, parameter :: heat_latent_magma = 4.2d5  ! J/kg, latent heat of freezing magma
 
 ! real_area = 0.5* (1./area(n,t))
 ! Calculate Fluxes in every triangle

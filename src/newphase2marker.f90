@@ -33,11 +33,14 @@ USE marker_data
 use arrays
 use params
 use phases
-include 'precision.inc'
 
-integer ichanged(100*mnx), jchanged(100*mnx)
-integer kph(1)
-dimension ratio(20)
+implicit none
+
+integer :: ichanged(100*(nx-1)), jchanged(100*(nx-1))
+integer :: kph(1), jj, j, i, iph, nelem_serp, nchanged, &
+           jbelow, k, kinc, kk, n
+double precision :: ratio(20), yy, dep2, depth, press, quad_area, &
+                    tmpr, trpres, trpres2, vol_frac_melt
 
 ! max. depth (m) of eclogite phase transition
 real*8, parameter :: max_basalt_depth = 150.e3
@@ -239,7 +242,7 @@ do kk = 1 , nmarkers
         endif
     end select
 
-    if(nchanged >= 100*mnx) stop 38
+    if(nchanged >= 100*(nx-1)) stop 38
 enddo
 !$OMP end do
 !$OMP end parallel

@@ -1,11 +1,10 @@
 subroutine rem_cord(cordo)
 use arrays
 use params
-include 'precision.inc'
-
-dimension cordo(nz,nx,2)
-dimension rmesh1(mnx+1)
-
+implicit none
+double precision :: cordo(nz,nx,2), rmesh1(nx)
+integer :: i, j, ii
+double precision :: xl, xr, xx, zcorr, zl, zr, zz, total_area
 logical do_volcorrection
 
 do_volcorrection = .false.
