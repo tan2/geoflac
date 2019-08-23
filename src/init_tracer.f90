@@ -5,10 +5,10 @@ use params
 
 include 'precision.inc'
 
-common /tracers/ idtracer(2*mnz*mnx)
+integer, allocatable :: ielem(:,:)
+integer :: i, j, k, kk, n, nn
 
-dimension ielem(mnz,mnx)
-
+allocate(ielem(nz, nx))
 ielem = 0
 nmtracers = 0
 
@@ -32,5 +32,6 @@ do kk = 1,nmarkers
         enddo
     endif
 enddo
+deallocate(ielem)
 return
 end subroutine init_tracer

@@ -9,7 +9,7 @@ real xik(nmtracers),timtrk(nmtracers),xtrak(nmtracers),ytrak(nmtracers),temptrak
 real prestrak(nmtracers),straintrak(nmtracers)
 real(kindr) D1d(nmtracers)
 
-common /tracers/ idtracer(2*mnz*mnx)
+integer :: i, id, j, k, kk, n, nn, nrec, nwords
 
 nrec = 0
 ! define record number and write it to contents

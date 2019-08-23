@@ -21,7 +21,7 @@ module arrays
   integer, allocatable :: iphase(:,:), nphase_counter(:,:,:), &
       ntopmarker(:), itopmarker(:,:), &
       irheol_fl(:,:), &
-      nopbou(:,:), ncodbou(:,:)
+      nopbou(:,:), ncodbou(:,:), idtracer(:)
 
   real*8, allocatable :: phase_ratio(:,:,:), &
       dtopo(:), dhacc(:), extrusion(:), &
@@ -60,6 +60,7 @@ contains
     allocate(irheol_fl(nz-1, nx-1))
     allocate(nopbou(((nz-1)+(nx-1))*2, 4))
     allocate(ncodbou(((nz-1)+(nx-1))*2, 3))
+    allocate(idtracer((nz-1)*(nx-1)*2))
 
     allocate(phase_ratio(20, nz-1, nx-1))
     allocate(dtopo(nx))
