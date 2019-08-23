@@ -4,7 +4,6 @@ use params
 USE marker_data
 
 include 'precision.inc'
-common /markers/ xmpt(2,3,mnz*mnx*2)
 double precision :: shp2(2,3,2)
 
 ! calculate the new paramters for the triangles

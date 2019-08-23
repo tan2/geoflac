@@ -29,7 +29,7 @@ module arrays
       strainr(:,:,:,:), &
       aps(:,:),visn(:,:),e2sr(:,:), &
       temp0(:,:),source(:,:),shrheat(:,:), &
-      bcstress(:,:)
+      bcstress(:,:), xmpt(:,:,:)
 
 contains
 
@@ -74,6 +74,7 @@ contains
     allocate(source(nz, nx))
     allocate(shrheat(nz, nx))
     allocate(bcstress((nz+nx)*2, 3))
+    allocate(xmpt(2,3,nz*nx*2))
 
     allocate(junk2(nz, nx))
 
