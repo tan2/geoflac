@@ -37,7 +37,7 @@ else
     ! Case with iynts = 2 or 10 for continental and collision
     if (iynts.eq.2 .or. iynts.eq.10) then
         do n = 1, nzone_age
-            do i = ixtb1(n), ixtb2(n)
+            do i = ixtb1(n), min(ixtb2(n), nx-1)
                 do j = 1, nz-1
                     y = (cord(1,i,2)-cord(j,i,2))*1.e-3
                     if (y.lt.hc1(n)) then
