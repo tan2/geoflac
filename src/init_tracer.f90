@@ -4,11 +4,10 @@ use arrays
 use params
 implicit none
 
-integer :: idtracer(2*mnz*mnx), ielem(mnz,mnx), &
-           i, j, k, kk, n, nn
-common /tracers/ idtracer
+integer, allocatable :: ielem(:,:)
+integer :: i, j, k, kk, n, nn
 
-
+allocate(ielem(nz, nx))
 ielem = 0
 nmtracers = 0
 
@@ -32,5 +31,6 @@ do kk = 1,nmarkers
         enddo
     endif
 enddo
+deallocate(ielem)
 return
 end subroutine init_tracer
