@@ -138,8 +138,6 @@ use arrays
 use params
 include 'precision.inc'
 
-dimension tkappa(mnx+1)
-
 !EROSION PROCESSES
 if( topo_kappa .gt. 0. ) then
 
