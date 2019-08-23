@@ -29,7 +29,7 @@ module arrays
       strainr(:,:,:,:), &
       aps(:,:),visn(:,:),e2sr(:,:), &
       temp0(:,:),source(:,:),shrheat(:,:), &
-      bcstress(:,:)
+      bcstress(:,:), xmpt(:,:,:)
 
   !$acc declare create(cord, temp, vel, stress0, force, balance, amass, rmass, area, dvol, strain, bc, ncod, junk2)
 contains
@@ -75,6 +75,7 @@ contains
     allocate(source(nz, nx))
     allocate(shrheat(nz, nx))
     allocate(bcstress((nz+nx)*2, 3))
+    allocate(xmpt(2,3,nz*nx*2))
 
     allocate(junk2(nz, nx))
 

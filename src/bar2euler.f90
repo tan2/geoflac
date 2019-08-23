@@ -4,7 +4,6 @@ use params
 USE marker_data
 implicit none
 
-double precision :: xmpt(2,3,mnz*mnx*2)
 double precision :: shp2(2,3,2)
 integer :: i, j, n
 double precision :: ba1, ba2, x, y
