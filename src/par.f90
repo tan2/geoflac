@@ -3,6 +3,7 @@
 program DREZINA
 use arrays
 use params
+use marker_data
 include 'precision.inc'
 
 character*200 inputfile
@@ -30,6 +31,7 @@ nloop_restarted = 0
 ! Read task parameters
 call read_params(inputfile)
 call allocate_arrays(nz, nx)
+call allocate_markers(nz, nx)
 
 ! Try to read save-file contents. If file exist - restart, othewise - new start
 open(1,file='_contents.rs',status='old',err=10)
