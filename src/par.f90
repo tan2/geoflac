@@ -8,7 +8,7 @@ implicit none
 
 character*200 inputfile
 real*4 secnds,time0
-integer :: narg, i_search, j, itest_mesh
+integer :: narg, ireset, i_search, j, itest_mesh
 double precision :: area_diff, dl, dtacc_file, dtacc_save, dtacc_screen, dtacc_tracer, &
                     force_l, force_r, sxx, sxxd, &
                     total_area, stressI
