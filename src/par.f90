@@ -80,7 +80,6 @@ dvmax = 0
 
 !do index_nobody_would_use=1,1
 do while( time .le. time_max )
-  nloop = nloop + 1
   if( dtout_screen .ne. 0 ) then
     if( dtacc_screen .gt. dtout_screen ) then
        write(*,'(I10,A,F7.3,A,F8.1,A)') nloop,'''s step. Time[My]=', time/sec_year/1.e+6, &
@@ -111,9 +110,18 @@ do while( time .le. time_max )
   !     close (1)
   ! endif
 
+  do j = 1, ntest_rem
+    ! FLAC
+    call flac
 
-  ! FLAC
-  call flac
+    nloop = nloop + 1
+    time = time + dt
+
+    dtacc_screen = dtacc_screen + dt
+    dtacc_file   = dtacc_file   + dt
+    dtacc_save   = dtacc_save   + dt
+    dtacc_tracer = dtacc_tracer + dt
+  end do
 
   ! Remeshing
   if( ny_rem.eq.1 .and. itherm.ne.2 ) then
@@ -167,12 +175,6 @@ do while( time .le. time_max )
     !call flush(33)
   endif
 
-  time = time + dt
-
-  dtacc_screen = dtacc_screen + dt
-  dtacc_file   = dtacc_file   + dt
-  dtacc_save   = dtacc_save   + dt
-  dtacc_tracer = dtacc_tracer + dt 
 end do
 
 ! SAVING the restart information of last step
