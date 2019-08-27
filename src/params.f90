@@ -54,7 +54,7 @@ real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
      conduct(maxph),cp(maxph), &
      ts(maxph),tl(maxph),tk(maxph),fk(maxph), &
      ten_off,tau_heal,dt_outtracer,xinitaps(maxinh), &
-     t_top,t_bot,hs,hr,temp_per,bot_bc,time_t,dt_therm, &
+     t_top,t_bot,hs,hr,temp_per,bot_bc, &
      hc1(maxph),hc2(maxph),hc3(maxph),hc4(maxph), &
      age_1(maxph),g,pisos,drosub,damp_vis, &
      devmax, dvmax, tbos, &
