@@ -232,11 +232,7 @@ do i = 1,nx
     if( itemp_bc.eq.1 ) then
         temp(nz,i) = bot_bc
     elseif( itemp_bc.eq.2 ) then
-        if( i.ne. nx ) then
-            cond_eff = Eff_conduct( nz-1,i )
-        else
-            cond_eff = Eff_conduct( nz-1,nx-1 )
-        endif
+        cond_eff = Eff_conduct( nz-1, min(i,nx-1) )
         temp(nz,i) = temp(nz-1,i)  +  bot_bc * ( cord(nz-1,i,2)-cord(nz,i,2) ) / cond_eff
     endif
 
