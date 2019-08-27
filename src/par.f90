@@ -8,7 +8,7 @@ implicit none
 
 character*200 inputfile
 real*4 secnds,time0
-integer :: narg, ireset, i_search, j, itest_mesh
+integer :: narg, i_search, j, itest_mesh
 double precision :: area_diff, dl, dtacc_file, dtacc_save, dtacc_screen, dtacc_tracer, &
                     force_l, force_r, sxx, sxxd, &
                     total_area, stressI
@@ -71,7 +71,6 @@ end if
 
 
 !      ****************** running ********************************
-ireset = 1
 dtacc_screen = 0
 dtacc_file = 0
 dtacc_save = 0
@@ -117,8 +116,6 @@ do while( time .le. time_max )
   ! FLAC
   call flac
 
-  if( ireset.eq.1 ) ireset = 0
-
   ! Remeshing
   if( ny_rem.eq.1 .and. itherm.ne.2 ) then
     if( itest_mesh() .eq. 1 ) then
@@ -137,7 +134,6 @@ do while( time .le. time_max )
         call lpeuler2bar
         call marker2elem
       endif
-      ireset = 1
     endif
   endif
 
