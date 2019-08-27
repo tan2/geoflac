@@ -255,5 +255,7 @@ call init_bc
 ! Inertial masses and time steps (elastic, maxwell and max_thermal)
 call dt_mass
 
+if( ivis_present.eq.1 ) call init_visc
+
 return
 end
