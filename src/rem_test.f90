@@ -72,8 +72,6 @@ integer function itest_mesh()
       endif
   endif
 
-  ! test by the angle is expensive, so do it every ntest_rem loops
-  if( mod(nloop, ntest_rem).ne.0 ) return
 
   pi = 3.14159265358979323846
   degrad = pi/180.
