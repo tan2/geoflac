@@ -25,8 +25,6 @@ if(first .eq. 0) then
     allocate(se2sr(nz-1,nx-1), sshrheat(nz-1,nx-1))
 endif
 
-if( ireset .eq. 1 ) nsrate = -1
-
 if( nsrate .eq. -1 ) then
 !$OMP parallel sections
     se2sr = 0.

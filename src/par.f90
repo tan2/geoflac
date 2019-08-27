@@ -4,10 +4,13 @@ program DREZINA
 use arrays
 use params
 use marker_data
-include 'precision.inc'
 
 character*200 inputfile
 real*4 secnds,time0
+integer :: narg, ireset, i_search, j, itest_mesh
+double precision :: area_diff, dl, dtacc_file, dtacc_save, dtacc_screen, dtacc_tracer, &
+                    force_l, force_r, sxx, sxxd, &
+                    total_area, stressI
 
 narg = iargc()
 if(narg /= 1) then

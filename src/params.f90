@@ -29,11 +29,11 @@ integer :: nx,nz,nq,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
      iph_col5(maxph),iph_col_trans(maxph), &
      if_intrus,if_hydro, &
      nyhydro,iphsub, &
-     nloop_restarted,nloop,irestart,ifreq_avgsr,ireset, &
-     ivis_present,n_boff_cutoff,idt_scale,ifreq_imasses,ifreq_rmasses, &
      movegrid,ndim,ifreq_visc,nmtracers,i_rey,iac_rem, &
      iph_int,incoming_left,incoming_right, &
-     iynts,iax1,iay1,ibx1,iby1,icx1,icy1,idx1,idy1
+     iynts, iax1,iay1,ibx1,iby1,icx1,icy1,idx1,idy1, &
+     ivis_present,n_boff_cutoff,idt_scale,ifreq_imasses,ifreq_rmasses, &
+     nloop_restarted,nloop,irestart,ifreq_avgsr
 
 real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
      dx_rem,angle_rem,anglemin1,anglemint,topo_kappa,fac_kappa, &

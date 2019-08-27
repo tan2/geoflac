@@ -11,11 +11,6 @@ dimension depl(4)
 dimension s11p(4),s22p(4),s12p(4),s33p(4),s11v(4),s22v(4),s12v(4),s33v(4)
 logical rh_sel
 
-!if( mod(nloop,10).eq.0 .OR. ireset.eq.1 ) then
-!    rh_sel = .true.
-!else
-!    rh_sel = .false.
-!endif
 rh_sel = .true.
 
 !XXX: irh==11, or irh>=11?
@@ -90,7 +85,7 @@ do 3 i = 1,nx-1
               
         ! Re-evaluate viscosity
         if (irh.eq.3 .or. irh.eq.12) then 
-            if( mod(nloop,ifreq_visc).eq.0 .OR. ireset.eq.1 ) visn(j,i) = Eff_visc(j,i)
+            if( mod(nloop,ifreq_visc).eq.0) visn(j,i) = Eff_visc(j,i)
 !            if (ny_inject.gt.0.and.i.eq.iinj) visn(j,i) = v_min
         endif
         vis = visn(j,i)
