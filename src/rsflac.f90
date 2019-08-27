@@ -31,7 +31,6 @@ read (1,rec=nrec) rtime, rdt
 close (1)
 time = rtime
 dt = rdt
-time_t = time
 
 dvol = 0
 

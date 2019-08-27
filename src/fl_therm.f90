@@ -38,14 +38,6 @@ ntherm = ntherm+1
 !$DIR PREFER_PARALLEL
 if (istress_therm.gt.0) temp0(1:nz,1:nx) = temp(1:nz,1:nx)
 
-!dt_therm = time - time_t
-dt_therm = dt
-!if( dt_therm.gt.dtmax_therm ) then
-!    write(*,*) dt_therm,dtmax_therm
-!    call SysMsg('DT_THERM is larger than DTMAX_THERM')
-!    stop 37
-!    return
-!endif
 
 !$OMP Parallel private(i,j,iph,cp_eff,cond_eff,dissip,diff,quad_area, &
 !$OMP                  x1,x2,x3,x4,y1,y2,y3,y4,t1,t2,t3,t4,tmpr, &
@@ -232,7 +224,7 @@ do i = 1,nx
         endif
 
         ! Update Temperature by Eulerian method 
-        temp(j,i) = temp(j,i)+rhs*dt_therm/area_n
+        temp(j,i) = temp(j,i)+rhs*dt/area_n
     end do
 end do
 !$OMP end do
@@ -265,8 +257,6 @@ do j = 1,nz
 end do
 !$OMP end do
 !$OMP end parallel
-
-time_t = time
 
 
 ! ! HOOK
