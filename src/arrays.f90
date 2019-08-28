@@ -20,7 +20,6 @@ module arrays
 
   integer, allocatable :: iphase(:,:), nphase_counter(:,:,:), &
       ntopmarker(:), itopmarker(:,:), &
-      irheol_fl(:,:), &
       nopbou(:,:), ncodbou(:,:), idtracer(:)
 
   real*8, allocatable :: phase_ratio(:,:,:), &
@@ -62,7 +61,6 @@ contains
     allocate(nphase_counter(20, nz-1, nx-1))
     allocate(ntopmarker(nx))
     allocate(itopmarker(max_markers_per_elem, nx-1))
-    allocate(irheol_fl(nz-1, nx-1))
     allocate(nopbou(((nz-1)+(nx-1))*2, 4))
     allocate(ncodbou(((nz-1)+(nx-1))*2, 3))
     allocate(idtracer((nz-1)*(nx-1)*2))

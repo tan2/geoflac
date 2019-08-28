@@ -9,9 +9,6 @@ include 'precision.inc'
 
 dimension depl(4)
 dimension s11p(4),s22p(4),s12p(4),s33p(4),s11v(4),s22v(4),s12v(4),s33v(4)
-logical rh_sel
-
-rh_sel = .true.
 
 !XXX: irh==11, or irh>=11?
 irh=irheol(mphase)
@@ -119,7 +116,6 @@ do 3 i = 1,nx-1
             if (irh.eq.1) then
                 ! elastic
                 call elastic(bulkm,rmu,s11p(k),s22p(k),s33p(k),s12p(k),de11,de22,de12)
-                irheol_fl(j,i) = 0  
                 stress0(j,i,1,k) = s11p(k)
                 stress0(j,i,2,k) = s22p(k)
                 stress0(j,i,3,k) = s12p(k)
@@ -129,7 +125,6 @@ do 3 i = 1,nx-1
                 ! viscous
                 call maxwell(bulkm,rmu,vis,s11v(k),s22v(k),s33v(k),s12v(k),de11,de22,de33,de12,dv,&
                      ndim,dt,curr_devmax,curr_dvmax)
-                irheol_fl(j,i) = -1  
                 stress0(j,i,1,k) = s11v(k)
                 stress0(j,i,2,k) = s22v(k)
                 stress0(j,i,3,k) = s12v(k)
@@ -139,7 +134,6 @@ do 3 i = 1,nx-1
                 ! plastic
                 call plastic(bulkm,rmu,coh,phi,psi,depl(k),ipls,diss,hardn,s11p(k),s22p(k),s33p(k),s12p(k),de11,de22,de33,de12,&
                      ten_off,ndim,irh_mark)
-                irheol_fl(j,i) = 1
                 stress0(j,i,1,k) = s11p(k)
                 stress0(j,i,2,k) = s22p(k)
                 stress0(j,i,3,k) = s12p(k)
@@ -147,36 +141,16 @@ do 3 i = 1,nx-1
 
             elseif (irh.ge.11) then 
                 ! Mixed rheology (Maxwell or plastic)
-                if( rh_sel ) then
-                    call plastic(bulkm,rmu,coh,phi,psi,depl(k),ipls,diss,hardn,&
-                        s11p(k),s22p(k),s33p(k),s12p(k),de11,de22,de33,de12,&
-                        ten_off,ndim,irh_mark)
-                    call maxwell(bulkm,rmu,vis,s11v(k),s22v(k),s33v(k),s12v(k),&
-                        de11,de22,de33,de12,dv,&
-                        ndim,dt,curr_devmax,curr_dvmax)
-                else ! use previously defined rheology
-                    if( irheol_fl(j,i) .eq. 1 ) then
-                        call plastic(bulkm,rmu,coh,phi,psi,depl(k),ipls,diss,hardn,&
-                            s11p(k),s22p(k),s33p(k),s12p(k),de11,de22,de33,de12,&
-                            ten_off,ndim,irh_mark)
-                        stress0(j,i,1,k) = s11p(k)
-                        stress0(j,i,2,k) = s22p(k)
-                        stress0(j,i,3,k) = s12p(k)
-                        stress0(j,i,4,k) = s33p(k)
-                    else  ! irheol_fl(j,i) = -1
-                        call maxwell(bulkm,rmu,vis,s11v(k),s22v(k),s33v(k),s12v(k),&
-                            de11,de22,de33,de12,dv,&
-                            ndim,dt,curr_devmax,curr_dvmax)
-                        stress0(j,i,1,k) = s11v(k)
-                        stress0(j,i,2,k) = s22v(k)
-                        stress0(j,i,3,k) = s12v(k)
-                        stress0(j,i,4,k) = s33v(k)
-                    endif
-                endif
+                call plastic(bulkm,rmu,coh,phi,psi,depl(k),ipls,diss,hardn,&
+                    s11p(k),s22p(k),s33p(k),s12p(k),de11,de22,de33,de12,&
+                    ten_off,ndim,irh_mark)
+                call maxwell(bulkm,rmu,vis,s11v(k),s22v(k),s33v(k),s12v(k),&
+                    de11,de22,de33,de12,dv,&
+                    ndim,dt,curr_devmax,curr_dvmax)
             endif
         enddo
 
-        if( irh.ge.11 .AND. rh_sel ) then
+        if( irh.ge.11 ) then
             ! deside - elasto-plastic or viscous deformation
             sII_plas = (s11p(1)+s11p(2)+s11p(3)+s11p(4)-s22p(1)-s22p(2)-s22p(3)-s22p(4))**2 &
                      + 4*(s12p(1)+s12p(2)+s12p(3)+s12p(4))**2
@@ -191,7 +165,6 @@ do 3 i = 1,nx-1
                     stress0(j,i,3,k) = s12p(k)
                     stress0(j,i,4,k) = s33p(k)
                 end do
-                irheol_fl (j,i) = 1
             else 
                 do k = 1, 4
                     stress0(j,i,1,k) = s11v(k)
@@ -199,7 +172,6 @@ do 3 i = 1,nx-1
                     stress0(j,i,3,k) = s12v(k)
                     stress0(j,i,4,k) = s33v(k)
                 end do
-                irheol_fl (j,i) = -1
             endif
         endif
 
