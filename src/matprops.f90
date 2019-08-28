@@ -79,14 +79,13 @@ end function Eff_dens
 function Eff_cp( j, i )
 use arrays
 use params
-include 'precision.inc'
+implicit none
 
-
-HeatLatent = 420000.
+integer :: iph, j, i
+double precision :: Eff_cp
 
 iph = iphase(j,i)
 Eff_cp = cp(iph)
-
 
 return
 end function Eff_cp
@@ -98,27 +97,13 @@ end function Eff_cp
 function Eff_conduct( j, i )
 use arrays
 use params
-include 'precision.inc'
+implicit none
 
+integer :: iph, j, i
+double precision :: Eff_conduct
 
-if (iint_marker.ne.1) then
-    iph = iphase(j,i)
-    cond = conduct(iph)
-
-    Eff_conduct = cond
-
-else
-    Eff_conduct = 0.
-    do k = 1 , nphase
-
-        ! when ratio is small, it won't affect the density
-        if(phase_ratio(k,j,i) .lt. 0.01) cycle
-
-        cond = conduct(k)
-
-        Eff_conduct = Eff_conduct + phase_ratio(k,j,i)*cond
-    enddo
-endif
+iph = iphase(j,i)
+Eff_conduct = conduct(iph)
 
 return
 end function Eff_conduct
