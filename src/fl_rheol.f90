@@ -52,12 +52,15 @@ if (ny_inject.gt.0) then
          !write(*,*) sarc1,sarc2
 endif
 
+!$ACC parallel create(s11p, s22p, s33p, s33v, s12p, depl, s12v, s22v, s11v)
+
 irh_mark = 0
 
 ! max. deviatoric strain and area change of current time step
 curr_devmax = devmax
 curr_dvmax = dvmax
 
+!$ACC loop collapse(2)
 !$OMP Parallel Private(i,j,k,iph,irh,bulkm,rmu,coh,phi,psi, &
 !$OMP                  stherm,hardn,vis, &
 !$OMP                  de11,de22,de12,de33,dv, &
@@ -237,9 +240,10 @@ do 3 i = 1,nx-1
 3 continue
 !$OMP end do
 !$OMP end parallel
+!$ACC end loop
 
 devmax = max(devmax, curr_devmax)
 dvmax = max(dvmax, curr_dvmax)
-
+!$ACC end parallel
 return
 end
