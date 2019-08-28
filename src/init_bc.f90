@@ -330,15 +330,15 @@ subroutine velbc_visc(i)
   tmp = 0.
   do jj = nbc1(i), nbc2(i)
       if(jj == 1) cycle
-      tmp = tmp + (cord(jj-1,ii,2) - cord(jj,ii,2)) / min(Eff_visc(jj-1,ie), 3e23)
+      tmp = tmp + (cord(jj-1,ii,2) - cord(jj,ii,2)) / min(Eff_visc(jj-1,ie), 3d23)
   enddo
   tmp1 = tmp
   tmp = bca(i) / tmp
 
   do jj = nbc1(i), nbc2(i)
       if(jj > 1) then
-          tmp1 = tmp1 - (cord(jj-1,ii,2) - cord(jj,ii,2)) / min(Eff_visc(jj-1,ie), 3e23)
-          write(*,*) jj, min(Eff_visc(jj-1,ie),3e23), tmp1 * tmp
+          tmp1 = tmp1 - (cord(jj-1,ii,2) - cord(jj,ii,2)) / min(Eff_visc(jj-1,ie), 3d23)
+          write(*,*) jj, min(Eff_visc(jj-1,ie),3d23), tmp1 * tmp
       else
           write(*,*) jj, 3e23, tmp1 * tmp
       end if
