@@ -22,8 +22,11 @@ subroutine bc_update
   force = 0.0d0
   balance = 0.0d0
 
+  !$ACC parallel
+
   if (ydrsides.eq. 1.) then
       rogh = 0.d0
+      !$ACC loop
       do j=1,nz-1
           iph = iphase(j,1)
           densT = Eff_dens(j,1)
@@ -48,10 +51,10 @@ subroutine bc_update
           force(j+1,1,2) = force(j+1,1,2)-0.5*press_norm*dlx
 
           balance(j,1,1) = 1.e+17
-          balance(j+1,1,1) = 1.e+17
           rogh = rogh +dP 
       enddo
-
+      balance(nz,1,1) = 1.e+17
+      !$ACC end loop
 
       ! -------------------------------------------------------------
       !      RIGHT BOUNDARY
@@ -59,6 +62,7 @@ subroutine bc_update
       !   Shear component = 0 (perfect fluid)
       ! -------------------------------------------------------------
       rogh = 0.d0
+      !$ACC loop
       do j=1,nz-1
           iph = iphase(j,nx-1)
           densT = Eff_dens(j,nx-1)
@@ -84,16 +88,17 @@ subroutine bc_update
           force(j+1,nx,2) = force(j+1,nx,2)+0.5*press_norm*dlx
 
           balance(j,nx,1) = 1.e+17
-          balance(j+1,nx,1) = 1.e+17
 
           rogh = rogh +dP
       enddo
-
+      balance(nz,nx,1) = 1.e+17
+      !$ACC end loop
   endif
 
   !----------------------------------
   ! APPLY  STATIC STRESSES:
   !----------------------------------
+  !$ACC loop
   do i=1,nopbmax
 
       ii1 = nopbou(i,1)
@@ -142,6 +147,7 @@ subroutine bc_update
       !       balance(nn2,3) = 1.e+17
       !       endif
   enddo
-
+  !$ACC end loop
+  !$ACC end parallel
   return
 end subroutine bc_update
