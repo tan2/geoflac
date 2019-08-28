@@ -9,6 +9,8 @@ MODULE marker_data
   integer, allocatable :: mark_phase(:)
   integer, allocatable :: mark_ID(:)          ! unique ID-number
 
+  !$ACC declare create(mark_a1, mark_a2, mark_x, mark_y, mark_age, &
+  !$ACC                mark_dead, mark_ntriag, mark_phase, mark_ID)
   contains
 
   subroutine allocate_markers(nz, nx)
