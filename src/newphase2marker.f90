@@ -1,4 +1,9 @@
+module newphase2marker
+
+contains
+
 subroutine newphase2marker (j1, j2, i1, i2, iph)
+!$ACC routine seq
 USE marker_data
 use arrays
 use params
@@ -63,13 +68,17 @@ real*8, parameter :: new_crust_thickness = 7.e3
 
 
 ! search the element for melting
+!$ACC parallel create(ichanged, jchanged, kph, ratio)
+!$ACC loop
 do jj = 1, nz-1
    ! search for crustal depth
    dep2 = 0.25*(cord(jj,1,2)+cord(jj+1,1,2)+cord(jj,2,2)+cord(jj+1,2,2))
    if (cord(1,1,2) - dep2 >= new_crust_thickness) exit
 end do
+!$ACC end loop
 j = min(max(2, jj), nz-1)
 
+!$ACC loop
 do i = 1, nx-1
   iph = iphase(j,i)
   if (iph==kmant1 .or. iph==kmant2) then
@@ -79,7 +88,7 @@ do i = 1, nx-1
     end if
   end if
 end do
-
+!$ACC end loop
 
 ! nelem_inject was used for magma injection, reused here for serpentization
 nelem_serp = nelem_inject
@@ -89,7 +98,7 @@ andesitic_melt_vol(1:nx-1) = 0
 
 nchanged = 0
 
-
+!$ACC loop
 !$OMP parallel private(kk,i,j,k,n,tmpr,depth,iph,press,jbelow,trpres,trpres2,kinc,quad_area,yy)
 !$OMP do schedule(guided)
 do kk = 1 , nmarkers
@@ -134,11 +143,17 @@ do kk = 1 , nmarkers
                  phase_ratio(kocean2,jbelow,i) > 0.8 .or. &
                  phase_ratio(karc1,jbelow,i) > 0.8 .or. &
                  phase_ratio(ksed1,jbelow,i) > 0.8) then
+                ! XXX: TODO: how to critical section for acc?
                 !$OMP critical (change_phase1)
+                !$ACC atomic update
                 nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
+                !$ACC atomic update
                 nphase_counter(kweak,j,i) = nphase_counter(kweak,j,i) + 1
+                !$ACC atomic update
                 nchanged = nchanged + 1
+                !$ACC atomic write
                 ichanged(nchanged) = i
+                !$ACC atomic write
                 jchanged(nchanged) = j
                 !$OMP end critical (change_phase1)
                 mark_phase(kk) = kweak
@@ -151,10 +166,15 @@ do kk = 1 , nmarkers
         !if(tmpr > 300. .and. tmpr < 400. &
         !     .and. stressII(j,i)*strainII(j,i) > 4.e6) then
         !    !$OMP critical (change_phase1)
+        !    !$ACC atomic update
         !    nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
+        !    !$ACC atomic update
         !    nphase_counter(kweakmc,j,i) = nphase_counter(kweakmc,j,i) + 1
+        !    !$ACC atomic update
         !    nchanged = nchanged + 1
+        !    !$ACC atomic write
         !    ichanged(nchanged) = i
+        !    !$ACC atomic write
         !    jchanged(nchanged) = j
         !    !$OMP end critical (change_phase1)
         !    mark_phase(kk) = kweakmc
@@ -175,10 +195,15 @@ do kk = 1 , nmarkers
                 phase_ratio(kocean2,jbelow,i) > 0.8 .or. &
                 phase_ratio(ksed1,jbelow,i) > 0.8) then
                 !$OMP critical (change_phase1)
+                !$ACC atomic update
                 nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
+                !$ACC atomic update
                 nphase_counter(kserp,j,i) = nphase_counter(kserp,j,i) + 1
+                !$ACC atomic update
                 nchanged = nchanged + 1
+                !$ACC atomic write
                 ichanged(nchanged) = i
+                !$ACC atomic write
                 jchanged(nchanged) = j
                 !$OMP end critical (change_phase1)
                 mark_phase(kk) = kserp
@@ -192,10 +217,15 @@ do kk = 1 , nmarkers
         press = mantle_density * g * depth
         if (tmpr < min_eclogite_temp .or. depth < min_eclogite_depth .or. press < trpres) cycle
         !$OMP critical (change_phase1)
+        !$ACC atomic update
         nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
+        !$ACC atomic update
         nphase_counter(keclg,j,i) = nphase_counter(keclg,j,i) + 1
+        !$ACC atomic update
         nchanged = nchanged + 1
+        !$ACC atomic write
         ichanged(nchanged) = i
+        !$ACC atomic write
         jchanged(nchanged) = j
         !$OMP end critical (change_phase1)
         mark_phase(kk) = keclg
@@ -209,10 +239,15 @@ do kk = 1 , nmarkers
         press = mantle_density * g * depth
         if (tmpr < serpentine_temp .or. (press < trpres .and. press > trpres2)) cycle
         !$OMP critical (change_phase1)
+        !$ACC atomic update
         nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
+        !$ACC atomic update
         nphase_counter(khydmant,j,i) = nphase_counter(khydmant,j,i) + 1
+        !$ACC atomic update
         nchanged = nchanged + 1
+        !$ACC atomic write
         ichanged(nchanged) = i
+        !$ACC atomic write
         jchanged(nchanged) = j
         !$OMP end critical (change_phase1)
         mark_phase(kk) = khydmant
@@ -221,10 +256,15 @@ do kk = 1 , nmarkers
         ! from sediment solidus in Nichols et al., Nature, 1994
         if (tmpr < 650 .or. depth < 20e3) cycle
         !$OMP critical (change_phase1)
+        !$ACC atomic update
         nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
+        !$ACC atomic update
         nphase_counter(kmetased,j,i) = nphase_counter(kmetased,j,i) + 1
+        !$ACC atomic update
         nchanged = nchanged + 1
+        !$ACC atomic write
         ichanged(nchanged) = i
+        !$ACC atomic write
         jchanged(nchanged) = j
         !$OMP end critical (change_phase1)
         mark_phase(kk) = kmetased
@@ -235,10 +275,15 @@ do kk = 1 , nmarkers
             andesitic_melt_vol(i) = andesitic_melt_vol(i) + quad_area * vol_frac_melt / kinc
 
             !$OMP critical (change_phase1)
+            !$ACC atomic update
             nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
+            !$ACC atomic update
             nphase_counter(kmant1,j,i) = nphase_counter(kmant1,j,i) + 1
+            !$ACC atomic update
             nchanged = nchanged + 1
+            !$ACC atomic write
             ichanged(nchanged) = i
+            !$ACC atomic write
             jchanged(nchanged) = j
             !$OMP end critical (change_phase1)
             mark_phase(kk) = kmant1
@@ -249,11 +294,13 @@ do kk = 1 , nmarkers
 enddo
 !$OMP end do
 !$OMP end parallel
+!$ACC end loop
 
 ! storing plastic strain in temporary array
 junk2(1:nz-1,1:nx-1) = aps(1:nz-1,1:nx-1)
 
 ! recompute phase ratio of those changed elements
+!$ACC loop
 do k = 1, nchanged
     i = ichanged(k)
     j = jchanged(k)
@@ -276,6 +323,10 @@ do k = 1, nchanged
     aps(j,i) = max(aps(j,i) - junk2(j,i) / float(kinc), 0d0)
 
 enddo
+!$ACC end loop
+!$ACC end parallel
 
 return
 end subroutine change_phase
+
+end module newphase2marker
