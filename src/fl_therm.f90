@@ -38,7 +38,7 @@ ntherm = ntherm+1
 !$DIR PREFER_PARALLEL
 if (istress_therm.gt.0) temp0(1:nz,1:nx) = temp(1:nz,1:nx)
 
-
+!$ACC parallel loop
 !$OMP Parallel private(i,j,iph,cp_eff,cond_eff,dissip,diff,quad_area, &
 !$OMP                  x1,x2,x3,x4,y1,y2,y3,y4,t1,t2,t3,t4,tmpr, &
 !$OMP                  qs,real_area13,area_n,rhs)
@@ -55,7 +55,9 @@ do i = 1,nx-1
     temp(j,i+1) = temp(j,i+1) + andesitic_melt_vol(i) * heat_latent_magma / quad_area / cp_eff
 end do
 !$OMP end do
+!ACC end parallel
 
+!$ACC parallel loop collapse(2)
 !$OMP do
 do i = 1,nx-1
     do j = 1,nz-1
@@ -106,8 +108,9 @@ do i = 1,nx-1
     end do
 end do    
 !$OMP end do
+!$ACC end parallel
 
-
+!$ACC parallel loop collapse(2)
 !$OMP do
 do i = 1,nx
     do j = 1,nz
@@ -228,8 +231,10 @@ do i = 1,nx
     end do
 end do
 !$OMP end do
+!$ACC end parallel
 
 ! Boundary conditions (top and bottom)
+!$ACC parallel loop
 !$OMP do
 do i = 1,nx
 
@@ -244,8 +249,10 @@ do i = 1,nx
 
 end do
 !$OMP end do
+!$ACC end parallel
 
 ! Boundary conditions: dt/dx =0 on left and right  
+!$ACC parallel loop
 !$OMP do
 do j = 1,nz
     temp(j ,1)  = temp(j,2)
@@ -253,7 +260,7 @@ do j = 1,nz
 end do
 !$OMP end do
 !$OMP end parallel
-
+!$ACC end parallel
 
 ! ! HOOK
 ! ! Intrusions - see user_ab.f90
