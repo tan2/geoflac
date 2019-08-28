@@ -153,8 +153,10 @@ MODULE_SRCS = \
 	phases.f90 \
 	params.f90 \
 	arrays.f90 \
+	newphase2marker.f90 \
 	marker_data.f90 \
-	matprops.f90
+	matprops.f90 \
+	rheol.f90
 
 SRCS =	\
 	bar2euler.f90 \
@@ -180,7 +182,6 @@ SRCS =	\
 	init_visc.f90 \
 	lpeuler2bar.f90 \
 	marker2elem.f90 \
-	newphase2marker.f90 \
 	outflac.f90 \
 	outmarker.f90 \
 	outtracer.f90 \
@@ -189,9 +190,6 @@ SRCS =	\
 	rem_cord.f90 \
 	remesh.f90 \
 	rem_test.f90 \
-	rh_elastic.f90 \
-	rh_maxwell.f90 \
-	rh_plastic.f90 \
 	rmasses.f90 \
 	rsflac.f90 \
 	saveflac.f90 \

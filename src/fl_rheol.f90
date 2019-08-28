@@ -6,6 +6,7 @@ subroutine fl_rheol
 use arrays
 use params
 use matprops
+use rheol
 implicit none
 
 double precision :: depl(4)
