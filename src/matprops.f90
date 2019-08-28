@@ -117,39 +117,10 @@ use params
 implicit none
 double precision :: Eff_cp
 
-!double precision :: HeatLatent = 420000.
 integer :: iph, j, i
 
 iph = iphase(j,i)
 Eff_cp = cp(iph)
-
-
-!!$tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
-!!$if( tmpr .lt. ts(iph) ) then
-!!$    Eff_cp = cp(iph)
-!!$elseif( tmpr .lt. tk(iph) ) then
-!!$    Eff_cp = cp(iph) + HeatLatent * fk(iph)/(tk(iph)-ts(iph))
-!!$elseif( tmpr .lt. tl(iph) ) then
-!!$    Eff_cp = cp(iph) + HeatLatent * (1.-fk(iph))/(tl(iph)-tk(iph))
-!!$else
-!!$    Eff_cp = cp(iph)
-!!$endif
-!!$
-!!$
-!!$! HOOK
-!!$! Intrusions - melting effect - see user_ab.f90
-!!$if( if_intrus .eq. 1 ) then
-!!$    HeatLatent = 420000.
-!!$
-!!$    tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
-!!$    if( tmpr .lt. ts(iph) ) then
-!!$        Eff_cp = cp(iph)
-!!$    elseif( tmpr .lt. tl(iph)+1 ) then
-!!$        Eff_cp = cp(iph) + HeatLatent/(tl(iph)-ts(iph))
-!!$    else
-!!$        Eff_cp = cp(iph)
-!!$    endif
-!!$endif
 
 return
 end function Eff_cp
@@ -164,51 +135,11 @@ use params
 implicit none
 double precision :: Eff_conduct
 
-integer :: iph, k, j, i
-double precision :: cond
+integer :: iph, j, i
 
-if (iint_marker.ne.1) then
-    iph = iphase(j,i)
-    cond = conduct(iph)
+iph = iphase(j,i)
+Eff_conduct = conduct(iph)
 
-    !if( den(iph) .lt. 3000. ) then  ! for crustal material
-    !    tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
-    !    if( tmpr.lt.25 ) tmpr = 25.
-    !    Eff_conduct = -0.38*dlog(tmpr) + 4.06
-    !endif
-
-    ! HOOK
-    ! Hydrothermal alteration of thermal diffusivity  - see user_luc.f90
-    !if( if_hydro .eq. 1 ) then
-    !    cond = HydroDiff(j,i)*den(iph)*cp(iph)
-    !endif
-    Eff_conduct = cond
-
-else
-    Eff_conduct = 0.
-    do k = 1 , nphase
-
-        ! when ratio is small, it won't affect the density
-        if(phase_ratio(k,j,i) .lt. 0.01) cycle
-
-        cond = conduct(k)
-
-        !if( den(k) .lt. 3000. ) then  ! for crustal material
-        !    tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
-        !    if( tmpr.lt.25 ) tmpr = 25.
-        !    Eff_conduct = -0.38*dlog(tmpr) + 4.06
-        !endif
-
-        ! HOOK
-        ! Hydrothermal alteration of thermal diffusivity  - see user_luc.f90
-        !if( if_hydro .eq. 1 ) then
-        !    cond = HydroDiff(j,i)*den(k)*cp(k)
-        !endif
-        Eff_conduct = Eff_conduct + phase_ratio(k,j,i)*cond
-    enddo
-endif
-
-!write(*,*) Eff_conduct, cond
 return
 end function Eff_conduct
 
