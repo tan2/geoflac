@@ -19,7 +19,7 @@
 ########################################################################
 
 ## GNU version >= 4.2, otherwise openmp won't work
-F90 = gfortran
+F90 = pgfortran
 
 ## Intel, tested with v11.1
 #F90 = ifort
@@ -104,19 +104,22 @@ ifeq ($(F90), pgfortran)
 	# Check that all variables are declared
 	CFLAGS += -Mdclchk
 	ifeq ($(acc), 1)
-		CFLAGS += -acc -ta=tesla:managed
+		CFLAGS += -acc -ta=tesla:managed -Minfo=accel
 		LDFLAGS += -acc -ta=tesla:managed
 	endif
 	ifeq ($(omp), 1)
 		CFLAGS += -mp
 		LDFLAGS += -mp
 	endif
-        ifeq ($(debug), 0)
-                CFLAGS += -O3 -fast -fastsse -Mnoframe -Minfo=accel
-        else
-               CFLAGS += -O0 -Mbounds -Mchkstk -traceback
-               LDFLAGS +=
-        endif
+	ifeq ($(debug), 0)
+		CFLAGS += -O3 -fast -fastsse -Mnoframe
+	else
+		CFLAGS += -O0 -Mchkstk -traceback
+		LDFLAGS +=
+		ifeq ($(acc), 0)
+			CFLAGS += -Mbounds
+		endif
+	endif
 endif
 
 ## for Solaris
