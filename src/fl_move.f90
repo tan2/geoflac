@@ -15,21 +15,28 @@ if (movegrid .eq. 0) return
 
 ! UPDATING COORDINATES
 
-!$OMP parallel private(i)
+!$ACC parallel
+!$ACC loop collapse(2)
+!$OMP parallel private(i,j)
 !$OMP do
 do i = 1,nx
-!    write(*,*) cord(j,i,1),cord(j,i,2),vel(j,i,1),vel(j,i,2),dt
-    cord(:,i,1) = cord(:,i,1) + vel(:,i,1)*dt
-    cord(:,i,2) = cord(:,i,2) + vel(:,i,2)*dt
-!    write(*,*) cord(j,i,1),cord(j,i,2)
+    do j = 1,nz
+        !    write(*,*) cord(j,i,1),cord(j,i,2),vel(j,i,1),vel(j,i,2),dt
+        cord(j,i,1) = cord(j,i,1) + vel(j,i,1)*dt
+        cord(j,i,2) = cord(j,i,2) + vel(j,i,2)*dt
+        !    write(*,*) cord(j,i,1),cord(j,i,2)
+    enddo
 enddo
 !$OMP end do
 !$OMP end parallel
+!$ACC end loop
+!$ACC end parallel
 
 ! Diffuse topography
 if( topo_kappa.gt.0.) call diff_topo
 
-
+!$ACC parallel
+!$ACC loop collapse(2)
 !$OMP parallel private(i,j,x1,y1,x2,y2,x3,y3,x4,y4, &
 !$OMP                  vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4, &
 !$OMP                  det,dw12,s11,s22,s12)
@@ -129,6 +136,8 @@ do  i = 1,nx-1
 enddo
 !$OMP end do
 !$OMP end parallel
+!$ACC end loop
+!$ACC end parallel
 return
 end subroutine fl_move
 
@@ -146,6 +155,7 @@ integer :: i
 
 !EROSION PROCESSES
 if( topo_kappa .gt. 0. ) then
+    !$ACC kernels
 
     topomean = sum(cord(1,:,2)) / nx
     tkappa = topo_kappa
@@ -168,6 +178,7 @@ if( topo_kappa .gt. 0. ) then
 
     ! accumulated topo change since last resurface
     dhacc(1:nx-1) = dhacc(1:nx-1) + 0.5 * (dtopo(1:nx-1) + dtopo(2:nx))
+    !$ACC end kernels
 
     ! adjust markers
     if(mod(nloop, 100) .eq. 0) then
@@ -180,6 +191,7 @@ endif
 
 ! magma extrusion
 if ( .true. ) then
+    !$ACC kernels
     ! grid spacing in x
     extrusion(1:nx-1) = cord(1,2:nx,1) - cord(1,1:nx-1,1)
     ! height of extrusion = volume of extrusion / grid spacing in x
@@ -188,8 +200,8 @@ if ( .true. ) then
 
     cord(1,1:nx-1,2) = cord(1,1:nx-1,2) + extrusion(1:nx-1)
     cord(1,2:nx  ,2) = cord(1,2:nx  ,2) + extrusion(1:nx-1)
+    !$ACC end kernels
 endif
-
 return
 end subroutine diff_topo
 
