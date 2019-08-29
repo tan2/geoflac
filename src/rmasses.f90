@@ -18,8 +18,11 @@ double precision :: dens
 ! real_area = 0.5* (1./area(n,t))
 !-----------------------------------
 
+!XXX data dependence
+!$ACC parallel
 rmass = 0
 
+!$ACC loop
 do i = 1, nx-1
     do j = 1, nz-1
 
@@ -49,6 +52,8 @@ do i = 1, nx-1
         rmass(j  ,i+1)=rmass(j  ,i+1)+c1d12/area(j,i,4)*dens 
     enddo
 enddo
+!$ACC end loop
+!$ACC end parallel
 
 return
 end
