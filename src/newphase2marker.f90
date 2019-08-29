@@ -300,7 +300,6 @@ enddo
 junk2(1:nz-1,1:nx-1) = aps(1:nz-1,1:nx-1)
 
 ! recompute phase ratio of those changed elements
-!$ACC loop
 do k = 1, nchanged
     i = ichanged(k)
     j = jchanged(k)
@@ -323,7 +322,6 @@ do k = 1, nchanged
     aps(j,i) = max(aps(j,i) - junk2(j,i) / float(kinc), 0d0)
 
 enddo
-!$ACC end loop
 !$ACC end parallel
 
 return
