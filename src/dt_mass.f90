@@ -65,7 +65,7 @@ dtmax_therm = 1.e+28
 dt_maxwell = 1.e+28
 
 
-
+!$ACC parallel loop collapse(2)
 do 1 i = 1,nx-1
     do 1 j = 1,nz-1
 
@@ -136,7 +136,7 @@ do 1 i = 1,nx-1
         endif
 
 1 continue 
-
+!ACC end parallel
 return
 end
 
@@ -156,52 +156,54 @@ integer :: i, j
 double precision :: dlmin, dl, dlm
 dlmin = 1.e+28
 
+!$ACC parallel loop collapse(2) copy(dlmin) reduction(min:dlmin)
 do 1 i = 1,nx-1
     do 1 j = 1,nz-1
 
         ! side 1-2 (triangles 1 and 3)
         dl = sqrt( (cord(j+1,i  ,1)-cord(j  ,i  ,1))**2 + (cord(j+1,i  ,2)-cord(j  ,i  ,2))**2 )
         dlm = 1./(area(j,i,1)*dl)
-        if( dlm.lt.dlmin ) dlmin = dlm
+        dlmin = min(dlmin, dlm)
         dlm = 1./(area(j,i,3)*dl)
-        if( dlm.lt.dlmin ) dlmin = dlm
+        dlmin = min(dlmin, dlm)
 
         ! side 2-4 (triangles 2 and 3)
         dl = sqrt( (cord(j+1,i+1,1)-cord(j+1,i  ,1))**2 + (cord(j+1,i+1,2)-cord(j+1,i  ,2))**2 )
         dlm = 1./(area(j,i,2)*dl)
-        if( dlm.lt.dlmin ) dlmin = dlm
+        dlmin = min(dlmin, dlm)
         dlm = 1./(area(j,i,3)*dl)
-        if( dlm.lt.dlmin ) dlmin = dlm
+        dlmin = min(dlmin, dlm)
 
         ! side 4-3 (triangles 2 and 4)
         dl = sqrt( (cord(j+1,i+1,1)-cord(j  ,i+1,1))**2 + (cord(j+1,i+1,2)-cord(j  ,i+1,2))**2 )
         dlm = 1./(area(j,i,2)*dl)
-        if( dlm.lt.dlmin ) dlmin = dlm
+        dlmin = min(dlmin, dlm)
         dlm = 1./(area(j,i,4)*dl)
-        if( dlm.lt.dlmin ) dlmin = dlm
+        dlmin = min(dlmin, dlm)
 
         ! side 3-1 (triangles 1 and 4)
         dl = sqrt( (cord(j  ,i+1,1)-cord(j  ,i  ,1))**2 + (cord(j  ,i+1,2)-cord(j  ,i  ,2))**2 )
         dlm = 1./(area(j,i,1)*dl)
-        if( dlm.lt.dlmin ) dlmin = dlm
+        dlmin = min(dlmin, dlm)
         dlm = 1./(area(j,i,4)*dl)
-        if( dlm.lt.dlmin ) dlmin = dlm
+        dlmin = min(dlmin, dlm)
 
         ! diagonal 1-4 (triangles 3 and 4)
         dl = sqrt( (cord(j+1,i+1,1)-cord(j  ,i  ,1))**2 + (cord(j+1,i+1,2)-cord(j  ,i  ,2))**2 )
         dlm = 1./(area(j,i,3)*dl)
-        if( dlm.lt.dlmin ) dlmin = dlm
+        dlmin = min(dlmin, dlm)
         dlm = 1./(area(j,i,4)*dl)
-        if( dlm.lt.dlmin ) dlmin = dlm
+        dlmin = min(dlmin, dlm)
 
         ! diagonal 2-3 (triangles 1 and 2)
         dl = sqrt( (cord(j+1,i  ,1)-cord(j  ,i+1,1))**2 + (cord(j+1,i  ,2)-cord(j  ,i+1,2))**2 )
         dlm = 1./(area(j,i,1)*dl)
-        if( dlm.lt.dlmin ) dlmin = dlm
+        dlmin = min(dlmin, dlm)
         dlm = 1./(area(j,i,2)*dl)
-        if( dlm.lt.dlmin ) dlmin = dlm
+        dlmin = min(dlmin, dlm)
 
 1 continue
+!$ACC end parallel
 
 dlmin_prop = dlmin
 
