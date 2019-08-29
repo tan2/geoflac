@@ -35,12 +35,11 @@ double precision :: drat, fx, fy, &
                   press_norm_r, dlx_r, dly_r, &
                   rho_water_g, water_depth
 
-
-boff = 0
-
 drat = dt / dt_elastic
 if (drat .lt. 1.) drat = 1.
 
+!$ACC parallel
+!$ACC loop collapse(2)
 !$OMP parallel private(i, j, fx, fy, &
 !$OMP                  p_est, rosubg, &
 !$OMP                  press_norm_l, dlx_l, dly_l, &
@@ -321,9 +320,11 @@ do i = 1,nx
   enddo
 enddo
 !$OMP end do
+!$ACC end loop
 
 ! BOUNDARY CONDITIONS
 if(nyhydro.gt.0) then
+    !$ACC loop
     !$OMP do
     do i=1,nx
 
@@ -364,7 +365,9 @@ if(nyhydro.gt.0) then
         endif
     enddo
     !$OMP end do
+    !$ACC end loop
 
+    !$ACC loop
     !$OMP do
     do i=1,nx
 
@@ -406,8 +409,13 @@ if(nyhydro.gt.0) then
 
     enddo
     !$OMP end do
+    !$ACC end loop
 endif
 
+boff = 0
+
+!XXX:  reduction(max:boff)
+!$ACC loop collapse(2)
 !$OMP do reduction(max:boff)
 do i=1,nx
     do j=1,nz
@@ -453,9 +461,12 @@ do i=1,nx
 end do
 !$OMP end do
 !$OMP end parallel
+!$ACC end loop
+
 ! Prestress to form the topo when density differences are present WITHOUT PUSHING OR PULLING!
 if (i_prestress.eq.1.and.time.lt.600.e3*sec_year) then
-    do k = 1,2
+     !$ACC loop
+     do k = 1,2
         do i = 1, nx
             vel(nz,i,k) = 0.
         enddo
@@ -464,6 +475,8 @@ if (i_prestress.eq.1.and.time.lt.600.e3*sec_year) then
             vel(j,nx,k) = 0.
         enddo
     enddo
+    !$ACC end loop
 endif
+!$ACC end parallel
 return
 end subroutine fl_node
