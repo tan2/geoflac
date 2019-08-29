@@ -25,7 +25,7 @@ if(first .eq. 0) then
     allocate(se2sr(nz-1,nx-1), sshrheat(nz-1,nx-1))
 endif
 
-!$ACC kernels
+!$ACC parallel
 if( nsrate .eq. -1 ) then
 !$OMP parallel sections
     se2sr = 0.
@@ -35,10 +35,9 @@ if( nsrate .eq. -1 ) then
 
     dtavg = 0.
 endif
-!$ACC end kernels
 ! --------
 
-!$ACC parallel loop collapse(2)
+!$ACC loop collapse(2)
 !$OMP parallel do &
 !$OMP private(i,j,x1,y1,x2,y2,x3,y3,x4,y4, &
 !$OMP         vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4, &
@@ -134,14 +133,14 @@ do 2  i = 1,nx-1
 
 2 continue
 !$OMP end parallel do
-!$ACC end parallel
+!$ACC end loop
 
 ! following block is needed for averaging
 dtavg = dtavg + dt
 
 ! re-initialisation after navgsr steps
 if( nsrate .eq. ifreq_avgsr ) then
-    !$ACC parallel loop collapse(2)
+    !$ACC loop collapse(2)
     !$OMP parallel do
     do i = 1,nx-1
         do j = 1, nz-1
@@ -152,11 +151,11 @@ if( nsrate .eq. ifreq_avgsr ) then
         end do
     end do
     !$OMP end parallel do
-    !$ACC end parallel
+    !$ACC end loop
     dtavg = 0
     nsrate = 0
 elseif( nsrate .eq. -1 ) then
-    !$ACC parallel loop collapse(2)
+    !$ACC loop collapse(2)
     !$OMP parallel do
     do i = 1,nx-1
         do j = 1, nz-1
@@ -165,11 +164,11 @@ elseif( nsrate .eq. -1 ) then
         end do
     end do
     !$OMP end parallel do
-    !$ACC end parallel
+    !$ACC end loop
 endif
 
 nsrate = nsrate + 1
 !--------------
-
+!$ACC end parallel
 return
 end 
