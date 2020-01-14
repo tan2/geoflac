@@ -22,8 +22,11 @@ do kk = 1 , nmarkers
     i = (n - k) / 2 / (nz - 1) + 1
 
     if(j>=j1 .and. j<=j2 .and. i>=i1 .and. i<=i2) then
+        !$ACC atomic update
         nphase_counter(mark_phase(kk),j,i) = nphase_counter(mark_phase(kk),j,i) - 1
+        !$ACC atomic write
         mark_phase(kk) = iph
+        !$ACC atomic update
         nphase_counter(iph,j,i) = nphase_counter(iph,j,i) + 1
     endif
 enddo
