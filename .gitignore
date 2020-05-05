@@ -1,10 +1,8 @@
-syntax:glob
-
 # files created by build
 src/*.mod
 src/*.o
 src/flac
-src/0.patch
+src/snapshot.diff
 util/*.pyc
 util/flac2vtk
 
