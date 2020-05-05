@@ -4,6 +4,7 @@ src/*.o
 src/flac
 src/snapshot.diff
 util/*.pyc
+util/__pycache__
 util/flac2vtk
 
 # files created by 'hg revert'
