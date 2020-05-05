@@ -202,8 +202,8 @@ OBJS = $(SRCS:.f90=.o)
 
 EXE = flac
 
-## Is this a mercurial repository?
-HAS_HG := $(shell hg log -r tip --template '{node}' 2>/dev/null)
+## Is this a git repository?
+HAS_GIT := $(shell git log -1 2>/dev/null)
 
 ########################################################################
 ## actions
@@ -228,21 +228,23 @@ take-snapshot:
 	@echo '  '  CXX=$(CXX) debug=$(debug) openmp=$(omp) >> snapshot.diff
 	@echo '  '  PATH=`pwd ${PATH}` >> snapshot.diff
 	@echo '  '  LD_LIBRARY_PATH=`pwd ${LD_LIBRARY_PATH}` >> snapshot.diff
-ifneq (HAS_HG),)
+ifneq (HAS_GIT),)
 	@echo >> snapshot.diff
 	@echo >> snapshot.diff
 	@echo '==== Summary of the code ====' >> snapshot.diff
-	@hg summary >> snapshot.diff
+	@git show -s >> snapshot.diff
+	@echo >> snapshot.diff
+	@git status >> snapshot.diff
 	@echo >> snapshot.diff
 	@echo >> snapshot.diff
 	@echo '== Code modification (not checked-in) ==' >> snapshot.diff
-	@hg diff >> snapshot.diff
+	@git diff >> snapshot.diff
 	@echo >> snapshot.diff
 	@echo >> snapshot.diff
-	@echo '== Code modification (checked-in but not public) ==' >> snapshot.diff
-	@hg log --patch -r "not public()" >> snapshot.diff
+	@echo '== Code modification (checked-in but not in "origin") ==' >> snapshot.diff
+	@git log --patch origin..HEAD >> snapshot.diff
 else
-	@echo \'hg\' is not in path, cannot take code snapshot. >> snapshot.diff
+	@echo \'git\' is not in path, cannot take code snapshot. >> snapshot.diff
 endif
 
 
