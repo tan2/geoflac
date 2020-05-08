@@ -21,4 +21,8 @@ module phases
     integer, parameter :: kweakmc = 15
     integer, parameter :: khydmant = 16
 
+    !$ACC declare copyin(kocean0, kcont1, kocean1, kmant1, kmetased, kcont2, kocean2, &
+    !$ACC                kmant2, kserp, ksed1, ksed2, kweak, keclg, karc1, kweakmc, &
+    !$ACC                khydmant)
+
 end module phases

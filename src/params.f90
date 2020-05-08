@@ -62,7 +62,7 @@ real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
 
 character phasefile*20,tempfile*20,coordfile*20
 
-!$ACC declare create(nx,nz,nq,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
+!$ACC declare copyin(nx,nz,nq,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
 !$ACC     ny_rem,mode_rem,ntest_rem,ivis_shape,igeotherm, &
 !$ACC     ny_inject,nelem_inject,nmass_update,nopbmax,iinj, &
 !$ACC     nofbc,nofside(maxbc),nbc1(maxbc),nbc2(maxbc),nbc(maxbc), &
@@ -90,7 +90,7 @@ character phasefile*20,tempfile*20,coordfile*20
 !$ACC     ivis_present,n_boff_cutoff,idt_scale,ifreq_imasses,ifreq_rmasses, &
 !$ACC     nloop_restarted,nloop,irestart,ifreq_avgsr)
 
-!$ACC declare create(x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
+!$ACC declare copyin(x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
 !$ACC     dx_rem,angle_rem,anglemin1,anglemint,topo_kappa,fac_kappa, &
 !$ACC     velbc_l,velbc_r,v_min,v_max,efoldc, &
 !$ACC     g_x0,g_y0c,g_amplitude,g_width,ydrsides,ynstressbc, &

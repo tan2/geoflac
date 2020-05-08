@@ -28,5 +28,8 @@ MODULE marker_data
              mark_phase(max_markers), &
              mark_ID(max_markers))
 
+    !$ACC update device(mark_a1, mark_a2, mark_x, mark_y, mark_age, &
+    !$ACC               mark_dead, mark_ntriag, mark_phase, mark_ID)
+
   end subroutine
 END MODULE marker_data

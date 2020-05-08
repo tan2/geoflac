@@ -22,7 +22,7 @@ double precision :: dens
 !$ACC parallel
 rmass = 0
 
-!$ACC loop
+!$ACC loop collapse(2)
 do i = 1, nx-1
     do j = 1, nz-1
 
