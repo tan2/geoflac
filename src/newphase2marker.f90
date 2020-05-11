@@ -2,43 +2,6 @@ module newphase2marker
 
 contains
 
-subroutine newphase2marker (j1, j2, i1, i2, iph)
-!$ACC routine seq
-USE marker_data
-use arrays
-use params
-implicit none
-
-integer :: j1, j2, i1, i2, iph, &
-           kk, n, k, j, i
-
-! reset the markers within elements in the rectangular region
-
-do kk = 1 , nmarkers
-    if (mark_dead(kk).eq.0) cycle
-    n = mark_ntriag(kk)
-    k = mod(n - 1, 2) + 1
-    j = mod((n - k) / 2, nz-1) + 1
-    i = (n - k) / 2 / (nz - 1) + 1
-
-    if(j>=j1 .and. j<=j2 .and. i>=i1 .and. i<=i2) then
-        !$ACC atomic update
-        nphase_counter(mark_phase(kk),j,i) = nphase_counter(mark_phase(kk),j,i) - 1
-        !$ACC atomic write
-        mark_phase(kk) = iph
-        !$ACC atomic update
-        nphase_counter(iph,j,i) = nphase_counter(iph,j,i) + 1
-    endif
-enddo
-
-iphase(j1:j2,i1:i2) = iph
-phase_ratio(:,j1:j2,i1:i2) = 0.d0
-phase_ratio(iph,j1:j2,i1:i2) = 1.d0
-
-return
-end subroutine newphase2marker
-
-
 subroutine change_phase
 USE marker_data
 use arrays
