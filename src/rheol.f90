@@ -106,6 +106,7 @@ s12  = (s12  * vic1 + 2. * rmu * de12 ) * vic2
 ! isotropic stress is elastic
 devmax = max(devmax, abs(dev))
 dvmax = max(dvmax, abs(dv))
+!$ACC update device(devmax,dvmax)
 
 s0 = s0 + bulkm * dv
 

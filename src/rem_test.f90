@@ -71,6 +71,7 @@ integer function itest_mesh()
           return
       endif
   endif
+  !$ACC update device(iac_rem)
 
 
   pi = 3.14159265358979323846
@@ -79,6 +80,7 @@ integer function itest_mesh()
   anglemint = 180. 
   imint = 0
   jmint = 0
+  !$ACC update device(anglemint)
 
   do i = 1, nx-1
       do j = 1,nz-1
@@ -111,12 +113,14 @@ integer function itest_mesh()
 
               ! min angle in one trianle
               anglemin1 = min(angle(1),angle(2),angle(3))
+              !$ACC update device(anglemin1)
 
               ! min angle in the whole mesh
               if( anglemin1 .lt. anglemint ) then
                   anglemint = anglemin1
                   imint = i
                   jmint = j
+                  !$ACC update device(anglemint)
               endif
 
           end do
@@ -139,6 +143,7 @@ integer function itest_mesh()
       endif
       itest_mesh = 1
       iac_rem = 0
+      !$ACC update device(iac_rem)
   endif
 
   return

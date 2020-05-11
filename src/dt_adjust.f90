@@ -20,6 +20,7 @@ elseif ( boff .gt. ratu ) then
 endif      
 
 dt = max (dt, dt_min )
+!$ACC update device(dt)
 !write(*,*)dt
 return
 end

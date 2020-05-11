@@ -46,6 +46,8 @@ elseif (idt_scale.eq.2) then
 !write(*,'(F45.20)')dt_elastic
     endif
 endif
+!$ACC update device(dt_elastic)
+
 vel_max = 0.
 do k = 1,2
 do i = 1,nx
@@ -63,7 +65,7 @@ end if
 
 dtmax_therm = 1.e+28
 dt_maxwell = 1.e+28
-
+!$ACC update device(dtmax_therm,dt_maxwell)
 
 !$ACC parallel loop collapse(2)
 do 1 i = 1,nx-1
@@ -136,7 +138,8 @@ do 1 i = 1,nx-1
         endif
 
 1 continue 
-!ACC end parallel
+!$ACC end parallel
+!$ACC update device(dt_elastic,dtmax_therm,dt_maxwell)
 return
 end
 

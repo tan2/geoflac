@@ -8,6 +8,8 @@ implicit none
 
 nloop = 0
 time = 0.
+!$ACC update device(nloop,time)
+
 ! Mesh generator
 call init_cord
 
@@ -51,6 +53,7 @@ if( ivis_present.eq.1 ) call init_visc
 ! Inertial masses and time steps (elastic and maxwell)
 call dt_mass
 dt = min( dt_elastic, dt_maxwell )
+!$ACC update device(dt)
 
 return
 end

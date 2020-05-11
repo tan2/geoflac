@@ -21,6 +21,7 @@ itopmarker(:,:) = 0
 ! Distribute evenly first then randomize the distribution
 ! to start 9 markers per elements
 nmarkers = 0
+!$ACC update device(nmarkers)
 
 ! zones with 9 markers per elements
 ! calculate the id (element number) of the zones of high res

@@ -80,6 +80,7 @@ enddo
 dx_init = abs(cord(1,2,1)-cord(1,1,1))
 dhacc(1:nx) = 0.d0
 extr_acc(1:nx-1) = 0.d0
+!$ACC update device(dx_init)
 
 return
 end

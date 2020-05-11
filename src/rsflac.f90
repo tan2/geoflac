@@ -31,6 +31,7 @@ read (1,rec=nrec) rtime, rdt
 close (1)
 time = rtime
 dt = rdt
+!$ACC update device(time,dt)
 
 dvol = 0
 
@@ -99,6 +100,7 @@ do i = 1,nx-1
         if( irheol(iph).eq.3 .or. irheol(iph).ge.11 ) ivis_present = 1
     end do
 end do
+!$ACC update device(ivis_present)
 
 ! Plastic strain
 open (1,file='aps.rs',access='direct',recl=nwords*kindr) 

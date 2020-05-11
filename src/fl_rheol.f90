@@ -34,8 +34,10 @@ if (ny_inject.gt.0) then
          sarc2 = 0. 
          if (ny_inject.eq.1) iinj = 1
          if (ny_inject.eq.2) iinj = nx/2 
+         !$ACC update device(iinj)
          !write (*,*) iinj
          nelem_inject = nz-1
+         !$ACC update device(nelem_inject)
          !average dx for injection:
          dxinj = 0.
          do jinj = 1,nelem_inject
@@ -245,5 +247,7 @@ do 3 i = 1,nx-1
 devmax = max(devmax, curr_devmax)
 dvmax = max(dvmax, curr_dvmax)
 !$ACC end parallel
+!$ACC update device(devmax,dvmax)
+
 return
 end

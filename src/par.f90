@@ -28,9 +28,11 @@ time0 = secnds(0.0)
 
 ! seconds in a year
 sec_year = 3.1558e+7
+!$ACC update device(sec_year)
 
 nloop = 0
 nloop_restarted = 0
+!$ACC update device(nloop,nloop_restarted)
 
 ! Read task parameters
 call read_params(inputfile)
@@ -41,16 +43,19 @@ call allocate_markers(nz, nx)
 open(1,file='_contents.rs',status='old',err=10)
 
 irestart = 1
+!$ACC update device(irestart)
 close(1)
 goto 20
 
 10 irestart = 0
+!$ACC update device(irestart)
 
 20 continue
 
 if ( irestart .eq. 1 ) then  !file exists - restart
     call rsflac
     nloop_restarted = nloop + 1
+    !$ACC update device(nloop_restarted)
     if( dtout_screen .ne. 0 ) then
         write(6,*) 'you CONTINUE from  ', nloop_restarted, ' step'
     else
@@ -78,6 +83,7 @@ dtacc_tracer = 0
 i_search = 0
 devmax = 0
 dvmax = 0
+!$ACC update device(devmax,dvmax)
 
 !do index_nobody_would_use=1,1
 do while( time .le. time_max )
@@ -117,6 +123,7 @@ do while( time .le. time_max )
 
     nloop = nloop + 1
     time = time + dt
+    !$ACC update device(nloop,time)
 
     dtacc_screen = dtacc_screen + dt
     dtacc_file   = dtacc_file   + dt
@@ -175,6 +182,7 @@ do while( time .le. time_max )
     devmax = 0; dvmax = 0;
     !call flush(33)
   endif
+  !$ACC update device(devmax,dvmax)
 
 end do
 

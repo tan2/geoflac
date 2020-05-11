@@ -33,6 +33,7 @@ double precision :: cp_eff,cond_eff,dissip,diff,quad_area, &
 
 
 ntherm = ntherm+1
+!$ACC update device(ntherm)
 
 !$ACC data create(add_source,flux)
 !$ACC parallel 

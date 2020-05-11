@@ -130,6 +130,7 @@ do i = 1,nx-1
         if( irheol(iph).eq.3 .or. irheol(iph).ge.11 ) ivis_present = 1
     end do
 end do
+!$ACC update device(ivis_present)
     
 
 return

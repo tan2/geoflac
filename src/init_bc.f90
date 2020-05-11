@@ -28,6 +28,7 @@ subroutine init_bc
   ! flags indicating whether material is coming from the sidewalls
   incoming_left = 0
   incoming_right = 0
+  !$ACC update device(incoming_left,incoming_right)
 
   !---------Number of side (nofside) -------------------------------
   !              4
@@ -98,6 +99,7 @@ subroutine init_bc
 
               if ((nbc(i).eq.1.or.nbc(i).eq.10).and.bca(i).gt.0) then
                   incoming_left = 1
+                  !$ACC update device(incoming_left)
               endif
           enddo
       endif
@@ -153,6 +155,7 @@ subroutine init_bc
 
               if ((nbc(i).eq.1.or.nbc(i).eq.10).and.bca(i).lt.0) then
                   incoming_right = 1
+                  !$ACC update device(incoming_right)
               endif
           enddo
       endif
@@ -389,6 +392,8 @@ subroutine vbcal
   if (ny_inject.gt.0) then
       vbc = vbc -0.5*rate_inject
   endif
+  !$ACC update device(vbc)
+
   return
 end subroutine vbcal
 

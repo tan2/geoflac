@@ -295,6 +295,7 @@ call dt_mass
 
 ! drop the time step to the smallest one
 dt = min(dt_elastic, dt_maxwell)
+!$ACC update device(dt)
 
 deallocate(cordo)
 
