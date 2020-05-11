@@ -1,3 +1,8 @@
+module bar2euler
+
+contains
+
+
 subroutine bar2euler
 use arrays
 use params
@@ -95,3 +100,6 @@ subroutine bar2xy(ba1, ba2, shp, x, y)
   x = xnum / xdem
   y = (ba1 - shp(1,1) - shp(1,2)*(xnum/xdem)) / shp(1,3)
 end subroutine bar2xy
+
+
+end module bar2euler
