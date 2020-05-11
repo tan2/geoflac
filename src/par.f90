@@ -3,6 +3,7 @@
 program DREZINA
 use arrays
 use params
+use bar2euler
 use marker_data
 implicit none
 
