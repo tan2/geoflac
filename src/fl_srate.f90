@@ -24,7 +24,8 @@ if(first .eq. 0) then
     first = 1
     allocate(se2sr(nz-1,nx-1), sshrheat(nz-1,nx-1))
 endif
-
+ 
+!$ACC data copy(se2sr, sshrheat)
 !$ACC parallel
 if( nsrate .eq. -1 ) then
 !$OMP parallel sections
@@ -170,5 +171,7 @@ endif
 nsrate = nsrate + 1
 !--------------
 !$ACC end parallel
+!$ACC end data
+
 return
 end 

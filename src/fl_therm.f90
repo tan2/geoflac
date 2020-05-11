@@ -34,7 +34,8 @@ double precision :: cp_eff,cond_eff,dissip,diff,quad_area, &
 
 ntherm = ntherm+1
 
-!$ACC parallel
+!$ACC data create(add_source,flux)
+!$ACC parallel 
 
 ! saving old temperature
 !$DIR PREFER_PARALLEL
@@ -264,6 +265,7 @@ end do
 !$OMP end parallel
 !$ACC end loop
 !$ACC end parallel
+!$ACC end data
 
 ! ! HOOK
 ! ! Intrusions - see user_ab.f90
