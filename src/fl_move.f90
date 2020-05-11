@@ -275,6 +275,7 @@ end subroutine resurface
 
 
 subroutine add_marker_at_top(i, dz_ratio, elz, kph, nmarkers)
+  use marker_data
   use arrays
   include 'precision.inc'
 

@@ -1,4 +1,5 @@
 subroutine marker2elem 
+  use marker_data
   use arrays
   use params
   include 'precision.inc'
