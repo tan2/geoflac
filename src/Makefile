@@ -140,6 +140,7 @@ MODULE_SRCS = \
 SRCS =	\
 	bar2euler.f90 \
 	bc_update.f90 \
+	change_phase.f90 \
 	dt_adjust.f90 \
 	dt_mass.f90 \
 	euler2bar.f90 \
@@ -162,7 +163,6 @@ SRCS =	\
 	lpeuler2bar.f90 \
 	marker2elem.f90 \
 	matprops.f90 \
-	newphase2marker.f90 \
 	outflac.f90 \
 	outmarker.f90 \
 	outtracer.f90 \
