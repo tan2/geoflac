@@ -34,7 +34,7 @@ subroutine marker2elem
               xx = x1 + rx*(x2-x1)
               yy = y1 + ry*(y2-y1)
 
-              call add_marker(xx, yy, iphase(j,i), 0., nmarkers, j, i, inc)
+              call add_marker(xx, yy, iphase(j,i), 0.d0, nmarkers, j, i, inc)
               if(inc.eq.0) cycle
 
               kinc = kinc + 1
