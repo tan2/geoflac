@@ -3,6 +3,7 @@ subroutine remesh
 use arrays
 use params
 use phases
+use marker_data
 implicit none
 
 integer :: nzt,nxt

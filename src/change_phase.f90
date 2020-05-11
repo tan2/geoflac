@@ -1,4 +1,4 @@
-module newphase2marker
+module change_phase
 
 contains
 
@@ -293,4 +293,4 @@ enddo
 return
 end subroutine change_phase
 
-end module newphase2marker
+end module change_phase

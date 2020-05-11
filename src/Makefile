@@ -154,7 +154,7 @@ MODULE_SRCS = \
 	params.f90 \
 	arrays.f90 \
 	marker_data.f90 \
-	newphase2marker.f90 \
+	change_phase.f90 \
 	matprops.f90 \
 	rheol.f90
 
