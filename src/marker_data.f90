@@ -40,9 +40,7 @@ MODULE marker_data
     ! marker not added. Otherwise, marker is added to "mark" array and kk
     ! incremented by 1.
     !
-    ! *** This subroutine is not thread-safe. DON'T CALL IT WITHIN
-    ! *** OPENMP/OMP SECTION.
-  
+
     !$ACC routine seq
     use arrays
     use params
@@ -64,6 +62,7 @@ MODULE marker_data
             !write(msg,*) 'Too many markers at surface elements:', i, ntopmarker(i)
             !call SysMsg(msg)
             !call SysMsg('Marker skipped, not added!')
+            inc = 0
             return
         endif
         ! recording the id of markers belonging to surface elements
@@ -72,7 +71,11 @@ MODULE marker_data
     end if
   
     k = kk + 1
-  
+    if(k > max_markers) then
+      !call SysMsg('ADD_MARKER: # of markers exceeds max. value. Please increase mark array size.')
+      stop 15
+    endif
+
     mark_x(k) = x
     mark_y(k) = y
     mark_dead(k) = 1
@@ -84,11 +87,6 @@ MODULE marker_data
     mark_phase(k) = iph
   
     nphase_counter(iph,j,i) = nphase_counter(iph,j,i) + 1
-  
-    if(kk > max_markers) then
-        !call SysMsg('ADD_MARKER: # of markers exceeds max. value. Please increase mark array size.')
-        stop 15
-    endif
   
   end subroutine add_marker
   
