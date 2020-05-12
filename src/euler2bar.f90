@@ -83,8 +83,10 @@ subroutine check_inside(x,y,bar1,bar2,ntr,i,j,inc)
   use params
   implicit none
 
-  integer :: ntr, i, j, inc
-  double precision :: x, y, bar1, bar2
+  integer, intent(in) :: i, j
+  integer, intent(out) :: ntr, inc
+  double precision, intent(in) :: x, y
+  double precision, intent(out) :: bar1, bar2
   double precision :: xxmpt(2,3)
   integer :: k, ninters
   double precision :: x1, x2, x3, y1, y2, y3, det
