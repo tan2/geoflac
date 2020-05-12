@@ -51,7 +51,7 @@ MODULE marker_data
     integer, intent(in) :: iph, kk, j, i
     integer, intent(out) :: inc
     double precision, intent(in) :: x, y, age
-    integer :: ntr
+    integer :: ntr, k
     double precision :: bar1, bar2
   
     !character*200 msg
@@ -71,17 +71,17 @@ MODULE marker_data
         itopmarker(ntopmarker(i), i) = kk + 1
     end if
   
-    kk = kk + 1
+    k = kk + 1
   
-    mark_x(kk) = x
-    mark_y(kk) = y
-    mark_dead(kk) = 1
-    mark_ID(kk) = kk
-    mark_a1(kk) = bar1
-    mark_a2(kk) = bar2
-    mark_age(kk) = age
-    mark_ntriag(kk) = ntr
-    mark_phase(kk) = iph
+    mark_x(k) = x
+    mark_y(k) = y
+    mark_dead(k) = 1
+    mark_ID(k) = kk
+    mark_a1(k) = bar1
+    mark_a2(k) = bar2
+    mark_age(k) = age
+    mark_ntriag(k) = ntr
+    mark_phase(k) = iph
   
     nphase_counter(iph,j,i) = nphase_counter(iph,j,i) + 1
   

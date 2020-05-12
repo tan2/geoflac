@@ -41,6 +41,7 @@ subroutine marker2elem
               call add_marker(xx, yy, iphase(j,i), 0.d0, nmarkers, j, i, inc)
               if(inc.eq.0) cycle
 
+              nmarkers = nmarkers + 1
               kinc = kinc + 1
           enddo
 
