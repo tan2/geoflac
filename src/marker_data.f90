@@ -43,6 +43,7 @@ MODULE marker_data
     ! *** This subroutine is not thread-safe. DON'T CALL IT WITHIN
     ! *** OPENMP/OMP SECTION.
   
+    !$ACC routine seq
     use arrays
     use params
     use euler2bar
@@ -52,16 +53,16 @@ MODULE marker_data
     integer :: ntr
     double precision :: bar1, bar2
   
-    character*200 msg
+    !character*200 msg
   
     call check_inside(x , y, bar1, bar2, ntr, i, j, inc)
     if(inc.eq.0) return
   
     if(j == 1) then
         if(ntopmarker(i) == max_markers_per_elem) then
-            write(msg,*) 'Too many markers at surface elements:', i, ntopmarker(i)
-            call SysMsg(msg)
-            call SysMsg('Marker skipped, not added!')
+            !write(msg,*) 'Too many markers at surface elements:', i, ntopmarker(i)
+            !call SysMsg(msg)
+            !call SysMsg('Marker skipped, not added!')
             return
         endif
         ! recording the id of markers belonging to surface elements
@@ -84,7 +85,7 @@ MODULE marker_data
     nphase_counter(iph,j,i) = nphase_counter(iph,j,i) + 1
   
     if(kk > max_markers) then
-        call SysMsg('ADD_MARKER: # of markers exceeds max. value. Please increase mark array size.')
+        !call SysMsg('ADD_MARKER: # of markers exceeds max. value. Please increase mark array size.')
         stop 15
     endif
   

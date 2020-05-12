@@ -13,7 +13,9 @@ subroutine marker2elem
   ! Interpolate marker properties into elements
   ! Find the triangle in which each marker belongs
 
+  !$ACC parallel private(iseed)
   iseed = 0
+  !$ACc loop collapse(2)
   do i = 1 , nx-1
       do j = 1 , nz-1
           kinc = sum(nphase_counter(:,j,i))
@@ -59,5 +61,6 @@ subroutine marker2elem
       enddo
   enddo
 
+  !$ACC end parallel
   return
 end subroutine marker2elem
