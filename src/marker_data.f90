@@ -45,6 +45,7 @@ MODULE marker_data
   
     use arrays
     use params
+    use euler2bar
     implicit none
     integer :: iph, kk, j, i, inc
     double precision :: x, y, age
