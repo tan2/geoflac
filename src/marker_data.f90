@@ -48,8 +48,9 @@ MODULE marker_data
     use params
     use euler2bar
     implicit none
-    integer :: iph, kk, j, i, inc
-    double precision :: x, y, age
+    integer, intent(in) :: iph, kk, j, i
+    integer, intent(out) :: inc
+    double precision, intent(in) :: x, y, age
     integer :: ntr
     double precision :: bar1, bar2
   
