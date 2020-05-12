@@ -2,6 +2,7 @@ subroutine lpeuler2bar
 USE marker_data
 use arrays
 use params
+use euler2bar
 implicit none
 
 integer :: n, k, i, j, ntr, inc
