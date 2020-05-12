@@ -15,6 +15,8 @@ double precision :: ba1, ba2, x, y
 
 ! calculate the new paramters for the triangles
 
+!$ACC parallel
+!$ACC loop collapse(2) private(shp2)
 !$OMP parallel private(i,j,n,shp2,ba1,ba2,x,y)
 !$OMP do
 do i = 1 , nx-1
@@ -27,6 +29,7 @@ enddo
 !$OMP end do
 
 
+!$ACC loop
 !$OMP do
 do i = 1 , nmarkers
      if (mark_dead(i).eq.0) cycle
@@ -40,16 +43,18 @@ do i = 1 , nmarkers
 enddo
 !$OMP end do
 !$OMP end parallel
+!$ACC end parallel
 return
 end subroutine bar2euler
 
 
 subroutine shape_functions(j, i, shp2)
+  !$ACC routine seq
   use arrays
-  use params
   implicit none
-  integer :: j, i, k
+  integer, intent(in) :: j, i
   double precision, intent(out) :: shp2(2,3,2)
+  integer :: k
   double precision :: x1, x2, x3, y1, y2, y3, det
 
   do k = 1 , 2
@@ -90,9 +95,10 @@ end subroutine shape_functions
 !
 ! solve for x and y
 subroutine bar2xy(ba1, ba2, shp, x, y)
-  use arrays
+  !$ACC routine seq
   implicit none
-  double precision :: ba1, ba2, shp(2,3), x, y
+  double precision, intent(in) :: ba1, ba2, shp(2,3)
+  double precision, intent(out) :: x, y
   double precision :: xnum, xdem
 
   xnum = ba2*shp(1,3) - shp(2,1)*shp(1,3) - shp(2,3)*ba1 + shp(2,3)*shp(1,1)
