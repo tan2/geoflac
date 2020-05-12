@@ -93,8 +93,6 @@ subroutine check_inside(x,y,bar1,bar2,ntr,i,j,inc)
   integer :: k, ninters
   double precision :: x1, x2, x3, y1, y2, y3, det
 
-  inc = 0
-
   do k = 1 , 2
 
       ninters = 0
@@ -137,6 +135,11 @@ subroutine check_inside(x,y,bar1,bar2,ntr,i,j,inc)
       endif
 
   enddo
+
+  bar1 = 0
+  bar2 = 0
+  ntr = 0
+  inc = 0
 
   return
 end subroutine check_inside
