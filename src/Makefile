@@ -132,6 +132,7 @@ endif
 
 # module files have to be compiled before other f90 files
 MODULE_SRCS = \
+	myrandom_mod.f90 \
 	params.f90 \
 	arrays.f90 \
 	phases.f90 \
