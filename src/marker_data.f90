@@ -10,6 +10,14 @@ MODULE marker_data
      integer(4) :: ntriag     ! number of FE-triangle
      integer(4) :: phase
      integer(4) :: ID         ! unique ID-number
+
+     real(8) :: temp          ! temperature
+     real(8) :: tempmax       ! the max temperature have been
+     real(8) :: cooling_rate  ! cooling rate
+     real(8) :: update_time   ! the time at last thermochron calculate
+     real(8) :: chron_time(3)  ! closure time of thermochron
+     real(8) :: chron_temp(3) ! the closure temperatures of thermochron
+     integer(4) :: chron_if(3) ! if closure of thermochron
   end type marker
 
   type(marker) :: mark(max_markers)

@@ -214,3 +214,15 @@ end do
 
 return
 end subroutine Gauss
+
+
+!===========================================
+! the function of increasing way
+function fline_incre(ran,val,x)
+include 'precision.inc'
+real*8 :: fline_incre,ran,val,x
+
+  fline_incre = val * x / ran
+
+return
+end function fline_incre

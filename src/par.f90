@@ -139,6 +139,7 @@ do while( time .le. time_max )
     ! OUTPUT  
   if( dtout_file .ne. 0 ) then 
     if( dtacc_file .gt. dtout_file ) then
+      call marker2elem
       call outflac
       if (iint_marker.eq.1) call outmarker
       dtacc_file = 0

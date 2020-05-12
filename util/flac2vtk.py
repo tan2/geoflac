@@ -104,6 +104,18 @@ def main(path, start=1, end=-1):
         a = fl.read_phase(i)
         vts_dataarray(fvts, a.swapaxes(0,1), 'Phase')
 
+
+        for j in range(fl.chron.size):
+            a = fl.read_chronif(i,j)
+            vts_dataarray(fvts, a.swapaxes(0,1), fl.chron[j] + ' if')
+
+            a = fl.read_chrontemp(i,j)
+            vts_dataarray(fvts, a.swapaxes(0,1), fl.chron[j] + ' Temp.')
+
+            a = fl.read_chronage(i,j)
+            vts_dataarray(fvts, a.swapaxes(0,1), fl.chron[j] + ' age')
+
+
         # Work done by stress
         a = sii * 1e8 * eii
         vts_dataarray(fvts, a.swapaxes(0,1), 'Work')

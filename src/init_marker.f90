@@ -73,9 +73,6 @@ do i = 1 , nx-1
 ! randomize the new coordinates inside the element
         l = 1
         do while (l .le. 9)
-            ! initialize kph in case nzone_age = 0
-            kph = iphase(j,i)
-
             ! position of the marker
             call random_number(rx)
             call random_number(ry)
@@ -238,6 +235,12 @@ subroutine add_marker(x, y, iph, age, kk, j, i, inc)
   mark(kk)%age = age
   mark(kk)%ntriag = ntr
   mark(kk)%phase = iph
+  mark(kk)%update_time = time
+  mark(kk)%chron_if(:) = idnint(chron_if(:,j,i))
+  mark(kk)%chron_temp(:) = chron_temp(:,j,i)
+  mark(kk)%chron_time(:) = chron_time(:,j,i)
+  mark(kk)%tempmax = 0.d0
+  call temp2marker(kk)
 
   nphase_counter(iph,j,i) = nphase_counter(iph,j,i) + 1
 

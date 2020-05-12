@@ -97,6 +97,7 @@ call AdvanceToNextInputLine( 4 )
         bca(i),bcb(i),bcc(i),  &
         bcd(i),bce(i),bcf(i),bcg(i),bch(i),bci(i)
  21     continue
+
 call AdvanceToNextInputLine( 4 )
 ! hydrostatic pressure applied at the bottom
 call AdvanceToNextInputLine( 4 )
@@ -109,9 +110,30 @@ read(4,*) g
 
 ! THERMAL CONDITIONS
 call AdvanceToNextInputLine( 4 )
-read(4,*) i_prestress 
+read(4,*) i_prestress
 call AdvanceToNextInputLine( 4 )
-read(4,*) itherm 
+read(4,*) itherm
+
+! assign kinematic velocity
+if (itherm.eq.3) then
+  do i=1,nofbc
+    if (nbc(i).eq.10 .or. nbc(i).eq.30) then
+      ind = (nbc(i)+10) / 20
+      vel_init(ind) = bca(i)
+      do j=1,nofbc
+        if (nbc(j).eq.10 .or. nbc(j).eq.30) then
+          ind2 = (nbc(j)+10) / 20
+          if (ind.eq.ind2) then
+            if (vel_init(ind).ne.bca(j)) then
+                stop 'boundary velocities should be the same when using itherm=3'
+            end if
+          end if
+        end if
+      end do
+    end if
+  end do
+end if
+
 call AdvanceToNextInputLine( 4 )
 read(4,*) istress_therm
 call AdvanceToNextInputLine( 4 )             ! thermal stresses
@@ -243,6 +265,23 @@ read(4,*)igeotherm,g_x0,g_y0c, g_amplitude,g_width
 call AdvanceToNextInputLine( 4 )
 read(4,*) ny_inject, nelem_inject, rate_inject 
 
+! THERMOCHRONOLOGY
+call AdvanceToNextInputLine( 4 )
+read(4,*) ithermochron
+call AdvanceToNextInputLine( 4 )
+read(4,*) chron_file
+call AdvanceToNextInputLine( 4 )
+read(4,*) nchron
+do i = 1, nchron
+    call AdvanceToNextInputLine( 4 )
+    read(4,*) chron_name(i), nchron_fpair(i)
+end do
+open(11,file='chron.0')
+do i=1,nchron
+  write(11,*) chron_name(i)
+end do
+close(11)
+
 ! REMESHING
 call AdvanceToNextInputLine( 4 )
 read(4,*)  ny_rem, mode_rem, ntest_rem, angle_rem
@@ -253,10 +292,32 @@ endif
 ! dx_rem - remeshing criteria for mode_rem=11
 call AdvanceToNextInputLine( 4 )
 read(4,*)  dx_rem
+! Surface process
+call AdvanceToNextInputLine( 4 )
+read(4,*)  itopodiff
 ! diffusion of topography
 call AdvanceToNextInputLine( 4 )
 read(4,*)  topo_kappa, fac_kappa
 
+! kinematic erosion
+call AdvanceToNextInputLine( 4 )
+read(4,*) ero_middle, ero_range
+do i = 1, 2
+  call AdvanceToNextInputLine( 4 )
+  read(4,*) nero_rate_sect(i)
+  do j = 1, nero_rate_sect(i)
+    call AdvanceToNextInputLine( 4 )
+    read(4,*) ero_rate(i,1,j), ero_rate(i,2,j), ero_duration(i,j)
+  end do
+end do
+
+ero_rate = ero_rate / (1.d3*sec_year)
+ero_duration = ero_duration * 1.d6*sec_year
+
+d1 = ero_duration(1,1) * ( (ero_rate(1,1,1) + ero_rate(2,1,1))/2. + (ero_rate(1,2,1) + ero_rate(2,2,1))/2. )
+d1 = d1 + ero_duration(1,2) * ( ( ero_rate(1,1,2) + ero_rate(2,1,2) )/2. + ( ero_rate(1,2,2) + ero_rate(2,2,2) )/2. )
+! the ratio of uplifting rate for  generating alltitude
+ratiok = (4400. / d1) + 1.
 
 ! PROCESS CONTROL
 ! inertial mass scaling
@@ -303,7 +364,7 @@ call AdvanceToNextInputLine( 4 )
 !135 continue
 !call AdvanceToNextInputLine( 4 )
 read(4,*) io_vel,io_srII,io_eII,io_aps,io_sII,io_sxx,io_szz,io_sxz,io_pres, &
-    io_temp,io_melt,io_visc,io_phas,io_mark,io_src,io_diss,io_forc,io_hfl,io_topo
+    io_temp,io_melt,io_visc,io_phas,io_mark,io_src,io_diss,io_forc,io_hfl,io_topo,io_thermochron
 call AdvanceToNextInputLine( 4 )
 read(4,*) lastout
 call AdvanceToNextInputLine( 4 )

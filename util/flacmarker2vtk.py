@@ -11,21 +11,27 @@ from flac2vtk import vts_dataarray
 
 # filtering markers to only those within the domain bounds (in km)
 filtering = True
-xmin = 300
+xmin = 0
 xmax = 700
 zmin = -50
 zmax = 100
 
-
-def filter_marker(x, z, age, phase, ID):
+def filter_marker(x, z, age,temp,tempmax,coolingrate, phase, ID, chronage,chronif,chrontemp):
     # bool * bool is element-wise logical AND
     ind = (xmin <= x) * (x <= xmax) * (zmin <= z) * (z <= zmax)
     x = x[ind]
     z = z[ind]
     age = age[ind]
+    temp = temp[ind]
+    tempmax = tempmax[ind]
+    coolingrate = coolingrate[ind]
     phase = phase[ind]
     ID = ID[ind]
-    return x, z, age, phase, ID
+    for i in range(len(chronage)):
+        chronage[i] = chronage[i][ind]
+        chronif[i] = chronif[i][ind]
+        chrontemp[i] = chrontemp[i][ind]
+    return x, z, age,temp,tempmax,coolingrate, phase, ID, chronage,chronif,chrontemp
 
 
 def main(path, start=1, end=-1):
@@ -38,9 +44,10 @@ def main(path, start=1, end=-1):
         end = fl.nrec
 
     for i in range(start, end+1):
-        x, z, age, phase, ID = fl.read_markers(i)
+        x, z, age,temp,tempmax,coolingrate, phase, ID, chronage,chronif,chrontemp = fl.read_markers(i)
         if filtering:
-            x, z, age, phase, ID = filter_marker(x, z, age, phase, ID)
+            x, z, age,temp,tempmax,coolingrate, phase, ID,chronage,chronif,chrontemp  = \
+            filter_marker(x, z, age,temp,tempmax,coolingrate, phase, ID, chronage,chronif,chrontemp)
         nmarkers = len(x)
 
         print 'Writing record #%d, model time=%.3e, %d markers' % (i, fl.time[i-1], nmarkers)
@@ -50,7 +57,14 @@ def main(path, start=1, end=-1):
         # point-based data
         fvtp.write('  <PointData>\n')
         vts_dataarray(fvtp, age, 'age', 1)
+        vts_dataarray(fvtp, temp, 'temp', 1)
+        vts_dataarray(fvtp, tempmax, 'tempmax', 1)
+        vts_dataarray(fvtp, coolingrate, 'cooling rate', 1)
         vts_dataarray(fvtp, phase.astype(np.int32), 'phase', 1)
+        for j in range(fl.chron.size):
+            vts_dataarray(fvtp, chronage[j], fl.chron[j]+' age', 1)
+            vts_dataarray(fvtp, chronif[j].astype(np.int32), fl.chron[j]+' if', 1)
+            vts_dataarray(fvtp, chrontemp[j], fl.chron[j]+' Temp.', 1)
         vts_dataarray(fvtp, ID.astype(np.int32), 'ID', 1)
         fvtp.write('  </PointData>\n')
 

@@ -13,6 +13,7 @@ parameter( kindr=8, kindi=4 )
 real(kindr), allocatable :: dum1(:),dum2(:,:)
 integer(kindi), allocatable :: dum11(:), idum2(:,:)
 real*8 rtime, rdt
+character*200 msg
 
 ! define record number and write it to contents
 
@@ -137,7 +138,6 @@ enddo
 open (1,file='xagemarker.rs',access='direct',recl=nwords*kindr)
 write (1,rec=nrec) dum1 
 close (1)
-deallocate(dum1)
 
 allocate(dum11(nmarkers))
 do i = 1,nmarkers
@@ -165,6 +165,39 @@ enddo
 open (1,file='xdeadmarker.rs',access='direct',recl=nwords*kindi)
 write (1,rec=nrec) dum11
 close (1)
+
+123 format(1I1)
+do i = 1, nchron
+  write(msg,123) i
+  do j = 1,nmarkers
+  dum11(j) = mark(j)%chron_if(i)
+  enddo
+  open (1,file='chronifmarker'//trim(msg)//'.rs',access='direct',recl=nwords*kindi)
+  write (1,rec=nrec) dum11
+  close (1)
+
+  do j = 1,nmarkers
+  dum1(j) = mark(j)%chron_temp(i)
+  enddo
+  open (1,file='chrontempmarker'//trim(msg)//'.rs',access='direct',recl=nwords*kindr)
+  write (1,rec=nrec) dum1
+  close (1)
+
+  do j = 1,nmarkers
+  dum1(j) = mark(j)%chron_time(i)
+  enddo
+  open (1,file='chrontimemarker'//trim(msg)//'.rs',access='direct',recl=nwords*kindr)
+  write (1,rec=nrec) dum1
+  close (1)
+end do
+
+do i = 1,nmarkers
+dum1(i) = mark(i)%tempmax
+enddo
+open (1,file='tempmaxmarker.rs',access='direct',recl=nwords*kindr)
+write (1,rec=nrec) dum1
+close (1)
+deallocate(dum1)
 deallocate(dum11)
 
 endif

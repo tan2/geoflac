@@ -26,6 +26,9 @@ open( 1, file='_contents.rs', status='old' )
 read( 1, * ) nrec, nloop, time_my, nmarkers, nmtracers
 close(1)
 
+! Read the reference of thernochronology & set initial condition
+if (ithermochron .gt. 0) call read_thermochron_reference
+
 
 ! Read time and dt
 open (1,file='time.rs',access='direct',recl=2*8) 
@@ -196,6 +199,38 @@ do i = 1,nmarkers
 mark(i)%dead = dum11(i)
 enddo
 
+123 format(1I1)
+do i = 1, nchron
+    write(msg,123) i
+    open (1,file='chronifmarker'//trim(msg)//'.rs',access='direct',recl=nwords*kindi)
+    read (1,rec=nrec) dum11
+    close (1)
+    do j = 1,nmarkers
+    mark(j)%chron_if(i) = dum11(j)
+    enddo
+
+    open (1,file='chrontempmarker'//trim(msg)//'.rs',access='direct',recl=nwords*kindr)
+    read (1,rec=nrec) dum1
+    close (1)
+    do j = 1,nmarkers
+    mark(j)%chron_temp(i) = dum1(j)
+    enddo
+
+    open (1,file='chrontimemarker'//trim(msg)//'.rs',access='direct',recl=nwords*kindr)
+    read (1,rec=nrec) dum1
+    close (1)
+    do j = 1,nmarkers
+    mark(j)%chron_time(i) = dum1(j)
+    enddo
+end do
+
+open (1,file='tempmaxmarker.rs',access='direct',recl=nwords*kindr)
+read (1,rec=nrec) dum1
+close (1)
+do i = 1,nmarkers
+mark(i)%tempmax = dum1(i)
+enddo
+deallocate(dum1)
 deallocate(dum11)
 
 ! recount marker phase
@@ -226,7 +261,7 @@ do n = 1, nmarkers
         endif
         ! recording the id of markers belonging to surface elements
         ntopmarker(i) = ntopmarker(i) + 1
-        itopmarker(ntopmarker(i), i) = n + 1
+        itopmarker(ntopmarker(i), i) = n
     end if
 
     nphase_counter(mark(n)%phase,j,i) = nphase_counter(mark(n)%phase,j,i) + 1

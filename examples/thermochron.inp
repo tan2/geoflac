@@ -1,0 +1,208 @@
+;
+0 (#0)
+;FT radiation-damaged zircon (Brandon et al 1998)
+;Effective closure temperature using the method of Dodson
+;(1973, Contr. Min. Petr.; 1979, in Lectures on Isotope Geology).
+;Omega (s^-1): 1.00E+08
+;Activation Energy (kJ/mol): 208.0
+;Cooling_Rate(C/Myr)	Closure_Temp(C)
+1 (#1)
+.01	172.3
+.10	190.6
+.50	204.4
+1.00	210.5
+2.00	216.8
+3.00	220.6
+4.00	223.3
+5.00	225.4
+10.00	232.1
+15.00	236.2
+20.00	239.0
+25.00	241.3
+30.00	243.1
+40.00	246.1
+50.00	248.4
+60.00	250.3
+70.00	252.0
+80.00	253.4
+90.00	254.6
+100.00	255.8
+150.00	260.1
+200.00	263.3
+;
+;FT zero-damage zircon (Rahn et al 2004, fanning model)
+;Effective closure temperature using the method of Dodson
+;(1973, Contr. Min. Petr.; 1979, in Lectures on Isotope Geology).
+;Omega (s^-1): 5.66E+13
+;Activation Energy (kJ/mol): 321.0
+;Cooling_Rate(C/Myr)	Closure_Temp(C)
+2 (#2)
+.01	283.0
+.10	301.5
+.50	315.2
+1.00	321.3
+2.00	327.5
+3.00	331.2
+4.00	333.9
+5.00	335.9
+10.00	342.4
+15.00	346.3
+20.00	349.1
+25.00	351.3
+30.00	353.1
+40.00	355.9
+50.00	358.1
+60.00	360.0
+70.00	361.5
+80.00	362.9
+90.00	364.1
+100.00	365.1
+150.00	369.3
+200.00	372.3
+;
+;FT zircon (Tagami et al 1998, fanning model)
+;Effective closure temperature using the method of Dodson
+;(1973, Contr. Min. Petr.; 1979, in Lectures on Isotope Geology).
+;Omega (s^-1): 1.64E+14
+;Activation Energy (kJ/mol): 324.0
+;Cooling_Rate(C/Myr)	Closure_Temp(C)
+3 (#3)
+.01	279.9
+.10	298.0
+.50	311.4
+1.00	317.4
+2.00	323.5
+3.00	327.1
+4.00	329.7
+5.00	331.7
+10.00	338.1
+15.00	341.9
+20.00	344.6
+25.00	346.7
+30.00	348.4
+40.00	351.2
+50.00	353.4
+60.00	355.2
+70.00	356.7
+80.00	358.0
+90.00	359.2
+100.00	360.2
+150.00	364.3
+200.00	367.2
+;
+;FT zircon (Tagami et al 1998, parallel model)
+;Effective closure temperature using the method of Dodson
+;(1973, Contr. Min. Petr.; 1979, in Lectures on Isotope Geology).
+;Omega (s^-1): 2.56E+12
+;Activation Energy (kJ/mol): 297.0
+;Cooling_Rate(C/Myr)	Closure_Temp(C)
+4 (#4)
+.01	265.3
+.10	284.1
+.50	298.0
+1.00	304.2
+2.00	310.5
+3.00	314.3
+4.00	317.0
+5.00	319.1
+10.00	325.8
+15.00	329.7
+20.00	332.6
+25.00	334.8
+30.00	336.6
+40.00	339.5
+50.00	341.8
+60.00	343.7
+70.00	345.3
+80.00	346.7
+90.00	347.9
+100.00	349.0
+150.00	353.3
+200.00	356.3
+;
+5 (#5 = constant)
+.01	240.0
+.10	240.0
+.50	240.0
+1.00	240.0
+2.00	240.0
+3.00	240.0
+4.00	240.0
+5.00	240.0
+10.00	240.0
+15.00	240.0
+20.00	240.0
+25.00	240.0
+30.00	240.0
+40.00	240.0
+50.00	240.0
+60.00	240.0
+70.00	240.0
+80.00	240.0
+90.00	240.0
+100.00	240.0
+150.00	240.0
+200.00	240.0
+;
+0 (#)
+;(U-Th)/He zircon (Reiners et al 2004)
+;Effective closure temperature using the method of Dodson
+;(1973, Contr. Min. Petr.; 1979, in Lectures on Isotope Geology).
+;Radius of an equivalent sphere (micrometers): 60.0
+;Radius of an equivalent infinite cylinder (micrometers): 40.0
+;Equivalent volume/surface area ratio (micrometers): 20.0
+;Frequency factor (D0) (cm^2/s): 4.60E-01
+;Omega (s^-1): 7.03E+05
+;Activation Energy (kJ/mol): 169.0
+;Cooling_Rate(C/Myr)	Closure_Temp(C)
+1 (#1)
+.01	124.0
+.10	141.9
+.50	155.5
+1.00	161.6
+2.00	167.8
+3.00	171.6
+4.00	174.3
+5.00	176.4
+10.00	183.1
+15.00	187.1
+20.00	189.9
+25.00	192.2
+30.00	194.1
+40.00	197.0
+50.00	199.4
+60.00	201.3
+70.00	202.9
+80.00	204.4
+90.00	205.6
+100.00	206.8
+150.00	211.2
+200.00	214.4
+;
+;
+2 (#2)
+.01	180.0
+.10	180.0
+.50	180.0
+1.00	180.0
+2.00	180.0
+3.00	180.0
+4.00	180.0
+5.00	180.0
+10.00	180.0
+15.00	180.0
+20.00	180.0
+25.00	180.0
+30.00	180.0
+40.00	180.0
+50.00	180.0
+60.00	180.0
+70.00	180.0
+80.00	180.0
+90.00	180.0
+100.00	180.0
+150.00	180.0
+200.00	180.0
+;
+0 (#)
+;

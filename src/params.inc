@@ -10,7 +10,7 @@ common /mesh/ x0,z0,rxbo,rzbo,sizez_x(10),sizez_y(10), &
      bca(20),bcb(20),bcc(20),dx_init,xReyn,i_rey,iac_rem, &
      bcd(20),bce(20),bcf(20),bcg(20),bch(20),bci(20),iph_int, &
      iynts,tbos, iax1,iay1,ibx1,iby1,icx1,icy1,idx1,idy1, &
-     incoming_left, incoming_right
+     incoming_left, incoming_right,vel_init(2)
 common /flac_ctrl/ dt_scale,strain_inert,vbc,amul,ratl,ratu,frac, &
      dtmax_therm,dt_maxwell,fracm,srate0, &
      dt_elastic,dt_elastic0,demf,boff,mix_strain,mix_stress, &
@@ -21,7 +21,7 @@ character phasefile*20,tempfile*20,coordfile*20
 common /inout/ dtout_screen,dtout_file,dtsave_file,lastsave,lastout, &
      io_vel,io_srII,io_eII,io_aps,io_sII,io_sxx,io_szz, &
      io_sxz,io_pres,io_temp,io_melt,io_visc,io_phas,io_mark, &
-     io_src,io_diss,io_forc,io_hfl,io_topo, &
+     io_src,io_diss,io_forc,io_hfl,io_topo,io_thermochron, &
      irh_mark,irphase,irtemp,ircoord,phasefile,tempfile,coordfile
 
 common /rheol/ visc(20),den(20),alfa(20),beta(20),pln(20),acoef(20),eactiv(20),rl(20),rm(20), &
@@ -45,6 +45,14 @@ common /therm/ t_top,t_bot,hs,hr,temp_per,bot_bc,time_t,dt_therm, &
      ntherm,hc1(20),hc2(20),hc3(20),hc4(20), &
      age_1(20),ixtb1(20),ixtb2(20),nzone_age,i_prestress, &
      iph_col1(20),iph_col2(20),iph_col3(20),iph_col4(20),iph_col5(20),iph_col_trans(20)
+
+common /topodiff/ ero_middle, ero_range, ero_rate(2,2,6), &
+     ero_duration(2,6), ratiok, &
+     itopodiff,nero_rate_sect(2)
+
+character chron_file*20, chron_name(3)*3
+common /thermochronology/  unreset_time, chron_ref(3,50,2), &
+     ithermochron, iwait, nchron_fpair(3), nchron, chron_file, chron_name
 
 common /stress/ g,pisos,drosub,damp_vis,nyhydro,iphsub
 

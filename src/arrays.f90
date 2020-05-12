@@ -10,6 +10,12 @@ module arrays
 
   integer, pointer, save :: ncod(:,:,:)
 
+  ! theromchronology
+  real*8, pointer, save :: chron_if(:,:,:), chron_temp(:,:,:), &
+      chron_time(:,:,:), max_temp(:,:)
+
+  integer, pointer, save :: nmark(:,:)
+
   ! temporary array
   real*8, pointer, save :: junk2(:,:)
 
@@ -35,6 +41,12 @@ contains
     allocate(bc(nz, nx, 2))
 
     allocate(ncod(nz, nx, 2))
+
+    allocate(max_temp(nz,nx))
+    allocate(nmark(nz-1,nx-1))
+    allocate(chron_if(3,nz-1,nx-1))
+    allocate(chron_temp(3,nz-1,nx-1))
+    allocate(chron_time(3,nz-1,nx-1))
 
     allocate(junk2(nz, nx))
 

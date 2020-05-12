@@ -1,4 +1,5 @@
-subroutine marker2elem 
+subroutine marker2elem
+  use marker_data
   use arrays
   include 'precision.inc'
   include 'params.inc'
@@ -10,36 +11,65 @@ subroutine marker2elem
   ! Interpolate marker properties into elements
   ! Find the triangle in which each marker belongs
 
+  if (ithermochron.eq.1) then
+    nmark = 0
+    chron_if = 0.d0
+    chron_time = 0.d0
+    chron_temp = 0.d0
+
+    do kk = 1, nmarkers
+        if (mark(kk)%dead.eq.0) cycle
+        n = mark(kk)%ntriag
+        k = mod(n - 1, 2) + 1
+        j = mod((n - k) / 2, nz-1) + 1
+        i = (n - k) / 2 / (nz - 1) + 1
+
+        chron_if(:,j,i) = chron_if(:,j,i) + dble(mark(kk)%chron_if(:))
+        chron_time(:,j,i) = chron_time(:,j,i) + mark(kk)%chron_time(:)
+        chron_temp(:,j,i) = chron_temp(:,j,i) + mark(kk)%chron_temp(:)
+        nmark(j,i) = nmark(j,i) + 1
+    end do
+
+    do i = 1, nchron
+        chron_if(i,:,:) = chron_if(i,:,:) / dble(nmark)
+        chron_temp(i,:,:) = chron_temp(i,:,:) / dble(nmark)
+        chron_time(i,:,:) = chron_time(i,:,:) / dble(nmark)
+    end do
+  end if
 
   do i = 1 , nx-1
       do j = 1 , nz-1
           kinc = sum(nphase_counter(:,j,i))
 
-          !  if there are too few markers in the element, create a new one
-          !  with age 0 (similar to initial marker)
-          !if(kinc.le.4) then
-          !    write(msg,*) 'marker2elem: , create a new marker in the element (i,j))', i, j
-          !    call SysMsg(msg)
-          !endif
-          do while (kinc.le.4)
-              x1 = min(cord(j  ,i  ,1), cord(j+1,i  ,1))
-              y1 = min(cord(j  ,i  ,2), cord(j  ,i+1,2))
-              x2 = max(cord(j+1,i+1,1), cord(j  ,i+1,1))
-              y2 = max(cord(j+1,i+1,2), cord(j+1,i  ,2))
+          ! disable surface marker adding during huge surface erosion
+          if ( j.ne.1 .or. itopodiff.ne.2 ) then
 
-              call random_number(rx)
-              call random_number(ry)
+              !  if there are too few markers in the element, create a new one
+              !  with age 0 (similar to initial marker)
+              !if(kinc.le.4) then
+              !    write(msg,*) 'marker2elem: , create a new marker in the element (i,j))', i, j
+              !    call SysMsg(msg)
+              !endif
+              do while (kinc.le.4)
+                  x1 = min(cord(j  ,i  ,1), cord(j+1,i  ,1))
+                  y1 = min(cord(j  ,i  ,2), cord(j  ,i+1,2))
+                  x2 = max(cord(j+1,i+1,1), cord(j  ,i+1,1))
+                  y2 = max(cord(j+1,i+1,2), cord(j+1,i  ,2))
 
-              xx = x1 + rx*(x2-x1)
-              yy = y1 + ry*(y2-y1)
+                  call random_number(rx)
+                  call random_number(ry)
 
-              call add_marker(xx, yy, iphase(j,i), 0., nmarkers, j, i, inc)
-              if(inc.eq.0) cycle
+                  xx = x1 + rx*(x2-x1)
+                  yy = y1 + ry*(y2-y1)
 
-              kinc = kinc + 1
-          enddo
+                  call add_marker(xx, yy, iphase(j,i), 0., nmarkers, j, i, inc)
+                  if(inc.eq.0) cycle
 
-          phase_ratio(1:nphase,j,i) = nphase_counter(1:nphase,j,i) / float(kinc)
+                  kinc = kinc + 1
+              enddo
+          end if
+
+          phase_ratio(1:nphase,j,i) = dble(nphase_counter(1:nphase,j,i)) / dble(kinc)
 
           ! the phase of this element is the most abundant marker phase
           kph = maxloc(nphase_counter(:,j,i))

@@ -253,13 +253,17 @@ do i = 1,nx
 end do
 !$OMP end do
 
+! disable thermal stabilization of boundary during thermochronology with
+! kinematic model for preventing cooling rate bug on side boundaries
+if (itherm.ne.3 .or. ithermochron.eq.0) then
 ! Boundary conditions: dt/dx =0 on left and right  
 !$OMP do
-do j = 1,nz
-    temp(j ,1)  = temp(j,2)
-    temp(j, nx) = temp(j,nx-1)
-end do
+    do j = 1,nz
+        temp(j ,1)  = temp(j,2)
+        temp(j, nx) = temp(j,nx-1)
+    end do
 !$OMP end do
+end if
 !$OMP end parallel
 
 time_t = time

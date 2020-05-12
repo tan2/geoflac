@@ -8,7 +8,7 @@ parameter( kindr=4, kindi=4 )
 real(kindr) D1d(nmarkers)
 integer(kindi) D1i(nmarkers)
 
-character*100 fn
+character*100 fn, msg
 
 call bar2euler
 
@@ -64,6 +64,23 @@ open (1,file=fn,access='direct',recl=nwords*kindr)
 write (1,rec=1) D1d
 close (1)
 
+! Temperature [C]
+do i = 1,nmarkers
+    D1d(i)= real(mark(i)%temp)
+enddo
+write(fn,'(A,I6.6,A)') 'marktemp.', nrec, '.0'
+open (1,file=fn,access='direct',recl=nwords*kindr)
+write (1,rec=1) D1d
+close (1)
+
+! Max temperature [C]
+do i = 1,nmarkers
+    D1d(i)= real(mark(i)%tempmax)
+enddo
+write(fn,'(A,I6.6,A)') 'marktempmax.', nrec, '.0'
+open (1,file=fn,access='direct',recl=nwords*kindr)
+write (1,rec=1) D1d
+close (1)
 
 D1i = 0
 do l = 1,nmarkers
@@ -82,6 +99,44 @@ write(fn,'(A,I6.6,A)') 'markdead.', nrec, '.0'
 open (1,file=fn,access='direct',recl=nwords*kindr)
 write (1,rec=1) D1i
 close (1)
+
+do l = 1,nmarkers
+  D1d(l)=  real(mark(l)%cooling_rate)
+enddo
+write(fn,'(A,I6.6,A)') 'markcoolingrate.', nrec, '.0'
+open (1,file=fn,access='direct',recl=nwords*kindr)
+write (1,rec=1) D1d
+close (1)
+
+! Thermochronology
+123 format(1I1)
+do i = 1, nchron
+  write(msg,123) i
+  do l = 1,nmarkers
+    D1d(l)=  real((time - mark(l)%chron_time(i)) / sec_year / 1e6)
+  enddo
+  write(fn,'(A,I6.6,A)') 'markchronage'//trim(msg)//'.', nrec, '.0'
+  open (1,file=fn,access='direct',recl=nwords*kindr)
+  write (1,rec=1) D1d
+  close (1)
+
+  do l = 1,nmarkers
+    D1i(l)= mark(l)%chron_if(i)
+  enddo
+  write(fn,'(A,I6.6,A)') 'markchronif'//trim(msg)//'.', nrec, '.0'
+  open (1,file=fn,access='direct',recl=nwords*kindi)
+  write (1,rec=1) D1i
+  close (1)
+
+  do l = 1,nmarkers
+    D1d(l)= real(mark(l)%chron_temp(i))
+  enddo
+  write(fn,'(A,I6.6,A)') 'markchrontemp'//trim(msg)//'.', nrec, '.0'
+  open (1,file=fn,access='direct',recl=nwords*kindr)
+  write (1,rec=1) D1d
+  close (1)
+
+end do
 
 return
 end subroutine outmarker

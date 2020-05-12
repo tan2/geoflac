@@ -12,6 +12,7 @@ parameter( kindr=4, kindi=4 )
 
 real(kindr), allocatable :: D1d(:),De(:,:),Dn2(:,:,:)
 real(kindr) rtime
+character*200 msg
 
 ! define record number and write it to contents
 if( lastout .eq. 1 ) then
@@ -251,6 +252,29 @@ if( io_melt.eq.1 ) then
     close (1)
 endif
 
+if( io_thermochron.eq.1 ) then
+123 format(1I1)
+do i = 1, nchron
+    write(msg,123) i
+    ! Thermochronological Closure Temperature in [Celsius]
+    De = real(chron_temp(i,:,:))
+    open (1,file='chrontemp'//trim(msg)//'.0',access='direct',recl=nwords*kindr)
+    write (1,rec=nrec) De
+    close (1)
+
+    ! Thermochronological Status [0~1]
+    De = real(chron_if(i,:,:))
+    open (1,file='chronif'//trim(msg)//'.0',access='direct',recl=nwords*kindr)
+    write (1,rec=nrec) De
+    close (1)
+
+    ! Thermochronological Age in [Ma]
+    De = real((time - chron_time(i,:,:))/(sec_year*1e6))
+    open (1,file='chronage'//trim(msg)//'.0',access='direct',recl=nwords*kindr)
+    write (1,rec=nrec) De
+    close (1)
+end do
+endif
 
 ! Viscosities (log)
 if( io_visc.eq.1 ) then

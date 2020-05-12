@@ -13,7 +13,11 @@ include 'arrays.inc'
 ! Skip the therm calculations if itherm = 3
 call fl_therm
 
+! Skip the thermchron calculations if ithermchron = 0
+if(ithermochron .gt. 0) call fl_thermchron
+
 if (itherm .eq.2) goto 500  ! Thermal calculation only
+if (itherm .eq.3) goto 600  ! Kinematic move and thermal calculation only
 
 ! Calculation of strain rates from velocity
 call fl_srate
@@ -30,6 +34,8 @@ if (ynstressbc.eq.1.) call bc_update
 
 ! Calculations in a node: forces, balance, velocities, new coordinates
 call fl_node
+
+600 continue
 
 ! New coordinates
 call fl_move

@@ -19,6 +19,11 @@ aps = 0
 ! Initial velocity
 vel = 0
 
+if (itherm.eq.3) then
+  vel(:,:,1) = vel_init(1)
+  vel(:,:,2) = vel_init(2)
+end if
+
 dvol = 0
 strain = 0
 
@@ -37,6 +42,9 @@ call init_areas
 
 ! Initiate temperature field
 call init_temp
+
+! Initiate thermochronological setting
+call init_thermochron
 
 ! Calculation of the initial STRESSES (as hydrostatic)
 call init_stress

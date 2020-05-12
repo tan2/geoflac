@@ -59,6 +59,10 @@ class Flac(object):
         self.nnodes = self.nx * self.nz
         self.nelements = nex * nez
 
+        # number and name of thermochronlogy
+        with open('chron.0','r') as f:
+            self.chron = np.array([line.split()[0] for line in f.readlines()])
+
         return
 
 
@@ -234,6 +238,33 @@ class Flac(object):
         return phase
 
 
+    def read_chronif(self, frame, kind):
+        columns = 1
+        f = open('chronif%d.0' % (kind+1))
+        offset = (frame-1) * columns * self.nelements * sizeoffloat
+        f.seek(offset)
+        zftif = self._read_data(f, columns, count=self.nelements)
+        self._reshape_elemental_fields(zftif)
+        return zftif
+
+    def read_chrontemp(self, frame, kind):
+        columns = 1
+        f = open('chrontemp%d.0' % (kind+1))
+        offset = (frame-1) * columns * self.nelements * sizeoffloat
+        f.seek(offset)
+        zfttemp = self._read_data(f, columns, count=self.nelements)
+        self._reshape_elemental_fields(zfttemp)
+        return zfttemp
+
+    def read_chronage(self, frame, kind):
+        columns = 1
+        f = open('chronage%d.0' % (kind+1))
+        offset = (frame-1) * columns * self.nelements * sizeoffloat
+        f.seek(offset)
+        zft = self._read_data(f, columns, count=self.nelements)
+        self._reshape_elemental_fields(zft)
+        return zft
+
     def read_markers(self, frame):
         # read tracer size
         tmp = np.fromfile('_markers.0', sep=' ')
@@ -252,13 +283,33 @@ class Flac(object):
         tmp = self._read_data('markage' + suffix, count=n)
         age = self._remove_dead_markers(tmp, dead)
 
+        tmp = self._read_data('marktemp' + suffix, count=n)
+        temp = self._remove_dead_markers(tmp, dead)
+
+        tmp = self._read_data('marktempmax' + suffix, count=n)
+        tempmax = self._remove_dead_markers(tmp, dead)
+
+        tmp = self._read_data('markcoolingrate' + suffix, count=n)
+        coolingrate = self._remove_dead_markers(tmp, dead)
+
         tmp = self._read_data('markphase' + suffix, count=n, dtype=np.int32)
         phase = self._remove_dead_markers(tmp, dead)
+
+        chronif, chrontemp, chronage = [], [], []
+        for i in range(self.chron.size):
+
+            tmp = self._read_data('markchronif%d' % (i+1) + suffix, count=n, dtype=np.int32)
+            chronif.append(self._remove_dead_markers(tmp, dead))
+            tmp = self._read_data('markchrontemp%d' % (i+1) + suffix, count=n)
+            chrontemp.append(self._remove_dead_markers(tmp, dead))
+            tmp = self._read_data('markchronage%d' % (i+1) + suffix, count=n)
+            chronage.append(self._remove_dead_markers(tmp, dead))
+
 
         tmp = np.arange(n)
         ID = self._remove_dead_markers(tmp, dead)
 
-        return x, z, age, phase, ID
+        return x, z, age, temp, tempmax, coolingrate, phase, ID, chronage,chronif,chrontemp
 
 
     def read_tracers(self):
