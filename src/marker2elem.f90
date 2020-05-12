@@ -1,16 +1,19 @@
 subroutine marker2elem 
+  use myrandom_mod
   use marker_data
   use arrays
   use params
-  include 'precision.inc'
-  integer kph(1)
+  implicit none
+
+  integer :: kph(1), i, j, kinc, inc, iseed
+  double precision :: x1, x2, y1, y2, xx, yy, rx, ry
 
   !character*200 msg
 
   ! Interpolate marker properties into elements
   ! Find the triangle in which each marker belongs
 
-
+  iseed = 0
   do i = 1 , nx-1
       do j = 1 , nz-1
           kinc = sum(nphase_counter(:,j,i))
@@ -27,8 +30,8 @@ subroutine marker2elem
               x2 = max(cord(j+1,i+1,1), cord(j  ,i+1,1))
               y2 = max(cord(j+1,i+1,2), cord(j+1,i  ,2))
 
-              call random_number(rx)
-              call random_number(ry)
+              call myrandom(iseed, rx)
+              call myrandom(iseed, ry)
 
               xx = x1 + rx*(x2-x1)
               yy = y1 + ry*(y2-y1)
