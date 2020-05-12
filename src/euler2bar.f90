@@ -8,8 +8,10 @@ use arrays
 use params
 implicit none
 
-integer :: ntr, ii, jj, inc
-double precision :: x, y, bar1, bar2
+integer, intent(inout) :: ii, jj
+integer, intent(out) :: ntr, inc
+double precision, intent(in) :: x, y
+double precision, intent(out) :: bar1, bar2
 
 integer :: i, j, ibeg, iend, jbeg, jend
 !character*200 msg
