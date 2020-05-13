@@ -15,7 +15,7 @@ if (movegrid .eq. 0) return
 
 ! UPDATING COORDINATES
 
-!$ACC parallel
+!$ACC parallel private(i,j)
 !$ACC loop collapse(2)
 !$OMP parallel private(i,j)
 !$OMP do
@@ -35,7 +35,9 @@ enddo
 ! Diffuse topography
 if( topo_kappa.gt.0.) call diff_topo
 
-!$ACC parallel
+!$ACC parallel  private(i,j,x1,y1,x2,y2,x3,y3,x4,y4, &
+!$ACC                  vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4, &
+!$ACC                   det,dw12,s11,s22,s12)
 !$ACC loop collapse(2)
 !$OMP parallel private(i,j,x1,y1,x2,y2,x3,y3,x4,y4, &
 !$OMP                  vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4, &

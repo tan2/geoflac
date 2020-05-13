@@ -38,7 +38,10 @@ if( nsrate .eq. -1 ) then
 endif
 ! --------
 
-!$ACC loop collapse(2)
+!$ACC loop collapse(2) private(i,j,x1,y1,x2,y2,x3,y3,x4,y4, &
+!$ACC                          vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4, &
+!$ACC                          em,eda,edb,s11,s22,s12, &
+!$ACC                          srII,srI,srs2,stII)
 !$OMP parallel do &
 !$OMP private(i,j,x1,y1,x2,y2,x3,y3,x4,y4, &
 !$OMP         vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4, &

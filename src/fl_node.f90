@@ -38,13 +38,17 @@ double precision :: drat, fx, fy, &
 drat = dt / dt_elastic
 if (drat .lt. 1.) drat = 1.
 
-!$ACC parallel
+!$ACC parallel private(i, j, fx, fy, &
+!$ACC                  p_est, rosubg, &
+!$ACC                  press_norm_l, dlx_l, dly_l, &
+!$ACC                  press_norm_r, dlx_r, dly_r, &
+!$ACC                  rho_water_g, water_depth)
 !$ACC loop collapse(2)
 !$OMP parallel private(i, j, fx, fy, &
 !$OMP                  p_est, rosubg, &
 !$OMP                  press_norm_l, dlx_l, dly_l, &
 !$OMP                  press_norm_r, dlx_r, dly_r, &
-!$OMP                  iunknown, rho_water_g, water_depth)
+!$OMP                  rho_water_g, water_depth)
 !
 !$OMP do
 do i = 1,nx

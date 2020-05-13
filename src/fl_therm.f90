@@ -42,7 +42,9 @@ ntherm = ntherm+1
 !$DIR PREFER_PARALLEL
 if (istress_therm.gt.0) temp0(1:nz,1:nx) = temp(1:nz,1:nx)
 
-!$ACC loop
+!$ACC loop private(i,j,iph,cp_eff,cond_eff,dissip,diff,quad_area, &
+!$ACC              x1,x2,x3,x4,y1,y2,y3,y4,t1,t2,t3,t4,tmpr, &
+!$ACC              qs,real_area13,area_n,rhs)
 !$OMP Parallel private(i,j,iph,cp_eff,cond_eff,dissip,diff,quad_area, &
 !$OMP                  x1,x2,x3,x4,y1,y2,y3,y4,t1,t2,t3,t4,tmpr, &
 !$OMP                  qs,real_area13,area_n,rhs)

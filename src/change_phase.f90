@@ -64,7 +64,7 @@ andesitic_melt_vol(1:nx-1) = 0
 
 nchanged = 0
 
-!$ACC loop
+!$ACC loop private(kk,i,j,k,n,tmpr,depth,iph,press,jbelow,trpres,trpres2,kinc,quad_area,yy)
 !$OMP parallel private(kk,i,j,k,n,tmpr,depth,iph,press,jbelow,trpres,trpres2,kinc,quad_area,yy)
 !$OMP do schedule(guided)
 do kk = 1 , nmarkers
