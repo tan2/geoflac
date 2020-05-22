@@ -5,7 +5,7 @@ subroutine marker2elem
   use params
   implicit none
 
-  integer :: kph(1), i, j, kinc, inc, iseed
+  integer :: kph(1), i, j, k, kinc, inc, iseed, nm
   double precision :: x1, x2, y1, y2, xx, yy, rx, ry
 
   !character*200 msg
@@ -13,9 +13,9 @@ subroutine marker2elem
   ! Interpolate marker properties into elements
   ! Find the triangle in which each marker belongs
 
-  !$ACC parallel private(iseed)
+  !$ACC parallel private(iseed, k, kph, nm)
   iseed = 0
-  !$ACc loop collapse(2)
+  !$ACC loop collapse(2)
   do i = 1 , nx-1
       do j = 1 , nz-1
           kinc = sum(nphase_counter(:,j,i))
@@ -47,7 +47,15 @@ subroutine marker2elem
           phase_ratio(1:nphase,j,i) = nphase_counter(1:nphase,j,i) / float(kinc)
 
           ! the phase of this element is the most abundant marker phase
-          kph = maxloc(nphase_counter(:,j,i))
+          !kph = maxloc(nphase_counter(:,j,i))
+          kph = 1
+          nm = 0
+          do k = 1, nphase
+             if (nphase_counter(k,j,i) > nm) then
+                 nm = nphase_counter(k,j,i)
+                 kph = k
+             end if
+          end do
           iphase(j,i) = kph(1)
 
           !! sometimes there are more than one phases that are equally abundant
