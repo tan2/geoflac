@@ -154,10 +154,10 @@ MODULE_SRCS = \
 	phases.f90 \
 	params.f90 \
 	arrays.f90 \
-	bar2euler.f90 \
 	euler2bar.f90 \
 	marker_data.f90 \
-	change_phase.f90 \
+        bar2euler.f90 \
+        change_phase.f90 \
 	matprops.f90 \
 	rheol.f90
 
