@@ -55,5 +55,16 @@ call dt_mass
 dt = min( dt_elastic, dt_maxwell )
 !$ACC update device(dt)
 
+!Initialization
+!$ACC update device(temp, vel, stress0, force, balance, amass, rmass, &
+!$ACC               area, dvol, strain, bc, ncod, junk2, xmpt, tkappa, &
+!$ACC               iphase, nphase_counter, ntopmarker, itopmarker, irheol_fl, &
+!$ACC               nopbou, ncodbou, idtracer, phase_ratio, dtopo, dhacc, extrusion, &
+!$ACC               andesitic_melt_vol, extr_acc, strainr, aps, visn, e2sr, &
+!$ACC               temp0, source, shrheat, bcstress, &
+!$ACC               pt, barcord, cold, cnew, numtr, &
+!$ACC               se2sr, sshrheat)
+
+
 return
 end
