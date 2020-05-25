@@ -19,7 +19,8 @@ double precision :: x1,y1,x2,y2,x3,y3,x4,y4, &
          em,eda,edb,s11,s22,s12, &
          srII,srI,srs2,stII
 
-!$ACC parallel
+!$ACC data create(nsrate, dtavg)
+!$ACC parallel 
 if( nsrate .eq. -1 ) then
 !$OMP parallel sections
     se2sr = 0.
@@ -29,17 +30,18 @@ if( nsrate .eq. -1 ) then
 
     dtavg = 0.
 endif
+!$ACC end parallel
 ! --------
 
-!$ACC loop collapse(2) private(i,j,x1,y1,x2,y2,x3,y3,x4,y4, &
-!$ACC                          vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4, &
-!$ACC                          em,eda,edb,s11,s22,s12, &
-!$ACC                          srII,srI,srs2,stII)
 !$OMP parallel do &
 !$OMP private(i,j,x1,y1,x2,y2,x3,y3,x4,y4, &
 !$OMP         vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4, &
 !$OMP         em,eda,edb,s11,s22,s12, &
 !$OMP         srII,srI,srs2,stII)
+!$ACC parallel loop collapse(2) private(i,j,x1,y1,x2,y2,x3,y3,x4,y4, &
+!$ACC                          vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4, &
+!$ACC                          em,eda,edb,s11,s22,s12, &
+!$ACC                          srII,srI,srs2,stII)
 do 2  i = 1,nx-1
     do 2  j = 1,nz-1
 
@@ -130,14 +132,15 @@ do 2  i = 1,nx-1
 
 2 continue
 !$OMP end parallel do
-!$ACC end loop
+!$ACC end parallel
 
 ! following block is needed for averaging
 dtavg = dtavg + dt
+!$ACC update device(dtavg)
 
 ! re-initialisation after navgsr steps
 if( nsrate .eq. ifreq_avgsr ) then
-    !$ACC loop collapse(2)
+    !$ACC parallel loop collapse(2)
     !$OMP parallel do
     do i = 1,nx-1
         do j = 1, nz-1
@@ -148,11 +151,11 @@ if( nsrate .eq. ifreq_avgsr ) then
         end do
     end do
     !$OMP end parallel do
-    !$ACC end loop
+    !$ACC end parallel
     dtavg = 0
     nsrate = 0
 elseif( nsrate .eq. -1 ) then
-    !$ACC loop collapse(2)
+    !$ACC parallel loop collapse(2)
     !$OMP parallel do
     do i = 1,nx-1
         do j = 1, nz-1
@@ -161,12 +164,13 @@ elseif( nsrate .eq. -1 ) then
         end do
     end do
     !$OMP end parallel do
-    !$ACC end loop
+    !$ACC end parallel
 endif
 
 nsrate = nsrate + 1
+!$ACC update device(dtavg, nsrate)
+!$ACC end data
 !--------------
-!$ACC end parallel
 
 return
 end 
