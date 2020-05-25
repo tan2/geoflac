@@ -9,7 +9,6 @@ implicit none
 
 ! following block is needed for averaging
 double precision, save :: dtavg
-double precision, save, allocatable :: se2sr(:,:), sshrheat(:,:)
 integer, save :: nsrate, first
 data nsrate/-1/
 data first/0/
@@ -20,12 +19,6 @@ double precision :: x1,y1,x2,y2,x3,y3,x4,y4, &
          em,eda,edb,s11,s22,s12, &
          srII,srI,srs2,stII
 
-if(first .eq. 0) then
-    first = 1
-    allocate(se2sr(nz-1,nx-1), sshrheat(nz-1,nx-1))
-endif
- 
-!$ACC data copy(se2sr, sshrheat)
 !$ACC parallel
 if( nsrate .eq. -1 ) then
 !$OMP parallel sections
@@ -174,7 +167,6 @@ endif
 nsrate = nsrate + 1
 !--------------
 !$ACC end parallel
-!$ACC end data
 
 return
 end 
