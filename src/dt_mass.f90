@@ -14,7 +14,7 @@
 !   j+1,i        j+1,i+1
 
 subroutine dt_mass
-
+!$ACC routine(dlmin_prop) vector
 use arrays
 use params
 use matprops
@@ -26,6 +26,8 @@ integer i, j, k, iph
 double precision :: dlmin, vel_max, dt_m, diff
 double precision :: pwave, dens, vel_sound, rho_inert, rho_inert2, am3, dte, dtt
 double precision :: rmu, visc_cut
+
+!$ACC parallel
 
 ! minimal propagation distance
 dlmin = dlmin_prop()
@@ -46,7 +48,6 @@ elseif (idt_scale.eq.2) then
 !write(*,'(F45.20)')dt_elastic
     endif
 endif
-!$ACC update device(dt_elastic)
 
 vel_max = 0.
 do k = 1,2
@@ -65,16 +66,15 @@ end if
 
 dtmax_therm = 1.e+28
 dt_maxwell = 1.e+28
-!$ACC update device(dtmax_therm,dt_maxwell)
 
-!$ACC parallel loop collapse(2)
+!$ACC loop collapse(2)
 do 1 i = 1,nx-1
     do 1 j = 1,nz-1
 
         iph     = iphase(j,i)
         pwave   = rl(iph) + 0.6666*rm(iph)  
         dens    = den(iph)
-        vel_sound = dlmin*frac/dt_elastic  
+        vel_sound = dlmin*frac/dt_elastic
         rho_inert = pwave/(vel_sound*vel_sound)  
         if (i_rey.eq.1.and.vel_max.gt.0.) then
             rho_inert2 = (xReyn*v_min)/(vel_max*abs(rzbo))
@@ -139,7 +139,7 @@ do 1 i = 1,nx-1
 
 1 continue 
 !$ACC end parallel
-!$ACC update device(dt_elastic,dtmax_therm,dt_maxwell)
+!$ACC update self(dt_elastic,dtmax_therm,dt_maxwell)
 return
 end
 
@@ -150,6 +150,7 @@ end
 !   dlmin = Area/Dmax for each triangle
 
 function dlmin_prop()
+!$ACC routine vector
 use arrays
 use params
 implicit none
@@ -159,7 +160,7 @@ integer :: i, j
 double precision :: dlmin, dl, dlm
 dlmin = 1.e+28
 
-!$ACC parallel loop collapse(2) copy(dlmin) reduction(min:dlmin)
+!$ACC loop collapse(2) reduction(min:dlmin)
 do 1 i = 1,nx-1
     do 1 j = 1,nz-1
 
@@ -206,7 +207,6 @@ do 1 i = 1,nx-1
         dlmin = min(dlmin, dlm)
 
 1 continue
-!$ACC end parallel
 
 dlmin_prop = dlmin
 
