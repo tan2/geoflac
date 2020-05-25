@@ -32,23 +32,20 @@ double precision :: cp_eff,cond_eff,dissip,diff,quad_area, &
 !  2         2---3
 
 
-ntherm = ntherm+1
-!$ACC update device(ntherm)
-
-!$ACC data create(add_source,flux)
-!$ACC parallel 
+!!ntherm = ntherm+1
+!!$ACC update device(ntherm)
 
 ! saving old temperature
 !$DIR PREFER_PARALLEL
+!$ACC parallel 
 if (istress_therm.gt.0) temp0(1:nz,1:nx) = temp(1:nz,1:nx)
+!$ACC end parallel
 
-!$ACC loop private(i,j,iph,cp_eff,cond_eff,dissip,diff,quad_area, &
-!$ACC              x1,x2,x3,x4,y1,y2,y3,y4,t1,t2,t3,t4,tmpr, &
-!$ACC              qs,real_area13,area_n,rhs)
 !$OMP Parallel private(i,j,iph,cp_eff,cond_eff,dissip,diff,quad_area, &
 !$OMP                  x1,x2,x3,x4,y1,y2,y3,y4,t1,t2,t3,t4,tmpr, &
 !$OMP                  qs,real_area13,area_n,rhs)
 !$OMP do
+!$ACC parallel loop private(cp_eff, quad_area)
 do i = 1,nx-1
     j = 1  ! top
     !iph = iphase(j,i)
@@ -61,9 +58,11 @@ do i = 1,nx-1
     temp(j,i+1) = temp(j,i+1) + andesitic_melt_vol(i) * heat_latent_magma / quad_area / cp_eff
 end do
 !$OMP end do
-!ACC end loop
+!$ACC end parallel
 
-!$ACC loop collapse(2)
+!$ACC data create(add_source,flux)
+!$ACC parallel loop collapse(2) private(iph, cp_eff, cond_eff, dissip, diff, &
+!$ACC                                   x1, x2, x3, x4, y1, y2, y3, y4, tmpr) 
 !$OMP do
 do i = 1,nx-1
     do j = 1,nz-1
@@ -114,9 +113,9 @@ do i = 1,nx-1
     end do
 end do    
 !$OMP end do
-!$ACC end loop
+!$ACC end parallel
 
-!$ACC loop collapse(2)
+!$ACC parallel loop collapse(2) private(rhs, area_n, rhs,real_area13)
 !$OMP do
 do i = 1,nx
     do j = 1,nz
@@ -237,10 +236,11 @@ do i = 1,nx
     end do
 end do
 !$OMP end do
-!$ACC end loop
+!$ACC end parallel
+!$ACC end data
 
 ! Boundary conditions (top and bottom)
-!$ACC loop
+!$ACC parallel loop
 !$OMP do
 do i = 1,nx
 
@@ -255,10 +255,10 @@ do i = 1,nx
 
 end do
 !$OMP end do
-!$ACC end loop
+!$ACC end parallel
 
 ! Boundary conditions: dt/dx =0 on left and right  
-!$ACC loop
+!$ACC parallel loop
 !$OMP do
 do j = 1,nz
     temp(j ,1)  = temp(j,2)
@@ -266,9 +266,7 @@ do j = 1,nz
 end do
 !$OMP end do
 !$OMP end parallel
-!$ACC end loop
 !$ACC end parallel
-!$ACC end data
 
 ! ! HOOK
 ! ! Intrusions - see user_ab.f90
