@@ -22,37 +22,37 @@ integer :: i, j, k, iph, irh, &
            ipls, jinj
 
 !XXX: irh==11, or irh>=11?
-irh=irheol(mphase)
-if(irh.eq.11) call init_visc
+!irh=irheol(mphase)
+!if(irh.eq.11) call init_visc
 
 !if(iynts.eq.1) call init_temp
 
 ! Initial stress boundary condition
 ! Accretional Stresses
-if (ny_inject.gt.0) then
-         sarc1 = 0.
-         sarc2 = 0. 
-         if (ny_inject.eq.1) iinj = 1
-         if (ny_inject.eq.2) iinj = nx/2 
-         !$ACC update device(iinj)
-         !write (*,*) iinj
-         nelem_inject = nz-1
-         !$ACC update device(nelem_inject)
-         !average dx for injection:
-         dxinj = 0.
-         do jinj = 1,nelem_inject
-            iph=iphase(jinj,iinj)
-            dxinj=dxinj+cord(jinj,iinj+1,1)-cord(jinj,iinj,1)
-         enddo
-         dxinj = dxinj/nelem_inject 
-         ! Constants Elastic:
-         poiss = 0.5*rl(iph)/(rl(iph)+rm(iph))
-         young = rm(iph)*2.*(1.+poiss)   
-         ! Additional Stress:
-         sarc1 = -young/(1.-poiss*poiss)*rate_inject/dxinj*dt
-         sarc2 = sarc1*poiss/(1.-poiss)
-         !write(*,*) sarc1,sarc2
-endif
+!if (ny_inject.gt.0) then
+!         sarc1 = 0.
+!         sarc2 = 0. 
+!         if (ny_inject.eq.1) iinj = 1
+!         if (ny_inject.eq.2) iinj = nx/2 
+!         !$ACC update device(iinj)
+!         !write (*,*) iinj
+!         nelem_inject = nz-1
+!         !$ACC update device(nelem_inject)
+!         !average dx for injection:
+!         dxinj = 0.
+!         do jinj = 1,nelem_inject
+!            iph=iphase(jinj,iinj)
+!            dxinj=dxinj+cord(jinj,iinj+1,1)-cord(jinj,iinj,1)
+!         enddo
+!         dxinj = dxinj/nelem_inject 
+!         ! Constants Elastic:
+!         poiss = 0.5*rl(iph)/(rl(iph)+rm(iph))
+!         young = rm(iph)*2.*(1.+poiss)   
+!         ! Additional Stress:
+!         sarc1 = -young/(1.-poiss*poiss)*rate_inject/dxinj*dt
+!         sarc2 = sarc1*poiss/(1.-poiss)
+!         !write(*,*) sarc1,sarc2
+!endif
 
 !$ACC parallel create(s11p, s22p, s33p, s33v, s12p, depl, s12v, s22v, s11v)
 
