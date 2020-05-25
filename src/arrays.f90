@@ -30,6 +30,8 @@ module arrays
       temp0(:,:),source(:,:),shrheat(:,:), &
       bcstress(:,:)
 
+  double precision, allocatable :: se2sr(:,:), sshrheat(:,:)
+  
   ! remeshing arrays
   real*8, allocatable :: pt(:,:,:), barcord(:,:,:), &
             cold(:,:,:), cnew(:,:,:)
@@ -79,6 +81,9 @@ contains
     allocate(source(nz-1, nx-1))
     allocate(shrheat(nz-1, nx-1))
     allocate(bcstress(((nz-1)+(nx-1))*2, 3))
+
+    allocate(se2sr(nz-1,nx-1))
+    allocate(sshrheat(nz-1,nx-1))
 
     allocate(pt((nz-1)*(nx-1)*2, 2, 3), barcord(nz, nx, 3), &
              cold(nz, nx, 2), cnew(nz, nx, 2))
