@@ -38,19 +38,19 @@ double precision :: drat, fx, fy, &
 drat = dt / dt_elastic
 if (drat .lt. 1.) drat = 1.
 
-!$ACC parallel private(i, j, fx, fy, &
-!$ACC                  p_est, rosubg, &
-!$ACC                  press_norm_l, dlx_l, dly_l, &
-!$ACC                  press_norm_r, dlx_r, dly_r, &
-!$ACC                  rho_water_g, water_depth)
-!$ACC loop collapse(2)
+!!**$ACC parallel private(i, j, fx, fy, &
+!!**$ACC                  p_est, rosubg, &
+!!**$ACC                  press_norm_l, dlx_l, dly_l, &
+!!**$ACC                  press_norm_r, dlx_r, dly_r, &
+!!**$ACC                  rho_water_g, water_depth)
+!!**$ACC loop collapse(2)
 !$OMP parallel private(i, j, fx, fy, &
 !$OMP                  p_est, rosubg, &
 !$OMP                  press_norm_l, dlx_l, dly_l, &
 !$OMP                  press_norm_r, dlx_r, dly_r, &
 !$OMP                  rho_water_g, water_depth)
-!
 !$OMP do
+!$ACC parallel loop collapse(2) private(fx, fy)
 do i = 1,nx
     do j = 1,nz
         if(ynstressbc.eq.0.) then
@@ -324,11 +324,12 @@ do i = 1,nx
   enddo
 enddo
 !$OMP end do
-!$ACC end loop
+!$ACC end parallel
 
 ! BOUNDARY CONDITIONS
 if(nyhydro.gt.0) then
-    !$ACC loop
+    !$ACC parallel loop private(rho_water_g, water_depth, press_norm_l, &
+    !$ACC                       dlx_l, dly_l, dlx_r, dly_r, press_norm_l, press_norm_r)
     !$OMP do
     do i=1,nx
 
@@ -369,9 +370,10 @@ if(nyhydro.gt.0) then
         endif
     enddo
     !$OMP end do
-    !$ACC end loop
+    !$ACC end parallel
 
-    !$ACC loop
+    !$ACC parallel loop private(p_est, rosubg, &
+    !$ACC                       dlx_l, dly_l, dlx_r, dly_r, press_norm_l, press_norm_r)
     !$OMP do
     do i=1,nx
 
@@ -413,13 +415,14 @@ if(nyhydro.gt.0) then
 
     enddo
     !$OMP end do
-    !$ACC end loop
+    !$ACC end parallel
 endif
 
 boff = 0
 
 !XXX:  reduction(max:boff)
-!$ACC loop collapse(2)
+!$ACC data copyin(drat)
+!$ACC parallel loop collapse(2)
 !$OMP do reduction(max:boff)
 do i=1,nx
     do j=1,nz
@@ -465,11 +468,12 @@ do i=1,nx
 end do
 !$OMP end do
 !$OMP end parallel
-!$ACC end loop
+!$ACC end parallel
+!$ACC end data
 
 ! Prestress to form the topo when density differences are present WITHOUT PUSHING OR PULLING!
 if (i_prestress.eq.1.and.time.lt.600.e3*sec_year) then
-     !$ACC loop
+     !$ACC parallel loop
      do k = 1,2
         do i = 1, nx
             vel(nz,i,k) = 0.
@@ -479,8 +483,7 @@ if (i_prestress.eq.1.and.time.lt.600.e3*sec_year) then
             vel(j,nx,k) = 0.
         enddo
     enddo
-    !$ACC end loop
+    !$ACC end parallel loop
 endif
-!$ACC end parallel
 return
 end subroutine fl_node
