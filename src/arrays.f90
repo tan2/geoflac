@@ -44,7 +44,7 @@ module arrays
   !$ACC                iphase, nphase_counter, ntopmarker, itopmarker, irheol_fl, &
   !$ACC                nopbou, ncodbou, idtracer, phase_ratio, dtopo, dhacc, extrusion, &
   !$ACC                andesitic_melt_vol, extr_acc, strainr, aps, visn, e2sr, &
-  !$ACC                temp0, source, shrheat, bcstress, &
+  !$ACC                temp0, source, shrheat, bcstress, se2sr, sshrheat, &
   !$ACC                pt, barcord, cold, cnew, numtr)
 contains
 
@@ -108,7 +108,7 @@ contains
     !$ACC               iphase, nphase_counter, ntopmarker, itopmarker, irheol_fl, &
     !$ACC               nopbou, ncodbou, idtracer, phase_ratio, dtopo, dhacc, extrusion, &
     !$ACC               andesitic_melt_vol, extr_acc, strainr, aps, visn, e2sr, &
-    !$ACC               temp0, source, shrheat, bcstress, &
+    !$ACC               temp0, source, shrheat, bcstress, se2sr, sshrheat, &
     !$ACC               pt, barcord, cold, cnew, numtr)
 
   end subroutine allocate_arrays
