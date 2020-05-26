@@ -27,9 +27,9 @@ do i = 1 , nx-1
     enddo
 enddo
 !$OMP end do
+!$ACC end parallel
 
-
-!$ACC loop
+!$ACC parallel loop
 !$OMP do
 do i = 1 , nmarkers
      if (mark_dead(i).eq.0) cycle
