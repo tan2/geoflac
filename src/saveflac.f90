@@ -14,6 +14,12 @@ integer(kindi), allocatable :: dum11(:), idum2(:,:)
 real*8 rtime, rdt
 integer :: i, nrec, nwords
 
+!$ACC update self(nloop, time, nmarkers, nmtracers, dt, &
+!$ACC             cord, dhacc, extr_acc, vel, &
+!$ACC             strain, stress0, temp, iphase, source)
+!$ACC update self(mark_a1, mark_a2, mark_x, mark_y, mark_age, &
+!$ACC             mark_dead, mark_ntriag, mark_phase, mark_ID)
+
 ! define record number and write it to contents
 
 open (1,file='_contents.save')
