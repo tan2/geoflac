@@ -7,6 +7,8 @@ implicit none
 
 double precision :: dt_min
 
+!$ACC parallel
+
 dt_min = min(dt_elastic, dt_maxwell)
 
 ! Adaptive scaling (Cundall, 1982)
@@ -20,7 +22,6 @@ elseif ( boff .gt. ratu ) then
 endif      
 
 dt = max (dt, dt_min )
-!$ACC update device(dt)
-!write(*,*)dt
+!$ACC end parallel
 return
 end
