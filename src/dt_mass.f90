@@ -48,8 +48,11 @@ elseif (idt_scale.eq.2) then
 !write(*,'(F45.20)')dt_elastic
     endif
 endif
+!$ACC end parallel
 
+!$ACC parallel
 vel_max = 0.
+!$ACC loop collapse(3)
 do k = 1,2
 do i = 1,nx
 do j = 1,nz
@@ -57,7 +60,9 @@ do j = 1,nz
 enddo
 enddo
 enddo
+!$ACC end parallel
 
+!$ACC parallel
 if (idt_scale .eq. 0) then
     amass = rmass
 else
@@ -66,8 +71,9 @@ end if
 
 dtmax_therm = 1.e+28
 dt_maxwell = 1.e+28
+!$ACC end parallel
 
-!$ACC loop collapse(2)
+!$ACC parallel loop collapse(2)
 do 1 i = 1,nx-1
     do 1 j = 1,nz-1
 
@@ -139,7 +145,6 @@ do 1 i = 1,nx-1
 
 1 continue 
 !$ACC end parallel
-!$ACC update self(dt_elastic,dtmax_therm,dt_maxwell)
 return
 end
 
