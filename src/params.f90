@@ -3,6 +3,7 @@ module params
 implicit none
 
 integer, parameter :: maxzone = 10   ! max nzonx and nzony
+integer, parameter :: maxtrzone = 20   ! max nzone_marker and nzone_tracer
 integer, parameter :: maxphasel = 20   ! max nphasl
 integer, parameter :: maxbc = 20   ! max # of bcs
 integer, parameter :: maxph = 20   ! max # of phases
@@ -19,8 +20,8 @@ integer :: nx,nz,nq,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
      irh_mark,irphase,irtemp,ircoord, &
      nphase,mphase,irheol(maxph), &
      ltop(maxphasel),lbottom(maxphasel),lphase(maxphasel), &
-     imx1(20),imx2(20),imy1(20),imy2(20), &
-     itx1(20),itx2(20),ity1(20),ity2(20), &
+     imx1(maxtrzone),imx2(maxtrzone),imy1(maxtrzone),imy2(maxtrzone), &
+     itx1(maxtrzone),itx2(maxtrzone),ity1(maxtrzone),ity2(maxtrzone), &
      nphasl,nzone_marker,nmarkers, iint_marker,iint_tracer,nzone_tracer, &
      ix1(maxinh),ix2(maxinh),iy1(maxinh),iy2(maxinh),inphase(maxinh), &
      igeom(maxinh),inhom, &
@@ -74,8 +75,8 @@ character phasefile*20,tempfile*20,coordfile*20
 !$ACC     irh_mark,irphase,irtemp,ircoord, &
 !$ACC     nphase,mphase,irheol(maxph), &
 !$ACC     ltop(maxphasel),lbottom(maxphasel),lphase(maxphasel), &
-!$ACC     imx1(20),imx2(20),imy1(20),imy2(20), &
-!$ACC     itx1(20),itx2(20),ity1(20),ity2(20), &
+!$ACC     imx1(maxtrzone),imx2(maxtrzone),imy1(maxtrzone),imy2(maxtrzone), &
+!$ACC     itx1(maxtrzone),itx2(maxtrzone),ity1(maxtrzone),ity2(maxtrzone), &
 !$ACC     nphasl,nzone_marker,nmarkers, iint_marker,iint_tracer,nzone_tracer, &
 !$ACC     ix1(maxinh),ix2(maxinh),iy1(maxinh),iy2(maxinh),inphase(maxinh), &
 !$ACC     igeom(maxinh),inhom, &
