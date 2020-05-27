@@ -208,6 +208,10 @@ read(4,*) mphase
 ! number of horizontal layers
 call AdvanceToNextInputLine( 4 )
 read(4,*) nphasl
+if( nphasl .gt. maxphasel ) then
+    call SysMsg('Read_params: Increase arrays for phase layers')
+    stop 26
+endif
 ! layers
 do i = 1, nphasl
     call AdvanceToNextInputLine( 4 )
@@ -308,10 +312,6 @@ call AdvanceToNextInputLine( 4 )
 read(4,*) lastsave
 
 close (iu)
-
-
-! ADDITIONAL PARTICULAR INPUT
-!call ReadMoreParams()
 
 return
 end
