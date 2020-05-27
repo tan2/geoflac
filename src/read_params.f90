@@ -210,6 +210,10 @@ read(4,*) mphase
 ! number of horizontal layers
 call AdvanceToNextInputLine( 4 )
 read(4,*) nphasl
+if( nphasl .gt. maxphasel ) then
+    call SysMsg('Read_params: Increase arrays for phase layers')
+    stop 26
+endif
 ! layers
 do i = 1, nphasl
     call AdvanceToNextInputLine( 4 )
@@ -325,7 +329,7 @@ close (iu)
 !$ACC     io_src,io_diss,io_forc,io_hfl,io_topo, &
 !$ACC     irh_mark,irphase,irtemp,ircoord, &
 !$ACC     nphase,mphase,irheol(maxph), &
-!$ACC     ltop(20),lbottom(20),lphase(20), &
+!$ACC     ltop(maxphasel),lbottom(maxphasel),lphase(maxphasel), &
 !$ACC     imx1(20),imx2(20),imy1(20),imy2(20), &
 !$ACC     itx1(20),itx2(20),ity1(20),ity2(20), &
 !$ACC     nphasl,nzone_marker,nmarkers, iint_marker,iint_tracer,nzone_tracer, &

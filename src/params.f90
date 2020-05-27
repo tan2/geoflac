@@ -3,6 +3,7 @@ module params
 implicit none
 
 integer, parameter :: maxzone = 10   ! max nzonx and nzony
+integer, parameter :: maxphasel = 20   ! max nphasl
 integer, parameter :: maxbc = 20   ! max # of bcs
 integer, parameter :: maxph = 20   ! max # of phases
 integer, parameter :: maxinh = 50   ! max # of inhomogeneities
@@ -17,7 +18,7 @@ integer :: nx,nz,nq,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
      io_src,io_diss,io_forc,io_hfl,io_topo, &
      irh_mark,irphase,irtemp,ircoord, &
      nphase,mphase,irheol(maxph), &
-     ltop(20),lbottom(20),lphase(20), &
+     ltop(maxphasel),lbottom(maxphasel),lphase(maxphasel), &
      imx1(20),imx2(20),imy1(20),imy2(20), &
      itx1(20),itx2(20),ity1(20),ity2(20), &
      nphasl,nzone_marker,nmarkers, iint_marker,iint_tracer,nzone_tracer, &
@@ -72,7 +73,7 @@ character phasefile*20,tempfile*20,coordfile*20
 !$ACC     io_src,io_diss,io_forc,io_hfl,io_topo, &
 !$ACC     irh_mark,irphase,irtemp,ircoord, &
 !$ACC     nphase,mphase,irheol(maxph), &
-!$ACC     ltop(20),lbottom(20),lphase(20), &
+!$ACC     ltop(maxphasel),lbottom(maxphasel),lphase(maxphasel), &
 !$ACC     imx1(20),imx2(20),imy1(20),imy2(20), &
 !$ACC     itx1(20),itx2(20),ity1(20),ity2(20), &
 !$ACC     nphasl,nzone_marker,nmarkers, iint_marker,iint_tracer,nzone_tracer, &
