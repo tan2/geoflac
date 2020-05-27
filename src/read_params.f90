@@ -216,7 +216,7 @@ end do
 ! inclusions
 call AdvanceToNextInputLine( 4 )
 read(4,*) inhom
-if( inhom .gt. 50 ) then
+if( inhom .gt. maxinh ) then
     call SysMsg('Read_params: Increase arrays for inhomogenities')
     stop 26
 endif
