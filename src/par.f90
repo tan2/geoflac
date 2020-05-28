@@ -25,9 +25,6 @@ open( 333, file='output.asc' )
 
 time0 = secnds(0.0)
 
-! seconds in a year
-sec_year = 3.1558e+7
-
 nloop = 0
 nloop_restarted = 0
 
