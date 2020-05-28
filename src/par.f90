@@ -27,10 +27,6 @@ open( 333, file='output.asc' )
 
 time0 = secnds(0.0)
 
-! seconds in a year
-sec_year = 3.1558e+7
-!$ACC update device(sec_year)
-
 nloop = 0
 nloop_restarted = 0
 !$ACC update device(nloop,nloop_restarted)

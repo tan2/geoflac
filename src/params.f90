@@ -9,6 +9,9 @@ integer, parameter :: maxbc = 20   ! max # of bcs
 integer, parameter :: maxph = 20   ! max # of phases
 integer, parameter :: maxinh = 50   ! max # of inhomogeneities
 
+real*8, parameter :: sec_year = 3.1558e+7  ! seconds in a year
+
+
 integer :: nx,nz,nq,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
      ny_rem,mode_rem,ntest_rem,ivis_shape,igeotherm, &
      ny_inject,nelem_inject,nmass_update,nopbmax,iinj, &
@@ -59,7 +62,7 @@ real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
      t_top,t_bot,hs,hr,temp_per,bot_bc, &
      hc1(maxph),hc2(maxph),hc3(maxph),hc4(maxph), &
      age_1(maxph),g,pisos,drosub,damp_vis, &
-     sec_year,time,dt,time_max, devmax, dvmax
+     time,dt,time_max, devmax, dvmax
 
 
 character phasefile*20,tempfile*20,coordfile*20
@@ -114,5 +117,5 @@ character phasefile*20,tempfile*20,coordfile*20
 !$ACC     t_top,t_bot,hs,hr,temp_per,bot_bc, &
 !$ACC     hc1(maxph),hc2(maxph),hc3(maxph),hc4(maxph), &
 !$ACC     age_1(maxph),g,pisos,drosub,damp_vis, &
-!$ACC     sec_year,time,dt,time_max, devmax, dvmax)
+!$ACC     time,dt,time_max, devmax, dvmax)
 end module params
