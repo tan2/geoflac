@@ -14,8 +14,8 @@ integer :: i, j, i1, i2, iamp, inc, itop, iwidth, ixc, k, k1, k2, kph, n, l, &
 double precision :: ddx, ddy, dx, dy, r, rx, ry, xx, ycol1, ycol2, ycol3, ycol4, &
                     yy, yyy
 nphase_counter = 0
-ntopmarker(:) = 0
-itopmarker(:,:) = 0
+mark_id_elem = 0
+nmark_elem = 0
 
 ! define euler coordinate of the markers
 ! Distribute evenly first then randomize the distribution
@@ -193,7 +193,7 @@ end do
 
 write(333,*) '# of markers', nmarkers
 
-!$ACC update device(nphase_counter,cord,phase_ratio,iphase)
+!$ACC update device(cord,phase_ratio,iphase)
 call marker2elem
 
 return

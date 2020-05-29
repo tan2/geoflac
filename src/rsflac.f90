@@ -202,8 +202,6 @@ deallocate(dum11)
 
 ! recount marker phase
 nphase_counter(:,:,:) = 0
-ntopmarker(:) = 0
-itopmarker(:,:) = 0
 mark_id_elem(:,:,:) = 0
 nmark_elem(:,:) = 0
 print *, nmarkers
@@ -236,9 +234,9 @@ do n = 1, nmarkers
 
 enddo
 
-!$ACC update device(nphase_counter, ntopmarker, itopmarker)
 !$ACC update device(mark_a1, mark_a2, mark_x, mark_y, mark_age, &
-!$ACC               mark_dead, mark_ntriag, mark_phase, mark_ID)
+!$ACC               mark_dead, mark_ntriag, mark_phase, mark_ID, &
+!$ACC               nmark_elem, mark_id_elem)
 
 call marker2elem
 
@@ -273,7 +271,7 @@ nsrate=-1
 !Initialization
 !$ACC update device(cord, temp, vel, stress0, force, balance, amass, rmass, &
 !$ACC               area, dvol, strain, bc, ncod, junk2, xmpt, tkappa, &
-!$ACC               iphase, nphase_counter, ntopmarker, itopmarker, mark_id_elem, nmark_elem, irheol_fl, &
+!$ACC               iphase, nphase_counter, mark_id_elem, nmark_elem, irheol_fl, &
 !$ACC               nopbou, ncodbou, idtracer, phase_ratio, dtopo, dhacc, extrusion, &
 !$ACC               andesitic_melt_vol, extr_acc, strainr, aps, visn, e2sr, &
 !$ACC               temp0, source, shrheat, bcstress, &

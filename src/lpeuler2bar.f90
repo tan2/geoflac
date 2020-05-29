@@ -11,7 +11,6 @@ character*200 msg
 
 !$ACC parallel
 nphase_counter(:,:,:) = 0
-ntopmarker(:) = 0
 mark_id_elem(:,:,:) = 0
 nmark_elem(:,:) = 0
 
