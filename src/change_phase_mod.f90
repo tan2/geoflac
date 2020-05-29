@@ -34,17 +34,17 @@ real*8, parameter :: new_crust_thickness = 7.e3
 
 
 ! search the element for melting
-!$ACC parallel create(ichanged, jchanged, kph, ratio)
-!$ACC loop
+!$ACC parallel loop create(ichanged, jchanged, kph, ratio)
 do jj = 1, nz-1
    ! search for crustal depth
    dep2 = 0.25*(cord(jj,1,2)+cord(jj+1,1,2)+cord(jj,2,2)+cord(jj+1,2,2))
    if (cord(1,1,2) - dep2 >= new_crust_thickness) exit
 end do
-!$ACC end loop
-j = min(max(2, jj), nz-1)
+!$ACC end parallel
 
-!$ACC loop
+
+!$ACC serial
+j = min(max(2, jj), nz-1)
 do i = 1, nx-1
   iph = iphase(j,i)
   if (iph==kmant1 .or. iph==kmant2) then
@@ -54,7 +54,6 @@ do i = 1, nx-1
     end if
   end if
 end do
-!$ACC end loop
 
 ! nelem_inject was used for magma injection, reused here for serpentization
 nelem_serp = nelem_inject
@@ -63,8 +62,9 @@ vol_frac_melt = rate_inject
 andesitic_melt_vol(1:nx-1) = 0
 
 nchanged = 0
+!$ACC end serial
 
-!$ACC loop private(kk,i,j,k,n,tmpr,depth,iph,press,jbelow,trpres,trpres2,kinc,quad_area,yy)
+!$ACC parallel loop private(kk,i,j,k,n,tmpr,depth,iph,press,jbelow,trpres,trpres2,kinc,quad_area,yy)
 !$OMP parallel private(kk,i,j,k,n,tmpr,depth,iph,press,jbelow,trpres,trpres2,kinc,quad_area,yy)
 !$OMP do schedule(guided)
 do kk = 1 , nmarkers
@@ -260,11 +260,14 @@ do kk = 1 , nmarkers
 enddo
 !$OMP end do
 !$OMP end parallel
-!$ACC end loop
+!$ACC end parallel
 
+!$ACC parallel
 ! storing plastic strain in temporary array
 junk2(1:nz-1,1:nx-1) = aps(1:nz-1,1:nx-1)
+!$ACC end parallel
 
+!$ACC parallel
 ! recompute phase ratio of those changed elements
 do k = 1, nchanged
     i = ichanged(k)

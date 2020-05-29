@@ -110,7 +110,7 @@ MODULE marker_data
   
 
   subroutine newphase2marker (j1, j2, i1, i2, iph)
-    !$ACC routine seq
+    !$ACC routine gang
     use arrays
     use params
     implicit none
@@ -118,6 +118,7 @@ MODULE marker_data
     integer :: j1, j2, i1, i2, iph, &
                kk, n, j, i
 
+    !$ACC loop collapse(2) private(i,j,n,kk)
     !$OMP parallel do private(i,j,n,kk)
     ! reset the markers within elements in the rectangular region
     do i = i1, i2
@@ -132,6 +133,7 @@ MODULE marker_data
       enddo
     enddo
     !$OMP end parallel do
+    !$ACC end loop
 
     iphase(j1:j2,i1:i2) = iph
     phase_ratio(:,j1:j2,i1:i2) = 0.d0
