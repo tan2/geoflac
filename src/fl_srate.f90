@@ -7,30 +7,12 @@ use arrays
 use params
 implicit none
 
-! following block is needed for averaging
-double precision, save :: dtavg
-integer, save :: nsrate, first
-data nsrate/-1/
-data first/0/
-
 integer :: i,j
 double precision :: x1,y1,x2,y2,x3,y3,x4,y4, &
          vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4, &
          em,eda,edb,s11,s22,s12, &
          srII,srI,srs2,stII
 
-!$ACC data create(nsrate, dtavg)
-!$ACC parallel 
-if( nsrate .eq. -1 ) then
-!$OMP parallel sections
-    se2sr = 0.
-!$OMP section
-    sshrheat = 0.
-!$OMP end parallel sections
-
-    dtavg = 0.
-endif
-!$ACC end parallel
 ! --------
 
 !$OMP parallel do &
@@ -135,8 +117,9 @@ do 2  i = 1,nx-1
 !$ACC end parallel
 
 ! following block is needed for averaging
+!$ACC serial
 dtavg = dtavg + dt
-!$ACC update device(dtavg)
+!$ACC end serial
 
 ! re-initialisation after navgsr steps
 if( nsrate .eq. ifreq_avgsr ) then
@@ -152,8 +135,10 @@ if( nsrate .eq. ifreq_avgsr ) then
     end do
     !$OMP end parallel do
     !$ACC end parallel
+    !$ACC serial
     dtavg = 0
     nsrate = 0
+    !$ACC end serial
 elseif( nsrate .eq. -1 ) then
     !$ACC parallel loop collapse(2)
     !$OMP parallel do
@@ -167,9 +152,9 @@ elseif( nsrate .eq. -1 ) then
     !$ACC end parallel
 endif
 
+!$ACC serial
 nsrate = nsrate + 1
-!$ACC update device(dtavg, nsrate)
-!$ACC end data
+!$ACC end serial
 !--------------
 
 return

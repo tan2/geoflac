@@ -55,6 +55,10 @@ call dt_mass
 dt = min( dt_elastic, dt_maxwell )
 !$ACC update device(dt)
 
+! Initiate parameters for stress averaging
+dtavg=0
+nsrate=-1
+
 !Initialization
 !$ACC update device(temp, vel, stress0, force, balance, amass, rmass, &
 !$ACC               area, dvol, strain, bc, ncod, junk2, xmpt, tkappa, &
@@ -63,7 +67,7 @@ dt = min( dt_elastic, dt_maxwell )
 !$ACC               andesitic_melt_vol, extr_acc, strainr, aps, visn, e2sr, &
 !$ACC               temp0, source, shrheat, bcstress, &
 !$ACC               pt, barcord, cold, cnew, numtr, &
-!$ACC               se2sr, sshrheat)
+!$ACC               se2sr, sshrheat, dtavg, nsrate)
 
 
 return

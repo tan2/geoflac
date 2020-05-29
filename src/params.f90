@@ -38,7 +38,7 @@ integer :: nx,nz,nq,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
      iph_int,incoming_left,incoming_right, &
      iynts, iax1,iay1,ibx1,iby1,icx1,icy1,idx1,idy1, &
      ivis_present,n_boff_cutoff,idt_scale,ifreq_imasses,ifreq_rmasses, &
-     nloop_restarted,nloop,irestart,ifreq_avgsr
+     nloop_restarted,nloop,irestart,ifreq_avgsr,nsrate
 
 real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
      dx_rem,angle_rem,anglemin1,anglemint,topo_kappa,fac_kappa, &
@@ -62,7 +62,7 @@ real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
      t_top,t_bot,hs,hr,temp_per,bot_bc, &
      hc1(maxph),hc2(maxph),hc3(maxph),hc4(maxph), &
      age_1(maxph),g,pisos,drosub,damp_vis, &
-     time,dt,time_max, devmax, dvmax
+     time,dt,time_max, devmax, dvmax, dtavg
 
 
 character phasefile*20,tempfile*20,coordfile*20
@@ -93,7 +93,7 @@ character phasefile*20,tempfile*20,coordfile*20
 !$ACC     iph_int,incoming_left,incoming_right, &
 !$ACC     iynts, iax1,iay1,ibx1,iby1,icx1,icy1,idx1,idy1, &
 !$ACC     ivis_present,n_boff_cutoff,idt_scale,ifreq_imasses,ifreq_rmasses, &
-!$ACC     nloop_restarted,nloop,irestart,ifreq_avgsr)
+!$ACC     nloop_restarted,nloop,irestart,ifreq_avgsr,nsrate)
 
 !$ACC declare copyin(x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
 !$ACC     dx_rem,angle_rem,anglemin1,anglemint,topo_kappa,fac_kappa, &
@@ -117,5 +117,5 @@ character phasefile*20,tempfile*20,coordfile*20
 !$ACC     t_top,t_bot,hs,hr,temp_per,bot_bc, &
 !$ACC     hc1(maxph),hc2(maxph),hc3(maxph),hc4(maxph), &
 !$ACC     age_1(maxph),g,pisos,drosub,damp_vis, &
-!$ACC     time,dt,time_max, devmax, dvmax)
+!$ACC     time,dt,time_max, devmax, dvmax, dtavg)
 end module params
