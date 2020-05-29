@@ -4,6 +4,7 @@
 subroutine setflac
 use arrays
 use params
+use marker_data
 implicit none
 
 nloop = 0
