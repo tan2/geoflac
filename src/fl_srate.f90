@@ -122,6 +122,7 @@ dtavg = dtavg + dt
 !$ACC end serial
 
 ! re-initialisation after navgsr steps
+!$ACC update self(nsrate)
 if( nsrate .eq. ifreq_avgsr ) then
     !$ACC parallel loop collapse(2)
     !$OMP parallel do
