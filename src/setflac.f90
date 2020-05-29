@@ -52,6 +52,7 @@ if( ivis_present.eq.1 ) call init_visc
 
 ! Inertial masses and time steps (elastic and maxwell)
 call dt_mass
+!$ACC update self(dt_elastic, dt_maxwell)
 dt = min( dt_elastic, dt_maxwell )
 !$ACC update device(dt)
 
