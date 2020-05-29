@@ -64,18 +64,17 @@ MODULE marker_data
     call check_inside(x , y, bar1, bar2, ntr, i, j, inc)
     if(inc.eq.0) return
   
-    if(j == 1) then
-        if(ntopmarker(i) == max_markers_per_elem) then
-            write(msg,*) 'Too many markers at surface elements:', i, ntopmarker(i)
-            call SysMsg(msg)
-            call SysMsg('Marker skipped, not added!')
-            return
-        endif
-        ! recording the id of markers belonging to surface elements
-        ntopmarker(i) = ntopmarker(i) + 1
-        itopmarker(ntopmarker(i), i) = kk + 1
-    end if
-  
+    if(nmark_elem(j,i) == max_markers_per_elem) then
+        !write(msg*) 'Too many markers at element:', i, j, nmark_elem(j,i)
+        !call SysMsg(msg)
+        !call SysMsg('Marker skipped, not added!')
+        inc = 0
+        return
+    endif
+    ! recording the id of markers belonging to the element
+    nmark_elem(j,i) = nmark_elem(j,i) + 1
+    mark_id_elem(nmark_elem(j,i),j,i) = kk + 1
+
     kk = kk + 1
   
     mark_x(kk) = x
@@ -104,22 +103,20 @@ MODULE marker_data
     implicit none
     
     integer :: j1, j2, i1, i2, iph, &
-               kk, n, k, j, i
+               kk, n, j, i
     
     ! reset the markers within elements in the rectangular region
     
-    do kk = 1 , nmarkers
-        if (mark_dead(kk).eq.0) cycle
-        n = mark_ntriag(kk)
-        k = mod(n - 1, 2) + 1
-        j = mod((n - k) / 2, nz-1) + 1
-        i = (n - k) / 2 / (nz - 1) + 1
-    
-        if(j>=j1 .and. j<=j2 .and. i>=i1 .and. i<=i2) then
-            nphase_counter(mark_phase(kk),j,i) = nphase_counter(mark_phase(kk),j,i) - 1
-            mark_phase(kk) = iph
-            nphase_counter(iph,j,i) = nphase_counter(iph,j,i) + 1
-        endif
+    do i = i1, i2
+      do j = j1, j2
+
+        do n = 1 , nmark_elem(j,i)
+          kk = mark_id_elem(n,j,i)
+          mark_phase(kk) = iph
+        enddo
+        nphase_counter(:,j,i) = 0
+        nphase_counter(iph,j,i) = nmark_elem(j,i)
+      enddo
     enddo
     
     iphase(j1:j2,i1:i2) = iph

@@ -200,6 +200,8 @@ deallocate(dum11)
 nphase_counter(:,:,:) = 0
 ntopmarker(:) = 0
 itopmarker(:,:) = 0
+mark_id_elem(:,:,:) = 0
+nmark_elem(:,:) = 0
 print *, nmarkers
 do n = 1, nmarkers
     if(mark_dead(n) .eq. 0) cycle
@@ -216,16 +218,15 @@ do n = 1, nmarkers
 
     !if(mark_ntriag(n) .ne. 2 * ( (nz-1)*(i-1)+j-1) + k) write(*,*), mark_ntriag(n), i,j,k
 
-    if(j == 1) then
-        if(ntopmarker(i) == max_markers_per_elem) then
-            write(msg,*) 'Too many markers at surface elements:', i, ntopmarker(i)
-            call SysMsg(msg)
-            cycle
-        endif
-        ! recording the id of markers belonging to surface elements
-        ntopmarker(i) = ntopmarker(i) + 1
-        itopmarker(ntopmarker(i), i) = n + 1
-    end if
+    if(nmark_elem(j,i) == max_markers_per_elem) then
+        write(msg,*) 'Too many markers at element:', i, j, nmark_elem(j,i)
+        call SysMsg(msg)
+        cycle
+    endif
+
+    ! recording the id of markers belonging to the element
+    nmark_elem(j, i) = nmark_elem(j, i) + 1
+    mark_id_elem(nmark_elem(j, i), j, i) = n
 
     nphase_counter(mark_phase(n),j,i) = nphase_counter(mark_phase(n),j,i) + 1
 

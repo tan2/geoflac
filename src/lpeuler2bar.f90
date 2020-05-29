@@ -9,6 +9,8 @@ character*200 msg
 
 nphase_counter(:,:,:) = 0
 ntopmarker(:) = 0
+mark_id_elem(:,:,:) = 0
+nmark_elem(:,:) = 0
 
 !$OMP parallel do private(n,k,j,i,xx,yy,bar1,bar2,ntr,inc)
 do n = 1 , nmarkers
@@ -36,19 +38,17 @@ do n = 1 , nmarkers
     nphase_counter(mark_phase(n),j,i) = nphase_counter(mark_phase(n),j,i) + 1
     !$OMP end critical (lpeulerbar1)
 
-    if(j == 1) then
-        if(ntopmarker(i) == max_markers_per_elem) then
-            write(msg,*) 'Too many markers at surface elements in lpeuler2bar:', i, n
-            call SysMsg(msg)
-            mark_dead(n) = 0
-            cycle
-        endif
-        !$OMP critical (lpeulerbar2)
-        ! recording the id of markers belonging to surface elements
-        ntopmarker(i) = ntopmarker(i) + 1
-        itopmarker(ntopmarker(i), i) = n
-        !$OMP end critical (lpeulerbar2)
-    end if
+    if(nmark_elem(j, i) == max_markers_per_elem) then
+        !write(msg,*) 'Too many markers at elements in lpeuler2bar:', i, j, n
+        !call SysMsg(msg)
+        mark_dead(n) = 0
+        cycle
+    endif
+    !$OMP critical (lpeulerbar2)
+    ! recording the id of markers belonging to surface elements
+    nmark_elem(j, i) = nmark_elem(j, i) + 1
+    mark_id_elem(nmark_elem(j, i), j, i) = n
+    !$OMP end critical (lpeulerbar2)
 enddo
 !$OMP end parallel do
 return
