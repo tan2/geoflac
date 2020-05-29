@@ -28,18 +28,16 @@ real*8, parameter :: partial_melt_temp = 600.
 ! thickness of new crust
 real*8, parameter :: new_crust_thickness = 7.e3
 
+!$ACC data  create(ichanged, jchanged, kph, ratio)
 
+!$ACC serial
 ! search the element for melting
-!$ACC parallel loop create(ichanged, jchanged, kph, ratio)
 do jj = 1, nz-1
    ! search for crustal depth
    dep2 = 0.25*(cord(jj,1,2)+cord(jj+1,1,2)+cord(jj,2,2)+cord(jj+1,2,2))
    if (cord(1,1,2) - dep2 >= new_crust_thickness) exit
 end do
-!$ACC end parallel
 
-
-!$ACC serial
 j = min(max(2, jj), nz-1)
 do i = 1, nx-1
   iph = iphase(j,i)
@@ -263,7 +261,7 @@ enddo
 junk2(1:nz-1,1:nx-1) = aps(1:nz-1,1:nx-1)
 !$ACC end parallel
 
-!$ACC parallel
+!$ACC serial
 ! recompute phase ratio of those changed elements
 do k = 1, nchanged
     i = ichanged(k)
@@ -287,7 +285,8 @@ do k = 1, nchanged
     aps(j,i) = max(aps(j,i) - junk2(j,i) / float(kinc), 0d0)
 
 enddo
-!$ACC end parallel
+!$ACC end serial
 
+!$ACC end data
 return
 end subroutine change_phase
