@@ -211,6 +211,7 @@ end subroutine diff_topo
 
 
 subroutine resurface
+  !$ACC routine(add_marker_at_top) seq
   use bar2euler_mod
   use marker_data
   use arrays
@@ -220,10 +221,12 @@ subroutine resurface
 
 
   double precision :: shp2(2,3,2)
-  integer :: i, ii, k, kinc, kmax, m, n, n_to_add, nmax, ntriag
+  integer :: i, ii, k, kinc, kmax, m, n, n_to_add, nmax, ntriag, iseed
   double precision :: chgtopo, chgtopo2, dz, elz, &
                       x, y, ymax
 
+  !$ACC kernels
+  iseed = 0
   do i = 1, nx-1
       ! averge thickness of this element
       elz = 0.5 * (cord(1,i,2) - cord(2,i,2) + cord(1,i+1,2) - cord(2,i+1,2))
@@ -237,7 +240,7 @@ subroutine resurface
           if (chgtopo > 0.) then
               ! sedimentation, add a sediment marker
               !print *, 'add sediment', i, chgtopo, elz
-             call add_marker_at_top(i, 0.05d0, elz, ksed2, nmarkers)
+             call add_marker_at_top(i, 0.05d0, elz, ksed2, nmarkers, iseed)
           else
               ! erosion, remove the top marker
               !print *, 'erosion', i, chgtopo, elz
@@ -285,7 +288,7 @@ subroutine resurface
           dz = chgtopo2 / elz / (n_to_add+1)
           !print *, 'add arc', i, chgtopo2, elz, n_to_add, dz
           do ii = 1, n_to_add
-              call add_marker_at_top(i, dz*ii, elz, karc1, nmarkers)
+              call add_marker_at_top(i, dz*ii, elz, karc1, nmarkers, iseed)
           enddo
 
           extr_acc(i) = 0
@@ -296,19 +299,22 @@ subroutine resurface
 
       end if
   end do
+  !$ACC end kernels
 
 end subroutine resurface
 
 
-subroutine add_marker_at_top(i, dz_ratio, elz, kph, nmarkers)
+subroutine add_marker_at_top(i, dz_ratio, elz, kph, nmarkers, iseed)
+  !$ACC routine seq
+  use myrandom_mod
   use marker_data
   use arrays
   use params, only : time
   implicit none
-  integer :: i, kph, nmarkers, inc
+  integer :: i, kph, nmarkers, inc, iseed
   double precision :: dz_ratio, elz, xx, yy, rx
   do while(.true.)
-     call random_number(rx)
+     call myrandom(iseed, rx)
      xx = cord(1,i,1) + rx * (cord(1,i+1,1) - cord(1,i,1))
      yy = cord(1,i,2) + rx * (cord(1,i+1,2) - cord(1,i,2)) - dz_ratio*elz
      call add_marker(xx, yy, kph, time, nmarkers, 1, i, inc)
