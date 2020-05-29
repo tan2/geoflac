@@ -236,6 +236,7 @@ subroutine resurface
                   ! replace topmarker k with last topmarker
                   itopmarker(kmax,i) = itopmarker(ntopmarker(i),i)
                   ntopmarker(i) = ntopmarker(i) - 1
+                  nphase_counter(mark_phase(nmax),1,i) = nphase_counter(mark_phase(nmax),1,i) - 1
               endif
           endif
 
