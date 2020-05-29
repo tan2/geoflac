@@ -14,6 +14,10 @@ integer :: i, ii, iph, j, nrec, nwords
 double precision :: sxx, szz, sxz, dtmpr, dl
 double precision :: strainI, strainII, stressI, stressII
 
+!$ACC update self(nloop, time, &
+!$ACC             cord, vel, temp, e2sr, strain, stress0, iphase, phase_ratio, &
+!$ACC             aps, visn, source, shrheat, extrusion)
+
 ! define record number and write it to contents
 if( lastout .eq. 1 ) then
     nrec = 1
