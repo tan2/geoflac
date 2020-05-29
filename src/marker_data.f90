@@ -102,9 +102,9 @@ MODULE marker_data
     
     integer :: j1, j2, i1, i2, iph, &
                kk, n, j, i
-    
+
+    !$OMP parallel do private(i,j,n,kk)
     ! reset the markers within elements in the rectangular region
-    
     do i = i1, i2
       do j = j1, j2
 
@@ -116,7 +116,8 @@ MODULE marker_data
         nphase_counter(iph,j,i) = nmark_elem(j,i)
       enddo
     enddo
-    
+    !$OMP end parallel do
+
     iphase(j1:j2,i1:i2) = iph
     phase_ratio(:,j1:j2,i1:i2) = 0.d0
     phase_ratio(iph,j1:j2,i1:i2) = 1.d0
