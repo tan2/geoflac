@@ -245,8 +245,8 @@ subroutine resurface
               nmax = 0
               kmax = 0
               call shape_functions(1,i,shp2)
-              do k = 1, ntopmarker(i)
-                  n = itopmarker(k, i)
+              do k = 1, nmark_elem(1,i)
+                  n = mark_id_elem(k, 1, i)
                   ntriag = mark_ntriag(n)
                   m = mod(ntriag,2) + 1
                   call bar2xy(mark_a1(n), mark_a2(n), shp2(:,:,m), x, y)
@@ -258,9 +258,9 @@ subroutine resurface
               end do
               if (nmax .ne. 0) then
                   mark_dead(nmax) = 0
-                  ! replace topmarker k with last topmarker
-                  itopmarker(kmax,i) = itopmarker(ntopmarker(i),i)
-                  ntopmarker(i) = ntopmarker(i) - 1
+                  ! replace marker kmax with last marker
+                  mark_id_elem(kmax, 1, i) = mark_id_elem(nmark_elem(1, i), 1, i)
+                  nmark_elem(1, i) = nmark_elem(1, i) - 1
                   nphase_counter(mark_phase(nmax),1,i) = nphase_counter(mark_phase(nmax),1,i) - 1
               endif
           endif
