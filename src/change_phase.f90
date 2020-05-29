@@ -1,7 +1,3 @@
-module change_phase_mod
-
-contains
-
 subroutine change_phase
 USE marker_data
 use arrays
@@ -295,5 +291,3 @@ enddo
 
 return
 end subroutine change_phase
-
-end module change_phase_mod

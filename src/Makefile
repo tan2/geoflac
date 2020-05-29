@@ -157,12 +157,12 @@ MODULE_SRCS = \
 	euler2bar_mod.f90 \
 	marker_data.f90 \
 	bar2euler_mod.f90 \
-	change_phase_mod.f90 \
 	matprops.f90 \
 	rheol.f90
 
 SRCS =	\
 	bc_update.f90 \
+	change_phase.f90 \
 	dt_adjust.f90 \
 	dt_mass.f90 \
 	fl_move.f90 \
