@@ -53,5 +53,9 @@ if( ivis_present.eq.1 ) call init_visc
 call dt_mass
 dt = min( dt_elastic, dt_maxwell )
 
+! Initiate parameters for stress averaging
+dtavg=0
+nsrate=-1
+
 return
 end

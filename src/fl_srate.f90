@@ -5,30 +5,12 @@
 subroutine fl_srate
 use arrays
 use params
-include 'precision.inc'
-
-! following block is needed for averaging
-double precision, save :: dtavg
-integer, save :: nsrate
-data nsrate/-1/
-
+implicit none
 integer :: i,j
 double precision :: x1,y1,x2,y2,x3,y3,x4,y4, &
          vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4, &
          em,eda,edb,s11,s22,s12, &
          srII,srI,srs2,stII
-
-if( nsrate .eq. -1 ) then
-!$OMP parallel sections
-    se2sr = 0.
-!$OMP section
-    sshrheat = 0.
-!$OMP end parallel sections
-
-    dtavg = 0.
-endif
-! --------
-
 
 !$OMP parallel do &
 !$OMP private(i,j,x1,y1,x2,y2,x3,y3,x4,y4, &

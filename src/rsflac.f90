@@ -256,5 +256,9 @@ call dt_mass
 
 if( ivis_present.eq.1 ) call init_visc
 
+! Initiate parameters for stress averaging
+dtavg=0
+nsrate=-1
+
 return
 end
