@@ -11,7 +11,7 @@ implicit none
 
 double precision :: depl(4)
 double precision :: s11p(4),s22p(4),s12p(4),s33p(4),s11v(4),s22v(4),s12v(4),s33v(4)
-logical :: rh_sel
+logical, parameter :: rh_sel = .true.
 double precision :: bulkm,rmu,coh,phi,psi, &
                     stherm,hardn,vis, &
                     de11,de22,de12,de33,dv, &
@@ -62,7 +62,7 @@ curr_devmax = devmax
 curr_dvmax = dvmax
 !$ACC end parallel
 
-!$ACC parallel loop collapse(2) create(s11p, s22p, s33p, s33v, s12p, depl, s12v, s22v, s11v)
+!$ACC parallel loop collapse(2) private(s11p, s22p, s33p, s33v, s12p, depl, s12v, s22v, s11v)
 !$OMP Parallel Private(i,j,k,iph,irh,bulkm,rmu,coh,phi,psi, &
 !$OMP                  stherm,hardn,vis, &
 !$OMP                  de11,de22,de12,de33,dv, &
