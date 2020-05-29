@@ -14,6 +14,10 @@ double precision :: densT, dh, dh1, dh2, dp, dpt, &
                     press, rogh, tmpr
 allocate(cordo(1:nz,1:nx,1:2))
 
+!$ACC update self(cord, dhacc, extr_acc, cold, cnew, &
+!$ACC             stress0, strain, aps, visn, source, temp, vel, rmass, area, &
+!$ACC             dt_elastic, dt_maxwell, dt)
+
 ! Save old mesh for interpolations
 cordo = cord
 
@@ -299,6 +303,10 @@ dt = min(dt_elastic, dt_maxwell)
 !$ACC update device(dt)
 
 deallocate(cordo)
+
+!$ACC update device(cord, dhacc, extr_acc, cnew, pt, barcord, numtr, &
+!$ACC               cold, stress0, strain, aps, visn, source, temp0, cnew, &
+!$ACC               vel, temp, area, dt, rmass) 
 
 return 
 end
