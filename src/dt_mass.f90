@@ -27,11 +27,13 @@ double precision :: dlmin, vel_max, dt_m, diff
 double precision :: pwave, dens, vel_sound, rho_inert, rho_inert2, am3, dte, dtt
 double precision :: rmu, visc_cut
 
-!$ACC parallel
-
 ! minimal propagation distance
+!$ACC parallel
 dlmin = dlmin_prop()
+!$ACC end parallel
+
 !if(time/sec_year.le.500000.) strain_inert = 1.e-5
+!$ACC serial
 if (idt_scale .eq. 0) then
     ! find dt below
 elseif (idt_scale.eq.1) then 
@@ -48,7 +50,7 @@ elseif (idt_scale.eq.2) then
 !write(*,'(F45.20)')dt_elastic
     endif
 endif
-!$ACC end parallel
+!$ACC end serial
 
 !$ACC parallel
 vel_max = 0.
@@ -62,7 +64,7 @@ enddo
 enddo
 !$ACC end parallel
 
-!$ACC parallel
+!$ACC serial
 if (idt_scale .eq. 0) then
     amass = rmass
 else
@@ -71,9 +73,7 @@ end if
 
 dtmax_therm = 1.e+28
 dt_maxwell = 1.e+28
-!$ACC end parallel
 
-!$ACC parallel loop collapse(2)
 do 1 i = 1,nx-1
     do 1 j = 1,nz-1
 
@@ -144,7 +144,7 @@ do 1 i = 1,nx-1
         endif
 
 1 continue 
-!$ACC end parallel
+!$ACC end serial
 return
 end
 
