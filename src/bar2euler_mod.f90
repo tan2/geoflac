@@ -1,4 +1,4 @@
-module bar2euler
+module bar2euler_mod
 
 contains
 
@@ -108,4 +108,4 @@ subroutine bar2xy(ba1, ba2, shp, x, y)
 end subroutine bar2xy
 
 
-end module bar2euler
+end module bar2euler_mod

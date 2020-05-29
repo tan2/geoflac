@@ -1,6 +1,6 @@
-module myrandom
+module myrandom_mod
 
-contains 
+contains
 
 !
 ! A simple thread-safe pseudo random number generator
@@ -18,4 +18,4 @@ subroutine myrandom(iseed, r)
 end subroutine myrandom
 
 
-end module myrandom
+end module myrandom_mod

@@ -211,7 +211,7 @@ end subroutine diff_topo
 
 
 subroutine resurface
-  use bar2euler
+  use bar2euler_mod
   use marker_data
   use arrays
   use params

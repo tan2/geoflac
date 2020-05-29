@@ -1,5 +1,5 @@
-subroutine marker2elem 
-  use myrandom
+subroutine marker2elem
+  use myrandom_mod
   use marker_data
   use arrays
   use params

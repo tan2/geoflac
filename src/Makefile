@@ -150,14 +150,14 @@ endif
 
 # module files have to be compiled before other f90 files
 MODULE_SRCS = \
-	myrandom.f90 \
+	myrandom_mod.f90 \
 	phases.f90 \
 	params.f90 \
 	arrays.f90 \
-	euler2bar.f90 \
+	euler2bar_mod.f90 \
 	marker_data.f90 \
-        bar2euler.f90 \
-        change_phase.f90 \
+	bar2euler_mod.f90 \
+	change_phase_mod.f90 \
 	matprops.f90 \
 	rheol.f90
 

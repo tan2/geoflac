@@ -1,4 +1,4 @@
-module euler2bar
+module euler2bar_mod
 
 contains
 
@@ -144,4 +144,4 @@ subroutine check_inside(x,y,bar1,bar2,ntr,i,j,inc)
   return
 end subroutine check_inside
 
-end module euler2bar
+end module euler2bar_mod

@@ -1,4 +1,4 @@
-module change_phase
+module change_phase_mod
 
 contains
 
@@ -293,4 +293,4 @@ enddo
 return
 end subroutine change_phase
 
-end module change_phase
+end module change_phase_mod
