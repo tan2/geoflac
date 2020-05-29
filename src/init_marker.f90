@@ -12,8 +12,8 @@ double precision, parameter :: onesixth = 0.1666666666666666666666d0
 double precision, parameter :: fivesixth = 0.8333333333333333333333d0
 
 nphase_counter = 0
-ntopmarker(:) = 0
-itopmarker(:,:) = 0
+mark_id_elem = 0
+nmark_elem = 0
 
 ! define euler coordinate of the markers
 ! Distribute evenly first then randomize the distribution

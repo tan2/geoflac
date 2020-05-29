@@ -13,7 +13,7 @@ MODULE marker_data
   integer, allocatable :: mark_phase(:)
   integer, allocatable :: mark_ID(:)          ! unique ID-number
 
-  integer, allocatable :: nphase_counter(:,:,:), ntopmarker(:), itopmarker(:,:)
+  integer, allocatable :: nphase_counter(:,:,:)
   integer, allocatable :: mark_id_elem(:,:,:), nmark_elem(:,:)
 
   contains
@@ -34,8 +34,6 @@ MODULE marker_data
              mark_ID(max_markers))
 
     allocate(nphase_counter(20, nz-1, nx-1))
-    allocate(ntopmarker(nx))
-    allocate(itopmarker(max_markers_per_elem, nx-1))
     allocate(mark_id_elem(max_markers_per_elem, nz-1, nx-1))
     allocate(nmark_elem(nz-1, nx-1))
 

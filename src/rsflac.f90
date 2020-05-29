@@ -198,8 +198,6 @@ deallocate(dum11)
 
 ! recount marker phase
 nphase_counter(:,:,:) = 0
-ntopmarker(:) = 0
-itopmarker(:,:) = 0
 mark_id_elem(:,:,:) = 0
 nmark_elem(:,:) = 0
 print *, nmarkers
