@@ -19,10 +19,9 @@ double precision :: dens
 !-----------------------------------
 
 !XXX data dependence
-!$ACC parallel
+!$ACC serial
 rmass = 0
 
-!$ACC loop collapse(2)
 do i = 1, nx-1
     do j = 1, nz-1
 
@@ -52,8 +51,7 @@ do i = 1, nx-1
         rmass(j  ,i+1)=rmass(j  ,i+1)+c1d12/area(j,i,4)*dens 
     enddo
 enddo
-!$ACC end loop
-!$ACC end parallel
+!$ACC end serial
 
 return
 end
