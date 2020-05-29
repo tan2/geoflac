@@ -1,5 +1,9 @@
 MODULE marker_data
   integer, parameter :: max_markers = 10000000
+
+  !!! maximum number of ELEMENTS !!!
+  integer, parameter :: max_markers_per_elem=32
+
   SAVE
   double precision, allocatable :: mark_a1(:), mark_a2(:) ! baricentric coordinates
   double precision, allocatable :: mark_x(:), mark_y(:)   ! Euler coordinates
@@ -9,6 +13,8 @@ MODULE marker_data
   integer, allocatable :: mark_phase(:)
   integer, allocatable :: mark_ID(:)          ! unique ID-number
 
+  integer, allocatable :: nphase_counter(:,:,:), ntopmarker(:), itopmarker(:,:)
+
   contains
 
   subroutine allocate_markers(nz, nx)
@@ -16,7 +22,7 @@ MODULE marker_data
 
     integer, intent(in) :: nz, nx
     integer :: max_markers
-    max_markers = nz * nx * 32
+    max_markers = nz * nx * max_markers_per_elem
 
     allocate(mark_a1(max_markers), mark_a2(max_markers), &
              mark_x(max_markers), mark_y(max_markers), &
@@ -25,6 +31,10 @@ MODULE marker_data
              mark_ntriag(max_markers), &
              mark_phase(max_markers), &
              mark_ID(max_markers))
+
+    allocate(nphase_counter(20, nz-1, nx-1))
+    allocate(ntopmarker(nx))
+    allocate(itopmarker(max_markers_per_elem, nx-1))
 
   end subroutine
 

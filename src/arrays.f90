@@ -15,11 +15,7 @@ module arrays
   ! temporary array
   real*8, allocatable :: junk2(:,:), xmpt(:,:,:), tkappa(:)
 
-  !!! maximum number of ELEMENTS !!!
-  integer, parameter :: max_markers_per_elem=32
-
-  integer, allocatable :: iphase(:,:), nphase_counter(:,:,:), &
-      ntopmarker(:), itopmarker(:,:), &
+  integer, allocatable :: iphase(:,:), &
       nopbou(:,:), ncodbou(:,:), idtracer(:)
 
   real*8, allocatable :: phase_ratio(:,:,:), &
@@ -60,9 +56,6 @@ contains
 
     allocate(ncod(nz, nx, 2))
     allocate(iphase(nz-1, nx-1))
-    allocate(nphase_counter(20, nz-1, nx-1))
-    allocate(ntopmarker(nx))
-    allocate(itopmarker(max_markers_per_elem, nx-1))
     allocate(nopbou(((nz-1)+(nx-1))*2, 4))
     allocate(ncodbou(((nz-1)+(nx-1))*2, 3))
     allocate(idtracer((nz-1)*(nx-1)*2))
