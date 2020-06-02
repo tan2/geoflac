@@ -80,7 +80,7 @@ do kk = 1 , nmarkers
     depth = 0.5*(cord(1,i,2)+cord(1,i+1,2)) - yy
 
     ! # of markers inside quad
-    kinc = sum(nphase_counter(:,j,i))
+    kinc = nmark_elem(j,i)
 
     !XXX: Some quick checks to skip markers that won't change phase. Might
     !     not be accurate!
@@ -102,8 +102,6 @@ do kk = 1 , nmarkers
                  phase_ratio(karc1,jbelow,i) > 0.8 .or. &
                  phase_ratio(ksed1,jbelow,i) > 0.8) then
                 !$OMP critical (change_phase1)
-                nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
-                nphase_counter(kweak,j,i) = nphase_counter(kweak,j,i) + 1
                 nchanged = nchanged + 1
                 ichanged(nchanged) = i
                 jchanged(nchanged) = j
@@ -118,8 +116,6 @@ do kk = 1 , nmarkers
         !if(tmpr > 300. .and. tmpr < 400. &
         !     .and. stressII(j,i)*strainII(j,i) > 4.e6) then
         !    !$OMP critical (change_phase1)
-        !    nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
-        !    nphase_counter(kweakmc,j,i) = nphase_counter(kweakmc,j,i) + 1
         !    nchanged = nchanged + 1
         !    ichanged(nchanged) = i
         !    jchanged(nchanged) = j
@@ -142,8 +138,6 @@ do kk = 1 , nmarkers
                 phase_ratio(kocean2,jbelow,i) > 0.8 .or. &
                 phase_ratio(ksed1,jbelow,i) > 0.8) then
                 !$OMP critical (change_phase1)
-                nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
-                nphase_counter(kserp,j,i) = nphase_counter(kserp,j,i) + 1
                 nchanged = nchanged + 1
                 ichanged(nchanged) = i
                 jchanged(nchanged) = j
@@ -159,8 +153,6 @@ do kk = 1 , nmarkers
         press = mantle_density * g * depth
         if (tmpr < min_eclogite_temp .or. depth < min_eclogite_depth .or. press < trpres) cycle
         !$OMP critical (change_phase1)
-        nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
-        nphase_counter(keclg,j,i) = nphase_counter(keclg,j,i) + 1
         nchanged = nchanged + 1
         ichanged(nchanged) = i
         jchanged(nchanged) = j
@@ -176,8 +168,6 @@ do kk = 1 , nmarkers
         press = mantle_density * g * depth
         if (tmpr < serpentine_temp .or. (press < trpres .and. press > trpres2)) cycle
         !$OMP critical (change_phase1)
-        nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
-        nphase_counter(khydmant,j,i) = nphase_counter(khydmant,j,i) + 1
         nchanged = nchanged + 1
         ichanged(nchanged) = i
         jchanged(nchanged) = j
@@ -188,8 +178,6 @@ do kk = 1 , nmarkers
         ! from sediment solidus in Nichols et al., Nature, 1994
         if (tmpr < 650 .or. depth < 20e3) cycle
         !$OMP critical (change_phase1)
-        nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
-        nphase_counter(kmetased,j,i) = nphase_counter(kmetased,j,i) + 1
         nchanged = nchanged + 1
         ichanged(nchanged) = i
         jchanged(nchanged) = j
@@ -202,8 +190,6 @@ do kk = 1 , nmarkers
             andesitic_melt_vol(i) = andesitic_melt_vol(i) + quad_area * vol_frac_melt / kinc
 
             !$OMP critical (change_phase1)
-            nphase_counter(iph,j,i) = nphase_counter(iph,j,i) - 1
-            nphase_counter(kmant1,j,i) = nphase_counter(kmant1,j,i) + 1
             nchanged = nchanged + 1
             ichanged(nchanged) = i
             jchanged(nchanged) = j
@@ -225,21 +211,13 @@ do k = 1, nchanged
     i = ichanged(k)
     j = jchanged(k)
 
-    !if(minval(nphase_counter(:,j,i)) < 0) then
-    !    print *, j, i, nphase_counter(:,j,i)
-    !    stop 999
-    !endif
-
-    kinc = sum(nphase_counter(:,j,i))
-    ratio(1:nphase) = nphase_counter(1:nphase,j,i) / float(kinc)
-    kph = maxloc(nphase_counter(:,j,i))
-
     ! the phase of this element is the most abundant marker phase
-    iphase(j,i) = kph(1)
-    phase_ratio(1:nphase,j,i) = ratio(1:nphase)
+    call count_phase_ratio(j,i,iph)
+    iphase(j,i) = iph
 
     ! When phase change occurs, the mineral would recrystalize and lost
     ! all plastic strain associated with this marker.
+    kinc = nmark_elem(j,i)
     aps(j,i) = max(aps(j,i) - junk2(j,i) / float(kinc), 0d0)
 
 enddo

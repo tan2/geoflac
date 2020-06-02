@@ -5,7 +5,7 @@ subroutine marker2elem
   use params
   implicit none
 
-  integer :: kph(1), i, j, kinc, inc, iseed
+  integer :: kph(1), i, j, k, kinc, inc, iseed
   double precision :: x1, x2, y1, y2, xx, yy, rx, ry
 
   !character*200 msg
@@ -16,7 +16,7 @@ subroutine marker2elem
   iseed = 0
   do i = 1 , nx-1
       do j = 1 , nz-1
-          kinc = sum(nphase_counter(:,j,i))
+          kinc = nmark_elem(j,i)
 
           !  if there are too few markers in the element, create a new one
           !  with age 0 (similar to initial marker)
@@ -42,19 +42,8 @@ subroutine marker2elem
               kinc = kinc + 1
           enddo
 
-          phase_ratio(1:nphase,j,i) = nphase_counter(1:nphase,j,i) / float(kinc)
-
-          ! the phase of this element is the most abundant marker phase
-          kph = maxloc(nphase_counter(:,j,i))
-          iphase(j,i) = kph(1)
-
-          !! sometimes there are more than one phases that are equally abundant
-          !maxphase = maxval(nphase_counter(:,j,i))
-          !nmax = count(nphase_counter(:,j,i) == maxphase)
-          !if(nmax .gt. 1) then
-          !    write(*,*) 'elem has equally abundant marker phases:', i,j,nmax,nphase_counter(:,j,i)
-          !    write(*,*) 'choosing the 1st maxloc as the phase'
-          !endif
+          call count_phase_ratio(j,i,k)
+          iphase(j,i) = k
 
       enddo
   enddo

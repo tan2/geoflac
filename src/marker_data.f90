@@ -13,7 +13,6 @@ MODULE marker_data
   integer, allocatable :: mark_phase(:)
   integer, allocatable :: mark_ID(:)          ! unique ID-number
 
-  integer, allocatable :: nphase_counter(:,:,:)
   integer, allocatable :: mark_id_elem(:,:,:), nmark_elem(:,:)
 
   contains
@@ -33,7 +32,6 @@ MODULE marker_data
              mark_phase(max_markers), &
              mark_ID(max_markers))
 
-    allocate(nphase_counter(20, nz-1, nx-1))
     allocate(mark_id_elem(max_markers_per_elem, nz-1, nx-1))
     allocate(nmark_elem(nz-1, nx-1))
 
@@ -84,16 +82,9 @@ MODULE marker_data
     mark_age(kk) = age
     mark_ntriag(kk) = ntr
     mark_phase(kk) = iph
-  
-    nphase_counter(iph,j,i) = nphase_counter(iph,j,i) + 1
-  
-    if(kk > max_markers) then
-        call SysMsg('ADD_MARKER: # of markers exceeds max. value. Please increase mark array size.')
-        stop 15
-    endif
-  
+
   end subroutine add_marker
-  
+
 
   subroutine newphase2marker (j1, j2, i1, i2, iph)
     use arrays
@@ -112,8 +103,7 @@ MODULE marker_data
           kk = mark_id_elem(n,j,i)
           mark_phase(kk) = iph
         enddo
-        nphase_counter(:,j,i) = 0
-        nphase_counter(iph,j,i) = nmark_elem(j,i)
+
       enddo
     enddo
     !$OMP end parallel do

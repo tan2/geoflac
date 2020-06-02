@@ -197,7 +197,6 @@ enddo
 deallocate(dum11)
 
 ! recount marker phase
-nphase_counter(:,:,:) = 0
 mark_id_elem(:,:,:) = 0
 nmark_elem(:,:) = 0
 print *, nmarkers
@@ -225,9 +224,6 @@ do n = 1, nmarkers
     ! recording the id of markers belonging to the element
     nmark_elem(j, i) = nmark_elem(j, i) + 1
     mark_id_elem(nmark_elem(j, i), j, i) = n
-
-    nphase_counter(mark_phase(n),j,i) = nphase_counter(mark_phase(n),j,i) + 1
-
 enddo
 
 call marker2elem

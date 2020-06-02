@@ -205,7 +205,7 @@ subroutine resurface
       ! change in topo
       chgtopo = dhacc(i)
       ! # of markers in this element
-      kinc = sum(nphase_counter(:,1,i))
+      kinc = nmark_elem(1,i)
 
       if (abs(chgtopo*kinc) >= elz) then
           ! add/remove markers if topo changed too much
@@ -236,15 +236,13 @@ subroutine resurface
                   ! replace marker kmax with last marker
                   mark_id_elem(kmax, 1, i) = mark_id_elem(nmark_elem(1, i), 1, i)
                   nmark_elem(1, i) = nmark_elem(1, i) - 1
-                  nphase_counter(mark_phase(nmax),1,i) = nphase_counter(mark_phase(nmax),1,i) - 1
               endif
           endif
 
           dhacc(i) = 0
 
           ! recalculate phase ratio
-          kinc = sum(nphase_counter(:,1,i))
-          phase_ratio(1:nphase,1,i) = nphase_counter(1:nphase,1,i) / float(kinc)
+          call count_phase_ratio(1,i,n)
 
       else
           ! nothing to do
@@ -266,8 +264,7 @@ subroutine resurface
           extr_acc(i) = 0
 
           ! recalculate phase ratio
-          kinc = sum(nphase_counter(:,1,i))
-          phase_ratio(1:nphase,1,i) = nphase_counter(1:nphase,1,i) / float(kinc)
+          call count_phase_ratio(1,i,n)
 
       end if
   end do

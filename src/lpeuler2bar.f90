@@ -7,7 +7,6 @@ include 'precision.inc'
 
 character*200 msg
 
-nphase_counter(:,:,:) = 0
 mark_id_elem(:,:,:) = 0
 nmark_elem(:,:) = 0
 
@@ -33,10 +32,6 @@ do n = 1 , nmarkers
     mark_a2(n) = bar2
     mark_ntriag(n) = ntr
 
-    !$OMP critical (lpeulerbar1)
-    nphase_counter(mark_phase(n),j,i) = nphase_counter(mark_phase(n),j,i) + 1
-    !$OMP end critical (lpeulerbar1)
-
     if(nmark_elem(j, i) == max_markers_per_elem) then
         !write(msg,*) 'Too many markers at elements in lpeuler2bar:', i, j, n
         !call SysMsg(msg)
@@ -50,6 +45,15 @@ do n = 1 , nmarkers
     !$OMP end critical (lpeulerbar2)
 enddo
 !$OMP end parallel do
+
+!$OMP parallel do private(n,j,i)
+do i = 1, nx-1
+    do j = 1, nz-1
+        call count_phase_ratio(j,i,n)
+    enddo
+enddo
+!$OMP end parallel do
+
 return
 
 end subroutine lpeuler2bar
