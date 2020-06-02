@@ -14,6 +14,7 @@ module arrays
 
   ! temporary array
   real*8, allocatable :: junk2(:,:), xmpt(:,:,:), tkappa(:)
+  integer, allocatable :: itmp(:,:)
 
   integer, allocatable :: iphase(:,:), &
       nopbou(:,:), ncodbou(:,:), idtracer(:)
@@ -86,6 +87,7 @@ contains
     allocate(junk2(nz, nx))
     allocate(xmpt(2,3,(nz-1)*(nx-1)*2))
     allocate(tkappa(nx))
+    allocate(itmp(nz, nx))
 
   end subroutine allocate_arrays
 
