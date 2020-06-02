@@ -123,6 +123,23 @@ MODULE marker_data
     phase_ratio(iph,j1:j2,i1:i2) = 1.d0
     
     return
-    end subroutine newphase2marker
-    
+  end subroutine newphase2marker
+
+
+  subroutine count_phase_ratio(j, i)
+    use params
+    use arrays
+
+    integer :: j, i, n, kk, ncounters(maxph), iph
+
+    ncounters = 0
+    do n = 1, nmark_elem(j,i)
+      kk = mark_id_elem(n,j,i)
+      iph = mark_phase(kk)
+      ncounters(iph) = ncounters(iph) + 1
+    enddo
+
+    phase_ratio(1:nphase,j,i) = ncounters(1:nphase) / (nmark_elem(j,i) * 1.0d0)
+
+  end subroutine count_phase_ratio
 END MODULE marker_data
