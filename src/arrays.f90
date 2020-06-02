@@ -16,7 +16,6 @@ module arrays
   real*8, allocatable :: junk2(:,:), xmpt(:,:,:), tkappa(:)
 
   integer, allocatable :: iphase(:,:), &
-      irheol_fl(:,:), &
       nopbou(:,:), ncodbou(:,:), idtracer(:)
 
   real*8, allocatable :: phase_ratio(:,:,:), &
@@ -37,7 +36,7 @@ module arrays
 
   !$ACC declare create(cord, temp, vel, stress0, force, balance, amass, rmass, &
   !$ACC                area, dvol, strain, bc, ncod, junk2, xmpt, tkappa, &
-  !$ACC                iphase, irheol_fl, &
+  !$ACC                iphase, &
   !$ACC                nopbou, ncodbou, idtracer, phase_ratio, dtopo, dhacc, extrusion, &
   !$ACC                andesitic_melt_vol, extr_acc, strainr, aps, visn, e2sr, &
   !$ACC                temp0, source, shrheat, bcstress, se2sr, sshrheat, &
@@ -64,7 +63,6 @@ contains
 
     allocate(ncod(nz, nx, 2))
     allocate(iphase(nz-1, nx-1))
-    allocate(irheol_fl(nz-1, nx-1))
     allocate(nopbou(((nz-1)+(nx-1))*2, 4))
     allocate(ncodbou(((nz-1)+(nx-1))*2, 3))
     allocate(idtracer((nz-1)*(nx-1)*2))
@@ -98,7 +96,7 @@ contains
 
     !$ACC update device(cord, temp, vel, stress0, force, balance, amass, rmass, &
     !$ACC               area, dvol, strain, bc, ncod, junk2, xmpt, tkappa, &
-    !$ACC               iphase, irheol_fl, &
+    !$ACC               iphase, &
     !$ACC               nopbou, ncodbou, idtracer, phase_ratio, dtopo, dhacc, extrusion, &
     !$ACC               andesitic_melt_vol, extr_acc, strainr, aps, visn, e2sr, &
     !$ACC               temp0, source, shrheat, bcstress, se2sr, sshrheat, &

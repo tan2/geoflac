@@ -267,7 +267,7 @@ nsrate=-1
 !Initialization
 !$ACC update device(cord, temp, vel, stress0, force, balance, amass, rmass, &
 !$ACC               area, dvol, strain, bc, ncod, junk2, xmpt, tkappa, &
-!$ACC               iphase, mark_id_elem, nmark_elem, irheol_fl, &
+!$ACC               iphase, mark_id_elem, nmark_elem, &
 !$ACC               nopbou, ncodbou, idtracer, phase_ratio, dtopo, dhacc, extrusion, &
 !$ACC               andesitic_melt_vol, extr_acc, strainr, aps, visn, e2sr, &
 !$ACC               temp0, source, shrheat, bcstress, &
