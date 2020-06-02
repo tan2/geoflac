@@ -18,7 +18,7 @@ subroutine marker2elem
   !$ACC loop collapse(2)
   do i = 1 , nx-1
       do j = 1 , nz-1
-          kinc = sum(nphase_counter(:,j,i))
+          kinc = nmark_elem(j,i)
 
           !  if there are too few markers in the element, create a new one
           !  with age 0 (similar to initial marker)
@@ -44,27 +44,8 @@ subroutine marker2elem
               kinc = kinc + 1
           enddo
 
-          phase_ratio(1:nphase,j,i) = nphase_counter(1:nphase,j,i) / float(kinc)
-
-          ! the phase of this element is the most abundant marker phase
-          !kph = maxloc(nphase_counter(:,j,i))
-          kph = 1
-          nm = 0
-          do k = 1, nphase
-             if (nphase_counter(k,j,i) > nm) then
-                 nm = nphase_counter(k,j,i)
-                 kph = k
-             end if
-          end do
-          iphase(j,i) = kph(1)
-
-          !! sometimes there are more than one phases that are equally abundant
-          !maxphase = maxval(nphase_counter(:,j,i))
-          !nmax = count(nphase_counter(:,j,i) == maxphase)
-          !if(nmax .gt. 1) then
-          !    write(*,*) 'elem has equally abundant marker phases:', i,j,nmax,nphase_counter(:,j,i)
-          !    write(*,*) 'choosing the 1st maxloc as the phase'
-          !endif
+          call count_phase_ratio(j,i,k)
+          iphase(j,i) = k
 
       enddo
   enddo

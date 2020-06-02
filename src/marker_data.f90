@@ -13,13 +13,12 @@ MODULE marker_data
   integer, allocatable :: mark_phase(:)
   integer, allocatable :: mark_ID(:)          ! unique ID-number
 
-  integer, allocatable :: nphase_counter(:,:,:)
   integer, allocatable :: mark_id_elem(:,:,:), nmark_elem(:,:)
 
 
   !$ACC declare create(mark_a1, mark_a2, mark_x, mark_y, mark_age, &
   !$ACC                mark_dead, mark_ntriag, mark_phase, mark_ID, &
-  !$ACC                nphase_counter, mark_id_elem, nmark_elem)
+  !$ACC                mark_id_elem, nmark_elem)
   contains
 
   subroutine allocate_markers(nz, nx)
@@ -37,13 +36,12 @@ MODULE marker_data
              mark_phase(max_markers), &
              mark_ID(max_markers))
 
-    allocate(nphase_counter(20, nz-1, nx-1))
     allocate(mark_id_elem(max_markers_per_elem, nz-1, nx-1))
     allocate(nmark_elem(nz-1, nx-1))
 
     !$ACC update device(mark_a1, mark_a2, mark_x, mark_y, mark_age, &
     !$ACC               mark_dead, mark_ntriag, mark_phase, mark_ID, &
-    !$ACC               nphase_counter, mark_id_elem, nmark_elem)
+    !$ACC               mark_id_elem, nmark_elem)
 
   end subroutine
 
@@ -103,9 +101,6 @@ MODULE marker_data
     mark_ntriag(kk) = ntr
     mark_phase(kk) = iph
   
-    !$ACC atomic update
-    nphase_counter(iph,j,i) = nphase_counter(iph,j,i) + 1
-  
   end subroutine add_marker
   
 
@@ -128,8 +123,7 @@ MODULE marker_data
           kk = mark_id_elem(n,j,i)
           mark_phase(kk) = iph
         enddo
-        nphase_counter(:,j,i) = 0
-        nphase_counter(iph,j,i) = nmark_elem(j,i)
+
       enddo
     enddo
     !$OMP end parallel do
