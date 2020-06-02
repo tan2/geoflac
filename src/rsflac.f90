@@ -117,7 +117,7 @@ source(1:nz-1,1:nx-1) = dum2(1:nz-1,1:nx-1)
 
 deallocate( dum2 )
 
-!$ACC update device(cord,dhacc,extr_acc,vel,strain,stress0,temp,
+!$ACC update device(cord,dhacc,extr_acc,vel,strain,stress0,temp, &
 !$ACC               iphase,aps,source)
 
 if (iint_marker.eq.1) then
