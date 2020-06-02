@@ -6,8 +6,7 @@ use phases
 
 implicit none
 
-integer :: ichanged(100*(nx-1)), jchanged(100*(nx-1))
-integer :: kph(1), jj, j, i, iph, nelem_serp, nchanged, &
+integer :: kph(1), jj, j, i, iph, nelem_serp, &
            jbelow, k, kinc, kk, n
 double precision :: ratio(20), yy, dep2, depth, press, quad_area, &
                     tmpr, trpres, trpres2, vol_frac_melt
@@ -27,8 +26,6 @@ real*8, parameter :: partial_melt_temp = 600.
 !real*8, parameter :: partial_melt_depth = -70.e3
 ! thickness of new crust
 real*8, parameter :: new_crust_thickness = 7.e3
-
-!$ACC data  create(ichanged, jchanged, kph, ratio)
 
 !$ACC serial
 ! search the element for melting
@@ -55,7 +52,7 @@ nelem_serp = nelem_inject
 vol_frac_melt = rate_inject
 andesitic_melt_vol(1:nx-1) = 0
 
-nchanged = 0
+itmp = 0  ! indicates which element has phase-changed markers
 !$ACC end serial
 
 !$ACC parallel loop private(kk,i,j,k,n,tmpr,depth,iph,press,jbelow,trpres,trpres2,kinc,quad_area,yy)
@@ -105,12 +102,8 @@ do kk = 1 , nmarkers
                  phase_ratio(ksed1,jbelow,i) > 0.8) then
                 ! XXX: TODO: how to critical section for acc?
                 !$OMP critical (change_phase1)
-                !$ACC atomic update
-                nchanged = nchanged + 1
                 !$ACC atomic write
-                ichanged(nchanged) = i
-                !$ACC atomic write
-                jchanged(nchanged) = j
+                itmp(j,i) = 1
                 !$OMP end critical (change_phase1)
                 mark_phase(kk) = kweak
                 exit
@@ -122,12 +115,8 @@ do kk = 1 , nmarkers
         !if(tmpr > 300. .and. tmpr < 400. &
         !     .and. stressII(j,i)*strainII(j,i) > 4.e6) then
         !    !$OMP critical (change_phase1)
-        !    !$ACC atomic update
-        !    nchanged = nchanged + 1
         !    !$ACC atomic write
-        !    ichanged(nchanged) = i
-        !    !$ACC atomic write
-        !    jchanged(nchanged) = j
+        !    !itmp(j,i) = 1
         !    !$OMP end critical (change_phase1)
         !    mark_phase(kk) = kweakmc
         !endif
@@ -147,12 +136,8 @@ do kk = 1 , nmarkers
                 phase_ratio(kocean2,jbelow,i) > 0.8 .or. &
                 phase_ratio(ksed1,jbelow,i) > 0.8) then
                 !$OMP critical (change_phase1)
-                !$ACC atomic update
-                nchanged = nchanged + 1
                 !$ACC atomic write
-                ichanged(nchanged) = i
-                !$ACC atomic write
-                jchanged(nchanged) = j
+                itmp(j,i) = 1
                 !$OMP end critical (change_phase1)
                 mark_phase(kk) = kserp
                 exit
@@ -165,12 +150,8 @@ do kk = 1 , nmarkers
         press = mantle_density * g * depth
         if (tmpr < min_eclogite_temp .or. depth < min_eclogite_depth .or. press < trpres) cycle
         !$OMP critical (change_phase1)
-        !$ACC atomic update
-        nchanged = nchanged + 1
         !$ACC atomic write
-        ichanged(nchanged) = i
-        !$ACC atomic write
-        jchanged(nchanged) = j
+        itmp(j,i) = 1
         !$OMP end critical (change_phase1)
         mark_phase(kk) = keclg
     case (kserp)
@@ -183,12 +164,8 @@ do kk = 1 , nmarkers
         press = mantle_density * g * depth
         if (tmpr < serpentine_temp .or. (press < trpres .and. press > trpres2)) cycle
         !$OMP critical (change_phase1)
-        !$ACC atomic update
-        nchanged = nchanged + 1
         !$ACC atomic write
-        ichanged(nchanged) = i
-        !$ACC atomic write
-        jchanged(nchanged) = j
+        itmp(j,i) = 1
         !$OMP end critical (change_phase1)
         mark_phase(kk) = khydmant
     case (ksed1, ksed2)
@@ -196,12 +173,8 @@ do kk = 1 , nmarkers
         ! from sediment solidus in Nichols et al., Nature, 1994
         if (tmpr < 650 .or. depth < 20e3) cycle
         !$OMP critical (change_phase1)
-        !$ACC atomic update
-        nchanged = nchanged + 1
         !$ACC atomic write
-        ichanged(nchanged) = i
-        !$ACC atomic write
-        jchanged(nchanged) = j
+        itmp(j,i) = 1
         !$OMP end critical (change_phase1)
         mark_phase(kk) = kmetased
     case (khydmant)
@@ -211,18 +184,13 @@ do kk = 1 , nmarkers
             andesitic_melt_vol(i) = andesitic_melt_vol(i) + quad_area * vol_frac_melt / kinc
 
             !$OMP critical (change_phase1)
-            !$ACC atomic update
-            nchanged = nchanged + 1
             !$ACC atomic write
-            ichanged(nchanged) = i
-            !$ACC atomic write
-            jchanged(nchanged) = j
+            itmp(j,i) = 1
             !$OMP end critical (change_phase1)
             mark_phase(kk) = kmant1
         endif
     end select
 
-    if(nchanged >= 100*(nx-1)) stop 38
 enddo
 !$OMP end do
 !$OMP end parallel
@@ -233,24 +201,27 @@ enddo
 junk2(1:nz-1,1:nx-1) = aps(1:nz-1,1:nx-1)
 !$ACC end parallel
 
-!$ACC serial
+!$ACC parallel loop collapse(2)
+!$OMP parallel do private(iph, kinc)
 ! recompute phase ratio of those changed elements
-do k = 1, nchanged
-    i = ichanged(k)
-    j = jchanged(k)
+do i = 1, nx-1
+    do j = 1, nz-1
 
-    ! the phase of this element is the most abundant marker phase
-    call count_phase_ratio(j,i,iph)
-    iphase(j,i) = iph
+        ! skip unchanged element
+        if (itmp(j,i) == 0) cycle
 
-    ! When phase change occurs, the mineral would recrystalize and lost
-    ! all plastic strain associated with this marker.
-    kinc = nmark_elem(j,i)
-    aps(j,i) = max(aps(j,i) - junk2(j,i) / float(kinc), 0d0)
+        ! the phase of this element is the most abundant marker phase
+        call count_phase_ratio(j,i,iph)
+        iphase(j,i) = iph
 
+        ! When phase change occurs, the mineral would recrystalize and lost
+        ! all plastic strain associated with this marker.
+        kinc = nmark_elem(j,i)
+        aps(j,i) = max(aps(j,i) - junk2(j,i) / float(kinc), 0d0)
+    enddo
 enddo
-!$ACC end serial
+!$OMP end parallel
+!$ACC end parallel
 
-!$ACC end data
 return
 end subroutine change_phase

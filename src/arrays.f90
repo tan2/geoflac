@@ -14,6 +14,7 @@ module arrays
 
   ! temporary array
   real*8, allocatable :: junk2(:,:), xmpt(:,:,:), tkappa(:)
+  integer, allocatable :: itmp(:,:)
 
   integer, allocatable :: iphase(:,:), &
       nopbou(:,:), ncodbou(:,:), idtracer(:)
@@ -35,7 +36,7 @@ module arrays
 
 
   !$ACC declare create(cord, temp, vel, stress0, force, balance, amass, rmass, &
-  !$ACC                area, dvol, strain, bc, ncod, junk2, xmpt, tkappa, &
+  !$ACC                area, dvol, strain, bc, ncod, junk2, xmpt, tkappa, itmp, &
   !$ACC                iphase, &
   !$ACC                nopbou, ncodbou, idtracer, phase_ratio, dtopo, dhacc, extrusion, &
   !$ACC                andesitic_melt_vol, extr_acc, strainr, aps, visn, e2sr, &
@@ -93,9 +94,10 @@ contains
     allocate(junk2(nz, nx))
     allocate(xmpt(2,3,(nz-1)*(nx-1)*2))
     allocate(tkappa(nx))
+    allocate(itmp(nz, nx))
 
     !$ACC update device(cord, temp, vel, stress0, force, balance, amass, rmass, &
-    !$ACC               area, dvol, strain, bc, ncod, junk2, xmpt, tkappa, &
+    !$ACC               area, dvol, strain, bc, ncod, junk2, xmpt, tkappa, itmp, &
     !$ACC               iphase, &
     !$ACC               nopbou, ncodbou, idtracer, phase_ratio, dtopo, dhacc, extrusion, &
     !$ACC               andesitic_melt_vol, extr_acc, strainr, aps, visn, e2sr, &
