@@ -53,16 +53,6 @@ enddo
 !$OMP end parallel do
 !$ACC end parallel
 
-!$ACC parallel loop collapse(2)
-!$OMP parallel do private(n,j,i)
-do i = 1, nx-1
-    do j = 1, nz-1
-        call count_phase_ratio(j,i,n)
-    enddo
-enddo
-!$OMP end parallel do
-!$ACC end parallel
-
 return
 
 end subroutine lpeuler2bar
