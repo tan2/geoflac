@@ -143,12 +143,14 @@ MODULE marker_data
   end subroutine newphase2marker
 
 
-  subroutine count_phase_ratio(j, i)
+  subroutine count_phase_ratio(j, i, iph)
     !$ACC routine vector
     use params
     use arrays
 
-    integer :: j, i, n, kk, ncounters(maxph), iph
+    integer, intent(in) :: j, i
+    integer, intent(out) :: iph
+    integer :: n, kk, ncounters(maxph), kph, nm
 
     ncounters = 0
     !$ACC loop
@@ -159,6 +161,17 @@ MODULE marker_data
     enddo
 
     phase_ratio(1:nphase,j,i) = ncounters(1:nphase) / (nmark_elem(j,i) * 1.0d0)
+
+    ! the phase of this element is the most abundant marker phase
+    !kph = maxloc(ncounters)
+    iph = 1
+    nm = 0
+    do kk = 1, nphase
+       if (ncounters(kk) > nm) then
+           nm = ncounters(kk)
+           iph = kk
+       end if
+    end do
 
   end subroutine count_phase_ratio
 END MODULE marker_data
