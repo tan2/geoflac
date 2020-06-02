@@ -20,7 +20,8 @@ itopmarker(:,:) = 0
 ! define euler coordinate of the markers
 ! Distribute evenly first then randomize the distribution
 ! to start 9 markers per elements
-nmarkers = 0
+!nmarkers = 0
+nmarkers=1
 !$ACC update device(nmarkers)
 
 ! zones with 9 markers per elements
@@ -126,8 +127,10 @@ do i = 1 , nx-1
                 exit
             end do
 
+            !$ACC serial
             call add_marker(xx, yy, kph, 0.d0, nmarkers, j, i, inc)
             !call add_marker(xx, yy, iphase(j,i), 0.d0, nmarkers, j, i, inc)
+            !$ACC end serial
             if(inc.eq.0) cycle
 
             l = l + 1
@@ -190,6 +193,7 @@ end do
 
 write(333,*) '# of markers', nmarkers
 
+!$ACC update device(nphase_counter,cord,phase_ratio,iphase)
 call marker2elem
 
 return
