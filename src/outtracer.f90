@@ -2,7 +2,6 @@ subroutine outtracer
 USE marker_data
 use arrays
 use params
-use bar2euler_mod
 implicit none
 integer, parameter :: kindr=4
 real xik(nmtracers),timtrk(nmtracers),xtrak(nmtracers),ytrak(nmtracers),temptrak(nmtracers),phtrak(nmtracers)

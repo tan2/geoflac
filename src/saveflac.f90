@@ -6,7 +6,6 @@ subroutine saveflac
 use arrays
 USE marker_data
 use params
-use bar2euler_mod
 implicit none
 
 integer, parameter :: kindr=8, kindi=4

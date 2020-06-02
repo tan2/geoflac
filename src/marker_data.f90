@@ -54,9 +54,9 @@ MODULE marker_data
     !
 
     !$ACC routine seq
+    !$ACC routine(check_inside) seq
     use arrays
     use params
-    use euler2bar_mod
     implicit none
     integer, intent(in) :: iph, j, i
     integer, intent(out) :: inc

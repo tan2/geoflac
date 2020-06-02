@@ -212,8 +212,9 @@ end subroutine diff_topo
 
 subroutine resurface
   !$ACC routine(add_marker_at_top) seq
-  use bar2euler_mod
-  use marker_data
+  !$ACC routine(shape_functions) seq
+  !$ACC routine(bar2xy) seq
+    use marker_data
   use arrays
   use params
   use phases

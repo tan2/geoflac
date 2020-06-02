@@ -1,10 +1,7 @@
-module euler2bar_mod
-
-contains
-
 subroutine euler2bar(x,y,bar1,bar2,ntr,ii,jj,inc)
 !$ACC routine seq
-use arrays
+!$ACC routine(check_inside) seq
+    use arrays
 use params
 implicit none
 
@@ -143,5 +140,3 @@ subroutine check_inside(x,y,bar1,bar2,ntr,i,j,inc)
 
   return
 end subroutine check_inside
-
-end module euler2bar_mod

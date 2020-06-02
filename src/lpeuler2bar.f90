@@ -1,8 +1,8 @@
 subroutine lpeuler2bar
+!$ACC routine(euler2bar) seq
 USE marker_data
 use arrays
 use params
-use euler2bar_mod
 implicit none
 
 integer :: n, k, i, j, ntr, inc
