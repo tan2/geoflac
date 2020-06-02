@@ -82,6 +82,7 @@ integer function itest_mesh()
   jmint = 0
   !$ACC update device(anglemint)
 
+  !$ACC parallel loop collapse(3)
   do i = 1, nx-1
       do j = 1,nz-1
           ! loop for each 4 sub-triangles
@@ -113,20 +114,20 @@ integer function itest_mesh()
 
               ! min angle in one trianle
               anglemin1 = min(angle(1),angle(2),angle(3))
-              !$ACC update device(anglemin1)
 
               ! min angle in the whole mesh
               if( anglemin1 .lt. anglemint ) then
                   anglemint = anglemin1
                   imint = i
                   jmint = j
-                  !$ACC update device(anglemint)
               endif
 
           end do
 
       end do
   end do
+  !$ACC end parallel
+  !$ACC update device(anglemin1, anglemint)
 
   if( dtout_screen .ne. 0 ) then
       write (6,'(A,F5.2,A,I3,A,I3,A,F5.2)') '        min.angle=',anglemint,' j=', jmint, ' i=',imint, ' dt(yr)=',dt/sec_year
