@@ -31,6 +31,7 @@ read (1,rec=nrec) rtime, rdt
 close (1)
 time = rtime
 dt = rdt
+!$ACC update device(nrec,nloop,nmarkers,nmtracers)
 !$ACC update device(time,dt)
 
 dvol = 0
@@ -116,6 +117,8 @@ source(1:nz-1,1:nx-1) = dum2(1:nz-1,1:nx-1)
 
 deallocate( dum2 )
 
+!$ACC update device(cord,dhacc,extr_acc,vel,strain,stress0,temp,
+!$ACC               iphase,aps,source)
 
 if (iint_marker.eq.1) then
 
@@ -232,6 +235,10 @@ do n = 1, nmarkers
 
 enddo
 
+!$ACC update device(nphase_counter, ntopmarker, itopmarker)
+!$ACC update device(mark_a1, mark_a2, mark_x, mark_y, mark_age, &
+!$ACC               mark_dead, mark_ntriag, mark_phase, mark_ID)
+
 call marker2elem
 
 endif
@@ -245,6 +252,7 @@ endif
 
 ! Calculate AREAS (Important: iphase is needed to calculate area!)
 call init_areas
+!$ACC update device(area)
 
 ! Distribution of REAL masses to nodes
 call rmasses
