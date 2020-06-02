@@ -46,14 +46,6 @@ do n = 1 , nmarkers
 enddo
 !$OMP end parallel do
 
-!$OMP parallel do private(n,j,i)
-do i = 1, nx-1
-    do j = 1, nz-1
-        call count_phase_ratio(j,i,n)
-    enddo
-enddo
-!$OMP end parallel do
-
 return
 
 end subroutine lpeuler2bar
