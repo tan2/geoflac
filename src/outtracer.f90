@@ -10,6 +10,10 @@ real(kindr) D1d(nmtracers), tmpr, stressI, strainII
 
 integer :: i, id, j, k, kk, n, nn, nrec, nwords
 
+!!$ACC update self(nmtracers, nloop, time)
+!!$ACC update self(mark_dead, mark_ntriag, mark_x, mark_y, mark_phase, &
+!!$ACC             temp, stress0, strain) 
+
 nrec = 0
 ! define record number and write it to contents
 if( lastout .eq. 1 ) then
