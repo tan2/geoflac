@@ -203,8 +203,12 @@ OBJS = $(SRCS:.f90=.o)
 
 EXE = flac
 
-## Is this a git repository?
-HAS_GIT := $(shell git log -1 2>/dev/null)
+## Is git in the path?
+HAS_GIT := $(shell git --version 2>/dev/null)
+ifneq ($(HAS_GIT),)
+	## Is this a git repository?
+	IS_REPO := $(shell git rev-parse --git-dir 2>/dev/null)
+endif
 
 ########################################################################
 ## actions
@@ -226,12 +230,16 @@ $(OBJS): %.o : %.f90 $(MODULES)
 take-snapshot:
 	@# snapshot of the code for building the executable
 	@echo Flags used to compile the code: > snapshot.diff
-	@echo '  '  CXX=$(CXX) debug=$(debug) openmp=$(omp) >> snapshot.diff
-	@echo '  '  PATH=`pwd ${PATH}` >> snapshot.diff
-	@echo '  '  LD_LIBRARY_PATH=`pwd ${LD_LIBRARY_PATH}` >> snapshot.diff
-ifneq (HAS_GIT),)
+	@echo '  ' F90=$(F90) debug=$(debug) openmp=$(omp) acc=$(acc) >> snapshot.diff
+	@echo '  ' CFLAGS=$(CFLAGS) >> snapshot.diff
+	@echo '  ' LDFLAGS=$(LDFLAGS) >> snapshot.diff
+	@echo '  ' PATH=$(PATH) >> snapshot.diff
+	@echo '  ' LD_LIBRARY_PATH=$(LD_LIBRARY_PATH) >> snapshot.diff
+	@echo '  ' PWD=$(PWD) >> snapshot.diff
 	@echo >> snapshot.diff
 	@echo >> snapshot.diff
+ifneq ($(HAS_GIT),)
+ifneq ($(IS_REPO),)
 	@echo '==== Summary of the code ====' >> snapshot.diff
 	@git show -s >> snapshot.diff
 	@echo >> snapshot.diff
@@ -245,7 +253,11 @@ ifneq (HAS_GIT),)
 	@echo '== Code modification (checked-in but not in "origin") ==' >> snapshot.diff
 	@git log --patch origin..HEAD >> snapshot.diff
 else
-	@echo \'git\' is not in path, cannot take code snapshot. >> snapshot.diff
+	@echo "Warning: Not a git repository. Cannot take code snapshot." | tee -a snapshot.diff
+	@echo "Warning: Use 'git clone' to copy the code!" | tee -a snapshot.diff
+endif
+else
+	@echo "'git' is not in path, cannot take code snapshot." >> snapshot.diff
 endif
 
 
