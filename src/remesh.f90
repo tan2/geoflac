@@ -7,7 +7,6 @@ use marker_data
 implicit none
 
 integer :: nzt,nxt
-common /remeshing/ nzt,nxt
 double precision, allocatable :: dummy(:,:), cordo(:,:,:), dhnew(:), extnew(:)
 integer :: i, i1, i2, idist, ii, j, jj, k, l, iph
 double precision :: densT, dh, dh1, dh2, dp, dpt, &
