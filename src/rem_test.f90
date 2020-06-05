@@ -67,11 +67,9 @@ integer function itest_mesh()
               call SysMsg('Remeshing due to accretion required.')
           endif
           itest_mesh = 1
-          iac_rem = 1
           return
       endif
   endif
-  !$ACC update device(iac_rem)
 
 
   pi = 3.14159265358979323846
@@ -143,8 +141,6 @@ integer function itest_mesh()
           call SysMsg('TEST_MESH: Remeshing due to angle required.')
       endif
       itest_mesh = 1
-      iac_rem = 0
-      !$ACC update device(iac_rem)
   endif
 
   return

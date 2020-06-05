@@ -11,20 +11,21 @@ double precision, allocatable :: dummy(:,:), cordo(:,:,:), dhnew(:), extnew(:)
 integer :: i, i1, i2, idist, ii, j, jj, k, l, iph
 double precision :: densT, dh, dh1, dh2, dp, dpt, &
                     press, rogh, tmpr
+!$ACC declare create(dummy, cordo, dhnew, extnew)
+
 allocate(cordo(1:nz,1:nx,1:2))
+allocate(dhnew(nx-1), extnew(nx-1))
+!$ACC update device(cordo, dhnew, extnew)
 
-!$ACC update self(cord, dhacc, extr_acc, cold, cnew, &
-!$ACC             stress0, strain, aps, visn, source, temp, vel, rmass, area, &
-!$ACC             dt_elastic, dt_maxwell, dt)
-
+!$ACC kernels
 ! Save old mesh for interpolations
 cordo = cord
+!$ACC end kernels
 
 ! Create The New grid (cord) using cordo(nz,i,2) for the bottom and cordo(1,i,2) for the surface
 call rem_cord(cordo)
 
 ! Interpolate accumulated topo change
-allocate(dhnew(nx-1), extnew(nx-1))
 dhnew(:) = 0
 extnew(:) = 0
 
@@ -225,7 +226,6 @@ cold(1:nz,1:nx,1:2) = cordo(1:nz,1:nx,1:2)
 temp0(1:nz,1:nx) = temp(1:nz,1:nx)
 ! New mesh - new coordinates points
 cnew(1:nz,1:nx,1:2) = cord(1:nz,1:nx,1:2)
-if (iac_rem.eq.1) cold(1:nz,1:nx,1:2) = cnew(1:nz,1:nx,1:2)
 ! Calculate parameters of triangles of this mesh
 call rem_trpars(nzt, nxt)
 
@@ -256,39 +256,6 @@ if(incoming_right==1) call sidewalltemp(nx-idist,nx)
 
 ! Calculation of areas of triangle
 call init_areas
-
-!if (iac_rem.eq.1) call init_phase
-!if (iac_rem.eq.1) call init_temp
-
-! reinitialize the stress in the 3 middle element if iac_rem 1
-if (iac_rem.eq.1) then
-do 522 i = iinj-1,iinj+1
-     rogh = 0.
-   do 522 j = 1,nz-1
-     iph = iphase(j,i)
-        tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
-        densT = den(iph) * ( 1 - alfa(iph)*tmpr )
-        dh1 = cord (j,i  ,2) - cord (j+1,i  ,2)
-        dh2 = cord (j,i+1,2) - cord (j+1,i+1,2)
-        dh  = 0.5 * (dh1+dh2)
-        dPT = densT * g * dh
-
-        dP = dPT * ( 1 - beta(iph)*rogh ) / ( 1 + beta(iph)/2*dPT )
-
-        press = rogh + 0.5*dP
-        do ii = 1,4
-            stress0(j,i,1,ii) = -press
-            stress0(j,i,2,ii) = -press
-            stress0(j,i,3,ii) = 0.
-            stress0(j,i,4,ii) = -press
-        end do
-        rogh = rogh + dP
-        aps(j,i) = 0.
-        do k = 1,3
-            strain(j,i,k) = 0.
-        enddo
-522  continue
-endif
 
 ! Distribution of masses in nodes
 call rmasses

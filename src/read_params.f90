@@ -341,7 +341,7 @@ close (iu)
 !$ACC     iph_col5(maxph),iph_col_trans(maxph), &
 !$ACC     if_intrus,if_hydro, &
 !$ACC     nyhydro,iphsub, &
-!$ACC     movegrid,ndim,ifreq_visc,nmtracers,i_rey,iac_rem, &
+!$ACC     movegrid,ndim,ifreq_visc,nmtracers,i_rey, &
 !$ACC     iph_int,incoming_left,incoming_right, &
 !$ACC     iynts, iax1,iay1,ibx1,iby1,icx1,icy1,idx1,idy1, &
 !$ACC     ivis_present,n_boff_cutoff,idt_scale,ifreq_imasses,ifreq_rmasses, &
