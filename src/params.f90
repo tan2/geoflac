@@ -34,7 +34,7 @@ integer :: nx,nz,nq,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
      iph_col5(maxph),iph_col_trans(maxph), &
      if_intrus,if_hydro, &
      nyhydro,iphsub, &
-     movegrid,ndim,ifreq_visc,nmtracers,i_rey,iac_rem, &
+     movegrid,ndim,ifreq_visc,nmtracers,i_rey, &
      iph_int,incoming_left,incoming_right, &
      iynts, iax1,iay1,ibx1,iby1,icx1,icy1,idx1,idy1, &
      ivis_present,n_boff_cutoff,idt_scale,ifreq_imasses,ifreq_rmasses, &

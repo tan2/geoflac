@@ -7,28 +7,6 @@ integer :: i, j, ii
 double precision :: xl, xr, xx, zcorr, zl, zr, zz, total_area
 logical, parameter :: do_volcorrection = .false.
 
-! in the case of accretion iac_rem = 1 just remesh the center with 2 
-! elts  and cutoff one elt on each sides
-if (iac_rem.eq.1) then
-do i= 1,iinj-1
-   do j= 1,nz
-      cord(j,i,1) = cordo(j,i+1,1)
-      cord(j,i,2) = cordo(j,i+1,2)
-enddo
-enddo
-do i = nx,iinj+2,-1
-   do j =1,nz
-      cord(j,i,1) = cordo(j,i-1,1)
-      cord(j,i,2) = cordo(j,i-1,2)
-enddo
-enddo
-do j= 1,nz
-   cord(j,iinj,1) = cord(j,iinj-1,1) + dx_init 
-   cord(j,iinj+1,1) = cord(j,iinj+2,1) -  dx_init 
-enddo
-  return
-endif
-
 ! X - coordinate
 do j = 1, nz
 

@@ -220,7 +220,6 @@ cold(1:nz,1:nx,1:2) = cordo(1:nz,1:nx,1:2)
 temp0(1:nz,1:nx) = temp(1:nz,1:nx)
 ! New mesh - new coordinates points
 cnew(1:nz,1:nx,1:2) = cord(1:nz,1:nx,1:2)
-if (iac_rem.eq.1) cold(1:nz,1:nx,1:2) = cnew(1:nz,1:nx,1:2)
 ! Calculate parameters of triangles of this mesh
 call rem_trpars(nzt,nxt)
 
@@ -251,39 +250,6 @@ if(incoming_right==1) call sidewalltemp(nx-idist,nx)
 
 ! Calculation of areas of triangle
 call init_areas
-
-!if (iac_rem.eq.1) call init_phase
-!if (iac_rem.eq.1) call init_temp
-
-! reinitialize the stress in the 3 middle element if iac_rem 1
-if (iac_rem.eq.1) then
-do 522 i = iinj-1,iinj+1
-     rogh = 0.
-   do 522 j = 1,nz-1
-     iph = iphase(j,i)
-        tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
-        densT = den(iph) * ( 1 - alfa(iph)*tmpr )
-        dh1 = cord (j,i  ,2) - cord (j+1,i  ,2)
-        dh2 = cord (j,i+1,2) - cord (j+1,i+1,2)
-        dh  = 0.5 * (dh1+dh2)
-        dPT = densT * g * dh
-
-        dP = dPT * ( 1 - beta(iph)*rogh ) / ( 1 + beta(iph)/2*dPT )
-
-        press = rogh + 0.5*dP
-        do ii = 1,4
-            stress0(j,i,1,ii) = -press
-            stress0(j,i,2,ii) = -press
-            stress0(j,i,3,ii) = 0.
-            stress0(j,i,4,ii) = -press
-        end do
-        rogh = rogh + dP
-        aps(j,i) = 0.
-        do k = 1,3
-            strain(j,i,k) = 0.
-        enddo
-522  continue
-endif
 
 ! Distribution of masses in nodes
 call rmasses

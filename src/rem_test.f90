@@ -46,7 +46,6 @@ integer function itest_mesh()
               call SysMsg('Remeshing due to accretion required.')
           endif
           itest_mesh = 1
-          iac_rem = 1
           return
       endif
   endif
@@ -117,7 +116,6 @@ integer function itest_mesh()
           call SysMsg('TEST_MESH: Remeshing due to angle required.')
       endif
       itest_mesh = 1
-      iac_rem = 0
   endif
 
   return
