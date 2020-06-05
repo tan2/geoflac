@@ -12,12 +12,12 @@ double precision :: s11p(4),s22p(4),s12p(4),s33p(4),s11v(4),s22v(4),s12v(4),s33v
 double precision :: bulkm,rmu,coh,phi,psi, &
                     stherm,hardn,vis, &
                     de11,de22,de12,de33,dv, &
-                    curr_devmax, curr_dvmax, diss, dxinj, poiss, &
+                    curr_devmax, curr_dvmax, diss, poiss, &
                     quad_area, s0, s0a,s0b, &
                     sII_plas, sII_visc, young
 double precision :: Eff_visc
 integer :: i, j, k, iph, irh, &
-           ipls, jinj
+           ipls
 
 ! max. deviatoric strain and area change of current time step
 curr_devmax = devmax
@@ -176,7 +176,6 @@ do 3 i = 1,nx-1
             ! LINEAR HEALING OF THE PLASTIC STRAIN
             if (tau_heal .ne. 0.) &
                  aps (j,i) = aps (j,i)/(1.+dt/tau_heal)
-            if (ny_inject.gt.0.and.i.eq.iinj) aps (j,i) = 0.
         end if
 
         ! TOTAL FINITE STRAIN

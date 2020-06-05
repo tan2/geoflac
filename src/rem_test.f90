@@ -33,24 +33,6 @@ integer function itest_mesh()
       endif
   end if
 
-
-  ! test mesh in the case of accretion at the center
-  if (ny_inject.eq.2) then
-      !check the width of the two elements at the center
-      dx_accr = abs(cord(1,iinj+1,1)-cord(1,iinj,1))
-      if (dx_accr.ge.3.*dx_init) then
-          if( dtout_screen .ne. 0 ) then
-              print *, 'Remeshing due to accretion required.'
-              write(333,*) 'Remeshing due to accretion required.'
-          else
-              call SysMsg('Remeshing due to accretion required.')
-          endif
-          itest_mesh = 1
-          return
-      endif
-  endif
-
-
   pi = 3.14159265358979323846
   degrad = pi/180.
   raddeg = 180./pi
