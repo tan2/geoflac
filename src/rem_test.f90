@@ -35,43 +35,6 @@ integer function itest_mesh()
       endif
   end if
 
-  !!! test by dx ratio in the first layer
-  !dxratmax = 1000.
-  !if(ny_inject.eq.2) dxratmax = 10.
-  !dxmin = 1.d20
-  !dxmax = -1.d20
-  !do i = 1, nx-1
-  !    dx = cord(1,i+1,1) - cord(1,i,1)
-  !    if( dx .lt. dxmin ) dxmin = dx
-  !    if( dx .gt. dxmax ) dxmax = dx
-  !enddo
-  !if( dxmin.lt.0 .or. dxmax/dxmin.gt.dxratmax ) then
-  !    if( dtout_screen .ne. 0 ) then
-  !        print *, 'Remeshing due dxmax/dxmin criteria required: ', dxmin, dxmax
-  !    else
-  !        call SysMsg('TEST_MESH: Remeshing due dxmax/dxmin criteria required')
-  !    endif
-  !    itest_mesh = 1
-  !    return
-  !endif
-
-  ! test mesh in the case of accretion at the center
-  if (ny_inject.eq.2) then
-      !check the width of the two elements at the center
-      dx_accr = abs(cord(1,iinj+1,1)-cord(1,iinj,1))
-      if (dx_accr.ge.3.*dx_init) then
-          if( dtout_screen .ne. 0 ) then
-              print *, 'Remeshing due to accretion required.'
-              write(333,*) 'Remeshing due to accretion required.'
-          else
-              call SysMsg('Remeshing due to accretion required.')
-          endif
-          itest_mesh = 1
-          return
-      endif
-  endif
-
-
   pi = 3.14159265358979323846
   degrad = pi/180.
   raddeg = 180./pi

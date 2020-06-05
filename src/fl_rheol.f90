@@ -14,40 +14,14 @@ double precision :: s11p(4),s22p(4),s12p(4),s33p(4),s11v(4),s22v(4),s12v(4),s33v
 double precision :: bulkm,rmu,coh,phi,psi, &
                     stherm,hardn,vis, &
                     de11,de22,de12,de33,dv, &
-                    curr_devmax, curr_dvmax, diss, dxinj, poiss, &
+                    curr_devmax, curr_dvmax, diss, poiss, &
                     quad_area, s0, s0a,s0b, &
                     sarc1, sarc2, sII_plas, sII_visc, young
 integer :: i, j, k, iph, irh, &
-           ipls, jinj
+           ipls
 
 !if(iynts.eq.1) call init_temp
 
-! Initial stress boundary condition
-! Accretional Stresses
-!if (ny_inject.gt.0) then
-!         sarc1 = 0.
-!         sarc2 = 0. 
-!         if (ny_inject.eq.1) iinj = 1
-!         if (ny_inject.eq.2) iinj = nx/2 
-!         !$ACC update device(iinj)
-!         !write (*,*) iinj
-!         nelem_inject = nz-1
-!         !$ACC update device(nelem_inject)
-!         !average dx for injection:
-!         dxinj = 0.
-!         do jinj = 1,nelem_inject
-!            iph=iphase(jinj,iinj)
-!            dxinj=dxinj+cord(jinj,iinj+1,1)-cord(jinj,iinj,1)
-!         enddo
-!         dxinj = dxinj/nelem_inject 
-!         ! Constants Elastic:
-!         poiss = 0.5*rl(iph)/(rl(iph)+rm(iph))
-!         young = rm(iph)*2.*(1.+poiss)   
-!         ! Additional Stress:
-!         sarc1 = -young/(1.-poiss*poiss)*rate_inject/dxinj*dt
-!         sarc2 = sarc1*poiss/(1.-poiss)
-!         !write(*,*) sarc1,sarc2
-!endif
 
 !$ACC parallel
 ! max. deviatoric strain and area change of current time step
@@ -71,11 +45,6 @@ do 3 i = 1,nx-1
         iph = iphase(j,i)
         irh = irheol(iph)
 
-!        if(ny_inject.gt.0.and.j.le.nelem_inject) then
-!        if(i.eq.iinj.or.i.eq.iinj-1) irh_mark = 1
-!        if(i.eq.iinj) irh = 3 
-!        endif
-
         ! Elastic modules & viscosity & plastic properties
         bulkm = rl(iph) + 2.*rm(iph)/3.
         rmu   = rm(iph)
@@ -91,7 +60,6 @@ do 3 i = 1,nx-1
         ! Re-evaluate viscosity
         if (irh.eq.3 .or. irh.eq.12) then 
             if( mod(nloop,ifreq_visc).eq.0) visn(j,i) = Eff_visc(j,i)
-!            if (ny_inject.gt.0.and.i.eq.iinj) visn(j,i) = v_min
         endif
         vis = visn(j,i)
 
@@ -106,14 +74,6 @@ do 3 i = 1,nx-1
             dv = dvol(j,i,k)
             s11p(k) = stress0(j,i,1,k) + stherm 
             s22p(k) = stress0(j,i,2,k) + stherm 
-            if(ny_inject.gt.0.and.j.le.nelem_inject) then
-                !XXX: iinj is un-init'd if ny_inject is not 1 or 2.
-                if(i.eq.iinj) then
-                    s11p(k) = stress0(j,i,1,k) + stherm +sarc1
-                    s22p(k) = stress0(j,i,2,k) + stherm +sarc2
-                    !!            irh = 1
-                endif
-            endif
             s12p(k) = stress0(j,i,3,k) 
             s33p(k) = stress0(j,i,4,k) + stherm
             s11v(k) = s11p(k)
@@ -223,7 +183,6 @@ do 3 i = 1,nx-1
             ! LINEAR HEALING OF THE PLASTIC STRAIN
             if (tau_heal .ne. 0.) &
                  aps (j,i) = aps (j,i)/(1.+dt/tau_heal)
-            if (ny_inject.gt.0.and.i.eq.iinj) aps (j,i) = 0.
         end if
 
         ! TOTAL FINITE STRAIN

@@ -389,9 +389,6 @@ subroutine vbcal
   open(13,file = 'vbc.s')
   write(13,*) vbc
   close(13)
-  if (ny_inject.gt.0) then
-      vbc = vbc -0.5*rate_inject
-  endif
   !$ACC update device(vbc)
 
   return
