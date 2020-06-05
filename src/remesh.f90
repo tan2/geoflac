@@ -85,7 +85,7 @@ do i = 1, nx-1
 enddo
 
 ! Calculate parameters of old-mesh triangles
-call rem_trpars
+call rem_trpars(nzt, nxt)
 
 ! Baricentric coordinates of new-elements centers
 call rem_barcord
@@ -228,7 +228,7 @@ temp0(1:nz,1:nx) = temp(1:nz,1:nx)
 cnew(1:nz,1:nx,1:2) = cord(1:nz,1:nx,1:2)
 if (iac_rem.eq.1) cold(1:nz,1:nx,1:2) = cnew(1:nz,1:nx,1:2)
 ! Calculate parameters of triangles of this mesh
-call rem_trpars
+call rem_trpars(nzt, nxt)
 
 ! Baricentric coordinates of new-elements centers
 call rem_barcord
@@ -317,11 +317,10 @@ end
 !===============================================
 ! parameters of triangles of a grid
 !===============================================
-subroutine rem_trpars
+subroutine rem_trpars(nzt, nxt)
 use arrays
 implicit none
-integer :: nzt,nxt
-common /remeshing/ nzt,nxt
+integer, intent(in) :: nzt, nxt
 integer :: i, j, k, n
 double precision :: x1, x2, x3, y1, y2, y3, det
 
