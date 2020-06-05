@@ -97,7 +97,7 @@ call rem_barcord(nzt, nxt)
 do k = 1,4
     do l = 1,4
         dummy(1:nzt,1:nxt) = stress0(1:nzt,1:nxt,k,l)
-        call rem_interpolate( dummy )
+        call rem_interpolate( dummy, nzt, nxt )
         stress0(1:nzt,1:nxt,k,l) = dummy(1:nzt,1:nxt)
     end do
 end do
@@ -110,14 +110,14 @@ end do
 ! Interpolate strains
 do k = 1, 3
     dummy(1:nzt,1:nxt) = strain(1:nzt,1:nxt,k)
-    call rem_interpolate( dummy )
+    call rem_interpolate( dummy, nzt, nxt )
     strain(1:nzt,1:nxt,k) = dummy(1:nzt,1:nxt)
 end do
 
 
 ! plastic strain
 dummy(1:nzt,1:nxt) = aps(1:nzt,1:nxt)
-call rem_interpolate( dummy )
+call rem_interpolate( dummy, nzt, nxt )
 do i = 1, nxt
     do j = 1, nzt
         if( dummy(j,i) .ge. 0. ) then
@@ -131,7 +131,7 @@ end do
         
 ! viscosity
 dummy(1:nzt,1:nxt) = visn(1:nzt,1:nxt)
-call rem_interpolate( dummy )
+call rem_interpolate( dummy, nzt, nxt )
 visn(1:nzt,1:nxt) = dummy(1:nzt,1:nxt)
 
 ! phases
@@ -208,7 +208,7 @@ endif
 
 ! sources
 dummy(1:nzt,1:nxt) = source(1:nzt,1:nxt)
-call rem_interpolate( dummy )
+call rem_interpolate( dummy, nzt, nxt )
 source(1:nzt,1:nxt) = dummy(1:nzt,1:nxt)
 
 
@@ -238,13 +238,13 @@ call rem_barcord(nzt, nxt)
 ! Velocities (in nodes)
 do k = 1, 2
     dummy(1:nzt,1:nxt) = vel(1:nzt,1:nxt,k)
-    call rem_interpolate( dummy )
+    call rem_interpolate( dummy, nzt, nxt )
     vel(1:nzt,1:nxt,k) = dummy(1:nzt,1:nxt)
 end do
 
 ! Temperatures (in nodes) 
 dummy(1:nzt,1:nxt) = temp(1:nzt,1:nxt)
-call rem_interpolate( dummy )
+call rem_interpolate( dummy, nzt, nxt )
 temp(1:nzt,1:nxt) = dummy(1:nzt,1:nxt)
 deallocate( dummy )
 
@@ -509,12 +509,11 @@ end
 !===============================================
 ! interpolation
 !===============================================
-subroutine rem_interpolate( arr )
+subroutine rem_interpolate(arr, nzt, nxt)
 use arrays
 use params
 implicit none
-integer :: nzt,nxt
-common /remeshing/ nzt,nxt
+integer, intent(in) :: nzt, nxt
 double precision :: dummy(nzt,nxt),arr(nzt,nxt)
 integer :: i, j, io, jo, numq
 double precision :: f1, f2, f3
