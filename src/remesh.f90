@@ -88,7 +88,7 @@ enddo
 call rem_trpars(nzt, nxt)
 
 ! Baricentric coordinates of new-elements centers
-call rem_barcord
+call rem_barcord(nzt, nxt)
 
 
 ! Do interpolations
@@ -231,7 +231,7 @@ if (iac_rem.eq.1) cold(1:nz,1:nx,1:2) = cnew(1:nz,1:nx,1:2)
 call rem_trpars(nzt, nxt)
 
 ! Baricentric coordinates of new-elements centers
-call rem_barcord
+call rem_barcord(nzt, nxt)
 
 ! Do node-wise interpolations
 
@@ -374,11 +374,10 @@ end
 !===============================================
 ! baricentric coordinates of new mesh in old triangles
 !===============================================
-subroutine rem_barcord
+subroutine rem_barcord(nzt, nxt)
 use arrays
 implicit none
-integer :: nzt,nxt
-common /remeshing/ nzt,nxt
+integer, intent(in) :: nzt, nxt
 
 integer :: i, j, l, lt, io, jo, k, n, nmin, numqu
 double precision :: perr, xx, yy, amodmin, amod, a1, a2, a3, dist1, dist2, dist3
