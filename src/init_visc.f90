@@ -8,6 +8,8 @@ subroutine init_visc
   integer :: irh, i, j
   double precision :: xc, yc, geoth, vis0
   irh = irheol(mphase) 
+  !$ACC parallel loop collapse(2)
+  !$OMP parallel do
   do i = 1,nx-1  
       do j = 1,nz-1
 
@@ -62,5 +64,7 @@ subroutine init_visc
           !if ( abs(g_x0-xc).lt.g_width) write(*,*) v_max,v_min,visn(j,i)
       end do
   end do
+  !$OMP end parallel do
+  !$ACC end parallel
   return
 end subroutine init_visc
