@@ -17,10 +17,14 @@ subroutine dt_mass
 
 use arrays
 use params
-include 'precision.inc'
+implicit none
 
-
-real*8, parameter :: c1d12 = 1./12.
+double precision :: dlmin_prop
+double precision, parameter :: c1d12 = 1.d0/12.d0
+integer i, j, k, iph, iblk, jblk
+double precision :: dlmin, vel_max, dt_m, diff, Eff_cp, Eff_conduct
+double precision :: pwave, dens, vel_sound, rho_inert, rho_inert2, am3, dte, dtt
+double precision :: rmu, visc_cut
 
 ! minimal propagation distance
 dlmin = dlmin_prop()
@@ -28,7 +32,7 @@ dlmin = dlmin_prop()
 if (idt_scale .eq. 0) then
     ! find dt below
 elseif (idt_scale.eq.1) then 
-    ! choosing dt_elastic from sup.dat (non-automatic) 
+    ! choosing dt_elastic from sup.dat (non-automatic)
     dt_elastic = dt_scale
 elseif (idt_scale.eq.2) then
     ! choosing dt_elastic from tolerance conditions (automatic)
@@ -41,6 +45,10 @@ elseif (idt_scale.eq.2) then
 !write(*,'(F45.20)')dt_elastic
     endif
 endif
+
+dtmax_therm = 1.e+28
+dt_maxwell = 1.e+28
+
 vel_max = 0.
 do k = 1,2
 do i = 1,nx
@@ -56,19 +64,18 @@ else
     amass = 0
 end if
 
-dtmax_therm = 1.e+28
-dt_maxwell = 1.e+28
-
-
-
-do 1 i = 1,nx-1
-    do 1 j = 1,nz-1
+do iblk = 1, 2
+    do jblk = 1, 2
+!$OMP parallel do private(iph, pwave, dens, vel_sound, rho_inert, rho_inert2, &
+!$OMP                     am3, dte, diff, dtt, dt_m, rmu)
+do i = iblk, nx-1, 2
+    do j = jblk, nz-1, 2
 
         iph     = iphase(j,i)
-        pwave   = rl(iph) + 0.6666*rm(iph)  
+        pwave   = rl(iph) + 0.6666*rm(iph)
         dens    = den(iph)
-        vel_sound = dlmin*frac/dt_elastic  
-        rho_inert = pwave/(vel_sound*vel_sound)  
+        vel_sound = dlmin*frac/dt_elastic
+        rho_inert = pwave/(vel_sound*vel_sound)
         if (i_rey.eq.1.and.vel_max.gt.0.) then
             rho_inert2 = (xReyn*v_min)/(vel_max*abs(rzbo))
 !           write(*,*) rho_inert, rho_inert2,vel_max
@@ -78,11 +85,11 @@ do 1 i = 1,nx-1
         ! idt_scale = 0 (dt = frac*dx_min * sqrt(dens/pwave) )
         ! idt_scale = 1 (dt is taken from sup.dat: dt = dt_scale)
         ! idt_scale = 2 (dt = frac*dx_min * tolerance/Vbc_max)
-        if (idt_scale.gt.0) then 
+        if (idt_scale.gt.0) then
 
-            ! Distribution 1/3 of the inertial mass of each element to the nodes 
+            ! Distribution 1/3 of the inertial mass of each element to the nodes
             ! am3=c1d12*area(j,i,ii)*pwave*(dlmax*dt_scale/frac)**2
-            ! 1/12 = 1/3 * 1/2 (2 meshes) * 1/2 (1/area_num = 2 area_real) 
+            ! 1/12 = 1/3 * 1/2 (2 meshes) * 1/2 (1/area_num = 2 area_real)
             am3=c1d12*rho_inert/area(j,i,1)
             amass(j  ,i  ) = amass(j  ,i  ) + am3
             amass(j+1,i  ) = amass(j+1,i  ) + am3
@@ -107,10 +114,10 @@ do 1 i = 1,nx-1
             ! Find the dtime for given geometry, density and elas_mod
             dte = frac*dlmin*sqrt(dens/pwave)
             dt_elastic = min(dt_elastic,dte)
-        endif 
+        endif
 
         ! Find the maximum THERMAL time step from Stability Criterion
-        ! dtmax = dxmin^2/diffusivity = dx^2/(lyamda/cp*dens)  
+        ! dtmax = dxmin^2/diffusivity = dx^2/(lyamda/cp*dens)
         diff = Eff_conduct(j,i)/den(iph)/Eff_cp(j,i)
         dtt = dlmin*dlmin/diff
         dtmax_therm =min (dtmax_therm,dtt)
@@ -130,8 +137,12 @@ do 1 i = 1,nx-1
             endif
         endif
 
-1 continue 
+    enddo
+enddo
+!$OMP end parallel do
 
+    enddo
+enddo
 return
 end
 
