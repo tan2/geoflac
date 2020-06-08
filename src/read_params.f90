@@ -327,7 +327,7 @@ close (iu)
 !$ACC     io_vel,io_srII,io_eII,io_aps,io_sII,io_sxx,io_szz, &
 !$ACC     io_sxz,io_pres,io_temp,io_melt,io_visc,io_phas,io_mark, &
 !$ACC     io_src,io_diss,io_forc,io_hfl,io_topo, &
-!$ACC     irh_mark,irphase,irtemp,ircoord, &
+!$ACC     irphase,irtemp,ircoord, &
 !$ACC     nphase,mphase,irheol(maxph), &
 !$ACC     ltop(maxphasel),lbottom(maxphasel),lphase(maxphasel), &
 !$ACC     imx1(20),imx2(20),imy1(20),imy2(20), &
