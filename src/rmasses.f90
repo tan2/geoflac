@@ -4,11 +4,11 @@
 subroutine rmasses
 use arrays
 use params
-include 'precision.inc'
+implicit none
 
-
-real*8, parameter :: c1d12 = 1./12.
-
+double precision, parameter :: c1d12 = 1.d0/12.d0
+integer :: i, j, iblk, jblk
+double precision :: dens, Eff_dens
 
 !   Calcualtion of the TRUE GRAVITATIONAL ZONE MASSES
 !-----------------------------------
@@ -19,8 +19,12 @@ real*8, parameter :: c1d12 = 1./12.
 
 rmass = 0
 
-do i = 1, nx-1
-    do j = 1, nz-1
+do iblk = 1, 2
+    do jblk = 1, 2
+
+!$OMP parallel do private(dens)
+do i = iblk, nx-1, 2
+    do j = jblk, nz-1, 2
 
         !  Area and densities of zones
         dens = Eff_dens( j,i )
@@ -46,6 +50,9 @@ do i = 1, nx-1
         rmass(j  ,i  )=rmass(j  ,i  )+c1d12/area(j,i,4)*dens
         rmass(j+1,i+1)=rmass(j+1,i+1)+c1d12/area(j,i,4)*dens 
         rmass(j  ,i+1)=rmass(j  ,i+1)+c1d12/area(j,i,4)*dens 
+    enddo
+enddo
+!$OMP end parallel do
     enddo
 enddo
 
