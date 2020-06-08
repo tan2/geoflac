@@ -20,10 +20,6 @@ double precision :: bulkm,rmu,coh,phi,psi, &
 integer :: i, j, k, iph, irh, &
            ipls, jinj
 
-!XXX: irh==11, or irh>=11?
-!irh=irheol(mphase)
-!if(irh.eq.11) call init_visc
-
 !if(iynts.eq.1) call init_temp
 
 ! Initial stress boundary condition
