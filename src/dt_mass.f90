@@ -22,7 +22,7 @@ implicit none
 
 double precision :: dlmin_prop
 double precision, parameter :: c1d12 = 1.d0/12.d0
-integer i, j, k, iph
+integer i, j, k, iph, iblk, jblk
 double precision :: dlmin, vel_max, dt_m, diff
 double precision :: pwave, dens, vel_sound, rho_inert, rho_inert2, am3, dte, dtt
 double precision :: rmu, visc_cut
@@ -50,6 +50,9 @@ elseif (idt_scale.eq.2) then
 !write(*,'(F45.20)')dt_elastic
     endif
 endif
+dtmax_therm = 1.e+28
+dt_maxwell = 1.e+28
+
 !$ACC end serial
 
 !$ACC parallel
@@ -62,20 +65,22 @@ do j = 1,nz
 enddo
 enddo
 enddo
-!$ACC end parallel
 
-!$ACC serial
 if (idt_scale .eq. 0) then
     amass = rmass
 else
     amass = 0
 end if
+!$ACC end parallel
 
-dtmax_therm = 1.e+28
-dt_maxwell = 1.e+28
+do iblk = 0, 1
+    do jblk = 0, 1
 
-do 1 i = 1,nx-1
-    do 1 j = 1,nz-1
+!$ACC parallel loop collapse(2) copyin(iblk, jblk)
+!$OMP parallel do private(iph, pwave, dens, vel_sound, rho_inert, rho_inert2, &
+!$OMP                     am3, dte, diff, dtt, dt_m, rmu)
+do i = 1+iblk, nx-1, 2
+    do j = 1+jblk, nz-1, 2
 
         iph     = iphase(j,i)
         pwave   = rl(iph) + 0.6666*rm(iph)  
@@ -143,8 +148,13 @@ do 1 i = 1,nx-1
             endif
         endif
 
-1 continue 
-!$ACC end serial
+    enddo
+enddo
+!$OMP end parallel do
+!$ACC end parallel
+
+    enddo
+enddo
 return
 end
 
