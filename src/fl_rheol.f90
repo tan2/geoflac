@@ -11,7 +11,6 @@ implicit none
 
 double precision :: depl(4)
 double precision :: s11p(4),s22p(4),s12p(4),s33p(4),s11v(4),s22v(4),s12v(4),s33v(4)
-logical, parameter :: rh_sel = .true.
 double precision :: bulkm,rmu,coh,phi,psi, &
                     stherm,hardn,vis, &
                     de11,de22,de12,de33,dv, &
@@ -166,7 +165,7 @@ do 3 i = 1,nx-1
             endif
         enddo
 
-        if( irh.ge.11 .AND. rh_sel ) then
+        if( irh.ge.11 ) then
             ! deside - elasto-plastic or viscous deformation
             sII_plas = (s11p(1)+s11p(2)+s11p(3)+s11p(4)-s22p(1)-s22p(2)-s22p(3)-s22p(4))**2 &
                      + 4*(s12p(1)+s12p(2)+s12p(3)+s12p(4))**2
