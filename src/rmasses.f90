@@ -8,7 +8,7 @@ use matprops
 implicit none
 
 real*8, parameter :: c1d12 = 1./12.
-integer :: i, j
+integer :: i, j, iblk, jblk
 double precision :: dens
 
 !   Calcualtion of the TRUE GRAVITATIONAL ZONE MASSES
@@ -18,12 +18,17 @@ double precision :: dens
 ! real_area = 0.5* (1./area(n,t))
 !-----------------------------------
 
-!XXX data dependence
-!$ACC serial
+!$ACC parallel
 rmass = 0
+!$ACC end parallel
 
-do i = 1, nx-1
-    do j = 1, nz-1
+do iblk = 0, 1
+    do jblk = 0, 1
+
+!$ACC parallel loop collapse(2)
+!$OMP parallel do private(dens)
+do i = 1+iblk, nx-1, 2
+    do j = 1+jblk, nz-1, 2
 
         !  Area and densities of zones
         dens = Eff_dens( j,i )
@@ -51,7 +56,10 @@ do i = 1, nx-1
         rmass(j  ,i+1)=rmass(j  ,i+1)+c1d12/area(j,i,4)*dens 
     enddo
 enddo
-!$ACC end serial
+!$OMP end parallel do
+!$ACC end parallel
+    enddo
+enddo
 
 return
 end
