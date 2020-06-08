@@ -20,7 +20,7 @@ integer :: nx,nz,nq,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
      io_vel,io_srII,io_eII,io_aps,io_sII,io_sxx,io_szz, &
      io_sxz,io_pres,io_temp,io_melt,io_visc,io_phas,io_mark, &
      io_src,io_diss,io_forc,io_hfl,io_topo, &
-     irh_mark,irphase,irtemp,ircoord, &
+     irphase,irtemp,ircoord, &
      nphase,mphase,irheol(maxph), &
      ltop(maxphasel),lbottom(maxphasel),lphase(maxphasel), &
      imx1(maxtrzone),imx2(maxtrzone),imy1(maxtrzone),imy2(maxtrzone), &

@@ -5,12 +5,19 @@
 subroutine fl_rheol
 use arrays
 use params
-include 'precision.inc'
+implicit none
 
-dimension depl(4)
-dimension s11p(4),s22p(4),s12p(4),s33p(4),s11v(4),s22v(4),s12v(4),s33v(4)
-
-irh_mark = 0
+double precision :: depl(4)
+double precision :: s11p(4),s22p(4),s12p(4),s33p(4),s11v(4),s22v(4),s12v(4),s33v(4)
+double precision :: bulkm,rmu,coh,phi,psi, &
+                    stherm,hardn,vis, &
+                    de11,de22,de12,de33,dv, &
+                    curr_devmax, curr_dvmax, diss, dxinj, poiss, &
+                    quad_area, s0, s0a,s0b, &
+                    sII_plas, sII_visc, young
+double precision :: Eff_visc
+integer :: i, j, k, iph, irh, &
+           ipls, jinj
 
 ! max. deviatoric strain and area change of current time step
 curr_devmax = devmax
@@ -23,8 +30,7 @@ curr_dvmax = dvmax
 !$OMP                  s11v,s22v,s12v,s33v, &
 !$OMP                  depl,ipls,diss, &
 !$OMP                  sII_plas,sII_visc, &
-!$OMP                  quad_area,s0a,s0b,s0) &
-!$OMP firstprivate(irh_mark)
+!$OMP                  quad_area,s0a,s0b,s0)
 !$OMP do schedule(guided) reduction(max: curr_devmax, curr_dvmax)
 do 3 i = 1,nx-1
     do 3 j = 1,nz-1
@@ -88,7 +94,7 @@ do 3 i = 1,nx-1
             elseif (irh.eq.6) then
                 ! plastic
                 call plastic(bulkm,rmu,coh,phi,psi,depl(k),ipls,diss,hardn,s11p(k),s22p(k),s33p(k),s12p(k),de11,de22,de33,de12,&
-                     ten_off,ndim,irh_mark)
+                     ten_off,ndim)
                 stress0(j,i,1,k) = s11p(k)
                 stress0(j,i,2,k) = s22p(k)
                 stress0(j,i,3,k) = s12p(k)
@@ -98,7 +104,7 @@ do 3 i = 1,nx-1
                 ! Mixed rheology (Maxwell or plastic)
                 call plastic(bulkm,rmu,coh,phi,psi,depl(k),ipls,diss,hardn,&
                     s11p(k),s22p(k),s33p(k),s12p(k),de11,de22,de33,de12,&
-                    ten_off,ndim,irh_mark)
+                    ten_off,ndim)
                 call maxwell(bulkm,rmu,vis,s11v(k),s22v(k),s33v(k),s12v(k),&
                     de11,de22,de33,de12,dv,&
                     ndim,dt,curr_devmax,curr_dvmax)

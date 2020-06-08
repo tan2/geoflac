@@ -2,10 +2,10 @@
 !------ Elasto-Plastic
 
 subroutine plastic(bulkm,rmu,coh,phi,psi,depls,ipls,diss,hardn,s11,s22,s33,s12,de11,de22,de33,de12,&
-     ten_off,ndim,irh_mark)
+     ten_off,ndim)
 implicit none
 
-integer, intent(in) :: ndim, irh_mark
+integer, intent(in) :: ndim
 real*8, intent(in) :: bulkm, rmu, coh, phi, psi, hardn, de11, de22, de33, de12, ten_off
 real*8, intent(inout) :: s11, s22, s33, s12
 real*8, intent(out) :: depls, diss
@@ -64,13 +64,6 @@ rad  = 0.5 * sqrt(sdif*sdif + 4.0 *s12i*s12i)
 si  = s0 - rad
 sii = s0 + rad
 psdif = si - sii
-if (irh_mark.eq.1) then 
-    s11 = s11i + press_add
-    s22 = s22i + press_add
-    s33 = s33i + press_add
-    s12 = s12i
- return 
-endif
 
 !--------------------------------------------------------- 
 !                         3D version 
