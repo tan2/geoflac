@@ -24,7 +24,7 @@ enddo
 !$OMP end parallel
 
 ! Diffuse topography
-if( topo_kappa.gt.0.) call diff_topo
+if( topo_kappa.gt.0.d0) call diff_topo
 
 
 !$OMP parallel private(i,j,x1,y1,x2,y2,x3,y3,x4,y4, &
@@ -58,69 +58,69 @@ do  i = 1,nx-1
         ! (1) Element A:
         det=((x2*y3-y2*x3)-(x1*y3-y1*x3)+(x1*y2-y1*x2))
         dvol(j,i,1) = det*area(j,i,1) - 1
-        area(j,i,1) = 1./det
+        area(j,i,1) = 1.d0/det
 
         ! Adjusting stresses due to rotation
-        dw12 = 0.5*(vx1*(x3-x2)+vx2*(x1-x3)+vx3*(x2-x1) - &
+        dw12 = 0.5d0*(vx1*(x3-x2)+vx2*(x1-x3)+vx3*(x2-x1) - &
             vy1*(y2-y3)-vy2*(y3-y1)-vy3*(y1-y2))/det*dt
         s11 = stress0(j,i,1,1)
         s22 = stress0(j,i,2,1)
         s12 = stress0(j,i,3,1)
-        stress0(j,i,1,1) = s11 + s12*2.*dw12
-        stress0(j,i,2,1) = s22 - s12*2.*dw12
+        stress0(j,i,1,1) = s11 + s12*2*dw12
+        stress0(j,i,2,1) = s22 - s12*2*dw12
         stress0(j,i,3,1) = s12 + dw12*(s22-s11)
 
         ! rotate strains 
         s11 = strain(j,i,1)
         s22 = strain(j,i,2)
         s12 = strain(j,i,3)
-        strain(j,i,1) = s11 + s12*2.*dw12
-        strain(j,i,2) = s22 - s12*2.*dw12
+        strain(j,i,1) = s11 + s12*2*dw12
+        strain(j,i,2) = s22 - s12*2*dw12
         strain(j,i,3) = s12 + dw12*(s22-s11)
 
         ! (2) Element B:
         det=((x2*y4-y2*x4)-(x3*y4-y3*x4)+(x3*y2-y3*x2))
         dvol(j,i,2) = det*area(j,i,2) - 1
-        area(j,i,2) = 1./det
+        area(j,i,2) = 1.d0/det
 
         ! Adjusting stresses due to rotation
-        dw12 = 0.5*(vx3*(x4-x2)+vx2*(x3-x4)+vx4*(x2-x3) - &
+        dw12 = 0.5d0*(vx3*(x4-x2)+vx2*(x3-x4)+vx4*(x2-x3) - &
            vy3*(y2-y4)-vy2*(y4-y3)-vy4*(y3-y2))/det*dt
         s11 = stress0(j,i,1,2)
         s22 = stress0(j,i,2,2)
         s12 = stress0(j,i,3,2)
-        stress0(j,i,1,2) = s11 + s12*2.*dw12
-        stress0(j,i,2,2) = s22 - s12*2.*dw12
+        stress0(j,i,1,2) = s11 + s12*2*dw12
+        stress0(j,i,2,2) = s22 - s12*2*dw12
         stress0(j,i,3,2) = s12 + dw12*(s22-s11)
 
         ! (3) Element C:
         det=((x2*y4-y2*x4)-(x1*y4-y1*x4)+(x1*y2-y1*x2))
         dvol(j,i,3) = det*area(j,i,3) - 1
-        area(j,i,3) = 1./det
+        area(j,i,3) = 1.d0/det
 
         ! Adjusting stresses due to rotation
-        dw12 = 0.5*(vx1*(x4-x2)+vx2*(x1-x4)+vx4*(x2-x1) - &
+        dw12 = 0.5d0*(vx1*(x4-x2)+vx2*(x1-x4)+vx4*(x2-x1) - &
            vy1*(y2-y4)-vy2*(y4-y1)-vy4*(y1-y2))/det*dt
         s11 = stress0(j,i,1,3)
         s22 = stress0(j,i,2,3)
         s12 = stress0(j,i,3,3)
-        stress0(j,i,1,3) = s11 + s12*2.*dw12
-        stress0(j,i,2,3) = s22 - s12*2.*dw12
+        stress0(j,i,1,3) = s11 + s12*2*dw12
+        stress0(j,i,2,3) = s22 - s12*2*dw12
         stress0(j,i,3,3) = s12 + dw12*(s22-s11)
 
         ! (4) Element D:
         det=((x4*y3-y4*x3)-(x1*y3-y1*x3)+(x1*y4-y1*x4))
         dvol(j,i,4) = det*area(j,i,4) - 1
-        area(j,i,4) = 1./det
+        area(j,i,4) = 1.d0/det
 
         ! Adjusting stresses due to rotation
-        dw12 = 0.5*(vx1*(x3-x4)+vx4*(x1-x3)+vx3*(x4-x1) - &
+        dw12 = 0.5d0*(vx1*(x3-x4)+vx4*(x1-x3)+vx3*(x4-x1) - &
             vy1*(y4-y3)-vy4*(y3-y1)-vy3*(y1-y4))/det*dt
         s11 = stress0(j,i,1,4)
         s22 = stress0(j,i,2,4)
         s12 = stress0(j,i,3,4)
-        stress0(j,i,1,4) = s11 + s12*2.*dw12
-        stress0(j,i,2,4) = s22 - s12*2.*dw12
+        stress0(j,i,1,4) = s11 + s12*2*dw12
+        stress0(j,i,2,4) = s22 - s12*2*dw12
         stress0(j,i,3,4) = s12 + dw12*(s22-s11)
     enddo
 enddo
@@ -139,7 +139,7 @@ use params
 include 'precision.inc'
 
 !EROSION PROCESSES
-if( topo_kappa .gt. 0. ) then
+if( topo_kappa .gt. 0.d0 ) then
 
     topomean = sum(cord(1,:,2)) / nx
     tkappa = topo_kappa
@@ -161,13 +161,13 @@ if( topo_kappa .gt. 0. ) then
     cord(1,1:nx,2) = cord(1,1:nx,2) + dtopo(1:nx)
 
     ! accumulated topo change since last resurface
-    dhacc(1:nx-1) = dhacc(1:nx-1) + 0.5 * (dtopo(1:nx-1) + dtopo(2:nx))
+    dhacc(1:nx-1) = dhacc(1:nx-1) + 0.5d0 * (dtopo(1:nx-1) + dtopo(2:nx))
 
     ! adjust markers
     if(mod(nloop, 100) .eq. 0) then
 !!$        print *, 'max sed/erosion rate (m/yr):' &
-!!$             , maxval(dtopo(1:nx)) * 3.16e7 / dt &
-!!$             , minval(dtopo(1:nx)) * 3.16e7 / dt
+!!$             , maxval(dtopo(1:nx)) * 3.16d7 / dt &
+!!$             , minval(dtopo(1:nx)) * 3.16d7 / dt
         call resurface
     end if
 endif
@@ -201,7 +201,7 @@ subroutine resurface
 
   do i = 1, nx-1
       ! averge thickness of this element
-      elz = 0.5 * (cord(1,i,2) - cord(2,i,2) + cord(1,i+1,2) - cord(2,i+1,2))
+      elz = 0.5d0 * (cord(1,i,2) - cord(2,i,2) + cord(1,i+1,2) - cord(2,i+1,2))
       ! change in topo
       chgtopo = dhacc(i)
       ! # of markers in this element
@@ -209,14 +209,14 @@ subroutine resurface
 
       if (abs(chgtopo*kinc) >= elz) then
           ! add/remove markers if topo changed too much
-          if (chgtopo > 0.) then
+          if (chgtopo > 0.d0) then
               ! sedimentation, add a sediment marker
               !print *, 'add sediment', i, chgtopo, elz
              call add_marker_at_top(i, 0.05d0, elz, ksed2, nmarkers)
           else
               ! erosion, remove the top marker
               !print *, 'erosion', i, chgtopo, elz
-              ymax = -1e30
+              ymax = -1d30
               nmax = 0
               kmax = 0
               call shape_functions(1,i,shp2)

@@ -8,7 +8,8 @@ include 'precision.inc'
 
 
 nloop = 0
-time = 0.
+time = 0.d0
+
 ! Mesh generator
 call init_cord
 

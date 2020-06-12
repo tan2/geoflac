@@ -28,7 +28,6 @@ double precision :: rmu, visc_cut
 
 ! minimal propagation distance
 dlmin = dlmin_prop()
-!if(time/sec_year.le.500000.) strain_inert = 1.e-5
 if (idt_scale .eq. 0) then
     ! find dt below
 elseif (idt_scale.eq.1) then 
@@ -38,7 +37,7 @@ elseif (idt_scale.eq.2) then
     ! choosing dt_elastic from tolerance conditions (automatic)
     if( vbc .eq. 0 ) then
         ! let it be 1 cm/year
-        dt_elastic = dlmin*frac*strain_inert/(1./sec_year/100)
+        dt_elastic = dlmin*frac*strain_inert/(1.d0/sec_year/100)
     else
 !write(*,'(5F45.20)')dt_elastic,dlmin,frac,strain_inert,vbc
         dt_elastic = dlmin*frac*strain_inert/vbc
@@ -46,10 +45,11 @@ elseif (idt_scale.eq.2) then
     endif
 endif
 
-dtmax_therm = 1.e+28
-dt_maxwell = 1.e+28
+dtmax_therm = 1.d+28
+dt_maxwell = 1.d+28
 
-vel_max = 0.
+vel_max = 0.d0
+
 do k = 1,2
 do i = 1,nx
 do j = 1,nz
@@ -72,11 +72,11 @@ do iblk = 1, 2
             do j = jblk, nz-1, 2
 
                 iph     = iphase(j,i)
-                pwave   = rl(iph) + 0.6666*rm(iph)
+                pwave   = rl(iph) + 0.6666d0*rm(iph)
                 dens    = den(iph)
                 vel_sound = dlmin*frac/dt_elastic
                 rho_inert = pwave/(vel_sound*vel_sound)
-                if (i_rey.eq.1.and.vel_max.gt.0.) then
+                if (i_rey.eq.1.and.vel_max.gt.0.d0) then
                     rho_inert2 = (xReyn*v_min)/(vel_max*abs(rzbo))
         !           write(*,*) rho_inert, rho_inert2,vel_max
                     if (rho_inert.gt.rho_inert2) rho_inert = rho_inert2
@@ -125,8 +125,8 @@ do iblk = 1, 2
                 ! Calculate maxwell time step
                 if (ivis_present .eq. 1) then
                     !dt_m =visn(j,i)/rm(iph)*fracm
-                    if( (irheol(iph).eq.3 .OR. irheol(iph).eq.12) .AND. rm(iph).lt.1.e+11 ) then
-                        visc_cut = 1.e+10
+                    if( (irheol(iph).eq.3 .OR. irheol(iph).eq.12) .AND. rm(iph).lt.1.d+11 ) then
+                        visc_cut = 1.d+10
                         if( v_min .lt. visc_cut ) then
                             rmu = rm(iph) * v_min/visc_cut
                         else
@@ -155,54 +155,56 @@ end
 function dlmin_prop()
 use arrays
 use params
-include 'precision.inc'
+implicit none
 
-dlmin = 1.e+28
+integer :: i, j
+double precision :: dlmin_prop, dlmin, dl, dlm
+dlmin = 1.d+28
 
 do 1 i = 1,nx-1
     do 1 j = 1,nz-1
 
         ! side 1-2 (triangles 1 and 3)
         dl = sqrt( (cord(j+1,i  ,1)-cord(j  ,i  ,1))**2 + (cord(j+1,i  ,2)-cord(j  ,i  ,2))**2 )
-        dlm = 1./(area(j,i,1)*dl)
-        if( dlm.lt.dlmin ) dlmin = dlm
-        dlm = 1./(area(j,i,3)*dl)
-        if( dlm.lt.dlmin ) dlmin = dlm
+        dlm = 1.d0/(area(j,i,1)*dl)
+        dlmin = min(dlmin, dlm)
+        dlm = 1.d0/(area(j,i,3)*dl)
+        dlmin = min(dlmin, dlm)
 
         ! side 2-4 (triangles 2 and 3)
         dl = sqrt( (cord(j+1,i+1,1)-cord(j+1,i  ,1))**2 + (cord(j+1,i+1,2)-cord(j+1,i  ,2))**2 )
-        dlm = 1./(area(j,i,2)*dl)
-        if( dlm.lt.dlmin ) dlmin = dlm
-        dlm = 1./(area(j,i,3)*dl)
-        if( dlm.lt.dlmin ) dlmin = dlm
+        dlm = 1.d0/(area(j,i,2)*dl)
+        dlmin = min(dlmin, dlm)
+        dlm = 1.d0/(area(j,i,3)*dl)
+        dlmin = min(dlmin, dlm)
 
         ! side 4-3 (triangles 2 and 4)
         dl = sqrt( (cord(j+1,i+1,1)-cord(j  ,i+1,1))**2 + (cord(j+1,i+1,2)-cord(j  ,i+1,2))**2 )
-        dlm = 1./(area(j,i,2)*dl)
-        if( dlm.lt.dlmin ) dlmin = dlm
-        dlm = 1./(area(j,i,4)*dl)
-        if( dlm.lt.dlmin ) dlmin = dlm
+        dlm = 1.d0/(area(j,i,2)*dl)
+        dlmin = min(dlmin, dlm)
+        dlm = 1.d0/(area(j,i,4)*dl)
+        dlmin = min(dlmin, dlm)
 
         ! side 3-1 (triangles 1 and 4)
         dl = sqrt( (cord(j  ,i+1,1)-cord(j  ,i  ,1))**2 + (cord(j  ,i+1,2)-cord(j  ,i  ,2))**2 )
-        dlm = 1./(area(j,i,1)*dl)
-        if( dlm.lt.dlmin ) dlmin = dlm
-        dlm = 1./(area(j,i,4)*dl)
-        if( dlm.lt.dlmin ) dlmin = dlm
+        dlm = 1.d0/(area(j,i,1)*dl)
+        dlmin = min(dlmin, dlm)
+        dlm = 1.d0/(area(j,i,4)*dl)
+        dlmin = min(dlmin, dlm)
 
         ! diagonal 1-4 (triangles 3 and 4)
         dl = sqrt( (cord(j+1,i+1,1)-cord(j  ,i  ,1))**2 + (cord(j+1,i+1,2)-cord(j  ,i  ,2))**2 )
-        dlm = 1./(area(j,i,3)*dl)
-        if( dlm.lt.dlmin ) dlmin = dlm
-        dlm = 1./(area(j,i,4)*dl)
-        if( dlm.lt.dlmin ) dlmin = dlm
+        dlm = 1.d0/(area(j,i,3)*dl)
+        dlmin = min(dlmin, dlm)
+        dlm = 1.d0/(area(j,i,4)*dl)
+        dlmin = min(dlmin, dlm)
 
         ! diagonal 2-3 (triangles 1 and 2)
         dl = sqrt( (cord(j+1,i  ,1)-cord(j  ,i+1,1))**2 + (cord(j+1,i  ,2)-cord(j  ,i+1,2))**2 )
-        dlm = 1./(area(j,i,1)*dl)
-        if( dlm.lt.dlmin ) dlmin = dlm
-        dlm = 1./(area(j,i,2)*dl)
-        if( dlm.lt.dlmin ) dlmin = dlm
+        dlm = 1.d0/(area(j,i,1)*dl)
+        dlmin = min(dlmin, dlm)
+        dlm = 1.d0/(area(j,i,2)*dl)
+        dlmin = min(dlmin, dlm)
 
 1 continue
 

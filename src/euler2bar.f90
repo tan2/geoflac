@@ -115,7 +115,7 @@ subroutine check_inside(x,y,bar1,bar2,ntr,i,j,inc)
       bar2 = xxmpt(2,1) + xxmpt(2,2)*x + y*xxmpt(2,3)
 
       ! found the triangle
-      if(bar1 >= 0.0 .and. bar2 >= 0.0 .and. bar1+bar2 <= 1.0) then
+      if(bar1 >= 0.0d0 .and. bar2 >= 0.0d0 .and. bar1+bar2 <= 1.0d0) then
           ntr = 2 * ( (nz-1)*(i-1)+j-1) + k
           inc = 1
           return

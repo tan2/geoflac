@@ -78,8 +78,8 @@ do i = 1 , nx-1
             ! position of the marker
             call random_number(rx)
             call random_number(ry)
-            rx = 0.5 - rx
-            ry = 0.5 - ry
+            rx = 0.5d0 - rx
+            ry = 0.5d0 - ry
             ddx = dx*rx/3
             ddy = dy*ry/3
             xx = points(l,1) + ddx
@@ -107,7 +107,7 @@ do i = 1 , nx-1
                 endif
 
                 ! layer
-                yyy = yy * (-1e-3)
+                yyy = yy * (-1d-3)
 
                 if (yyy.lt.ycol1) then
                     kph = iph_col1(n)

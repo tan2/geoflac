@@ -33,10 +33,10 @@ integer function itest_mesh()
       endif
   end if
 
-  pi = 3.14159265358979323846
-  degrad = pi/180.
-  raddeg = 180./pi
-  anglemint = 180. 
+  pi = 3.14159265358979323846d0
+  degrad = pi/180.d0
+  raddeg = 180.d0/pi
+  anglemint = 180.d0
   imint = 0
   jmint = 0
 
@@ -67,7 +67,7 @@ integer function itest_mesh()
 
                   angle(k) = raddeg*acos((xa*xb+ya*yb)/(xxal*xxbl))
               end do
-              angle (1) = 180.-angle(2)-angle(3)
+              angle (1) = 180.d0-angle(2)-angle(3)
 
               ! min angle in one trianle
               anglemin1 = min(angle(1),angle(2),angle(3))

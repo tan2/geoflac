@@ -26,22 +26,22 @@ do 13 i = 1,nx-1
         
 	! (1) Element A:
         det=((x2*y3-y2*x3)-(x1*y3-y1*x3)+(x1*y2-y1*x2))
-        det1 = 1./det
+        det1 = 1.d0/det
         area(j,i,1) = det1
 
         ! (2) Element B:
         det=((x2*y4-y2*x4)-(x3*y4-y3*x4)+(x3*y2-y3*x2))
-        det1 = 1./det
+        det1 = 1.d0/det
         area(j,i,2) = det1
 
         ! (3) Element C:
         det=((x2*y4-y2*x4)-(x1*y4-y1*x4)+(x1*y2-y1*x2))
-        det1 = 1./det
+        det1 = 1.d0/det
         area(j,i,3) = det1
 
         ! (4) Element D:
         det=((x4*y3-y4*x3)-(x1*y3-y1*x3)+(x1*y4-y1*x4))
-        det1 = 1./det
+        det1 = 1.d0/det
         area(j,i,4) = det1
         if( area(j,i,1).lt.0.or.area(j,i,2).lt.0.or.area(j,i,3).lt.0.or.area(j,i,4).lt.0 ) then
             call SysMsg('INIT_AREAS: Negative area!')

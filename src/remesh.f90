@@ -71,10 +71,10 @@ allocate( dummy(nzt,nxt) )
 ! New mesh - new-element centers
 do i = 1, nx-1
     do j = 1, nz-1
-        cold(j,i,1) = 0.25*( cordo(j,i,1)+cordo(j+1,i,1)+cordo(j,i+1,1)+cordo(j+1,i+1,1) )
-        cold(j,i,2) = 0.25*( cordo(j,i,2)+cordo(j+1,i,2)+cordo(j,i+1,2)+cordo(j+1,i+1,2) )
-        cnew(j,i,1) = 0.25*( cord(j,i,1)+cord(j+1,i,1)+cord(j,i+1,1)+cord(j+1,i+1,1) )
-        cnew(j,i,2) = 0.25*( cord(j,i,2)+cord(j+1,i,2)+cord(j,i+1,2)+cord(j+1,i+1,2) )
+        cold(j,i,1) = 0.25d0*( cordo(j,i,1)+cordo(j+1,i,1)+cordo(j,i+1,1)+cordo(j+1,i+1,1) )
+        cold(j,i,2) = 0.25d0*( cordo(j,i,2)+cordo(j+1,i,2)+cordo(j,i+1,2)+cordo(j+1,i+1,2) )
+        cnew(j,i,1) = 0.25d0*( cord(j,i,1)+cord(j+1,i,1)+cord(j,i+1,1)+cord(j+1,i+1,1) )
+        cnew(j,i,2) = 0.25d0*( cord(j,i,2)+cord(j+1,i,2)+cord(j,i+1,2)+cord(j+1,i+1,2) )
     enddo
 enddo
 
@@ -114,10 +114,10 @@ dummy(1:nzt,1:nxt) = aps(1:nzt,1:nxt)
 call rem_interpolate( nzt, nxt, dummy )
 do i = 1, nxt
     do j = 1, nzt
-        if( dummy(j,i) .ge. 0. ) then
+        if( dummy(j,i) .ge. 0.d0 ) then
             aps(j,i) = dummy(j,i)
         else
-            aps(j,i) = 0.
+            aps(j,i) = 0.d0
         endif
 !       write(*,*) i,j,aps(j,i)
     end do
@@ -135,28 +135,28 @@ visn(1:nzt,1:nxt) = dummy(1:nzt,1:nxt)
 
 idist = 2
 if(incoming_left==1) then
-    aps(1:nz-1, 1:1+idist) = 0.0
+    aps(1:nz-1, 1:1+idist) = 0.0d0
 
     do jj = 1, nz-1
-        if((cord(1,1,2) - 0.5*(cord(jj,1,2)+cord(jj+1,1,2))) > hc1(1)*1e3) exit
+        if((cord(1,1,2) - 0.5d0*(cord(jj,1,2)+cord(jj+1,1,2))) > hc1(1)*1d3) exit
     enddo
     call newphase2marker(1, jj-1, 1, 1+idist, iph_col1(1))
     j = jj
 
     do jj = j, nz-1
-        if((cord(1,1,2) - 0.5*(cord(jj,1,2)+cord(jj+1,1,2))) > hc2(1)*1e3) exit
+        if((cord(1,1,2) - 0.5d0*(cord(jj,1,2)+cord(jj+1,1,2))) > hc2(1)*1d3) exit
     enddo
     call newphase2marker(j, jj-1, 1, 1+idist, iph_col2(1))
     j = jj
 
     do jj = j, nz-1
-        if((cord(1,1,2) - 0.5*(cord(jj,1,2)+cord(jj+1,1,2))) > hc3(1)*1e3) exit
+        if((cord(1,1,2) - 0.5d0*(cord(jj,1,2)+cord(jj+1,1,2))) > hc3(1)*1d3) exit
     enddo
     call newphase2marker(j, jj-1, 1, 1+idist, iph_col3(1))
     j = jj
 
     do jj = j, nz-1
-        if((cord(1,1,2) - 0.5*(cord(jj,1,2)+cord(jj+1,1,2))) > hc4(1)*1e3) exit
+        if((cord(1,1,2) - 0.5d0*(cord(jj,1,2)+cord(jj+1,1,2))) > hc4(1)*1d3) exit
     enddo
     call newphase2marker(j, jj-1, 1, 1+idist, iph_col4(1))
     j = jj
@@ -165,28 +165,28 @@ if(incoming_left==1) then
 endif
 
 if(incoming_right==1) then
-    aps(1:nz-1, nx-1-idist:nx-1) = 0.0
+    aps(1:nz-1, nx-1-idist:nx-1) = 0.0d0
 
     do jj = 1, nz-1
-        if((cord(1,nx,2) - 0.5*(cord(jj,nx,2)+cord(jj+1,nx,2))) > hc1(nzone_age)*1e3) exit
+        if((cord(1,nx,2) - 0.5d0*(cord(jj,nx,2)+cord(jj+1,nx,2))) > hc1(nzone_age)*1d3) exit
     enddo
     call newphase2marker(1, jj-1, nx-1-idist, nx-1, iph_col1(nzone_age))
     j = jj
 
     do jj = j, nz-1
-        if((cord(1,nx,2) - 0.5*(cord(jj,nx,2)+cord(jj+1,nx,2))) > hc2(nzone_age)*1e3) exit
+        if((cord(1,nx,2) - 0.5d0*(cord(jj,nx,2)+cord(jj+1,nx,2))) > hc2(nzone_age)*1d3) exit
     enddo
     call newphase2marker(j, jj-1, nx-1-idist, nx-1, iph_col2(nzone_age))
     j = jj
 
     do jj = j, nz-1
-        if((cord(1,nx,2) - 0.5*(cord(jj,nx,2)+cord(jj+1,nx,2))) > hc3(nzone_age)*1e3) exit
+        if((cord(1,nx,2) - 0.5d0*(cord(jj,nx,2)+cord(jj+1,nx,2))) > hc3(nzone_age)*1d3) exit
     enddo
     call newphase2marker(j, jj-1, nx-1-idist, nx-1, iph_col3(nzone_age))
     j = jj
 
     do jj = j, nz-1
-        if((cord(1,nx,2) - 0.5*(cord(jj,nx,2)+cord(jj+1,nx,2))) > hc4(nzone_age)*1e3) exit
+        if((cord(1,nx,2) - 0.5d0*(cord(jj,nx,2)+cord(jj+1,nx,2))) > hc4(nzone_age)*1d3) exit
     enddo
     call newphase2marker(j, jj-1, nx-1-idist, nx-1, iph_col4(nzone_age))
     j = jj
@@ -196,7 +196,7 @@ endif
 
 !!$! XXX: the bottom elements must be mantle material, otherwise
 !!$! too much deformation can occur(?)
-!!$aps(nz-3:nz-1, 1:nx-1) = 0.0
+!!$aps(nz-3:nz-1, 1:nx-1) = 0.0d0
 !!$call newphase2marker(nz-3, nz-1, 1, nx-1, kmant1)
 
 
@@ -335,14 +335,14 @@ include 'precision.inc'
 integer :: nzt,nxt
 
 
-perr = 1.e-4
+perr = 1.d-4
 
 do i = 1, nxt
     do j = 1, nzt
         xx = cnew(j,i,1)
         yy = cnew(j,i,2)
 
-        amodmin = 1.e+10
+        amodmin = 1.d+10
 
         numtr(j,i) = 0
         do l = 0, max( nxt-1, nzt-1 )
@@ -377,9 +377,9 @@ do i = 1, nxt
                         amodmin = amod
                         nmin = n
                     endif
-                    if ( a1.le.-perr .or. a1.ge.(1.0+perr) ) cycle
-                    if ( a2.le.-perr .or. a2.ge.(1.0+perr) ) cycle
-                    if ( a3.le.-perr .or. a3.ge.(1.0+perr) ) cycle
+                    if ( a1.le.-perr .or. a1.ge.(1.0d0+perr) ) cycle
+                    if ( a2.le.-perr .or. a2.ge.(1.0d0+perr) ) cycle
+                    if ( a3.le.-perr .or. a3.ge.(1.0d0+perr) ) cycle
                     numtr(j,i) = n
                     barcord(j,i,1) = a1
                     barcord(j,i,2) = a2
@@ -413,40 +413,40 @@ do i = 1, nxt
         if( dist1 .gt. dist2 ) then
             if( dist2 .gt. dist3 ) then
                 ! 1,2,3
-                barcord(j,i,1) = 0.
-                barcord(j,i,2) = 1./dist2/(1./dist2+1./dist3)
-                barcord(j,i,3) = 1./dist3/(1./dist2+1./dist3)
+                barcord(j,i,1) = 0.d0
+                barcord(j,i,2) = 1.d0/dist2/(1.d0/dist2+1.d0/dist3)
+                barcord(j,i,3) = 1.d0/dist3/(1.d0/dist2+1.d0/dist3)
             else
                 if( dist1 .gt. dist3 ) then
                     ! 1,3,2
-                    barcord(j,i,1) = 0.
-                    barcord(j,i,2) = 1./dist2/(1./dist2+1./dist3)
-                    barcord(j,i,3) = 1./dist3/(1./dist2+1./dist3)
+                    barcord(j,i,1) = 0.d0
+                    barcord(j,i,2) = 1.d0/dist2/(1.d0/dist2+1.d0/dist3)
+                    barcord(j,i,3) = 1.d0/dist3/(1.d0/dist2+1.d0/dist3)
                 else
                     ! 3,1,2
-                    barcord(j,i,1) = 1./dist1/(1./dist1+1./dist2)
-                    barcord(j,i,2) = 1./dist2/(1./dist1+1./dist2)
-                    barcord(j,i,3) = 0.
+                    barcord(j,i,1) = 1.d0/dist1/(1.d0/dist1+1.d0/dist2)
+                    barcord(j,i,2) = 1.d0/dist2/(1.d0/dist1+1.d0/dist2)
+                    barcord(j,i,3) = 0.d0
                 endif
             endif
         else
             if( dist3 .gt. dist1 ) then
                 if( dist2 .gt. dist3 ) then
                     ! 2,3,1
-                    barcord(j,i,1) = 1./dist1/(1./dist1+1./dist3)
-                    barcord(j,i,2) = 0.
-                    barcord(j,i,3) = 1./dist3/(1./dist1+1./dist3)
+                    barcord(j,i,1) = 1.d0/dist1/(1.d0/dist1+1.d0/dist3)
+                    barcord(j,i,2) = 0.d0
+                    barcord(j,i,3) = 1.d0/dist3/(1.d0/dist1+1.d0/dist3)
                 else
                     ! 3,2,1
-                    barcord(j,i,1) = 1./dist1/(1./dist1+1./dist2)
-                    barcord(j,i,2) = 1./dist2/(1./dist1+1./dist2)
-                    barcord(j,i,3) = 0.
+                    barcord(j,i,1) = 1.d0/dist1/(1.d0/dist1+1.d0/dist2)
+                    barcord(j,i,2) = 1.d0/dist2/(1.d0/dist1+1.d0/dist2)
+                    barcord(j,i,3) = 0.d0
                 endif
             else
                 ! 2,1,3
-                barcord(j,i,1) = 1./dist1/(1./dist1+1./dist3)
-                barcord(j,i,2) = 0.
-                barcord(j,i,3) = 1./dist3/(1./dist1+1./dist3)
+                barcord(j,i,1) = 1.d0/dist1/(1.d0/dist1+1.d0/dist3)
+                barcord(j,i,2) = 0.d0
+                barcord(j,i,3) = 1.d0/dist3/(1.d0/dist1+1.d0/dist3)
             endif
         endif
 
@@ -502,24 +502,24 @@ do i = 1, nxt
 !  For the phases make sure that you do not create new phases
 !        iph_int = 0
 !       if(iph_int.eq.1) then
-!     xmax1 = max(int(f1+0.5),int(f2+0.5))
-!        xmax2 = int(f3+0.5)
+!     xmax1 = max(int(f1+0.5d0),int(f2+0.5d0))
+!        xmax2 = int(f3+0.5d0)
 !        xmax = max(xmax1,xmax2)
-!        xmin1 = min(int(f1+0.5),int(f2+0.5))
-!        xmin2 = int(f3+0.5)
+!        xmin1 = min(int(f1+0.5d0),int(f2+0.5d0))
+!        xmin2 = int(f3+0.5d0)
 !        xmin = min(xmin1,xmin2)
 !        xnorm = abs(xmax -xmin)
-!        xavr = abs(xmax+xmin)*0.5
-!        if (xnorm.eq.0.) goto 132
+!        xavr = abs(xmax+xmin)*0.5d0
+!        if (xnorm.eq.0.d0) goto 132
 !        if(arr(j,i).lt.xavr) then 
 !        xvalnorm = abs((xmin-arr(j,i))/xnorm)
 !        else
 !        xvalnorm = abs((xmax-arr(j,i))/xnorm)
 !        endif
-!        if (xvalnorm.ge.0.5) arr(j,i) = xmax-xvalnorm
-!        if (xvalnorm.lt.0.5) arr(j,i) = xmin+xvalnorm
+!        if (xvalnorm.ge.0.5d0) arr(j,i) = xmax-xvalnorm
+!        if (xvalnorm.lt.0.5d0) arr(j,i) = xmin+xvalnorm
 !132     arr(j,i) = xmin
-!        if(arr(j,i).eq.0.) arr(j,i) = 1.
+!        if(arr(j,i).eq.0.d0) arr(j,i) = 1.d0
 !        endif
     end do
 end do

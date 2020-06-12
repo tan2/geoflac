@@ -15,10 +15,10 @@ subroutine init_bc
   !      degree-of-freedom with no applied boundary conditions ,and unity
   !      for an applied boundary condition.
   !
-  bc = 0.
+  bc = 0.d0
   ncod = 0
-  bcstress = 0.
-  nopbou = 0  
+  bcstress = 0.d0
+  nopbou = 0
   ncodbou = 0
   nebou = 0
 
@@ -89,7 +89,7 @@ subroutine init_bc
                   nnop = nnop + 1
                   numbp1 = numbp + 1
                   xn = (cord (numbp1,1,2) - x1)/(x2-x1)
-                  xa = 0.5 * (x+xn)
+                  xa = 0.5d0 * (x+xn)
                   call stressbc (i,nnop,numbp,numbp1,xa)  
               endif
 
@@ -117,7 +117,7 @@ subroutine init_bc
                   nnop = nnop + 1
                   numbp1 = n + 1
                   xn = (cord (nz,numbp1,1) - x1)/(x2-x1)
-                  xa = 0.5 * (x+xn)
+                  xa = 0.5d0 * (x+xn)
                   call stressbc (i,nnop,numbp,numbp1,xa)
               endif
 
@@ -144,7 +144,7 @@ subroutine init_bc
                   nnop = nnop + 1
                   numbp1 = numbp + 1
                   xn = (cord (numbp1,nx,2) - x1)/(x2-x1)
-                  xa = 0.5 * (x+xn)
+                  xa = 0.5d0 * (x+xn)
                   call stressbc (i,nnop,numbp,numbp1,xa)
               endif
 
@@ -172,7 +172,7 @@ subroutine init_bc
                   nnop = nnop + 1
                   numbp1 = numbp + 1
                   xn = (cord (1,numbp1,1) - x1)/(x2-x1)
-                  xa = 0.5 * (x+xn)
+                  xa = 0.5d0 * (x+xn)
                   call stressbc (i,nnop,numbp,numbp1,xa)
               endif
 
@@ -202,9 +202,11 @@ subroutine stressbc (i,n,numbp,numbp1,x)
 
   use arrays
   use params
-  include 'precision.inc'
+  implicit none
 
-  pi2 = 2. * 3.14159
+  integer :: i, n, numbp, numbp1
+  double precision :: x, fun
+  double precision, parameter :: pi2 = 2.d0 * 3.14159d0
 
   fun =  bca(i) + bcb(i)*x + bcc(i)*x*x  & 
        + (bcd(i)*cos (pi2*bce(i)*x) + bcf(i)*sin (pi2*bcg(i)*x))  &
@@ -259,9 +261,12 @@ subroutine velbc (i,numbp,x)
 
   use arrays
   use params
-  include 'precision.inc' 
-
-  pi2 = 2. * 3.14159 
+  implicit none
+  integer :: i, numbp
+  double precision :: x
+  double precision, parameter :: pi2 = 2.d0 * 3.14159d0
+  double precision :: fun
+  integer :: ii1, jj1
 
   fun =  bca(i) + bcb(i)*x + bcc(i)*x*x   & 
        + (bcd(i)*cos (pi2*bce(i)*x) + bcf(i)*sin (pi2*bcg(i)*x))    &
@@ -286,7 +291,7 @@ subroutine velbc (i,numbp,x)
   ! - x component 
   if (nbc(i) .eq. 10 ) then  
       ncod(jj1,ii1,1) = 1
-      if (abs(bc(jj1,ii1,1)).gt.0.) then
+      if (abs(bc(jj1,ii1,1)).gt.0.d0) then
           fun = bc(jj1,ii1,1)
       endif
       bc(jj1,ii1,1) = fun  
@@ -327,7 +332,7 @@ subroutine velbc_visc(i)
       stop 'Wrong side for velbv_visc'
   endif
 
-  tmp = 0.
+  tmp = 0.d0
   do jj = nbc1(i), nbc2(i)
       if(jj == 1) cycle
       tmp = tmp + (cord(jj-1,ii,2) - cord(jj,ii,2)) / min(Eff_visc(jj-1,ie), 3d23)
@@ -340,7 +345,7 @@ subroutine velbc_visc(i)
           tmp1 = tmp1 - (cord(jj-1,ii,2) - cord(jj,ii,2)) / min(Eff_visc(jj-1,ie), 3d23)
           write(*,*) jj, min(Eff_visc(jj-1,ie),3d23), tmp1 * tmp
       else
-          write(*,*) jj, 3e23, tmp1 * tmp
+          write(*,*) jj, 3d23, tmp1 * tmp
       end if
       ncod(jj,ii,1) = 1
       bc(jj,ii,1) = tmp1 * tmp
@@ -359,7 +364,7 @@ subroutine vbcal
   use params
   include 'precision.inc'
 
-  vbc = 0.
+  vbc = 0.d0
 
   do i = 1,nx
       do j = 1,nz
@@ -369,7 +374,7 @@ subroutine vbcal
           enddo
       enddo
   enddo
-  if(vbc.eq.0.) vbc=1.e-10
+  if(vbc.eq.0.d0) vbc=1.d-10
 
   open(13,file = 'vbc.s')
   write(13,*) vbc

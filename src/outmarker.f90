@@ -13,7 +13,7 @@ character*100 fn
 call bar2euler
 
 nrec = 0
-D1d = 0.
+D1d = 0.d0
 ! define record number and write it to contents
 if( lastout .eq. 1 ) then
     nrec = 1
@@ -31,7 +31,7 @@ else
     nrec = nrec + 1
     backspace(1) ! Neede for further writing since EOF has been reached.
 endif
-write( 1, '(i6,1x,i8,1x,i8,1x,f7.3)' ) nrec, nloop,nmarkers, time/sec_year/1.e6
+write( 1, '(i6,1x,i8,1x,i8,1x,f7.3)' ) nrec, nloop,nmarkers, time/sec_year/1.d6
 close(1)
 
 !! Since the number of markers changes with time, the marker data cannot be
@@ -40,7 +40,7 @@ close(1)
 ! Coordinates  [km]
 nwords = nmarkers 
 do i = 1, nmarkers
-    D1d(i)= real(mark_x(i) * 1e-3)
+    D1d(i)= real(mark_x(i) * 1d-3)
 enddo
 write(fn,'(A,I6.6,A)') 'markx.', nrec, '.0'
 open (1,file=fn,access='direct',recl=nwords*kindr)
@@ -48,7 +48,7 @@ write (1,rec=1) D1d
 close (1)
 
 do i = 1,nmarkers
-    D1d(i)= real(mark_y(i) * 1e-3)
+    D1d(i)= real(mark_y(i) * 1d-3)
 enddo
 write(fn,'(A,I6.6,A)') 'marky.', nrec, '.0'
 open (1,file=fn,access='direct',recl=nwords*kindr)
@@ -57,7 +57,7 @@ close (1)
 
 ! Age [Myrs]
 do i = 1,nmarkers
-    D1d(i)= real(mark_age(i) / sec_year / 1.e6)
+    D1d(i)= real(mark_age(i) / sec_year / 1.d6)
 enddo
 write(fn,'(A,I6.6,A)') 'markage.', nrec, '.0'
 open (1,file=fn,access='direct',recl=nwords*kindr)

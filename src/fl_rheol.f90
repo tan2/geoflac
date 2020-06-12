@@ -39,11 +39,11 @@ do 3 i = 1,nx-1
         irh = irheol(iph)
 
         ! Elastic modules & viscosity & plastic properties
-        bulkm = rl(iph) + 2.*rm(iph)/3.
+        bulkm = rl(iph) + 2.d0*rm(iph)/3.d0
         rmu   = rm(iph)
 
         ! Thermal stresses (alfa_v = 3.e-5 1/K)
-        stherm = 0.
+        stherm = 0.d0
         if (istress_therm.gt.0) stherm = -alfa(iph)*bulkm*(temp(j,i)-temp0(j,i))
 
 
@@ -63,7 +63,7 @@ do 3 i = 1,nx-1
             de11 = strainr(1,k,j,i)*dt
             de22 = strainr(2,k,j,i)*dt
             de12 = strainr(3,k,j,i)*dt
-            de33 = 0.
+            de33 = 0.d0
             dv = dvol(j,i,k)
             s11p(k) = stress0(j,i,1,k) + stherm 
             s22p(k) = stress0(j,i,2,k) + stherm 
@@ -142,9 +142,9 @@ do 3 i = 1,nx-1
         
             ! For A and B couple:
             ! area(n,it) is INVERSE of "real" DOUBLE area (=1./det)
-            quad_area = 1./(area(j,i,1)+area(j,i,2))
-            s0a=0.5*(stress0(j,i,1,1)+stress0(j,i,2,1))
-            s0b=0.5*(stress0(j,i,1,2)+stress0(j,i,2,2))
+            quad_area = 1.d0/(area(j,i,1)+area(j,i,2))
+            s0a=0.5d0*(stress0(j,i,1,1)+stress0(j,i,2,1))
+            s0b=0.5d0*(stress0(j,i,1,2)+stress0(j,i,2,2))
             s0=(s0a*area(j,i,2)+s0b*area(j,i,1))*quad_area
             stress0(j,i,1,1) = stress0(j,i,1,1) - s0a + s0
             stress0(j,i,2,1) = stress0(j,i,2,1) - s0a + s0
@@ -152,9 +152,9 @@ do 3 i = 1,nx-1
             stress0(j,i,2,2) = stress0(j,i,2,2) - s0b + s0
 
             ! For C and D couple:
-            quad_area = 1./(area(j,i,3)+area(j,i,4))
-            s0a=0.5*(stress0(j,i,1,3)+stress0(j,i,2,3))
-            s0b=0.5*(stress0(j,i,1,4)+stress0(j,i,2,4))
+            quad_area = 1.d0/(area(j,i,3)+area(j,i,4))
+            s0a=0.5d0*(stress0(j,i,1,3)+stress0(j,i,2,3))
+            s0b=0.5d0*(stress0(j,i,1,4)+stress0(j,i,2,4))
             s0=(s0a*area(j,i,4)+s0b*area(j,i,3))*quad_area
             stress0(j,i,1,3) = stress0(j,i,1,3) - s0a + s0
             stress0(j,i,2,3) = stress0(j,i,2,3) - s0a + s0
@@ -167,21 +167,21 @@ do 3 i = 1,nx-1
             ! Average the strain for pair of the triangles
             ! Note that area (n,it) is inverse of double area !!!!!
             aps(j,i) = aps(j,i) &
-                 + 0.5*( depl(1)*area(j,i,2)+depl(2)*area(j,i,1) ) / (area(j,i,1)+area(j,i,2)) &
-                 + 0.5*( depl(3)*area(j,i,4)+depl(4)*area(j,i,3) ) / (area(j,i,3)+area(j,i,4))
-            if( aps(j,i) .lt. 0. ) aps(j,i) = 0.
+                 + 0.5d0*( depl(1)*area(j,i,2)+depl(2)*area(j,i,1) ) / (area(j,i,1)+area(j,i,2)) &
+                 + 0.5d0*( depl(3)*area(j,i,4)+depl(4)*area(j,i,3) ) / (area(j,i,3)+area(j,i,4))
+            if( aps(j,i) .lt. 0.d0 ) aps(j,i) = 0.d0
 
             !	write(*,*) depl(1),depl(2),depl(3),depl(4),area(j,i,1),area(j,i,2),area(j,i,3),area(j,i,4)
 
             ! LINEAR HEALING OF THE PLASTIC STRAIN
-            if (tau_heal .ne. 0.) &
-                 aps (j,i) = aps (j,i)/(1.+dt/tau_heal)
+            if (tau_heal .ne. 0.d0) &
+                 aps (j,i) = aps (j,i)/(1.d0+dt/tau_heal)
         end if
 
         ! TOTAL FINITE STRAIN
-        strain(j,i,1) = strain(j,i,1) + 0.25*dt*(strainr(1,1,j,i)+strainr(1,2,j,i)+strainr(1,3,j,i)+strainr(1,4,j,i))
-        strain(j,i,2) = strain(j,i,2) + 0.25*dt*(strainr(2,1,j,i)+strainr(2,2,j,i)+strainr(2,3,j,i)+strainr(2,4,j,i))
-        strain(j,i,3) = strain(j,i,3) + 0.25*dt*(strainr(3,1,j,i)+strainr(3,2,j,i)+strainr(3,3,j,i)+strainr(3,4,j,i))
+        strain(j,i,1) = strain(j,i,1) + 0.25d0*dt*(strainr(1,1,j,i)+strainr(1,2,j,i)+strainr(1,3,j,i)+strainr(1,4,j,i))
+        strain(j,i,2) = strain(j,i,2) + 0.25d0*dt*(strainr(2,1,j,i)+strainr(2,2,j,i)+strainr(2,3,j,i)+strainr(2,4,j,i))
+        strain(j,i,3) = strain(j,i,3) + 0.25d0*dt*(strainr(3,1,j,i)+strainr(3,2,j,i)+strainr(3,3,j,i)+strainr(3,4,j,i))
 
 3 continue
 !$OMP end do

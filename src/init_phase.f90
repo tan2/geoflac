@@ -39,7 +39,7 @@ else
         do n = 1, nzone_age
             do i = ixtb1(n), min(ixtb2(n), nx-1)
                 do j = 1, nz-1
-                    y = (cord(1,i,2)-cord(j,i,2))*1.e-3
+                    y = (cord(1,i,2)-cord(j,i,2))*1.d-3
                     if (y.lt.hc1(n)) then
                         iphase(j,i) = iph_col1(n)
                     else if (y.lt.hc2(n)) then
