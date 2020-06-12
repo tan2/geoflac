@@ -139,8 +139,8 @@ if( io_eII.eq.1 ) then
 
 endif
 
-! Density 
-if( io_mark.eq.1 ) then
+! Density
+if( io_density.eq.1 ) then
    do i = 1, nx-1
    do j = 1, nz-1
           De(j,i) = real(Eff_dens(j,i))
@@ -244,7 +244,7 @@ endif
 
 
 ! Phase
-if( io_melt.eq.1 ) then
+if( io_phase.eq.1 ) then
     open (1,file='phase.0',access='direct',recl=nwords*kindi)
     write (1,rec=nrec) iphase(1:nz-1,1:nx-1)
     close (1)

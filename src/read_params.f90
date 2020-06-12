@@ -302,7 +302,7 @@ call AdvanceToNextInputLine( 4 )
 !135 continue
 !call AdvanceToNextInputLine( 4 )
 read(4,*) io_vel,io_srII,io_eII,io_aps,io_sII,io_sxx,io_szz,io_sxz,io_pres, &
-    io_temp,io_melt,io_visc,io_phas,io_mark,io_src,io_diss,io_forc,io_hfl,io_topo
+    io_temp,io_phase,io_visc,io_unused,io_density,io_src,io_diss,io_forc,io_hfl,io_topo
 call AdvanceToNextInputLine( 4 )
 read(4,*) lastout
 call AdvanceToNextInputLine( 4 )
