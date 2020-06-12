@@ -70,9 +70,7 @@ do i = 1,inhom
     if (igeom(i) .eq.0) then
         do j = ix1(i),ix2(i)
             do k = iy1(i),iy2(i)
-                if( inphase(i) .ge. 0) then
-                    iphase(k,j) = inphase(i)
-                endif
+                if( inphase(i) > 0) iphase(k,j) = inphase(i)
                 aps(k,j)=xinitaps(i)
             end do
         end do
@@ -95,7 +93,7 @@ do i = 1,inhom
             itop = itop_geom(j,ixc,iwidth,iamp) 
             do k = iy1(i),iy2(i)
                 if (k .ge. (iy2(i)-itop)) then 
-                    iphase(k,j) = inphase(i)
+                    if( inphase(i) > 0) iphase(k,j) = inphase(i)
                 endif
             end do
         end do
@@ -105,7 +103,7 @@ do i = 1,inhom
     if (igeom (i) .eq.3) then
         do j = ix1(i),ix2(i)
             k = nint(float(iy2(i)-iy1(i))/float(ix2(i)-ix1(i))*(j-ix1(i))) + iy1(i)
-            iphase(k,j) = inphase(i)
+            if( inphase(i) > 0) iphase(k,j) = inphase(i)
         end do
     endif
     
@@ -115,9 +113,7 @@ do i = 1,inhom
             k1 = floor(float(iy2(i)-iy1(i))/float(ix2(i)-ix1(i))*(j-ix1(i))) + iy1(i)
             k2 = ceiling(float(iy2(i)-iy1(i))/float(ix2(i)-ix1(i))*(j-ix1(i))) + iy1(i)
             aps(k1:k2,j)=xinitaps(i)
-            if( inphase(i) .ge. 0) then
-                iphase(k1:k2,j) = inphase(i)
-            endif
+            if( inphase(i) > 0) iphase(k1:k2,j) = inphase(i)
         end do
     endif
 end do
