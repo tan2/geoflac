@@ -43,9 +43,9 @@ do i = 1,nx
     end do
 end do
 !  Z - component 
-!zb_a = 0.
-!zb_x0 = 150000.
-!zb_s = 25000.
+!zb_a = 0.d0
+!zb_x0 = 150000.d0
+!zb_s = 25000.d0
 !write(*,*) 'INIT_CORD: Special lower boundary !!!'
 do i = 1,nx
     do j = 1,nz
@@ -98,14 +98,14 @@ double precision :: sizesum
 integer :: nelsum, i
 
 !- X direction
-sizesum=0.
+sizesum=0.d0
 nelsum =0
 do i = 1,nzonx
     sizesum = sizesum + sizez_x(i)
     nelsum =  nelsum  + nelz_x(i)
 end do
 
-if ( abs ((sizesum-1.0)) .gt. 1.e-4 ) then
+if ( abs ((sizesum-1.0d0)) .gt. 1.d-4 ) then
     call SysMsg('INIT_CORD: Sum of zones sizes is not correct.(X-direction)')
     stop 16
 endif
@@ -117,14 +117,14 @@ endif
 
 
 !- Y direction
-sizesum=0.
+sizesum=0.d0
 nelsum =0
 do i = 1,nzony 
     sizesum = sizesum + sizez_y(i)
     nelsum =  nelsum  + nelz_y(i)
 end do
 
-if ( abs (sizesum-1.) .gt. 1.e-4 ) then
+if ( abs (sizesum-1.d0) .gt. 1.d-4 ) then
     call SysMsg('INIT_CORD: Sum of zones sizes is not correct.(Y-direction)')
     stop 18
 endif

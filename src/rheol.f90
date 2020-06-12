@@ -11,9 +11,9 @@ subroutine elastic(bulkm,rmu,s11,s22,s33,s12,de11,de22,de12)
     real*8, intent(in) :: bulkm, rmu, de11, de22, de12
     real*8, intent(inout) :: s11, s22, s33, s12
 
-    real*8, parameter :: c1d3 = 1./3.
-    real*8, parameter :: c4d3 = 4./3.
-    real*8, parameter :: c2d3 = 2./3.
+    real*8, parameter :: c1d3 = 1.d0/3.d0
+    real*8, parameter :: c4d3 = 4.d0/3.d0
+    real*8, parameter :: c2d3 = 2.d0/3.d0
 
     real*8 a1, a2, s0
 
@@ -21,14 +21,14 @@ subroutine elastic(bulkm,rmu,s11,s22,s33,s12,de11,de22,de12)
     a2 = bulkm - c2d3*rmu
 
     !  In  lame coefficients:
-    !      s11 = s11 + rlam*(de11+de22) + 2.*rmu*de11
-    !      s22 = s22 + rlam*(de11+de22) + 2.*rmu*de22
-    !      s12 = s12 + 2.*rmu*de12
+    !      s11 = s11 + rlam*(de11+de22) + 2.d0*rmu*de11
+    !      s22 = s22 + rlam*(de11+de22) + 2.d0*rmu*de22
+    !      s12 = s12 + 2.d0*rmu*de12
     !      s33 = s33 + rlam*(de11+de22)
 
     s11 = s11 + a1*de11 + a2*de22
     s22 = s22 + a2*de11 + a1*de22
-    s12 = s12 + 2.*rmu*de12
+    s12 = s12 + 2.d0*rmu*de12
     s33 = s33 + a2*(de11+de22)
     s0 = c1d3 * (s11 + s22 + s33)
 
@@ -46,8 +46,8 @@ integer, intent(in) :: ndim
 real*8, intent(in) :: bulkm, rmu0, viscosity, de11, de22, de33, de12, dv, dt
 real*8, intent(inout) :: s11, s22, s33, s12, devmax, dvmax
 
-real*8, parameter :: c1d3 = 1./3.
-real*8, parameter :: visc_cut = 1.e+19
+real*8, parameter :: c1d3 = 1.d0/3.d0
+real*8, parameter :: visc_cut = 1.d+19
 
 real*8 rmu, temp, vic1, vic2, dev, de11d, de22d, de33d, s0, s11d, s22d, s33d
 character*200 msgstr
@@ -59,29 +59,29 @@ else
 end if
 
 ! Undimensional parametr:  dt / relaxation time
-temp = rmu/(2.*viscosity) * dt
+temp = rmu/(2.d0*viscosity) * dt
 
-! if ( temp .gt. 0.5 ) then
+! if ( temp .gt. 0.5d0 ) then
 !    write( msgstr, '(A,A,e8.1,A,e7.1,A,e7.1)' ) 'Maxwell: time step!',' visc=',viscosity,' m0=',rmu0,' m=',rmu
 !    call SysMsg(msgstr)
 !    stop 22
 ! endif
 
-vic1 = 1.0 - temp
-vic2 = 1.0/(1.0 + temp)
+vic1 = 1.0d0 - temp
+vic2 = 1.0d0/(1.0d0 + temp)
 
 if (ndim .eq. 2 ) then
    ! deviatoric strains
    dev = de11 + de22
-   de11d = de11 - 0.5 * dev
-   de22d = de22 - 0.5 * dev
-   de33d = 0.
+   de11d = de11 - 0.5d0 * dev
+   de22d = de22 - 0.5d0 * dev
+   de33d = 0.d0
 
    ! deviatoric stresses
-   s0 = 0.5 * (s11 + s22)
+   s0 = 0.5d0 * (s11 + s22)
    s11d = s11 - s0
    s22d = s22 - s0
-   s33d = 0.
+   s33d = 0.d0
 
 else
    ! deviatoric strains
@@ -98,10 +98,10 @@ else
 endif
 
 ! new deviatoric stresses
-s11d = (s11d * vic1 + 2. * rmu * de11d) * vic2
-s22d = (s22d * vic1 + 2. * rmu * de22d) * vic2
-s33d = (s33d * vic1 + 2. * rmu * de33d) * vic2
-s12  = (s12  * vic1 + 2. * rmu * de12 ) * vic2
+s11d = (s11d * vic1 + 2.d0 * rmu * de11d) * vic2
+s22d = (s22d * vic1 + 2.d0 * rmu * de22d) * vic2
+s33d = (s33d * vic1 + 2.d0 * rmu * de33d) * vic2
+s12  = (s12  * vic1 + 2.d0 * rmu * de12 ) * vic2
 
 ! isotropic stress is elastic
 devmax = max(devmax, abs(dev))
@@ -132,12 +132,12 @@ real*8, intent(in) :: bulkm, rmu, coh, phi, psi, hardn, de11, de22, de33, de12, 
 real*8, intent(inout) :: s11, s22, s33, s12
 real*8, intent(out) :: depls, diss
 integer, intent(out) :: ipls
-real*8, parameter :: pi = 3.14159265358979323846
-real*8, parameter :: degrad = pi/180.
-real*8, parameter :: c4d3 = 4./3.
-real*8, parameter :: c2d3 = 2./3.
+real*8, parameter :: pi = 3.14159265358979323846d0
+real*8, parameter :: degrad = pi/180.d0
+real*8, parameter :: c4d3 = 4.d0/3.d0
+real*8, parameter :: c2d3 = 2.d0/3.d0
 ! press_add formaely was passed by a parameter. in my case it is always zero.
-real*8, parameter :: press_add = 0.
+real*8, parameter :: press_add = 0.d0
 
 real*8 sphi, spsi, anphi, anpsi, amc, e1, e2, x1, ten_max, &
      s11i, s22i, s12i, s33i, sdif, s0, rad, si, sii, s1, s2, s3, psdif, &
@@ -148,20 +148,20 @@ integer icase
 ! ------------------------------
 ! Initialization section
 ! ------------------------------
-depls = 0.
-diss = 0.
+depls = 0.d0
+diss = 0.d0
 ipls = 0
 
 sphi  = dsin(phi * degrad)
 spsi  = dsin(psi * degrad)
-anphi = (1.+ sphi) / (1.- sphi)
-anpsi = (1.+ spsi) / (1.- spsi)
-amc   = 2.0 * coh * sqrt (anphi)
+anphi = (1.d0+ sphi) / (1.d0- sphi)
+anpsi = (1.d0+ spsi) / (1.d0- spsi)
+amc   = 2.0d0 * coh * sqrt (anphi)
 e1    = bulkm + c4d3 * rmu
 e2    = bulkm - c2d3 * rmu
 x1    = (e1 - e2*anpsi + e1*anphi*anpsi - e2*anphi)
 
-if (phi.eq. 0.) then
+if (phi.eq. 0.d0) then
     ten_max=ten_off
 else
     ten_max=min(ten_off,coh/(tan(phi*degrad)))
@@ -177,11 +177,11 @@ end if
 !---- and subtract pressure of the fluid
 s11i = s11 + (de22 + de33) *e2  + de11 *e1 - press_add
 s22i = s22 + (de11 + de33) *e2  + de22 *e1 - press_add
-s12i = s12 + de12 * 2.0 * rmu
+s12i = s12 + de12 * 2.0d0 * rmu
 s33i = s33 + (de11 + de22) *e2  + de33 *e1 - press_add
 sdif = s11i - s22i
-s0   = 0.5 * (s11i + s22i)
-rad  = 0.5 * sqrt(sdif*sdif + 4.0 *s12i*s12i)
+s0   = 0.5d0 * (s11i + s22i)
+rad  = 0.5d0 * sqrt(sdif*sdif + 4.0d0 *s12i*s12i)
 ! principal stresses
 si  = s0 - rad
 sii = s0 + rad
@@ -250,14 +250,14 @@ endif
 
 !- check for shear yield (if fs<0 -> plastic flow)
 fs = s1 - s3 * anphi + amc
-if (fs .lt. 0.0) then
+if (fs .lt. 0.0d0) then
     !-- yielding in shear ----
     if (icase .eq. 1) ipls = -2
     if (icase .eq. 2) ipls = -3
     if (icase .eq. 3) ipls = -4
     alams = fs/(x1+hardn)
     s1 = s1 - alams * (e1 - e2 * anpsi )
-    s2 = s2 - alams * e2 * (1.0 - anpsi )
+    s2 = s2 - alams * e2 * (1.0d0 - anpsi )
     s3 = s3 - alams * (e2 - e1 * anpsi )
 
     ! Increment of the plastic strain (2nd Invariant)
@@ -265,8 +265,8 @@ if (fs .lt. 0.0) then
     dep3 = -alams*anpsi
 
     ! FOR 2D caculations
-    depm = 0.5*(dep1+dep3)
-    depls = 0.5*abs(dep1-dep3)
+    depm = 0.5d0*(dep1+dep3)
+    depls = 0.5d0*abs(dep1-dep3)
 
     ! Dissipation rate
     diss = s1*dep1+s3*dep3
@@ -301,12 +301,12 @@ endif
 
 !- direction cosines
 205 continue
-if ( psdif .eq. 0. ) then
-    cs2 = 1.
-    si2 = 0.
+if ( psdif .eq. 0.d0 ) then
+    cs2 = 1.d0
+    si2 = 0.d0
 else
     cs2 = sdif / psdif
-    si2 = 2.0 * s12i / psdif
+    si2 = 2.0d0 * s12i / psdif
 endif
 
 !- resolve back to global axes
@@ -315,27 +315,27 @@ goto (210,220,230), icase
 210 continue
 dc2 = (s1-s3) * cs2
 dss = s1 + s3
-s11 = 0.5 * (dss + dc2)
-s22 = 0.5 * (dss - dc2)
-s12 = 0.5 * (s1 - s3) * si2
+s11 = 0.5d0 * (dss + dc2)
+s22 = 0.5d0 * (dss - dc2)
+s12 = 0.5d0 * (s1 - s3) * si2
 s33 = s2
 goto 240
 
 220 continue
 dc2 = (s2-s3) * cs2
 dss = s2 + s3
-s11 = 0.5 * (dss + dc2)
-s22 = 0.5 * (dss - dc2)
-s12 = 0.5 * (s2 - s3) * si2
+s11 = 0.5d0 * (dss + dc2)
+s22 = 0.5d0 * (dss - dc2)
+s12 = 0.5d0 * (s2 - s3) * si2
 s33 = s1
 goto 240
 
 230 continue
 dc2 = (s1-s2) * cs2
 dss = s1 + s2
-s11 = 0.5 * (dss + dc2)
-s22 = 0.5 * (dss - dc2)
-s12 = 0.5 * (s1 - s2) * si2
+s11 = 0.5d0 * (dss + dc2)
+s22 = 0.5d0 * (dss - dc2)
+s12 = 0.5d0 * (s1 - s2) * si2
 s33 = s3
 
 240 continue
@@ -350,7 +350,7 @@ return
 800   continue
 s11        = ten_max
 s22        = ten_max
-s12        = 0.0
+s12        = 0.0d0
 s33        = ten_max
 
 s11 = s11 + press_add
@@ -383,7 +383,7 @@ psi = 0
 hardn = 0
 
 do iph = 1, nphase
-    if(phase_ratio(iph,j,i) .lt. 0.01) cycle
+    if(phase_ratio(iph,j,i) .lt. 0.01d0) cycle
 
     if(pls_curr < plstrain1(iph)) then
         ! no weakening yet

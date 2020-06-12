@@ -85,9 +85,9 @@ dvmax = 0
 do while( time .le. time_max )
   if( dtout_screen .ne. 0 ) then
     if( dtacc_screen .gt. dtout_screen ) then
-       write(*,'(I10,A,F7.3,A,F8.1,A)') nloop,'''s step. Time[My]=', time/sec_year/1.e+6, &
+       write(*,'(I10,A,F7.3,A,F8.1,A)') nloop,'''s step. Time[My]=', time/sec_year/1.d+6, &
                 ',  elapsed sec-', secnds(time0)
-       write(333,'(I10,A,F7.3,A,F8.1,A)') nloop,'''s step. Time[My]=', time/sec_year/1.e+6, &
+       write(333,'(I10,A,F7.3,A,F8.1,A)') nloop,'''s step. Time[My]=', time/sec_year/1.d+6, &
                 ',  elapsed sec-', secnds(time0)
        dtacc_screen = 0
     endif
@@ -95,21 +95,21 @@ do while( time .le. time_max )
 
   ! ! Forces at the boundaries
   ! if( io_forc==1 .and. mod(nloop, 1000)==0) then
-  !     force_l=0.
-  !     force_r=0.
+  !     force_l=0.d0
+  !     force_r=0.d0
   !     do j = 1,nz-1
-  !         sxx = 0.25 * (stress0(j,1,1,1)+stress0(j,1,1,2)+stress0(j,1,1,3)+stress0(j,1,1,4) )
+  !         sxx = 0.25d0 * (stress0(j,1,1,1)+stress0(j,1,1,2)+stress0(j,1,1,3)+stress0(j,1,1,4) )
   !         sxxd = sxx-stressI(j,1)
   !         dl = cord(j+1,1,2)-cord(j,1,2)
   !         force_l = force_l + sxxd*dl
   !
-  !         sxx = 0.25 * (stress0(j,nx-1,1,1)+stress0(j,nx-1,1,2)+stress0(j,nx-1,1,3)+stress0(j,nx-1,1,4) )
+  !         sxx = 0.25d0 * (stress0(j,nx-1,1,1)+stress0(j,nx-1,1,2)+stress0(j,nx-1,1,3)+stress0(j,nx-1,1,4) )
   !         sxxd = sxx-stressI(j,nx-1)
   !         dl = cord(j+1,nx-1,2)-cord(j,nx-1,2)
   !         force_r = force_r + sxxd*dl
   !     end do
   !     open (1,file='forc.0',position='append')
-  !     write (1,'(i10,1x,f7.3,1x,e10.3,1x,e10.3)') nloop, time/sec_year/1.e6, force_l, force_r
+  !     write (1,'(i10,1x,f7.3,1x,e10.3,1x,e10.3)') nloop, time/sec_year/1.d6, force_l, force_r
   !     close (1)
   ! endif
 

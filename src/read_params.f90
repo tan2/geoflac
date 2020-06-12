@@ -44,7 +44,7 @@ read(4,*) nzonx
 if (nzonx .eq.0) then
     nzonx = 1
     nelz_x(1) = nx - 1
-    sizez_x(1) = 1.
+    sizez_x(1) = 1.d0
     go to 166
 endif
 do i = 1, nzonx
@@ -58,11 +58,11 @@ read(4,*) nzony
 if (nzony .eq.0) then
     nzony = 1
     nelz_y(1)    = nz - 1
-    sizez_y(1)   = 1.
+    sizez_y(1)   = 1.d0
     go to 177
 endif
 do i = 1,nzony
-    sizez_y(i) = 1.
+    sizez_y(i) = 1.d0
     call AdvanceToNextInputLine( 4 )
     read(4,*) nelz_y(i), sizez_y(i)
 end do

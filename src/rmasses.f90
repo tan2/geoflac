@@ -7,7 +7,7 @@ use params
 use matprops
 implicit none
 
-real*8, parameter :: c1d12 = 1./12.
+real*8, parameter :: c1d12 = 1.d0/12.d0
 integer :: i, j, iblk, jblk
 double precision :: dens
 

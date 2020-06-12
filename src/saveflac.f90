@@ -24,7 +24,7 @@ integer :: i, nrec, nwords
 
 open (1,file='_contents.save')
 nrec = 1
-write( 1, '(i4,1x,i8,1x,f6.2,1x,i9,1x,i9)' ) nrec, nloop, time/sec_year/1.e6, &
+write( 1, '(i4,1x,i8,1x,f6.2,1x,i9,1x,i9)' ) nrec, nloop, time/sec_year/1.d6, &
      nmarkers,nmtracers
 close(1)
 

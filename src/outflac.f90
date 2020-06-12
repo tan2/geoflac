@@ -34,7 +34,7 @@ else
     nrec = nrec + 1
     backspace(1)
 endif
-write( 1, '(i6,1x,i8,1x,f7.3)' ) nrec, nloop, time/sec_year/1.e6
+write( 1, '(i6,1x,i8,1x,f7.3)' ) nrec, nloop, time/sec_year/1.d6
 close(1)
 
 ! Time
@@ -83,7 +83,7 @@ nwords = (nz-1)*(nx-1)
 if( io_srII.eq.1 ) then
     do i = 1, nx-1
         do j = 1, nz-1
-            if( e2sr(j,i).ne.0. ) then
+            if( e2sr(j,i).ne.0.d0 ) then
                 De(j,i) = real(dlog10( e2sr(j,i) ))
             else
                 De(j,i) = 0
@@ -171,7 +171,7 @@ endif
 if( io_sII.eq.1 ) then
     do i = 1, nx-1
         do j = 1, nz-1
-            De(j,i) = real(stressII(j,i) * 1.e-8)
+            De(j,i) = real(stressII(j,i) * 1.d-8)
         end do
     end do
     open (1,file='sII.0',access='direct',recl=nwords*kindr) 
@@ -184,8 +184,8 @@ endif
 if( io_sxx.eq.1 ) then
     do i = 1, nx-1
         do j = 1, nz-1
-            sxx = 0.25 * (stress0(j,i,1,1)+stress0(j,i,1,2)+stress0(j,i,1,3)+stress0(j,i,1,4) )
-            De(j,i) = real(( sxx-stressI(j,i) ) * 1.e-8)
+            sxx = 0.25d0 * (stress0(j,i,1,1)+stress0(j,i,1,2)+stress0(j,i,1,3)+stress0(j,i,1,4) )
+            De(j,i) = real(( sxx-stressI(j,i) ) * 1.d-8)
         end do
     end do
     open (1,file='sxx.0',access='direct',recl=nwords*kindr) 
@@ -198,8 +198,8 @@ endif
 if( io_szz.eq.1 ) then
     do i = 1, nx-1
         do j = 1, nz-1
-            szz = 0.25 * (stress0(j,i,2,1)+stress0(j,i,2,2)+stress0(j,i,2,3)+stress0(j,i,2,4) )
-            De(j,i) = real(( szz-stressI(j,i) ) * 1.e-8)
+            szz = 0.25d0 * (stress0(j,i,2,1)+stress0(j,i,2,2)+stress0(j,i,2,3)+stress0(j,i,2,4) )
+            De(j,i) = real(( szz-stressI(j,i) ) * 1.d-8)
         end do
     end do
     open (1,file='szz.0',access='direct',recl=nwords*kindr) 
@@ -212,8 +212,8 @@ endif
 if( io_sxz.eq.1 ) then
     do i = 1, nx-1
         do j = 1, nz-1
-            sxz = 0.25 * (stress0(j,i,3,1)+stress0(j,i,3,2)+stress0(j,i,3,3)+stress0(j,i,3,4))
-            De(j,i) = real(sxz * 1.e-8)
+            sxz = 0.25d0 * (stress0(j,i,3,1)+stress0(j,i,3,2)+stress0(j,i,3,3)+stress0(j,i,3,4))
+            De(j,i) = real(sxz * 1.d-8)
         end do
     end do
     open (1,file='sxz.0',access='direct',recl=nwords*kindr) 
@@ -226,7 +226,7 @@ endif
 if( io_pres.eq.1 ) then
     do i = 1, nx-1
         do j = 1, nz-1
-            De(j,i) = real(stressI(j,i) * 1.e-8)
+            De(j,i) = real(stressI(j,i) * 1.d-8)
         end do
     end do
     open (1,file='pres.0',access='direct',recl=nwords*kindr) 
@@ -239,7 +239,7 @@ endif
 if( io_temp.eq.1 ) then
     do i = 1, nx-1
         do j = 1, nz-1
-            De(j,i) = real(0.25*( temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1) ))
+            De(j,i) = real(0.25d0*( temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1) ))
         end do
     end do
     open (1,file='temp.0',access='direct',recl=nwords*kindr)

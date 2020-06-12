@@ -9,7 +9,7 @@ integer, parameter :: maxbc = 20   ! max # of bcs
 integer, parameter :: maxph = 20   ! max # of phases
 integer, parameter :: maxinh = 50   ! max # of inhomogeneities
 
-real*8, parameter :: sec_year = 3.1558e+7  ! seconds in a year
+real*8, parameter :: sec_year = 3.1558d+7  ! seconds in a year
 
 
 integer :: nx,nz,nq,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &

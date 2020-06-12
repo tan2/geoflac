@@ -36,7 +36,7 @@ double precision :: drat, fx, fy, &
                   rho_water_g, water_depth
 
 drat = dt / dt_elastic
-if (drat .lt. 1.) drat = 1.
+if (drat .lt. 1.d0) drat = 1.d0
 
 !!**$ACC parallel private(i, j, fx, fy, &
 !!**$ACC                  p_est, rosubg, &
@@ -69,19 +69,19 @@ do i = 1,nx
                  stress0(j-1,i-1,3,2) * (cord(j  ,i  ,1)-cord(j  ,i-1,1))
             fy = stress0(j-1,i-1,3,2) * (cord(j  ,i  ,2)-cord(j  ,i-1,2)) - &
                  stress0(j-1,i-1,2,2) * (cord(j  ,i  ,1)-cord(j  ,i-1,1))
-            force(j,i,1) = force(j,i,1) - 0.25*fx
-            force(j,i,2) = force(j,i,2) - 0.25*fy
-            balance(j,i,1) = balance(j,i,1) + 0.25*abs(fx)
-            balance(j,i,2) = balance(j,i,2) + 0.25*abs(fy)
+            force(j,i,1) = force(j,i,1) - 0.25d0*fx
+            force(j,i,2) = force(j,i,2) - 0.25d0*fy
+            balance(j,i,1) = balance(j,i,1) + 0.25d0*abs(fx)
+            balance(j,i,2) = balance(j,i,2) + 0.25d0*abs(fy)
             ! side 3-1
             fx = stress0(j-1,i-1,1,2) * (cord(j-1,i  ,2)-cord(j  ,i  ,2)) - &
                  stress0(j-1,i-1,3,2) * (cord(j-1,i  ,1)-cord(j  ,i  ,1))
             fy = stress0(j-1,i-1,3,2) * (cord(j-1,i  ,2)-cord(j  ,i  ,2)) - &
                  stress0(j-1,i-1,2,2) * (cord(j-1,i  ,1)-cord(j  ,i  ,1))
-            force(j,i,1) = force(j,i,1) - 0.25*fx
-            force(j,i,2) = force(j,i,2) - 0.25*fy
-            balance(j,i,1) = balance(j,i,1) + 0.25*abs(fx)
-            balance(j,i,2) = balance(j,i,2) + 0.25*abs(fy)
+            force(j,i,1) = force(j,i,1) - 0.25d0*fx
+            force(j,i,2) = force(j,i,2) - 0.25d0*fy
+            balance(j,i,1) = balance(j,i,1) + 0.25d0*abs(fx)
+            balance(j,i,2) = balance(j,i,2) + 0.25d0*abs(fy)
 
             ! triangle C
             ! side 2-3
@@ -89,19 +89,19 @@ do i = 1,nx
                  stress0(j-1,i-1,3,3) * (cord(j  ,i  ,1)-cord(j  ,i-1,1))
             fy = stress0(j-1,i-1,3,3) * (cord(j  ,i  ,2)-cord(j  ,i-1,2)) - &
                  stress0(j-1,i-1,2,3) * (cord(j  ,i  ,1)-cord(j  ,i-1,1))
-            force(j,i,1) = force(j,i,1) - 0.25*fx
-            force(j,i,2) = force(j,i,2) - 0.25*fy
-            balance(j,i,1) = balance(j,i,1) + 0.25*abs(fx)
-            balance(j,i,2) = balance(j,i,2) + 0.25*abs(fy)
+            force(j,i,1) = force(j,i,1) - 0.25d0*fx
+            force(j,i,2) = force(j,i,2) - 0.25d0*fy
+            balance(j,i,1) = balance(j,i,1) + 0.25d0*abs(fx)
+            balance(j,i,2) = balance(j,i,2) + 0.25d0*abs(fy)
             ! side 3-1
             fx = stress0(j-1,i-1,1,3) * (cord(j-1,i-1,2)-cord(j  ,i  ,2)) - &
                  stress0(j-1,i-1,3,3) * (cord(j-1,i-1,1)-cord(j  ,i  ,1))
             fy = stress0(j-1,i-1,3,3) * (cord(j-1,i-1,2)-cord(j  ,i  ,2)) - &
                  stress0(j-1,i-1,2,3) * (cord(j-1,i-1,1)-cord(j  ,i  ,1))
-            force(j,i,1) = force(j,i,1) - 0.25*fx
-            force(j,i,2) = force(j,i,2) - 0.25*fy
-            balance(j,i,1) = balance(j,i,1) + 0.25*abs(fx)
-            balance(j,i,2) = balance(j,i,2) + 0.25*abs(fy)
+            force(j,i,1) = force(j,i,1) - 0.25d0*fx
+            force(j,i,2) = force(j,i,2) - 0.25d0*fy
+            balance(j,i,1) = balance(j,i,1) + 0.25d0*abs(fx)
+            balance(j,i,2) = balance(j,i,2) + 0.25d0*abs(fy)
 
             ! triangle D
             ! side 1-2
@@ -109,19 +109,19 @@ do i = 1,nx
                  stress0(j-1,i-1,3,4) * (cord(j  ,i  ,1)-cord(j-1,i-1,1))
             fy = stress0(j-1,i-1,3,4) * (cord(j  ,i  ,2)-cord(j-1,i-1,2)) - &
                  stress0(j-1,i-1,2,4) * (cord(j  ,i  ,1)-cord(j-1,i-1,1))
-            force(j,i,1) = force(j,i,1) - 0.25*fx
-            force(j,i,2) = force(j,i,2) - 0.25*fy
-            balance(j,i,1) = balance(j,i,1) + 0.25*abs(fx)
-            balance(j,i,2) = balance(j,i,2) + 0.25*abs(fy)
+            force(j,i,1) = force(j,i,1) - 0.25d0*fx
+            force(j,i,2) = force(j,i,2) - 0.25d0*fy
+            balance(j,i,1) = balance(j,i,1) + 0.25d0*abs(fx)
+            balance(j,i,2) = balance(j,i,2) + 0.25d0*abs(fy)
             ! side 2-3
             fx = stress0(j-1,i-1,1,4) * (cord(j-1,i  ,2)-cord(j  ,i  ,2)) - &
                  stress0(j-1,i-1,3,4) * (cord(j-1,i  ,1)-cord(j  ,i  ,1))
             fy = stress0(j-1,i-1,3,4) * (cord(j-1,i  ,2)-cord(j  ,i  ,2)) - &
                  stress0(j-1,i-1,2,4) * (cord(j-1,i  ,1)-cord(j  ,i  ,1))
-            force(j,i,1) = force(j,i,1) - 0.25*fx
-            force(j,i,2) = force(j,i,2) - 0.25*fy
-            balance(j,i,1) = balance(j,i,1) + 0.25*abs(fx)
-            balance(j,i,2) = balance(j,i,2) + 0.25*abs(fy)
+            force(j,i,1) = force(j,i,1) - 0.25d0*fx
+            force(j,i,2) = force(j,i,2) - 0.25d0*fy
+            balance(j,i,1) = balance(j,i,1) + 0.25d0*abs(fx)
+            balance(j,i,2) = balance(j,i,2) + 0.25d0*abs(fy)
 
         endif
 
@@ -133,19 +133,19 @@ do i = 1,nx
                  stress0(j-1,i  ,3,1) * (cord(j  ,i  ,1)-cord(j-1,i  ,1))
             fy = stress0(j-1,i  ,3,1) * (cord(j  ,i  ,2)-cord(j-1,i  ,2)) - &
                  stress0(j-1,i  ,2,1) * (cord(j  ,i  ,1)-cord(j-1,i  ,1))
-            force(j,i,1) = force(j,i,1) - 0.25*fx
-            force(j,i,2) = force(j,i,2) - 0.25*fy
-            balance(j,i,1) = balance(j,i,1) + 0.25*abs(fx)
-            balance(j,i,2) = balance(j,i,2) + 0.25*abs(fy)
+            force(j,i,1) = force(j,i,1) - 0.25d0*fx
+            force(j,i,2) = force(j,i,2) - 0.25d0*fy
+            balance(j,i,1) = balance(j,i,1) + 0.25d0*abs(fx)
+            balance(j,i,2) = balance(j,i,2) + 0.25d0*abs(fy)
             ! side 2-3
             fx = stress0(j-1,i  ,1,1) * (cord(j-1,i+1,2)-cord(j  ,i  ,2)) - &
                  stress0(j-1,i  ,3,1) * (cord(j-1,i+1,1)-cord(j  ,i  ,1))
             fy = stress0(j-1,i  ,3,1) * (cord(j-1,i+1,2)-cord(j  ,i  ,2)) - &
                  stress0(j-1,i  ,2,1) * (cord(j-1,i+1,1)-cord(j  ,i  ,1))
-            force(j,i,1) = force(j,i,1) - 0.25*fx
-            force(j,i,2) = force(j,i,2) - 0.25*fy
-            balance(j,i,1) = balance(j,i,1) + 0.25*abs(fx)
-            balance(j,i,2) = balance(j,i,2) + 0.25*abs(fy)
+            force(j,i,1) = force(j,i,1) - 0.25d0*fx
+            force(j,i,2) = force(j,i,2) - 0.25d0*fy
+            balance(j,i,1) = balance(j,i,1) + 0.25d0*abs(fx)
+            balance(j,i,2) = balance(j,i,2) + 0.25d0*abs(fy)
 
             ! triangle B
             ! side 1-2
@@ -153,19 +153,19 @@ do i = 1,nx
                  stress0(j-1,i  ,3,2) * (cord(j  ,i  ,1)-cord(j-1,i+1,1))
             fy = stress0(j-1,i  ,3,2) * (cord(j  ,i  ,2)-cord(j-1,i+1,2)) - &
                  stress0(j-1,i  ,2,2) * (cord(j  ,i  ,1)-cord(j-1,i+1,1))
-            force(j,i,1) = force(j,i,1) - 0.25*fx
-            force(j,i,2) = force(j,i,2) - 0.25*fy
-            balance(j,i,1) = balance(j,i,1) + 0.25*abs(fx)
-            balance(j,i,2) = balance(j,i,2) + 0.25*abs(fy)
+            force(j,i,1) = force(j,i,1) - 0.25d0*fx
+            force(j,i,2) = force(j,i,2) - 0.25d0*fy
+            balance(j,i,1) = balance(j,i,1) + 0.25d0*abs(fx)
+            balance(j,i,2) = balance(j,i,2) + 0.25d0*abs(fy)
             ! side 2-3
             fx = stress0(j-1,i  ,1,2) * (cord(j  ,i+1,2)-cord(j  ,i  ,2)) - &
                  stress0(j-1,i  ,3,2) * (cord(j  ,i+1,1)-cord(j  ,i  ,1))
             fy = stress0(j-1,i  ,3,2) * (cord(j  ,i+1,2)-cord(j  ,i  ,2)) - &
                  stress0(j-1,i  ,2,2) * (cord(j  ,i+1,1)-cord(j  ,i  ,1))
-            force(j,i,1) = force(j,i,1) - 0.25*fx
-            force(j,i,2) = force(j,i,2) - 0.25*fy
-            balance(j,i,1) = balance(j,i,1) + 0.25*abs(fx)
-            balance(j,i,2) = balance(j,i,2) + 0.25*abs(fy)
+            force(j,i,1) = force(j,i,1) - 0.25d0*fx
+            force(j,i,2) = force(j,i,2) - 0.25d0*fy
+            balance(j,i,1) = balance(j,i,1) + 0.25d0*abs(fx)
+            balance(j,i,2) = balance(j,i,2) + 0.25d0*abs(fy)
 
             ! triangle C
             ! side 1-2
@@ -173,19 +173,19 @@ do i = 1,nx
                  stress0(j-1,i  ,3,3) * (cord(j  ,i  ,1)-cord(j-1,i  ,1))
             fy = stress0(j-1,i  ,3,3) * (cord(j  ,i  ,2)-cord(j-1,i  ,2)) - &
                  stress0(j-1,i  ,2,3) * (cord(j  ,i  ,1)-cord(j-1,i  ,1))
-            force(j,i,1) = force(j,i,1) - 0.25*fx
-            force(j,i,2) = force(j,i,2) - 0.25*fy
-            balance(j,i,1) = balance(j,i,1) + 0.25*abs(fx)
-            balance(j,i,2) = balance(j,i,2) + 0.25*abs(fy)
+            force(j,i,1) = force(j,i,1) - 0.25d0*fx
+            force(j,i,2) = force(j,i,2) - 0.25d0*fy
+            balance(j,i,1) = balance(j,i,1) + 0.25d0*abs(fx)
+            balance(j,i,2) = balance(j,i,2) + 0.25d0*abs(fy)
             ! side 2-3
             fx = stress0(j-1,i  ,1,3) * (cord(j  ,i+1,2)-cord(j  ,i  ,2)) - &
                  stress0(j-1,i  ,3,3) * (cord(j  ,i+1,1)-cord(j  ,i  ,1))
             fy = stress0(j-1,i  ,3,3) * (cord(j  ,i+1,2)-cord(j  ,i  ,2)) - &
                  stress0(j-1,i  ,2,3) * (cord(j  ,i+1,1)-cord(j  ,i  ,1))
-            force(j,i,1) = force(j,i,1) - 0.25*fx
-            force(j,i,2) = force(j,i,2) - 0.25*fy
-            balance(j,i,1) = balance(j,i,1) + 0.25*abs(fx)
-            balance(j,i,2) = balance(j,i,2) + 0.25*abs(fy)
+            force(j,i,1) = force(j,i,1) - 0.25d0*fx
+            force(j,i,2) = force(j,i,2) - 0.25d0*fy
+            balance(j,i,1) = balance(j,i,1) + 0.25d0*abs(fx)
+            balance(j,i,2) = balance(j,i,2) + 0.25d0*abs(fy)
 
         endif
         
@@ -197,19 +197,19 @@ do i = 1,nx
                  stress0(j  ,i-1,3,1) * (cord(j  ,i  ,1)-cord(j+1,i-1,1))
             fy = stress0(j  ,i-1,3,1) * (cord(j  ,i  ,2)-cord(j+1,i-1,2)) - &
                  stress0(j  ,i-1,2,1) * (cord(j  ,i  ,1)-cord(j+1,i-1,1))
-            force(j,i,1) = force(j,i,1) - 0.25*fx
-            force(j,i,2) = force(j,i,2) - 0.25*fy
-            balance(j,i,1) = balance(j,i,1) + 0.25*abs(fx)
-            balance(j,i,2) = balance(j,i,2) + 0.25*abs(fy)
+            force(j,i,1) = force(j,i,1) - 0.25d0*fx
+            force(j,i,2) = force(j,i,2) - 0.25d0*fy
+            balance(j,i,1) = balance(j,i,1) + 0.25d0*abs(fx)
+            balance(j,i,2) = balance(j,i,2) + 0.25d0*abs(fy)
             ! side 3-1
             fx = stress0(j  ,i-1,1,1) * (cord(j  ,i-1,2)-cord(j  ,i  ,2)) - &
                  stress0(j  ,i-1,3,1) * (cord(j  ,i-1,1)-cord(j  ,i  ,1))
             fy = stress0(j  ,i-1,3,1) * (cord(j  ,i-1,2)-cord(j  ,i  ,2)) - &
                  stress0(j  ,i-1,2,1) * (cord(j  ,i-1,1)-cord(j  ,i  ,1))
-            force(j,i,1) = force(j,i,1) - 0.25*fx
-            force(j,i,2) = force(j,i,2) - 0.25*fy
-            balance(j,i,1) = balance(j,i,1) + 0.25*abs(fx)
-            balance(j,i,2) = balance(j,i,2) + 0.25*abs(fy)
+            force(j,i,1) = force(j,i,1) - 0.25d0*fx
+            force(j,i,2) = force(j,i,2) - 0.25d0*fy
+            balance(j,i,1) = balance(j,i,1) + 0.25d0*abs(fx)
+            balance(j,i,2) = balance(j,i,2) + 0.25d0*abs(fy)
 
             ! triangle B
             ! side 1-2
@@ -217,19 +217,19 @@ do i = 1,nx
                  stress0(j  ,i-1,3,2) * (cord(j+1,i-1,1)-cord(j  ,i  ,1))
             fy = stress0(j  ,i-1,3,2) * (cord(j+1,i-1,2)-cord(j  ,i  ,2)) - &
                  stress0(j  ,i-1,2,2) * (cord(j+1,i-1,1)-cord(j  ,i  ,1))
-            force(j,i,1) = force(j,i,1) - 0.25*fx
-            force(j,i,2) = force(j,i,2) - 0.25*fy
-            balance(j,i,1) = balance(j,i,1) + 0.25*abs(fx)
-            balance(j,i,2) = balance(j,i,2) + 0.25*abs(fy)
+            force(j,i,1) = force(j,i,1) - 0.25d0*fx
+            force(j,i,2) = force(j,i,2) - 0.25d0*fy
+            balance(j,i,1) = balance(j,i,1) + 0.25d0*abs(fx)
+            balance(j,i,2) = balance(j,i,2) + 0.25d0*abs(fy)
             ! side 3-1
             fx = stress0(j  ,i-1,1,2) * (cord(j  ,i  ,2)-cord(j+1,i  ,2)) - &
                  stress0(j  ,i-1,3,2) * (cord(j  ,i  ,1)-cord(j+1,i  ,1))
             fy = stress0(j  ,i-1,3,2) * (cord(j  ,i  ,2)-cord(j+1,i  ,2)) - &
                  stress0(j  ,i-1,2,2) * (cord(j  ,i  ,1)-cord(j+1,i  ,1))
-            force(j,i,1) = force(j,i,1) - 0.25*fx
-            force(j,i,2) = force(j,i,2) - 0.25*fy
-            balance(j,i,1) = balance(j,i,1) + 0.25*abs(fx)
-            balance(j,i,2) = balance(j,i,2) + 0.25*abs(fy)
+            force(j,i,1) = force(j,i,1) - 0.25d0*fx
+            force(j,i,2) = force(j,i,2) - 0.25d0*fy
+            balance(j,i,1) = balance(j,i,1) + 0.25d0*abs(fx)
+            balance(j,i,2) = balance(j,i,2) + 0.25d0*abs(fy)
 
             ! triangle D
             ! side 2-3
@@ -237,19 +237,19 @@ do i = 1,nx
                  stress0(j  ,i-1,3,4) * (cord(j  ,i  ,1)-cord(j+1,i  ,1))
             fy = stress0(j  ,i-1,3,4) * (cord(j  ,i  ,2)-cord(j+1,i  ,2)) - &
                  stress0(j  ,i-1,2,4) * (cord(j  ,i  ,1)-cord(j+1,i  ,1))
-            force(j,i,1) = force(j,i,1) - 0.25*fx
-            force(j,i,2) = force(j,i,2) - 0.25*fy
-            balance(j,i,1) = balance(j,i,1) + 0.25*abs(fx)
-            balance(j,i,2) = balance(j,i,2) + 0.25*abs(fy)
+            force(j,i,1) = force(j,i,1) - 0.25d0*fx
+            force(j,i,2) = force(j,i,2) - 0.25d0*fy
+            balance(j,i,1) = balance(j,i,1) + 0.25d0*abs(fx)
+            balance(j,i,2) = balance(j,i,2) + 0.25d0*abs(fy)
             ! side 3-1
             fx = stress0(j  ,i-1,1,4) * (cord(j  ,i-1,2)-cord(j  ,i  ,2)) - &
                  stress0(j  ,i-1,3,4) * (cord(j  ,i-1,1)-cord(j  ,i  ,1))
             fy = stress0(j  ,i-1,3,4) * (cord(j  ,i-1,2)-cord(j  ,i  ,2)) - &
                  stress0(j  ,i-1,2,4) * (cord(j  ,i-1,1)-cord(j  ,i  ,1))
-            force(j,i,1) = force(j,i,1) - 0.25*fx
-            force(j,i,2) = force(j,i,2) - 0.25*fy
-            balance(j,i,1) = balance(j,i,1) + 0.25*abs(fx)
-            balance(j,i,2) = balance(j,i,2) + 0.25*abs(fy)
+            force(j,i,1) = force(j,i,1) - 0.25d0*fx
+            force(j,i,2) = force(j,i,2) - 0.25d0*fy
+            balance(j,i,1) = balance(j,i,1) + 0.25d0*abs(fx)
+            balance(j,i,2) = balance(j,i,2) + 0.25d0*abs(fy)
 
         endif
 
@@ -261,19 +261,19 @@ do i = 1,nx
                  stress0(j  ,i  ,3,1) * (cord(j+1,i  ,1)-cord(j  ,i  ,1))
             fy = stress0(j  ,i  ,3,1) * (cord(j+1,i  ,2)-cord(j  ,i  ,2)) - &
                  stress0(j  ,i  ,2,1) * (cord(j+1,i  ,1)-cord(j  ,i  ,1))
-            force(j,i,1) = force(j,i,1) - 0.25*fx
-            force(j,i,2) = force(j,i,2) - 0.25*fy
-            balance(j,i,1) = balance(j,i,1) + 0.25*abs(fx)
-            balance(j,i,2) = balance(j,i,2) + 0.25*abs(fy)
+            force(j,i,1) = force(j,i,1) - 0.25d0*fx
+            force(j,i,2) = force(j,i,2) - 0.25d0*fy
+            balance(j,i,1) = balance(j,i,1) + 0.25d0*abs(fx)
+            balance(j,i,2) = balance(j,i,2) + 0.25d0*abs(fy)
             ! side 3-1
             fx = stress0(j  ,i  ,1,1) * (cord(j  ,i  ,2)-cord(j  ,i+1,2)) - &
                  stress0(j  ,i  ,3,1) * (cord(j  ,i  ,1)-cord(j  ,i+1,1))
             fy = stress0(j  ,i  ,3,1) * (cord(j  ,i  ,2)-cord(j  ,i+1,2)) - &
                  stress0(j  ,i  ,2,1) * (cord(j  ,i  ,1)-cord(j  ,i+1,1))
-            force(j,i,1) = force(j,i,1) - 0.25*fx
-            force(j,i,2) = force(j,i,2) - 0.25*fy
-            balance(j,i,1) = balance(j,i,1) + 0.25*abs(fx)
-            balance(j,i,2) = balance(j,i,2) + 0.25*abs(fy)
+            force(j,i,1) = force(j,i,1) - 0.25d0*fx
+            force(j,i,2) = force(j,i,2) - 0.25d0*fy
+            balance(j,i,1) = balance(j,i,1) + 0.25d0*abs(fx)
+            balance(j,i,2) = balance(j,i,2) + 0.25d0*abs(fy)
 
             ! triangle C
             ! side 1-2
@@ -281,19 +281,19 @@ do i = 1,nx
                  stress0(j  ,i  ,3,3) * (cord(j+1,i  ,1)-cord(j  ,i  ,1))
             fy = stress0(j  ,i  ,3,3) * (cord(j+1,i  ,2)-cord(j  ,i  ,2)) - &
                  stress0(j  ,i  ,2,3) * (cord(j+1,i  ,1)-cord(j  ,i  ,1))
-            force(j,i,1) = force(j,i,1) - 0.25*fx
-            force(j,i,2) = force(j,i,2) - 0.25*fy
-            balance(j,i,1) = balance(j,i,1) + 0.25*abs(fx)
-            balance(j,i,2) = balance(j,i,2) + 0.25*abs(fy)
+            force(j,i,1) = force(j,i,1) - 0.25d0*fx
+            force(j,i,2) = force(j,i,2) - 0.25d0*fy
+            balance(j,i,1) = balance(j,i,1) + 0.25d0*abs(fx)
+            balance(j,i,2) = balance(j,i,2) + 0.25d0*abs(fy)
             ! side 3-1
             fx = stress0(j  ,i  ,1,3) * (cord(j  ,i  ,2)-cord(j+1,i+1,2)) - &
                  stress0(j  ,i  ,3,3) * (cord(j  ,i  ,1)-cord(j+1,i+1,1))
             fy = stress0(j  ,i  ,3,3) * (cord(j  ,i  ,2)-cord(j+1,i+1,2)) - &
                  stress0(j  ,i  ,2,3) * (cord(j  ,i  ,1)-cord(j+1,i+1,1))
-            force(j,i,1) = force(j,i,1) - 0.25*fx
-            force(j,i,2) = force(j,i,2) - 0.25*fy
-            balance(j,i,1) = balance(j,i,1) + 0.25*abs(fx)
-            balance(j,i,2) = balance(j,i,2) + 0.25*abs(fy)
+            force(j,i,1) = force(j,i,1) - 0.25d0*fx
+            force(j,i,2) = force(j,i,2) - 0.25d0*fy
+            balance(j,i,1) = balance(j,i,1) + 0.25d0*abs(fx)
+            balance(j,i,2) = balance(j,i,2) + 0.25d0*abs(fy)
 
             ! triangle D
             ! side 1-2
@@ -301,19 +301,19 @@ do i = 1,nx
                  stress0(j  ,i  ,3,4) * (cord(j+1,i+1,1)-cord(j  ,i  ,1))
             fy = stress0(j  ,i  ,3,4) * (cord(j+1,i+1,2)-cord(j  ,i  ,2)) - &
                  stress0(j  ,i  ,2,4) * (cord(j+1,i+1,1)-cord(j  ,i  ,1))
-            force(j,i,1) = force(j,i,1) - 0.25*fx
-            force(j,i,2) = force(j,i,2) - 0.25*fy
-            balance(j,i,1) = balance(j,i,1) + 0.25*abs(fx)
-            balance(j,i,2) = balance(j,i,2) + 0.25*abs(fy)
+            force(j,i,1) = force(j,i,1) - 0.25d0*fx
+            force(j,i,2) = force(j,i,2) - 0.25d0*fy
+            balance(j,i,1) = balance(j,i,1) + 0.25d0*abs(fx)
+            balance(j,i,2) = balance(j,i,2) + 0.25d0*abs(fy)
             ! side 3-1
             fx = stress0(j  ,i  ,1,4) * (cord(j  ,i  ,2)-cord(j  ,i+1,2)) - &
                  stress0(j  ,i  ,3,4) * (cord(j  ,i  ,1)-cord(j  ,i+1,1))
             fy = stress0(j  ,i  ,3,4) * (cord(j  ,i  ,2)-cord(j  ,i+1,2)) - &
                  stress0(j  ,i  ,2,4) * (cord(j  ,i  ,1)-cord(j  ,i+1,1))
-            force(j,i,1) = force(j,i,1) - 0.25*fx
-            force(j,i,2) = force(j,i,2) - 0.25*fy
-            balance(j,i,1) = balance(j,i,1) + 0.25*abs(fx)
-            balance(j,i,2) = balance(j,i,2) + 0.25*abs(fy)
+            force(j,i,1) = force(j,i,1) - 0.25d0*fx
+            force(j,i,2) = force(j,i,2) - 0.25d0*fy
+            balance(j,i,1) = balance(j,i,1) + 0.25d0*abs(fx)
+            balance(j,i,2) = balance(j,i,2) + 0.25d0*abs(fy)
 
         endif
 
@@ -334,38 +334,38 @@ if(nyhydro.gt.0) then
     do i=1,nx
 
         ! pressure from water sea on top
-        rho_water_g = 1030. * g
+        rho_water_g = 1030.d0 * g
         if(i.lt.nx) then
-            water_depth = 0.5*(cord(1,i+1,2)+cord(1,i,2))
+            water_depth = 0.5d0*(cord(1,i+1,2)+cord(1,i,2))
         else
-            water_depth = 0.5*(cord(1,i-1,2)+cord(1,i,2))
+            water_depth = 0.5d0*(cord(1,i-1,2)+cord(1,i,2))
         endif
 
-        if (water_depth.lt.0.) then ! No water (above sea level)
+        if (water_depth.lt.0.d0) then ! No water (above sea level)
             if(i.eq.1) then
                 press_norm_l = 0
                 dlx_l = 0
                 dly_l = 0
-                press_norm_r = rho_water_g*((cord(1,i+1,2)+cord(1,i,2))/2.)
+                press_norm_r = rho_water_g*((cord(1,i+1,2)+cord(1,i,2))/2.d0)
                 dlx_r = cord(1,i+1,1)-cord(1,i  ,1)
                 dly_r = cord(1,i+1,2)-cord(1,i  ,2)
             elseif(i.eq.nx) then
-                press_norm_l = rho_water_g*((cord(1,i-1,2)+cord(1,i,2))/2.)
+                press_norm_l = rho_water_g*((cord(1,i-1,2)+cord(1,i,2))/2.d0)
                 dlx_l = cord(1,i  ,1)-cord(1,i-1,1)
                 dly_l = cord(1,i  ,2)-cord(1,i-1,2)
                 press_norm_r = 0
                 dlx_r = 0
                 dly_r = 0
             else
-                press_norm_l = rho_water_g*((cord(1,i-1,2)+cord(1,i,2))/2.)
+                press_norm_l = rho_water_g*((cord(1,i-1,2)+cord(1,i,2))/2.d0)
                 dlx_l = cord(1,i  ,1)-cord(1,i-1,1)
                 dly_l = cord(1,i  ,2)-cord(1,i-1,2)
-                press_norm_r = rho_water_g*((cord(1,i+1,2)+cord(1,i,2))/2.)
+                press_norm_r = rho_water_g*((cord(1,i+1,2)+cord(1,i,2))/2.d0)
                 dlx_r = cord(1,i+1,1)-cord(1,i  ,1)
                 dly_r = cord(1,i+1,2)-cord(1,i  ,2)
             endif
-            force(1,i,1) = force(1,i,1)-0.5*press_norm_l*dly_l-0.5*press_norm_r*dly_r
-            force(1,i,2) = force(1,i,2)+0.5*press_norm_l*dlx_l+0.5*press_norm_r*dlx_r
+            force(1,i,1) = force(1,i,1)-0.5d0*press_norm_l*dly_l-0.5d0*press_norm_r*dly_r
+            force(1,i,2) = force(1,i,2)+0.5d0*press_norm_l*dlx_l+0.5d0*press_norm_r*dlx_r
             balance(1,i,1) = 1.0d+17
         endif
     enddo
@@ -378,7 +378,7 @@ if(nyhydro.gt.0) then
     do i=1,nx
 
         ! bottom support - Archimed force (normal to the surface, shear component = 0)
-        p_est = pisos + 0.5*(den(iphsub)+drosub)*g*(cord(nz,i,2)-rzbo)
+        p_est = pisos + 0.5d0*(den(iphsub)+drosub)*g*(cord(nz,i,2)-rzbo)
         rosubg = g * (den(iphsub)+drosub) * (1-alfa(iphsub)*temp(nz,i)+beta(iphsub)*p_est)
 
         if(i.eq.1) then
@@ -386,11 +386,11 @@ if(nyhydro.gt.0) then
             dlx_l = 0
             dly_l = 0
 
-            press_norm_r = pisos-rosubg*((cord(nz,i+1,2)+cord(nz,i,2))/2-rzbo)
+            press_norm_r = pisos-rosubg*((cord(nz,i+1,2)+cord(nz,i,2))/2.d0-rzbo)
             dlx_r = cord(nz,i+1,1)-cord(nz,i  ,1)
             dly_r = cord(nz,i+1,2)-cord(nz,i  ,2)
         elseif(i.eq.nx) then
-            press_norm_l = pisos-rosubg*((cord(nz,i-1,2)+cord(nz,i,2))/2-rzbo)
+            press_norm_l = pisos-rosubg*((cord(nz,i-1,2)+cord(nz,i,2))/2.d0-rzbo)
             dlx_l = cord(nz,i  ,1)-cord(nz,i-1,1)
             dly_l = cord(nz,i  ,2)-cord(nz,i-1,2)
 
@@ -398,17 +398,17 @@ if(nyhydro.gt.0) then
             dlx_r = 0
             dly_r = 0
         else
-            press_norm_l = pisos-rosubg*((cord(nz,i-1,2)+cord(nz,i,2))/2-rzbo)
+            press_norm_l = pisos-rosubg*((cord(nz,i-1,2)+cord(nz,i,2))/2.d0-rzbo)
             dlx_l = cord(nz,i  ,1)-cord(nz,i-1,1)
             dly_l = cord(nz,i  ,2)-cord(nz,i-1,2)
 
-            press_norm_r = pisos-rosubg*((cord(nz,i+1,2)+cord(nz,i,2))/2-rzbo)
+            press_norm_r = pisos-rosubg*((cord(nz,i+1,2)+cord(nz,i,2))/2.d0-rzbo)
             dlx_r = cord(nz,i+1,1)-cord(nz,i  ,1)
             dly_r = cord(nz,i+1,2)-cord(nz,i  ,2)
         endif
             
-        force(nz,i,1) = force(nz,i,1)-0.5*press_norm_l*dly_l-0.5*press_norm_r*dly_r
-        force(nz,i,2) = force(nz,i,2)+0.5*press_norm_l*dlx_l+0.5*press_norm_r*dlx_r
+        force(nz,i,1) = force(nz,i,1)-0.5d0*press_norm_l*dly_l-0.5d0*press_norm_r*dly_r
+        force(nz,i,2) = force(nz,i,2)+0.5d0*press_norm_l*dlx_l+0.5d0*press_norm_r*dlx_r
 
         balance(nz,i,1) = 1.0d+17
         !write(*,*) i,pisos,force(nz,i,1),force(nz,i,2),press_norm_l,press_norm_r,dlx_l,dlx_r,dly_l,dly_r
@@ -472,15 +472,15 @@ end do
 !$ACC end data
 
 ! Prestress to form the topo when density differences are present WITHOUT PUSHING OR PULLING!
-if (i_prestress.eq.1.and.time.lt.600.e3*sec_year) then
+if (i_prestress.eq.1.and.time.lt.600.d3*sec_year) then
      !$ACC parallel loop
      do k = 1,2
         do i = 1, nx
-            vel(nz,i,k) = 0.
+            vel(nz,i,k) = 0
         enddo
         do j = 1, nz
-            vel(j,1,k) = 0.
-            vel(j,nx,k) = 0.
+            vel(j,1,k) = 0
+            vel(j,nx,k) = 0
         enddo
     enddo
     !$ACC end parallel loop

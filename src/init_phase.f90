@@ -41,7 +41,7 @@ else
         do n = 1, nzone_age
             do i = ixtb1(n), min(ixtb2(n), nx-1)
                 do j = 1, nz-1
-                    y = (cord(1,i,2)-cord(j,i,2))*1.e-3
+                    y = (cord(1,i,2)-cord(j,i,2))*1.d-3
                     if (y.lt.hc1(n)) then
                         iphase(j,i) = iph_col1(n)
                     else if (y.lt.hc2(n)) then
@@ -140,7 +140,7 @@ function itop_geom(j,ixc,iwidth,iamp)
     implicit none
     integer :: j, ixc, iwidth, iamp
     integer :: itop_geom
-    itop_geom = int(iamp*exp(-(float(j-ixc)/(0.5*float(iwidth)))**2.))
+    itop_geom = int(iamp*exp(-(float(j-ixc)/(0.5d0*float(iwidth)))**2))
 
 return
 end 

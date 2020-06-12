@@ -8,7 +8,7 @@ use marker_data
 implicit none
 
 nloop = 0
-time = 0.
+time = 0.d0
 !$ACC update device(nloop,time)
 
 ! Mesh generator

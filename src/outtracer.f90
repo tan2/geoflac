@@ -31,7 +31,7 @@ else
     nrec = nrec + 1
     backspace(1)
 endif
-write( 1, '(i6,1x,i8,1x,i8,1x,f7.3)' ) nrec, nmtracers,nloop,  time/sec_year/1.e6
+write( 1, '(i6,1x,i8,1x,i8,1x,f7.3)' ) nrec, nmtracers,nloop,  time/sec_year/1.d6
 close(1)
 
 ! Coordinates  [km]
@@ -42,15 +42,15 @@ do kk = 1,nmtracers
     id = idtracer(kk)
     xik(kk) = float(kk)
     ! time in myrs
-    timtrk(kk) = real(time/sec_year/1.e6)
+    timtrk(kk) = real(time/sec_year/1.d6)
 
     if(mark_dead(id) .eq. 0) then
-        xtrak(kk) = 0.
-        ytrak(kk) = 0.
-        temptrak(kk) = 0.
-        prestrak(kk) = 0.
-        straintrak(kk) = 0.
-        phtrak(kk) = 0.
+        xtrak(kk) = 0.d0
+        ytrak(kk) = 0.d0
+        temptrak(kk) = 0.d0
+        prestrak(kk) = 0.d0
+        straintrak(kk) = 0.d0
+        phtrak(kk) = 0.d0
     else
         n = mark_ntriag(id)
         nn = (n-1)/2
@@ -60,7 +60,7 @@ do kk = 1,nmtracers
 
         xtrak(kk) = real(mark_x(id))
         ytrak(kk) = real(mark_y(id))
-        tmpr = real(0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1)))
+        tmpr = real(0.25d0*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1)))
         temptrak(kk) = real(tmpr)
         prestrak(kk) = real(stressI(j,i))
         straintrak(kk) = real(strainII(j,i))
@@ -68,7 +68,7 @@ do kk = 1,nmtracers
     endif
 enddo
 
-D1d = 0.
+D1d = 0.d0
 do i = 1, nmtracers
 D1d(i) = xik(i)
 enddo

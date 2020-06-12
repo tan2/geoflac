@@ -52,7 +52,7 @@ do i = 1,nx-1
     cp_eff = Eff_cp( j,i )
 
     ! area(j,i) is INVERSE of "real" DOUBLE area (=1./det)
-    quad_area = 1./(area(j,i,1)+area(j,i,2))
+    quad_area = 1.d0/(area(j,i,1)+area(j,i,2))
 
     temp(j,i  ) = temp(j,i  ) + andesitic_melt_vol(i) * heat_latent_magma / quad_area / cp_eff
     temp(j,i+1) = temp(j,i+1) + andesitic_melt_vol(i) * heat_latent_magma / quad_area / cp_eff
@@ -98,8 +98,8 @@ do i = 1,nx-1
         t4 = temp (j+1 ,i+1)
 
         ! Additional sources - radiogenic and shear heating
-        tmpr = 0.25*(t1 + t2 + t3 + t4)
-        !add_source(j,i) = ( source(j,i) + dissip/den(iph) - 600.*cp_eff*Eff_melt(iph,tmpr)) / cp_eff
+        tmpr = 0.25d0*(t1 + t2 + t3 + t4)
+        !add_source(j,i) = ( source(j,i) + dissip/den(iph) - 600.d0*cp_eff*Eff_melt(iph,tmpr)) / cp_eff
         add_source(j,i) = ( source(j,i) + dissip/den(iph) ) / cp_eff
 
         ! (1) A element:
@@ -129,14 +129,14 @@ do i = 1,nx
             ! side 2-3
             qs = flux(j-1,i-1,2,1) * (cord(j  ,i  ,2)-cord(j  ,i-1,2)) - &
                  flux(j-1,i-1,2,2) * (cord(j  ,i  ,1)-cord(j  ,i-1,1))
-            rhs = rhs + 0.5*qs
+            rhs = rhs + 0.5d0*qs
 
             ! side 3-1
             qs = flux(j-1,i-1,2,1) * (cord(j-1,i  ,2)-cord(j  ,i  ,2)) - &
                  flux(j-1,i-1,2,2) * (cord(j-1,i  ,1)-cord(j  ,i  ,1))
-            rhs = rhs + 0.5*qs
+            rhs = rhs + 0.5d0*qs
 
-            real_area13 = 0.5/area(j-1,i-1,2)/3.
+            real_area13 = 0.5d0/area(j-1,i-1,2)/3.d0
             area_n = area_n + real_area13
             rhs = rhs + add_source(j-1,i-1)*real_area13
 
@@ -149,14 +149,14 @@ do i = 1,nx
             ! side 1-2
             qs = flux(j-1,i  ,1,1) * (cord(j  ,i  ,2)-cord(j-1,i  ,2)) - &
                  flux(j-1,i  ,1,2) * (cord(j  ,i  ,1)-cord(j-1,i  ,1))
-            rhs = rhs + 0.5*qs
+            rhs = rhs + 0.5d0*qs
 
             ! side 2-3
             qs = flux(j-1,i  ,1,1) * (cord(j-1,i+1,2)-cord(j  ,i  ,2)) - &
                  flux(j-1,i  ,1,2) * (cord(j-1,i+1,1)-cord(j  ,i  ,1))
-            rhs = rhs + 0.5*qs
+            rhs = rhs + 0.5d0*qs
 
-            real_area13 = 0.5/area(j-1,i  ,1)/3.
+            real_area13 = 0.5d0/area(j-1,i  ,1)/3.d0
             area_n = area_n + real_area13
             rhs = rhs + add_source(j-1,i  )*real_area13
 
@@ -164,14 +164,14 @@ do i = 1,nx
             ! side 1-2
             qs = flux(j-1,i  ,2,1) * (cord(j  ,i  ,2)-cord(j-1,i+1,2)) - &
                  flux(j-1,i  ,2,2) * (cord(j  ,i  ,1)-cord(j-1,i+1,1))
-            rhs = rhs + 0.5*qs
+            rhs = rhs + 0.5d0*qs
 
             ! side 2-3
             qs = flux(j-1,i  ,2,1) * (cord(j  ,i+1,2)-cord(j  ,i  ,2)) - &
                  flux(j-1,i  ,2,2) * (cord(j  ,i+1,1)-cord(j  ,i  ,1))
-            rhs = rhs + 0.5*qs
+            rhs = rhs + 0.5d0*qs
 
-            real_area13 = 0.5/area(j-1,i  ,2)/3.
+            real_area13 = 0.5d0/area(j-1,i  ,2)/3.d0
             area_n = area_n + real_area13
             rhs = rhs + add_source(j-1,i  )*real_area13
 
@@ -184,14 +184,14 @@ do i = 1,nx
             ! side 2-3
             qs = flux(j  ,i-1,1,1) * (cord(j  ,i  ,2)-cord(j+1,i-1,2)) - &
                  flux(j  ,i-1,1,2) * (cord(j  ,i  ,1)-cord(j+1,i-1,1))
-            rhs = rhs + 0.5*qs
+            rhs = rhs + 0.5d0*qs
 
             ! side 3-1
             qs = flux(j  ,i-1,1,1) * (cord(j  ,i-1,2)-cord(j  ,i  ,2)) - &
                  flux(j  ,i-1,1,2) * (cord(j  ,i-1,1)-cord(j  ,i  ,1))
-            rhs = rhs + 0.5*qs
+            rhs = rhs + 0.5d0*qs
 
-            real_area13 = 0.5/area(j  ,i-1,1)/3.
+            real_area13 = 0.5d0/area(j  ,i-1,1)/3.d0
             area_n = area_n + real_area13
             rhs = rhs + add_source(j  ,i-1)*real_area13
 
@@ -199,14 +199,14 @@ do i = 1,nx
             ! side 1-2
             qs = flux(j  ,i-1,2,1) * (cord(j+1,i-1,2)-cord(j  ,i  ,2)) - &
                  flux(j  ,i-1,2,2) * (cord(j+1,i-1,1)-cord(j  ,i  ,1))
-            rhs = rhs + 0.5*qs
+            rhs = rhs + 0.5d0*qs
 
             ! side 3-1
             qs = flux(j  ,i-1,2,1) * (cord(j  ,i  ,2)-cord(j+1,i  ,2)) - &
                  flux(j  ,i-1,2,2) * (cord(j  ,i  ,1)-cord(j+1,i  ,1))
-            rhs = rhs + 0.5*qs
+            rhs = rhs + 0.5d0*qs
 
-            real_area13 = 0.5/area(j  ,i-1,2)/3.
+            real_area13 = 0.5d0/area(j  ,i-1,2)/3.d0
             area_n = area_n + real_area13
             rhs = rhs + add_source(j  ,i-1)*real_area13
 
@@ -218,14 +218,14 @@ do i = 1,nx
             ! side 1-2
             qs = flux(j  ,i  ,1,1) * (cord(j+1,i  ,2)-cord(j  ,i  ,2)) - &
                  flux(j  ,i  ,1,2) * (cord(j+1,i  ,1)-cord(j  ,i  ,1))
-            rhs = rhs + 0.5*qs
+            rhs = rhs + 0.5d0*qs
 
             ! side 3-1
             qs = flux(j  ,i  ,1,1) * (cord(j  ,i  ,2)-cord(j  ,i+1,2)) - &
                  flux(j  ,i  ,1,2) * (cord(j  ,i  ,1)-cord(j  ,i+1,1))
-            rhs = rhs + 0.5*qs
+            rhs = rhs + 0.5d0*qs
 
-            real_area13 = 0.5/area(j  ,i  ,1)/3.
+            real_area13 = 0.5d0/area(j  ,i  ,1)/3.d0
             area_n = area_n + real_area13
             rhs = rhs + add_source(j  ,i  )*real_area13
 
