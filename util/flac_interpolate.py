@@ -22,6 +22,9 @@ zmax = 10
 dx = .8
 dz = .2
 
+# extra padding space for interpolation
+padding = 12
+
 
 def excluding(x, z, f, xmin, xmax, zmin, zmax):
     '''Excluding nodes of (x, z, f) that are outside the domain bounds'''
@@ -54,16 +57,31 @@ def interpolate(frame, field):
         ## phase
         # read marker location, age and phase
         mx, mz, mage, mphase, mid = fl.read_markers(frame)
-        mx, mz, mphase = excluding(mx, mz, mphase, xmin-dx, xmax+dx, zmin-dz, zmax+dz)
+        mx, mz, mphase = excluding(mx, mz, mphase, xmin-padding, xmax+padding, zmin-padding, zmax+padding)
         ph = flac.nearest_neighbor_interpolation2d(mx, mz, mphase, x, z)
         f = ph.astype(np.float32)
-    elif field in ('temperature', 'aps', 'density', 'eII', 'sII',
+    elif field in ('aps', 'density', 'eII', 'sII',
                    'sxx', 'szz', 'sxz', 'srII', 'pres', 'diss', 'visc'):
-        # read field
+        # read field on elements
         cf = getattr(fl, 'read_'+field)(frame)
         cx, cz = flac.elem_coord(xx, zz)
-        cx, cz, cf = excluding(cx, cz, cf, xmin-dx, xmax+dx, zmin-dz, zmax+dz)
+        cx, cz, cf = excluding(cx, cz, cf, xmin-padding, xmax+padding, zmin-padding, zmax+padding)
         f = flac.gaussian_interpolation2d(cx, cz, cf, x, z)
+    elif field in ('temperature', ):
+        # nodal field is interpolated by scipy bilinear interpolation
+        # read vector field on nodes
+        cf = getattr(fl, 'read_'+field)(frame)
+        cx, cz, cf = excluding(xx, zz, cf, xmin-padding, xmax+padding, zmin-padding, zmax+padding)
+        f = flac.bilinear_interpolation2d(cx, cz, cf, x, z)
+    elif field in ('velo'):
+        # read vector field on nodes
+        cf = getattr(fl, 'read_'+field)(frame)
+        cfx = cf[0]
+        cx, cz, cfx = excluding(x, z, cfx, xmin-padding, xmax+padding, zmin-padding, zmax+padding)
+        fx = flac.bilinear_interpolation2d(cx, cz, cfx, x, z)
+        cfz = cf[1]
+        cx, cz, cfz = excluding(x, z, cfz, xmin-padding, xmax+padding, zmin-padding, zmax+padding)
+        fz = flac.bilinear_interpolation2d(cx, cz, cfz, x, z)
     else:
         raise RuntimeError('unknown field %s' % field)
 

@@ -20,6 +20,12 @@ except ImportError:
     except ImportError:
         pass
 
+try:
+    # for interpolation
+    from scipy import interpolate
+except ImportError:
+    pass
+
 
 # the precision of saved file
 doubleprecision = False
@@ -371,28 +377,34 @@ def nearest_neighbor_interpolation2d(x0, z0, f0, x, z):
     if x.shape != z.shape:
         raise Exception('x and z arrays have different shape')
 
-    # using 1d index for x0, z0, f0
-    x0 = x0.flat
-    z0 = z0.flat
-    f0 = f0.flat
+    points = np.vstack((x0.flat, z0.flat)).T
+    f = interpolate.griddata(points, f0.flat, (x, z), method='nearest')
 
-    dx = x[1,0] - x[0,0]
-    dz = z[0,1] - z[0,0]
+    return f
 
-    nx, nz = x.shape
-    f = np.zeros(x.shape)
-    for i in range(nx):
-        for j in range(nz):
-            dist2 = ((x[i,j] - x0) / dx)**2 + ((z[i,j] - z0) / dz)**2
-            ind = np.argmin(dist2)
-            f[i,j] = f0[ind]
+
+def bilinear_interpolation2d(x0, z0, f0, x, z):
+    '''Interpolating field f0, which is defined on (x0, z0)
+    to a new grid (x, z) using bilinear method'''
+
+    if x0.shape != z0.shape:
+        raise Exception('x0 and z0 arrays have different shape')
+
+    if x0.shape != f0.shape:
+        raise Exception('x0 and f0 arrays have different shape')
+
+    if x.shape != z.shape:
+        raise Exception('x and z arrays have different shape')
+
+    points = np.vstack((x0.flat, z0.flat)).T
+    f = interpolate.griddata(points, f0.flat, (x, z), method='linear')
 
     return f
 
 
 def gaussian_interpolation2d(x0, z0, f0, x, z):
     '''Interpolating field f0, which is defined on (x0, z0)
-    to a new grid (x, z) using nearest neighbor method'''
+    to a new grid (x, z) using weighted gaussian method'''
 
     if x0.shape != z0.shape:
         raise Exception('x0 and z0 arrays have different shape')
