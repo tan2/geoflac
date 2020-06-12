@@ -220,7 +220,7 @@ do i = 1, nx-1
         aps(j,i) = max(aps(j,i) - junk2(j,i) / float(kinc), 0d0)
     enddo
 enddo
-!$OMP end parallel
+!$OMP end parallel do
 !$ACC end parallel
 
 return

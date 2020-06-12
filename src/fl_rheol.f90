@@ -37,7 +37,7 @@ curr_dvmax = dvmax
 !$OMP                  s11v,s22v,s12v,s33v, &
 !$OMP                  depl,ipls,diss, &
 !$OMP                  sII_plas,sII_visc, &
-!$OMP                  quad_area,s0a,s0b,s0) &
+!$OMP                  quad_area,s0a,s0b,s0)
 !$OMP do schedule(guided) reduction(max: curr_devmax, curr_dvmax)
 do 3 i = 1,nx-1
     do 3 j = 1,nz-1
