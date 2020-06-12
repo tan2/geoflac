@@ -260,8 +260,8 @@ phasedat.inp   ; file with distribution of phase on the 2D grid (phasedat)
 20
 ;
 ; Variables to print
-; vel srII eII aps sII sxx szz sxz pres temp melt visc phas mark src diss forc hfl topo
-1   1    1   1   1   1   1   1   1     1    1    1    1    1   1   1    1    1    1
+; vel srII eII aps sII sxx szz sxz pres temp phase visc unused dens src diss forc hfl topo
+  1   1    1   1   1   1   1   1   1    1    1     1    1      1    1   1    1    1   1
 ;
 ; output for last step only (1) or each nout step (0)
 0

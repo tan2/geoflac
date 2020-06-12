@@ -304,7 +304,7 @@ call AdvanceToNextInputLine( 4 )
 !135 continue
 !call AdvanceToNextInputLine( 4 )
 read(4,*) io_vel,io_srII,io_eII,io_aps,io_sII,io_sxx,io_szz,io_sxz,io_pres, &
-    io_temp,io_melt,io_visc,io_phas,io_mark,io_src,io_diss,io_forc,io_hfl,io_topo
+    io_temp,io_phase,io_visc,io_unused,io_density,io_src,io_diss,io_forc,io_hfl,io_topo
 call AdvanceToNextInputLine( 4 )
 read(4,*) lastout
 call AdvanceToNextInputLine( 4 )
@@ -325,7 +325,7 @@ close (iu)
 !$ACC     nofbc,nofside(maxbc),nbc1(maxbc),nbc2(maxbc),nbc(maxbc), &
 !$ACC     mix_strain,mix_stress,lastsave,lastout, &
 !$ACC     io_vel,io_srII,io_eII,io_aps,io_sII,io_sxx,io_szz, &
-!$ACC     io_sxz,io_pres,io_temp,io_melt,io_visc,io_phas,io_mark, &
+!$ACC     io_sxz,io_pres,io_temp,io_phase,io_visc,io_unused,io_density, &
 !$ACC     io_src,io_diss,io_forc,io_hfl,io_topo, &
 !$ACC     irphase,irtemp,ircoord, &
 !$ACC     nphase,mphase,irheol(maxph), &

@@ -18,7 +18,7 @@ integer :: nx,nz,nq,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
      nofbc,nofside(maxbc),nbc1(maxbc),nbc2(maxbc),nbc(maxbc), &
      mix_strain,mix_stress,lastsave,lastout, &
      io_vel,io_srII,io_eII,io_aps,io_sII,io_sxx,io_szz, &
-     io_sxz,io_pres,io_temp,io_melt,io_visc,io_phas,io_mark, &
+     io_sxz,io_pres,io_temp,io_phase,io_visc,io_unused,io_density, &
      io_src,io_diss,io_forc,io_hfl,io_topo, &
      irphase,irtemp,ircoord, &
      nphase,mphase,irheol(maxph), &
@@ -73,7 +73,7 @@ character phasefile*20,tempfile*20,coordfile*20
 !$ACC     nofbc,nofside(maxbc),nbc1(maxbc),nbc2(maxbc),nbc(maxbc), &
 !$ACC     mix_strain,mix_stress,lastsave,lastout, &
 !$ACC     io_vel,io_srII,io_eII,io_aps,io_sII,io_sxx,io_szz, &
-!$ACC     io_sxz,io_pres,io_temp,io_melt,io_visc,io_phas,io_mark, &
+!$ACC     io_sxz,io_pres,io_temp,io_phase,io_visc,io_unused,io_density, &
 !$ACC     io_src,io_diss,io_forc,io_hfl,io_topo, &
 !$ACC     irphase,irtemp,ircoord, &
 !$ACC     nphase,mphase,irheol(maxph), &
