@@ -109,8 +109,8 @@ proftemp.dat   temperature profile dat.file
 5              - nzone_age (number of zones of different age max 20)
 ;Thermal age (Myr.), layer1 depth (km), layer2 depth, layer3 depth (also Moho depth), layer4 depth, layer1 phase, layer2 phase, layer3 phase, layer4 phase, layer5 phase, x nodes 1 and 2
  60., 1.5, 7.5, 7.5, 7.5, 11,  3,  4,  4,  4,  1, 58
- 50.,15.0,  15,  15,  15, 14,  4,  4,  4,  4, 59, 75
- 50.,20.0,  20,  20,  20, 14,  4,  4,  4,  4, 76, 83
+ 50.,15.0,  15,  15,  15, 14,  4,  4,  4,  4, 59, -1
+ 50.,20.0,  20,  20,  20, 14,  4,  4,  4,  4, -1, 83
  50.,25.0,  25,  25,  25, 14,  4,  4,  4,  4, 84, 90
  60.,35.0,  35,  35,  35, 14,  4,  4,  4,  4, 91,186
 ;
@@ -172,16 +172,20 @@ phasedat.inp   ; file with distribution of phase on the 2D grid (phasedat)
 ;
 ; Initial heterogeneities
 ;
-; Weak zone geometries:
+; The typeof inhomogeneity depends on 'geometry'.
+;
+; Weak zone or phase geometries (see init_marker.f90 and init_phase.f90):
 ; 0- rectangular,
 ; 1,2- Gauss shape
 ; 3- diagonal line
 ; 4- diagonal line plus init.plastic strain
 ;
-; Thermal anomaly
-; 11- Gaussian shape (halfwidth=ix1-ix2, amplitude=amp), d
+; Thermal anomaly (see init_temp.f90):
+; 11- Gaussian shape (halfwidth=ix1-ix2, amplitude=amp), depth [iy1,iy2]
+; 13- right slanting temp. inhom.
+; 14- left slanting temp. inhom.
 ;
-; Topography
+; Topography (see init_cord.f90):
 ; 20- square, surface nodes ix1-ix2 elevated by amp
 ; 21- trapzoidal, surface nodes linearly increase ix1-ix2, flat ix2-iy1,
 ;     decrease iy1-iy2, max. elevated by amp
