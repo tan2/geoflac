@@ -4,7 +4,7 @@
 '''
 from __future__ import print_function
 import sys, os
-import zlib, base64
+import zlib, base64, glob
 import numpy as np
 import flac
 
@@ -25,6 +25,11 @@ def main(path, start=1, end=-1):
     nez = fl.nz - 1
     if end == -1:
         end = fl.nrec
+
+    if start == -1:
+        vtslist = sorted(glob.glob('flac.*.vts'))
+        lastframe = int(vtslist[-1][5:-4]) if vtslist else 0
+        start = lastframe + 1
 
     for i in range(start, end+1):
         print('Writing record #%d, model time=%.3e' % (i, fl.time[i-1]), end='\r')
@@ -214,11 +219,13 @@ def vts_footer(f):
 if __name__ == '__main__':
 
     if len(sys.argv) < 2:
-        print('''usage: flac2vtk.py path [step_min [step_max]]
+        print('''usage: flac2vtk.py path [frame_min [frame_max]]
 
 Processing flac data output to VTK format.
-If step_max is not given, processing to latest steps
-If both step_min and step_max are not given, processing all steps''')
+
+If frame_min is -1, start from the latest vts file.
+If frame_max is -1 or not given, processing to latest frames.
+If both frame_min and frame_max are not given, processing all frames''')
         sys.exit(1)
 
     path = sys.argv[1]
