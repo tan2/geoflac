@@ -17,8 +17,8 @@ subroutine bc_update
   force = 0.0
   balance = 0.0
 
-  if (ydrsides.eq. 1.) then
-      rogh = 0.      
+  if (nydrsides.eq. 1) then
+      rogh = 0.d0
       do j=1,nz-1
           iph = iphase(j,1)
           densT = Eff_dens(j,1)

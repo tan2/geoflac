@@ -83,7 +83,7 @@ call AdvanceToNextInputLine( 4 )
 
 ! MECHANICAL CONDITIONS
 call AdvanceToNextInputLine( 4 )
-read(4,*) ynstressbc,ydrsides
+read(4,*) nystressbc,nydrsides
 call AdvanceToNextInputLine( 4 )
 read(4,*) nofbc
 call AdvanceToNextInputLine( 4 )

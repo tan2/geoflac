@@ -44,7 +44,7 @@
 ;===================================================================
 ;        C o n d i t i o n s:  M e c h a n i c a l
 ;===================================================================
-; ynstressbc, ydrsides
+; nystressbc, nydrsides
 ; Stress boundary conditions (0:no,1:yes), lithostatic stress bc on the sides (0/1)
 0  0 
 ; nofbc: Number of boundary conditions

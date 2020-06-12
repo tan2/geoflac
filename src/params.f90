@@ -14,7 +14,7 @@ real*8, parameter :: sec_year = 3.1558e+7  ! seconds in a year
 
 integer :: nx,nz,nq,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
      ny_rem,mode_rem,ntest_rem,ivis_shape,igeotherm, &
-     ny_inject,nelem_inject,nmass_update,nopbmax,iinj, &
+     ny_inject,nelem_inject,nmass_update,nopbmax,iinj,nydrsides,nystressbc, &
      nofbc,nofside(maxbc),nbc1(maxbc),nbc2(maxbc),nbc(maxbc), &
      mix_strain,mix_stress,lastsave,lastout, &
      io_vel,io_srII,io_eII,io_aps,io_sII,io_sxx,io_szz, &
@@ -43,7 +43,7 @@ integer :: nx,nz,nq,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
 real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
      dx_rem,angle_rem,anglemin1,anglemint,topo_kappa,fac_kappa, &
      velbc_l,velbc_r,v_min,v_max,efoldc, &
-     g_x0,g_y0c,g_amplitude,g_width,ydrsides,ynstressbc, &
+     g_x0,g_y0c,g_amplitude,g_width, &
      rate_inject, &
      bca(maxbc),bcb(maxbc),bcc(maxbc),dx_init,xReyn, &
      bcd(maxbc),bce(maxbc),bcf(maxbc),bcg(maxbc),bch(maxbc),bci(maxbc), &
