@@ -5,10 +5,10 @@ src/flac
 src/snapshot.diff
 util/*.pyc
 util/__pycache__
-util/flac2vtk
 
-# files created by 'hg revert'
+# files created by VCS
 *.orig
+*.rej
 
 # temporary files from vi
 *.swp
@@ -22,6 +22,3 @@ src/*.gcda
 src/*.gcno
 src/*.gcov
 
-# directory for running tests
-src/tmp/
-src/tibet/
