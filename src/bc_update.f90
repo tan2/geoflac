@@ -24,7 +24,7 @@ subroutine bc_update
   !$ACC update device(force, balance)
 
   !$ACC data create(rogh) 
-  if (ydrsides.eq. 1.) then
+  if (nydrsides.eq. 1) then
       rogh = 0.d0
       !$ACC update device(rogh)
       !$ACC parallel loop 

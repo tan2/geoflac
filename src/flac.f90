@@ -24,7 +24,7 @@ if( mod(nloop, 10).eq.0 ) call change_phase
 call fl_rheol
 
 ! update stress boundary conditions
-if (ynstressbc.eq.1.) call bc_update
+if (nystressbc.eq.1) call bc_update
 
 ! Calculations in a node: forces, balance, velocities, new coordinates
 call fl_node

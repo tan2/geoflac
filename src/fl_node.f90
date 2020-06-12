@@ -53,7 +53,7 @@ if (drat .lt. 1.) drat = 1.
 !$ACC parallel loop collapse(2) private(fx, fy)
 do i = 1,nx
     do j = 1,nz
-        if(ynstressbc.eq.0.) then
+        if(nystressbc.eq.0) then
            force(j,i,1) = 0
            force(j,i,2) = 0
            balance(j,i,1)=0

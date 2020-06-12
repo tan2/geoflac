@@ -85,7 +85,7 @@ call AdvanceToNextInputLine( 4 )
 
 ! MECHANICAL CONDITIONS
 call AdvanceToNextInputLine( 4 )
-read(4,*) ynstressbc,ydrsides
+read(4,*) nystressbc,nydrsides
 call AdvanceToNextInputLine( 4 )
 read(4,*) nofbc
 call AdvanceToNextInputLine( 4 )
@@ -321,7 +321,7 @@ close (iu)
 
 !$ACC update device(nx,nz,nq,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
 !$ACC     ny_rem,mode_rem,ntest_rem,ivis_shape,igeotherm, &
-!$ACC     ny_inject,nelem_inject,nmass_update,nopbmax,iinj, &
+!$ACC     ny_inject,nelem_inject,nmass_update,nopbmax,iinj,nydrsides,nystressbc, &
 !$ACC     nofbc,nofside(maxbc),nbc1(maxbc),nbc2(maxbc),nbc(maxbc), &
 !$ACC     mix_strain,mix_stress,lastsave,lastout, &
 !$ACC     io_vel,io_srII,io_eII,io_aps,io_sII,io_sxx,io_szz, &
@@ -350,7 +350,7 @@ close (iu)
 !$ACC update device(x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
 !$ACC     dx_rem,angle_rem,anglemin1,anglemint,topo_kappa,fac_kappa, &
 !$ACC     velbc_l,velbc_r,v_min,v_max,efoldc, &
-!$ACC     g_x0,g_y0c,g_amplitude,g_width,ydrsides,ynstressbc, &
+!$ACC     g_x0,g_y0c,g_amplitude,g_width, &
 !$ACC     rate_inject,tbos, &
 !$ACC     bca(maxbc),bcb(maxbc),bcc(maxbc),dx_init,xReyn, &
 !$ACC     bcd(maxbc),bce(maxbc),bcf(maxbc),bcg(maxbc),bch(maxbc),bci(maxbc), &
