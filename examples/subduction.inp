@@ -79,7 +79,7 @@
 ;=============================================================
 ;            C o n d i t i o n s : T h e r m a l
 ;=============================================================
-0       -iprestress (fix boundaries) topo build up  stress up buyoancy are there for 200000. yrs
+0       -iprestress: allow topo build up by isostasy for 600 kyrs
 1        - itherm  (1-mech+therm, 2-no mech)
 0        - istress_therm: Add THERMAL STRESSES (0,1,2-just 1 step)
 1        - ishearh: Add SHEAR heating
@@ -99,7 +99,7 @@
 0              irtemp (0,1) (read temperature file or not)
 proftemp.dat   temperature profile dat.file
 ;
-1.e+0          - time_scale (V_numerical/V_tectonic)
+1.e+0          - time_scale (not used)
 ; Temperature structure for ridges (3 linear segments) above linear
 ; Max Temperature or bottom Temperature (iynts:0/no,1/yes,2/use initial geotherm from age), tbos
 2 425.
