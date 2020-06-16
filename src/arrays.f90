@@ -7,7 +7,7 @@ module arrays
 
   ! fortran array allocatable
   real*8, allocatable:: cord(:,:,:), temp(:,:), vel(:,:,:), stress0(:,:,:,:), &
-       force(:,:,:), balance(:,:,:), amass(:,:), rmass(:,:), &
+       force(:,:,:), amass(:,:), rmass(:,:), &
        area(:,:,:), dvol(:,:,:), strain(:,:,:), bc(:,:,:)
 
   integer, allocatable:: ncod(:,:,:)
@@ -47,7 +47,6 @@ contains
     allocate(vel(nz, nx, 2))
     allocate(stress0(nz-1, nx-1, 4, 4))
     allocate(force(nz, nx, 2))
-    allocate(balance(nz, nx, 2))
     allocate(amass(nz, nx))
     allocate(rmass(nz, nx))
     allocate(area(nz-1, nx-1, 4))
