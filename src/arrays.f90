@@ -7,7 +7,7 @@ module arrays
 
   ! fortran array allocatable
   real*8, allocatable:: cord(:,:,:), temp(:,:), vel(:,:,:), stress0(:,:,:,:), &
-       force(:,:,:), balance(:,:,:), amass(:,:), rmass(:,:), &
+       force(:,:,:), amass(:,:), rmass(:,:), &
        area(:,:,:), dvol(:,:,:), strain(:,:,:), bc(:,:,:)
 
   integer, allocatable:: ncod(:,:,:)
@@ -35,7 +35,7 @@ module arrays
   integer, allocatable :: numtr(:,:)
 
 
-  !$ACC declare create(cord, temp, vel, stress0, force, balance, amass, rmass, &
+  !$ACC declare create(cord, temp, vel, stress0, force, amass, rmass, &
   !$ACC                area, dvol, strain, bc, ncod, junk2, xmpt, tkappa, itmp, &
   !$ACC                iphase, &
   !$ACC                nopbou, ncodbou, idtracer, phase_ratio, dtopo, dhacc, extrusion, &
@@ -54,7 +54,6 @@ contains
     allocate(vel(nz, nx, 2))
     allocate(stress0(nz-1, nx-1, 4, 4))
     allocate(force(nz, nx, 2))
-    allocate(balance(nz, nx, 2))
     allocate(amass(nz, nx))
     allocate(rmass(nz, nx))
     allocate(area(nz-1, nx-1, 4))
@@ -96,7 +95,7 @@ contains
     allocate(tkappa(nx))
     allocate(itmp(nz, nx))
 
-    !$ACC update device(cord, temp, vel, stress0, force, balance, amass, rmass, &
+    !$ACC update device(cord, temp, vel, stress0, force, amass, rmass, &
     !$ACC               area, dvol, strain, bc, ncod, junk2, xmpt, tkappa, itmp, &
     !$ACC               iphase, &
     !$ACC               nopbou, ncodbou, idtracer, phase_ratio, dtopo, dhacc, extrusion, &

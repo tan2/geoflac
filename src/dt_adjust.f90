@@ -7,21 +7,9 @@ implicit none
 
 double precision :: dt_min
 
-!$ACC parallel
-
+!$ACC serial
 dt_min = min(dt_elastic, dt_maxwell)
-
-! Adaptive scaling (Cundall, 1982)
-if ( boff .lt. ratl ) then
-    ! Increase the time step 
-    dt = dt * amul
-elseif ( boff .gt. ratu ) then
-    ! decrease time step
-    dt = dt / amul
-    !dt = max (dt, dt_min )
-endif      
-
 dt = max (dt, dt_min )
-!$ACC end parallel
+!$ACC end serial
 return
 end

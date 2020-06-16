@@ -20,8 +20,6 @@ subroutine bc_update
   !   Shear component = 0 (perfect fluid)
   ! -------------------------------------------------------------
   force = 0.0d0
-  balance = 0.0d0
-  !$ACC update device(force, balance)
 
   !$ACC data create(rogh) 
   if (nydrsides.eq. 1) then
@@ -51,12 +49,9 @@ subroutine bc_update
           force(j,1,2) = force(j,1,2)-0.5d0*press_norm*dlx
           force(j+1,1,2) = force(j+1,1,2)-0.5d0*press_norm*dlx
 
-          balance(j,1,1) = 1.d+17
           rogh = rogh +dP
       enddo
       !$ACC end parallel
-      balance(nz,1,1) = 1.d+17
-      !$ACC update device(balance)
 
       ! -------------------------------------------------------------
       !      RIGHT BOUNDARY
@@ -90,13 +85,9 @@ subroutine bc_update
           force(j,nx,2) = force(j,nx,2)+0.5d0*press_norm*dlx
           force(j+1,nx,2) = force(j+1,nx,2)+0.5d0*press_norm*dlx
 
-          balance(j,nx,1) = 1.d+17
-
           rogh = rogh +dP
       enddo
       !$ACC end parallel
-      balance(nz,nx,1) = 1.d+17
-      !$ACC update device(balance)
   endif
   !$ACC end data
 
@@ -125,8 +116,6 @@ subroutine bc_update
       force(jj1,ii1,2) = force(jj1,ii1,2)+0.5d0*s_normal*dlx
       force(jj2,ii2,2) = force(jj2,ii2,2)+0.5d0*s_normal*dlx
       !       write(*,*) jj1,jj2,ii1,ii2,s_normal,force(jj1,ii1,1), force(jj2,ii2,1)
-      balance(jj1,ii1,1) = 1.d+17
-      balance(jj2,ii2,1) = 1.d+17
       !
       ! Shear component
       !
@@ -139,8 +128,6 @@ subroutine bc_update
       force(jj1,ii1,2) = force(jj1,ii1,2)+0.5d0*s_shear*dly
       force(jj2,ii2,2) = force(jj2,ii2,2)+0.5d0*s_shear*dly
 
-      balance(jj1,ii1,2) = 1.d+17
-      balance(jj2,ii2,2) = 1.d+17
 
       !       if (i_sl.eq.1) then
       !       s_shearo  = bcstress(i,3)
@@ -148,8 +135,6 @@ subroutine bc_update
       !       force(nn1,3) = force(nn1,3)+0.5d0*s_shearo*dlx
       !       force(nn2,3) = force(nn2,3)+0.5d0*s_shearo*dlx
       !       write(*,*) bcstress(i,3)
-      !       balance(nn1,3) = 1.d+17
-      !       balance(nn2,3) = 1.d+17
       !       endif
   enddo
   !$ACC end parallel
