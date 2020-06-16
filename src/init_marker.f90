@@ -13,15 +13,14 @@ integer :: i, j, i1, i2, iamp, inc, itop, iwidth, ixc, k, k1, k2, kph, n, l, &
            itop_geom
 double precision :: ddx, ddy, dx, dy, r, rx, ry, xx, ycol1, ycol2, ycol3, ycol4, &
                     yy, yyy
-mark_id_elem = 0
-nmark_elem = 0
 
 ! define euler coordinate of the markers
 ! Distribute evenly first then randomize the distribution
 ! to start 9 markers per elements
-!nmarkers = 0
-nmarkers=1
-!$ACC update device(nmarkers)
+mark_id_elem = 0
+nmark_elem = 0
+nmarkers = 0
+!$ACC update device(nmarkers,mark_id_elem,nmark_elem)
 
 ! zones with 9 markers per elements
 ! calculate the id (element number) of the zones of high res
@@ -144,7 +143,9 @@ do i = 1,inhom
 
     ! Rectangular shape:
     if (igeom(i) .eq.0) then
+        !$ACC serial
         call newphase2marker(iy1(i),iy2(i),ix1(i),ix2(i),inphase(i))
+        !$ACC end serial
     endif
 
     ! Gauss shape:
@@ -164,7 +165,9 @@ do i = 1,inhom
             itop = itop_geom(j,ixc,iwidth,iamp)
             do k = iy1(i),iy2(i)
                 if (k .ge. (iy2(i)-itop)) then
+                    !$ACC serial
                     call newphase2marker(k,k,j,j,inphase(i))
+                    !$ACC end serial
                 endif
             end do
         end do
@@ -174,7 +177,9 @@ do i = 1,inhom
     if (igeom (i) .eq.3) then
         do j = ix1(i),ix2(i)
             k = nint(float(iy2(i)-iy1(i))/float(ix2(i)-ix1(i))*(j-ix1(i))) + iy1(i)
+            !$ACC serial
             call newphase2marker(k,k,j,j,inphase(i))
+            !$ACC end serial
         end do
     endif
 
@@ -184,7 +189,9 @@ do i = 1,inhom
             k1 = floor(float(iy2(i)-iy1(i))/float(ix2(i)-ix1(i))*(j-ix1(i))) + iy1(i)
             k2 = ceiling(float(iy2(i)-iy1(i))/float(ix2(i)-ix1(i))*(j-ix1(i))) + iy1(i)
             if( inphase(i) .ge. 0) then
+                !$ACC serial
                 call newphase2marker(k1,k2,j,j,inphase(i))
+                !$ACC end serial
             endif
         end do
     endif

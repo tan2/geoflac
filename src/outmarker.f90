@@ -12,8 +12,8 @@ character*100 fn
 
 call bar2euler
 
-!!$ACC update self(nloop, nmarkers, time)
-!!$ACC update self(mark_x, mark_y, mark_age, mark_dead, mark_phase)
+!$ACC update self(nloop, nmarkers, time)
+!$ACC update self(mark_x, mark_y, mark_age, mark_dead, mark_phase)
 
 nrec = 0
 D1d = 0.

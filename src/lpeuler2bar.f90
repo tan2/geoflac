@@ -5,7 +5,7 @@ use arrays
 use params
 implicit none
 
-integer :: n, k, i, j, ntr, inc
+integer :: n, k, i, j, ntr, inc, temp_nmark
 double precision :: xx, yy, bar1, bar2
 character*200 msg
 
@@ -44,10 +44,12 @@ do n = 1 , nmarkers
     endif
     !$OMP critical (lpeulerbar2)
     ! recording the id of markers belonging to surface elements
+    temp_nmark = nmark_elem(j, i) + 1
     !$ACC atomic update
     nmark_elem(j, i) = nmark_elem(j, i) + 1
     !$ACC atomic write
-    mark_id_elem(nmark_elem(j, i), j, i) = n
+    mark_id_elem(temp_nmark, j, i) = n
+    !mark_id_elem(nmark_elem(j, i), j, i) = n
     !$OMP end critical (lpeulerbar2)
 enddo
 !$OMP end parallel do

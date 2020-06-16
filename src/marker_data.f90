@@ -62,7 +62,7 @@ MODULE marker_data
     integer, intent(out) :: inc
     integer, intent(inout) :: kk
     double precision, intent(in) :: x, y, age
-    integer :: ntr
+    integer :: ntr, temp_nmark, temp_kk
     double precision :: bar1, bar2
   
     !character*200 msg
@@ -77,29 +77,36 @@ MODULE marker_data
         inc = 0
         return
     endif
+
+    ! read information of markers
+    !!$ACC atomic read
+    temp_nmark = nmark_elem(j,i) + 1
+    !$ACC atomic write
+    mark_id_elem(temp_nmark,j,i) = kk +1
+    temp_kk = kk + 1
+
     ! recording the id of markers belonging to the element
     !$ACC atomic update
     nmark_elem(j,i) = nmark_elem(j,i) + 1
-    !$ACC atomic write
-    mark_id_elem(nmark_elem(j,i),j,i) = kk + 1
-
+    !!$ACC atomic write
+    !!mark_id_elem(nmark_elem(j,i),j,i) = kk + 1
     !$ACC atomic update
     kk = kk + 1
 
-    if(kk > max_markers) then
+    if(temp_kk > max_markers) then
       !call SysMsg('ADD_MARKER: # of markers exceeds max. value. Please increase mark array size.')
       stop 15
     endif
 
-    mark_x(kk) = x
-    mark_y(kk) = y
-    mark_dead(kk) = 1
-    mark_ID(kk) = kk
-    mark_a1(kk) = bar1
-    mark_a2(kk) = bar2
-    mark_age(kk) = age
-    mark_ntriag(kk) = ntr
-    mark_phase(kk) = iph
+    mark_x(temp_kk) = x
+    mark_y(temp_kk) = y
+    mark_dead(temp_kk) = 1
+    mark_ID(temp_kk) = kk
+    mark_a1(temp_kk) = bar1
+    mark_a2(temp_kk) = bar2
+    mark_age(temp_kk) = age
+    mark_ntriag(temp_kk) = ntr
+    mark_phase(temp_kk) = iph
   
   end subroutine add_marker
   
