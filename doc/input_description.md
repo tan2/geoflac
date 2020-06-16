@@ -322,9 +322,9 @@ Phase changes are activated and will take place among certain of the defined pha
 |**ifreq-imasses**| int | Frequency of re-evaluation of inertial masses |
 |**ifreq-visc**|  int | Freq. re-evaluation Non-Newtonian VISC (rheol.eq.12) |
 |**ifreq-avgsr**| int | freq. averaging strain rate and dissipation |
-|**amul, ratl, ratu**| 3 dbl | Internal adaptive time scaling. |
+|**amul, ratl, ratu**| 3 dbl | Internal adaptive time scaling. Not used. |
 |**frac, fracm**| 2 dbl | calculate time step scales |
-|**n-boff-cutoff**| int | force balance cut-off. |
+|**n-boff-cutoff**| int | force balance cut-off. Not used. |
 |**movegrid, ndim**| 2 int | **movegrid**: 0-N, 1-Y. **ndim**: =2 normal cases; =3 in/out of plane stress.|
 |**demf, mix-strain, mix-stress**| dbl 2 int | **demf** damping coefficient. Mixing Procedures:	**mix-strain**: 0-no, 1-yes. **mix-stress**: 0-no, 1-yes.|
 
