@@ -14,7 +14,6 @@ integer function itest_mesh()
   double precision :: angle(3), testcr, shortening, dx_accr, &
                       pi, raddeg, degrad, xa, xb, xxal, xxbl, ya, yb
 
-
   itest_mesh = 0
 
   ! if remeshing with adding material on the sides then
@@ -22,7 +21,9 @@ integer function itest_mesh()
   ! dx_rem*dx - critical distance of shortnening
   if( mode_rem .eq. 11.or.mode_rem.eq.3 ) then
       testcr = dx_rem * rxbo / (nx-1)
+      !$ACC serial copyout(shortening)
       shortening = abs(cord(1,nx,1) - cord(1,1,1) - rxbo)
+      !$ACC end serial
       if ( shortening .gt. testcr ) then
           if( dtout_screen .ne. 0 ) then
               print *, 'Remeshing due to shortening required: ', shortening
@@ -41,9 +42,8 @@ integer function itest_mesh()
   anglemint = 180.d0
   imint = 0
   jmint = 0
-  !$ACC update device(anglemint)
 
-  !$ACC parallel loop collapse(3)
+  !$ACC parallel loop collapse(3) create(iv, jv, angle) private(i,j) copyout(anglemint) reduction(min:anglemint)
   do i = 1, nx-1
       do j = 1,nz-1
           ! loop for each 4 sub-triangles
@@ -75,11 +75,12 @@ integer function itest_mesh()
 
               ! min angle in one trianle
               anglemin1 = min(angle(1),angle(2),angle(3))
-
               ! min angle in the whole mesh
-              if( anglemin1 .lt. anglemint ) then
-                  anglemint = anglemin1
+              anglemint = min(anglemint, anglemin1)
+              if( anglemin1 .eq. anglemint ) then
+                  !$ACC atomic write
                   imint = i
+                  !$ACC atomic write
                   jmint = j
               endif
 
@@ -88,11 +89,10 @@ integer function itest_mesh()
       end do
   end do
   !$ACC end parallel
-  !$ACC update device(anglemin1, anglemint)
 
   if( dtout_screen .ne. 0 ) then
-      write (6,'(A,F5.2,A,I3,A,I3,A,F5.2)') '        min.angle=',anglemint,' j=', jmint, ' i=',imint, ' dt(yr)=',dt/sec_year
-      write (333,'(A,F5.2,A,I3,A,I3,A,F5.2)') '        min.angle=',anglemint,' j=', jmint, ' i=',imint, ' dt(yr)=',dt/sec_year
+      write (6,'(A,F6.2,A,I3,A,I3,A,F5.2)') '        min.angle=',anglemint,' j=', jmint, ' i=',imint, ' dt(yr)=',dt/sec_year
+      write (333,'(A,F6.2,A,I3,A,I3,A,F5.2)') '        min.angle=',anglemint,' j=', jmint, ' i=',imint, ' dt(yr)=',dt/sec_year
       flush (333)
   endif
   ! check if the angle is smaller than angle of remeshing  
