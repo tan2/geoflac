@@ -10,6 +10,10 @@ util/__pycache__
 *.orig
 *.rej
 
+# results created by flac under examples/
+examples/**
+!examples/*.inp
+
 # temporary files from vi
 *.swp
 
