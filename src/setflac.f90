@@ -44,6 +44,13 @@ call init_stress
 ! Setup boundary conditions
 call init_bc
 
+temp0 = temp
+shrheat = 0
+sshrheat = 0
+dtopo = 0
+extrusion = 0
+andesitic_melt_vol = 0
+
 ! Distribution of REAL masses to nodes
 call rmasses
 
