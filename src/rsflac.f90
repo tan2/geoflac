@@ -260,6 +260,13 @@ call dt_mass
 
 if( ivis_present.eq.1 ) call init_visc
 
+temp0 = temp
+shrheat = 0
+sshrheat = 0
+dtopo = 0
+extrusion = 0
+andesitic_melt_vol = 0
+
 ! Initiate parameters for stress averaging
 dtavg=0
 nsrate=-1

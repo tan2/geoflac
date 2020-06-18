@@ -45,6 +45,13 @@ call init_stress
 ! Setup boundary conditions
 call init_bc
 
+temp0 = temp
+shrheat = 0
+sshrheat = 0
+dtopo = 0
+extrusion = 0
+andesitic_melt_vol = 0
+
 !Initialization
 !$ACC update device(temp, vel, stress0, force, amass, rmass, &
 !$ACC               area, dvol, strain, bc, ncod, junk2, xmpt, tkappa, &
