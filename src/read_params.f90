@@ -352,7 +352,7 @@ close (iu)
 !$ACC     velbc_l,velbc_r,v_min,v_max,efoldc, &
 !$ACC     g_x0,g_y0c,g_amplitude,g_width, &
 !$ACC     rate_inject,tbos, &
-!$ACC     bca(maxbc),bcb(maxbc),bcc(maxbc),dx_init,xReyn, &
+!$ACC     bca(maxbc),bcb(maxbc),bcc(maxbc),xReyn, &
 !$ACC     bcd(maxbc),bce(maxbc),bcf(maxbc),bcg(maxbc),bch(maxbc),bci(maxbc), &
 !$ACC     dt_scale,strain_inert,vbc,amul,ratl,ratu,frac, &
 !$ACC     dtmax_therm,dt_maxwell,fracm,srate0, &
