@@ -45,7 +45,7 @@ real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
      velbc_l,velbc_r,v_min,v_max,efoldc, &
      g_x0,g_y0c,g_amplitude,g_width, &
      rate_inject, &
-     bca(maxbc),bcb(maxbc),bcc(maxbc),dx_init,xReyn, &
+     bca(maxbc),bcb(maxbc),bcc(maxbc),xReyn, &
      bcd(maxbc),bce(maxbc),bcf(maxbc),bcg(maxbc),bch(maxbc),bci(maxbc), &
      dt_scale,strain_inert,vbc,amul,ratl,ratu,frac, &
      dtmax_therm,dt_maxwell,fracm,srate0, &
