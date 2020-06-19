@@ -291,11 +291,6 @@ call rmasses
 ! 2) dt_mech with a given  Real Masses (idt_scale = 0)
 call dt_mass
 
-! drop the time step to the smallest one
-!$ACC serial
-dt = min(dt_elastic, dt_maxwell)
-!$ACC end serial
-
 return 
 end
 

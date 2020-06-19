@@ -155,6 +155,11 @@ do iblk = 0, 1
 
     enddo
 enddo
+
+!$ACC serial
+dt = min(dt_elastic, dt_maxwell)
+!$ACC end serial
+
 return
 end
 
