@@ -61,7 +61,6 @@ if( ivis_present.eq.1 ) call init_visc
 
 ! Inertial masses and time steps (elastic and maxwell)
 call dt_mass
-dt = min( dt_elastic, dt_maxwell )
 
 ! Initiate parameters for stress averaging
 dtavg=0

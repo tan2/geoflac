@@ -143,6 +143,9 @@ do iblk = 1, 2
 
     enddo
 enddo
+
+dt = min(dt_elastic, dt_maxwell)
+
 return
 end
 

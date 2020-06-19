@@ -39,9 +39,6 @@ if( mod(nloop,ifreq_rmasses).eq.0 ) call rmasses
 ! Adjust inertial masses or time step due to deformations
 if( mod(nloop,ifreq_imasses) .eq. 0 ) call dt_mass
 
-! Adjust time Step 
-call dt_adjust
-
 500 continue
 
 
