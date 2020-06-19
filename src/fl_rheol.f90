@@ -20,8 +20,6 @@ double precision :: bulkm,rmu,coh,phi,psi, &
 integer :: i, j, k, iph, irh, &
            ipls
 
-!if(iynts.eq.1) call init_temp
-
 
 !$ACC parallel loop collapse(2) private(s11p, s22p, s33p, s33v, s12p, depl, s12v, s22v, s11v)
 !$OMP Parallel Private(i,j,k,iph,irh,bulkm,rmu,coh,phi,psi, &
