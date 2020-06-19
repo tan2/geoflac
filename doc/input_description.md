@@ -121,7 +121,7 @@
 |**nzone-age**| int | # zones of different age (max 20). Used when **iynts**=2.|
 |**_age-1(i),hc1(i),hc2(i),hc3(i),hc4(i),iph-col1(i),iph-col2(i),iph-col3(i),iph-col4(i),iph-col5(i),ixtb1(i),ixtb2(i)_**| 2 dbl, 4 int | See below. |
 
-* **iynts**: 1 - initialize temperature for mid ocean ridges
+* **iynts**: 1 - not supported, (was for mid ocean ridges)
      2 - initialize temperature by **nzone-age**.
      Else - linear temperature profile.
 * **tbos**: If **iynts**=1, **tbos** is the maximum or bottom temperature.  If **iynts**=2, used as the mantle temperature of the half-space cooling model.
@@ -277,9 +277,9 @@ Phase changes are activated and will take place among certain of the defined pha
 
 | Parameters  | Types |  Description  |
 |:------------|:-----:|:--------------|
-|**igeotherm, g-x0, g-y0c, g-amplitude, g-width**|int, 4 dbl| See below.|
+|**igeotherm, g-x0, g-y0c, g-amplitude, g-width**|int, 4 dbl| Not used.|
 
-* When **iynts**=1, these parameters control the initial temperature profile. (See init_temp.f90 for details.)
+* These parameters was used when **iynts**=1, not used any more.
 
 | Parameters  | Types |  Description  |
 |:------------|:-----:|:--------------|

@@ -24,6 +24,9 @@ if (irtemp .gt. 0) then
 endif
 
 select case(iynts)
+case (1)
+    call sysmsg('init_temp: iynts=1 is not supported anymore!')
+    stop 1
 case (2)
     !!  geotherm of a given age accross the box with variable age
     cond_c = 2.2d0
