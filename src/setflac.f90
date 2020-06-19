@@ -51,6 +51,8 @@ sshrheat = 0
 dtopo = 0
 extrusion = 0
 andesitic_melt_vol = 0
+e2sr = 1d-16
+se2sr = 1d-16
 
 !Initialization
 !$ACC update device(temp, vel, stress0, force, amass, rmass, &
