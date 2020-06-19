@@ -117,9 +117,6 @@ do while( time .le. time_max )
   if( ny_rem.eq.1 .and. itherm.ne.2 ) then
     if( itest_mesh() .eq. 1 ) then
       if(iynts.eq.1) call init_temp
-      ! Some calculations was not performed every time step, need to
-      ! perform these calculation before remeshing
-      if(topo_kappa .gt. 0 .and. mod(nloop, 100) .ne. 0) call resurface
 
       ! If there are markers recalculate their x,y global coordinate and assign them aps, eII, press, temp
       if(iint_marker.eq.1) then
