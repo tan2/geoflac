@@ -104,7 +104,7 @@ do i = 1,nx-1
 end do
 
 !Initialization
-!$ACC update device(iphase, ivis_present)
+!$ACC update device(ivis_present)
 
 return
 end
