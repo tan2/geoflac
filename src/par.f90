@@ -73,7 +73,6 @@ dtacc_file = 0
 dtacc_save = 0
 dtacc_tracer = 0
 
-!do index_nobody_would_use=1,1
 do while( time .le. time_max )
   if( dtout_screen .ne. 0 ) then
     if( dtacc_screen .gt. dtout_screen ) then
@@ -84,26 +83,6 @@ do while( time .le. time_max )
        dtacc_screen = 0
     endif
   endif
-
-  ! ! Forces at the boundaries
-  ! if( io_forc==1 .and. mod(nloop, 1000)==0) then
-  !     force_l=0.d0
-  !     force_r=0.d0
-  !     do j = 1,nz-1
-  !         sxx = 0.25d0 * (stress0(j,1,1,1)+stress0(j,1,1,2)+stress0(j,1,1,3)+stress0(j,1,1,4) )
-  !         sxxd = sxx-stressI(j,1)
-  !         dl = cord(j+1,1,2)-cord(j,1,2)
-  !         force_l = force_l + sxxd*dl
-  !
-  !         sxx = 0.25d0 * (stress0(j,nx-1,1,1)+stress0(j,nx-1,1,2)+stress0(j,nx-1,1,3)+stress0(j,nx-1,1,4) )
-  !         sxxd = sxx-stressI(j,nx-1)
-  !         dl = cord(j+1,nx-1,2)-cord(j,nx-1,2)
-  !         force_r = force_r + sxxd*dl
-  !     end do
-  !     open (1,file='forc.0',position='append')
-  !     write (1,'(i10,1x,f7.3,1x,e10.3,1x,e10.3)') nloop, time/sec_year/1.d6, force_l, force_r
-  !     close (1)
-  ! endif
 
   do j = 1, ntest_rem
     ! FLAC
