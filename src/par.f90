@@ -8,9 +8,7 @@ use marker_data
 character*200 inputfile
 real*4 secnds,time0
 integer :: narg, iargc, i_search, j, itest_mesh
-double precision :: area_diff, dtacc_file, dtacc_save, dtacc_screen, dtacc_tracer, &
-!                    force_l, force_r, dl, sxx, sxxd, stressI, &
-                    total_area
+double precision :: dtacc_file, dtacc_save, dtacc_screen, dtacc_tracer
 
 narg = iargc()
 if(narg /= 1) then
@@ -19,8 +17,6 @@ if(narg /= 1) then
 endif
 call getarg(1, inputfile)
 
-! Area
-open( 33, file='area.dat' )
 open( 333, file='output.asc' )
 
 time0 = secnds(0.0)
@@ -72,8 +68,6 @@ dtacc_file = 0
 dtacc_save = 0
 dtacc_tracer = 0
 i_search = 0
-devmax = 0
-dvmax = 0
 
 !do index_nobody_would_use=1,1
 do while( time .le. time_max )
@@ -163,21 +157,11 @@ do while( time .le. time_max )
     endif
   endif
 
-  ! Area
-  if( mod(nloop,1000) .eq. 0 ) then
-    area_diff = total_area(0)/abs(rzbo*rxbo) - 1
-    !write( *,'(i6,1x,e9.2,1x,e9.2,1x,e9.2)' ) nloop, area_diff, devmax, dvmax
-    write(33,'(i10,1x,e9.2,1x,e9.2,1x,e9.2)' ) nloop, area_diff, devmax, dvmax
-    devmax = 0; dvmax = 0;
-    !call flush(33)
-  endif
-
 end do
 
 ! SAVING the restart information of last step
 call saveflac
 
-close(33)
 close(333)
 
 call SysMsg('Congratulations !')
