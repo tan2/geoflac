@@ -6,6 +6,7 @@ integer, parameter :: maxzone = 10   ! max nzonx and nzony
 integer, parameter :: maxtrzone = 20   ! max nzone_marker and nzone_tracer
 integer, parameter :: maxphasel = 20   ! max nphasl
 integer, parameter :: maxbc = 20   ! max # of bcs
+integer, parameter :: maxzone_age = 20   ! max # of nzone_age
 integer, parameter :: maxph = 20   ! max # of phases
 integer, parameter :: maxinh = 50   ! max # of inhomogeneities
 
@@ -29,9 +30,9 @@ integer :: nx,nz,nq,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
      ix1(maxinh),ix2(maxinh),iy1(maxinh),iy2(maxinh),inphase(maxinh), &
      igeom(maxinh),inhom, &
      itherm,istress_therm,initial_geoth,itemp_bc,ix1t,ix2t,iy1t,iy2t,ishearh, &
-     ntherm,ixtb1(maxph),ixtb2(maxph),nzone_age,i_prestress, &
-     iph_col1(maxph),iph_col2(maxph),iph_col3(maxph),iph_col4(maxph), &
-     iph_col5(maxph),iph_col_trans(maxph), &
+     ntherm,ixtb1(maxzone_age),ixtb2(maxzone_age),nzone_age,i_prestress, &
+     iph_col1(maxzone_age),iph_col2(maxzone_age),iph_col3(maxzone_age), &
+     iph_col4(maxzone_age),iph_col5(maxzone_age),iph_col_trans(maxzone_age), &
      if_intrus,if_hydro, &
      nyhydro,iphsub, &
      movegrid,ndim,ifreq_visc,nmtracers,i_rey, &
@@ -60,8 +61,8 @@ real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
      ts(maxph),tl(maxph),tk(maxph),fk(maxph), &
      ten_off,tau_heal,dt_outtracer,xinitaps(maxinh), &
      t_top,t_bot,hs,hr,temp_per,bot_bc, &
-     hc1(maxph),hc2(maxph),hc3(maxph),hc4(maxph), &
-     age_1(maxph),g,pisos,drosub,damp_vis, &
+     hc1(maxzone_age),hc2(maxzone_age),hc3(maxzone_age),hc4(maxzone_age), &
+     age_1(maxzone_age),g,pisos,drosub,damp_vis, &
      time,dt,time_max, dtavg
 
 
@@ -84,9 +85,9 @@ character phasefile*20,tempfile*20,coordfile*20
 !$ACC     ix1(maxinh),ix2(maxinh),iy1(maxinh),iy2(maxinh),inphase(maxinh), &
 !$ACC     igeom(maxinh),inhom, &
 !$ACC     itherm,istress_therm,initial_geoth,itemp_bc,ix1t,ix2t,iy1t,iy2t,ishearh, &
-!$ACC     ntherm,ixtb1(maxph),ixtb2(maxph),nzone_age,i_prestress, &
-!$ACC     iph_col1(maxph),iph_col2(maxph),iph_col3(maxph),iph_col4(maxph), &
-!$ACC     iph_col5(maxph),iph_col_trans(maxph), &
+!$ACC     ntherm,ixtb1(maxzone_age),ixtb2(maxzone_age),nzone_age,i_prestress, &
+!$ACC     iph_col1(maxzone_age),iph_col2(maxzone_age),iph_col3(maxzone_age), &
+!$ACC     iph_col4(maxzone_age),iph_col5(maxzone_age),iph_col_trans(maxzone_age), &
 !$ACC     if_intrus,if_hydro, &
 !$ACC     nyhydro,iphsub, &
 !$ACC     movegrid,ndim,ifreq_visc,nmtracers,i_rey, &
@@ -115,7 +116,7 @@ character phasefile*20,tempfile*20,coordfile*20
 !$ACC     ts(maxph),tl(maxph),tk(maxph),fk(maxph), &
 !$ACC     ten_off,tau_heal,dt_outtracer,xinitaps(maxinh), &
 !$ACC     t_top,t_bot,hs,hr,temp_per,bot_bc, &
-!$ACC     hc1(maxph),hc2(maxph),hc3(maxph),hc4(maxph), &
-!$ACC     age_1(maxph),g,pisos,drosub,damp_vis, &
+!$ACC     hc1(maxzone_age),hc2(maxzone_age),hc3(maxzone_age),hc4(maxzone_age), &
+!$ACC     age_1(maxzone_age),g,pisos,drosub,damp_vis, &
 !$ACC     time,dt,time_max, dtavg)
 end module params
