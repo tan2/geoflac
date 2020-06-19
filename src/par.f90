@@ -7,7 +7,7 @@ use marker_data
 
 character*200 inputfile
 real*4 secnds,time0
-integer :: narg, iargc, i_search, j, itest_mesh
+integer :: narg, iargc, j, itest_mesh
 double precision :: dtacc_file, dtacc_save, dtacc_screen, dtacc_tracer
 
 narg = iargc()
@@ -67,7 +67,6 @@ dtacc_screen = 0
 dtacc_file = 0
 dtacc_save = 0
 dtacc_tracer = 0
-i_search = 0
 
 !do index_nobody_would_use=1,1
 do while( time .le. time_max )
