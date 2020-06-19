@@ -9,8 +9,7 @@ double precision :: a(3,2), b(3,2), points(9,2)
 double precision, parameter :: half = 0.5d0
 double precision, parameter :: onesixth = 0.1666666666666666666666d0
 double precision, parameter :: fivesixth = 0.8333333333333333333333d0
-integer :: i, j, i1, i2, iamp, inc, itop, iwidth, ixc, k, k1, k2, kph, n, l, &
-           itop_geom
+integer :: i, j, i1, i2, iamp, inc, itop, iwidth, ixc, k, k1, k2, kph, n, l
 double precision :: ddx, ddy, dx, dy, r, rx, ry, xx, ycol1, ycol2, ycol3, ycol4, &
                     yy, yyy
 
@@ -150,27 +149,7 @@ do i = 1,inhom
 
     ! Gauss shape:
     if (igeom(i).eq.1.or.igeom(i).eq.2) then
-        ! symmetric case:
-        if (igeom(i).eq.1) then
-            ixc  = (ix1(i)+ix2(i))/2
-            iwidth = (ix2(i)-ix1(i))
-        else
-            ixc    = ix1(i)
-            iwidth = ix2(i)-ix1(i)
-        endif
-
-        iamp = iy2(i)-iy1(i)
-
-        do j = ix1(i),ix2(i)
-            itop = itop_geom(j,ixc,iwidth,iamp)
-            do k = iy1(i),iy2(i)
-                if (k .ge. (iy2(i)-itop)) then
-                    !$ACC serial
-                    call newphase2marker(k,k,j,j,inphase(i))
-                    !$ACC end serial
-                endif
-            end do
-        end do
+        stop 1
     endif
 
     ! weak zone at 45 degree

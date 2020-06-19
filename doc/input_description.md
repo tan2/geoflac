@@ -243,7 +243,7 @@ Phase changes are activated and will take place among certain of the defined pha
 * The type of inhomogeneities is determined by **igeom**.
 * Add phase inclusion or weak zone (initial plastic strain, see init_phase.f90)
     - 0 rectangular inclusion
-    - 1,2 Gauss shape inclusion (not tested, don’t use)
+    - 1,2 (obsolete, don’t use)
     - 3 diagonal line inclusion
     - 4 diagonal line inclusion plus init. plastic strain
     - if rectangular, upper left corner is **ix1-iy1**, lower right corner is **ix2-iy2** (in elements).
