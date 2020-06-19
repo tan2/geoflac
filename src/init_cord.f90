@@ -36,22 +36,13 @@ call test_grid
 call mesh1 (x0,x0+rxbo,rmesh1,nzonx,nelz_x,sizez_x) 
 
 do i = 1,nx
-    do j = 1,nz
-        cord (j,i,1) =  rmesh1(i)
-!        write(*,*) i,j,cord(j,i,1), x0, rxbo,nzonx,nelz_x,sizez_x
-    end do
+    cord (:,i,1) =  rmesh1(i)
 end do
-!  Z - component 
-!zb_a = 0.d0
-!zb_x0 = 150000.d0
-!zb_s = 25000.d0
-!write(*,*) 'INIT_CORD: Special lower boundary !!!'
-do i = 1,nx
-    do j = 1,nz
-    call mesh1 (z0,z0+rzbo,rmesh1,nzony,nelz_y,sizez_y) 
-         cord (j,i,2) =  rmesh1(j)
-!        write(*,*) i,j,cord(j,i,1),cord(j,i,2)
-    end do
+
+!  Z - component
+do j = 1,nz
+    call mesh1 (z0,z0+rzbo,rmesh1,nzony,nelz_y,sizez_y)
+    cord (j,:,2) =  rmesh1(j)
 end do
 
 ! topo perturbation
