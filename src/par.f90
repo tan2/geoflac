@@ -7,7 +7,7 @@ use marker_data
 
 character*200 inputfile
 real*4 secnds,time0
-integer :: narg, iargc, j, itest_mesh
+integer :: narg, iargc, j, itest_mesh, irestart
 double precision :: dtacc_file, dtacc_save, dtacc_screen, dtacc_tracer
 
 narg = iargc()
