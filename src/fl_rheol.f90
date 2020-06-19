@@ -14,7 +14,7 @@ double precision :: s11p(4),s22p(4),s12p(4),s33p(4),s11v(4),s22v(4),s12v(4),s33v
 double precision :: bulkm,rmu,coh,phi,psi, &
                     stherm,hardn,vis, &
                     de11,de22,de12,de33,dv, &
-                    curr_devmax, curr_dvmax, diss, poiss, &
+                    diss, poiss, &
                     quad_area, s0, s0a,s0b, &
                     sarc1, sarc2, sII_plas, sII_visc, young
 integer :: i, j, k, iph, irh, &
@@ -22,12 +22,6 @@ integer :: i, j, k, iph, irh, &
 
 !if(iynts.eq.1) call init_temp
 
-
-!$ACC parallel
-! max. deviatoric strain and area change of current time step
-curr_devmax = devmax
-curr_dvmax = dvmax
-!$ACC end parallel
 
 !$ACC parallel loop collapse(2) private(s11p, s22p, s33p, s33v, s12p, depl, s12v, s22v, s11v)
 !$OMP Parallel Private(i,j,k,iph,irh,bulkm,rmu,coh,phi,psi, &
@@ -38,7 +32,7 @@ curr_dvmax = dvmax
 !$OMP                  depl,ipls,diss, &
 !$OMP                  sII_plas,sII_visc, &
 !$OMP                  quad_area,s0a,s0b,s0)
-!$OMP do schedule(guided) reduction(max: curr_devmax, curr_dvmax)
+!$OMP do schedule(guided)
 do 3 i = 1,nx-1
     do 3 j = 1,nz-1
         ! iphase (j,i) is number of a phase NOT a rheology
@@ -92,7 +86,7 @@ do 3 i = 1,nx-1
             elseif (irh.eq.3) then
                 ! viscous
                 call maxwell(bulkm,rmu,vis,s11v(k),s22v(k),s33v(k),s12v(k),de11,de22,de33,de12,dv,&
-                     ndim,dt,curr_devmax,curr_dvmax)
+                     ndim,dt)
                 stress0(j,i,1,k) = s11v(k)
                 stress0(j,i,2,k) = s22v(k)
                 stress0(j,i,3,k) = s12v(k)
@@ -114,7 +108,7 @@ do 3 i = 1,nx-1
                     ten_off,ndim)
                 call maxwell(bulkm,rmu,vis,s11v(k),s22v(k),s33v(k),s12v(k),&
                     de11,de22,de33,de12,dv,&
-                    ndim,dt,curr_devmax,curr_dvmax)
+                    ndim,dt)
             endif
         enddo
 
@@ -193,11 +187,6 @@ do 3 i = 1,nx-1
 3 continue
 !$OMP end do
 !$OMP end parallel
-!$ACC end parallel
-
-!$ACC parallel 
-devmax = max(devmax, curr_devmax)
-dvmax = max(dvmax, curr_dvmax)
 !$ACC end parallel
 
 return

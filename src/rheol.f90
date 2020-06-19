@@ -38,13 +38,13 @@ end
 
 !------ Visco - Elasticity (Maxwell rheology)
 subroutine maxwell (bulkm,rmu0,viscosity,s11,s22,s33,s12,de11,de22,de33,de12,dv,&
-    ndim,dt,devmax,dvmax)
+    ndim,dt)
 !$ACC routine seq
 implicit none
 
 integer, intent(in) :: ndim
 real*8, intent(in) :: bulkm, rmu0, viscosity, de11, de22, de33, de12, dv, dt
-real*8, intent(inout) :: s11, s22, s33, s12, devmax, dvmax
+real*8, intent(inout) :: s11, s22, s33, s12
 
 real*8, parameter :: c1d3 = 1.d0/3.d0
 real*8, parameter :: visc_cut = 1.d+19
@@ -104,10 +104,6 @@ s33d = (s33d * vic1 + 2.d0 * rmu * de33d) * vic2
 s12  = (s12  * vic1 + 2.d0 * rmu * de12 ) * vic2
 
 ! isotropic stress is elastic
-devmax = max(devmax, abs(dev))
-dvmax = max(dvmax, abs(dv))
-!$ACC update device(devmax,dvmax)
-
 s0 = s0 + bulkm * dv
 
 ! convert back to x-y components ------

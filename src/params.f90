@@ -62,7 +62,7 @@ real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
      t_top,t_bot,hs,hr,temp_per,bot_bc, &
      hc1(maxph),hc2(maxph),hc3(maxph),hc4(maxph), &
      age_1(maxph),g,pisos,drosub,damp_vis, &
-     time,dt,time_max, devmax, dvmax, dtavg
+     time,dt,time_max, dtavg
 
 
 character phasefile*20,tempfile*20,coordfile*20
@@ -117,5 +117,5 @@ character phasefile*20,tempfile*20,coordfile*20
 !$ACC     t_top,t_bot,hs,hr,temp_per,bot_bc, &
 !$ACC     hc1(maxph),hc2(maxph),hc3(maxph),hc4(maxph), &
 !$ACC     age_1(maxph),g,pisos,drosub,damp_vis, &
-!$ACC     time,dt,time_max, devmax, dvmax, dtavg)
+!$ACC     time,dt,time_max, dtavg)
 end module params

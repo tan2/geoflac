@@ -369,7 +369,7 @@ close (iu)
 !$ACC     t_top,t_bot,hs,hr,temp_per,bot_bc, &
 !$ACC     hc1(maxph),hc2(maxph),hc3(maxph),hc4(maxph), &
 !$ACC     age_1(maxph),g,pisos,drosub,damp_vis, &
-!$ACC     sec_year,time,dt,time_max, devmax, dvmax)
+!$ACC     sec_year,time,dt,time_max)
 
 return
 end
