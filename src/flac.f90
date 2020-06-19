@@ -6,6 +6,7 @@ subroutine flac
 
 use arrays
 use params
+implicit none
 
 ! Update Thermal State
 ! Skip the therm calculations if itherm = 3

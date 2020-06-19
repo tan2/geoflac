@@ -7,6 +7,7 @@ contains
 !
 
 subroutine myrandom(iseed, r)
+    implicit none
     !$ACC routine seq
     integer, intent(inout) :: iseed
     double precision, intent(out) :: r

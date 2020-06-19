@@ -6,8 +6,9 @@ subroutine outflac
 use arrays
 use params
 use matprops
-integer, parameter :: kindr=4, kindi=4
+implicit none
 
+integer, parameter :: kindr=4, kindi=4
 real(kindr), allocatable :: D1d(:),De(:,:),Dn2(:,:,:)
 real(kindr) rtime
 integer :: i, ii, iph, j, nrec, nwords
