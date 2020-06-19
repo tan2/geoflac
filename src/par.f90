@@ -22,10 +22,6 @@ open( 333, file='output.asc' )
 
 time0 = secnds(0.0)
 
-nloop = 0
-nloop_restarted = 0
-!$ACC update device(nloop,nloop_restarted)
-
 ! Read task parameters
 call read_params(inputfile)
 call allocate_arrays(nz, nx)
@@ -43,10 +39,8 @@ goto 20
 
 if ( irestart .eq. 1 ) then  !file exists - restart
     call rsflac
-    nloop_restarted = nloop + 1
-    !$ACC update device(nloop_restarted)
     if( dtout_screen .ne. 0 ) then
-        write(6,*) 'you CONTINUE from  ', nloop_restarted, ' step'
+        write(6,*) 'you CONTINUE from  ', nloop, ' step'
     else
         call SysMsg('you CONTINUE the execution')
     endif
