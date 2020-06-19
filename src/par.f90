@@ -21,9 +21,6 @@ open( 333, file='output.asc' )
 
 time0 = secnds(0.0)
 
-nloop = 0
-nloop_restarted = 0
-
 ! Read task parameters
 call read_params(inputfile)
 call allocate_arrays(nz, nx)
@@ -42,9 +39,8 @@ goto 20
 
 if ( irestart .eq. 1 ) then  !file exists - restart
     call rsflac
-    nloop_restarted = nloop + 1
     if( dtout_screen .ne. 0 ) then
-        write(6,*) 'you CONTINUE from  ', nloop_restarted, ' step'
+        write(6,*) 'you CONTINUE from  ', nloop, ' step'
     else
         call SysMsg('you CONTINUE the execution')
     endif
