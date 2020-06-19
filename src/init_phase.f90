@@ -36,8 +36,8 @@ else
         end do
     end do
 
-    ! Case with iynts = 2 or 10 for continental and collision
-    if (iynts.eq.2 .or. iynts.eq.10) then
+    ! Case with iynts = 2, layered phases in each zone
+    if (iynts.eq.2) then
         do n = 1, nzone_age
             do i = ixtb1(n), min(ixtb2(n), nx-1)
                 do j = 1, nz-1
