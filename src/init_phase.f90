@@ -29,10 +29,8 @@ if (irphase .gt. 0) then
 else
     ! phases in horizontal layers
     do k = 1,nphasl
-        do i = 1,nx-1
-            do j = ltop(k),lbottom(k)
-                iphase(j,i) = lphase(k)
-            end do
+        do j = ltop(k),lbottom(k)
+            iphase(j,:) = lphase(k)
         end do
     end do
 
@@ -58,11 +56,6 @@ else
         enddo
     endif
 endif
-
-write(333,*) 'Phases of horizontal layers:'
-do i = 1,nphasl
-   write(333,*) i,lphase(i)
-enddo
 
 !   Put different rheologies for inclusions 
 do i = 1,inhom
