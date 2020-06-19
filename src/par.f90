@@ -8,7 +8,7 @@ implicit none
 
 character*200 inputfile
 real*4 secnds,time0
-integer :: narg, iargc, j, itest_mesh
+integer :: narg, iargc, j, itest_mesh, irestart
 double precision :: dtacc_file, dtacc_save, dtacc_screen, dtacc_tracer
 
 narg = iargc()
@@ -35,13 +35,10 @@ call allocate_markers(nz, nx)
 open(1,file='_contents.rs',status='old',err=10)
 
 irestart = 1
-!$ACC update device(irestart)
 close(1)
 goto 20
 
 10 irestart = 0
-!$ACC update device(irestart)
-
 20 continue
 
 if ( irestart .eq. 1 ) then  !file exists - restart
