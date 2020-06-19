@@ -143,8 +143,8 @@ subroutine mesh1 (x1,x2,xmesh,nzon,nelz,sizez)
 !$ACC routine seq
 use params
 implicit none
-double precision :: x1, x2, xmesh(nx+nz), sizez(10)
-integer :: nzon, nelz(10), k, i, nel
+double precision :: x1, x2, xmesh(nx+nz), sizez(maxzone)
+integer :: nzon, nelz(maxzone), k, i, nel
 double precision :: xbeg, xend, elemsize
 nel = 1
 xmesh(nel) = x1
