@@ -138,10 +138,11 @@ end
 !==========================================================================
 subroutine mesh1 (x1,x2,xmesh,nzon,nelz,sizez)
 use params
-include 'precision.inc'
+implicit none
+double precision :: x1, x2, xmesh(nx+nz), sizez(maxzone)
+integer :: nzon, nelz(maxzone), k, i, nel
+double precision :: xbeg, xend, elemsize
 
-dimension sizez(10),nelz(10),xmesh(nx+nz)
-   
 nel = 1
 xmesh(nel) = x1
 
