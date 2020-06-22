@@ -90,7 +90,6 @@ MODULE marker_data
     nmark_local = nmark_local + 1
     !$ACC atomic write
     nmark_elem(j,i) = nmark_local
-    !$ACC atomic write
     mark_id_elem(nmark_local,j,i) = kk_local
 
     if(kk_local > max_markers) then
