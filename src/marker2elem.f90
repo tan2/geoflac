@@ -47,8 +47,7 @@ subroutine marker2elem
               kinc = kinc + 1
           enddo
 
-          call count_phase_ratio(j,i,k)
-          iphase(j,i) = k
+          call count_phase_ratio(j,i)
 
       enddo
   enddo

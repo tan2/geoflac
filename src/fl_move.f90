@@ -242,7 +242,7 @@ subroutine resurface
           dhacc(i) = 0
 
           ! recalculate phase ratio
-          call count_phase_ratio(1,i,n)
+          call count_phase_ratio(1,i)
 
       else
           ! nothing to do
@@ -264,7 +264,7 @@ subroutine resurface
           extr_acc(i) = 0
 
           ! recalculate phase ratio
-          call count_phase_ratio(1,i,n)
+          call count_phase_ratio(1,i)
 
       end if
   end do
