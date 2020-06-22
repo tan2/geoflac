@@ -1,6 +1,11 @@
 subroutine bar2euler
 !$ACC routine(shape_functions) seq
 !$ACC routine(bar2xy) seq
+
+!  Read: cord, mark_dead, mark_ntriag, mark_a1, mark_a2
+!  Write: xmpt, mark_x, mark_y
+!  Call: shape_functions, bar2xy
+
 use arrays
 use params
 USE marker_data
@@ -47,6 +52,11 @@ end subroutine bar2euler
 
 subroutine shape_functions(j, i, shp2)
   !$ACC routine seq
+
+  !  Read: cord
+  !  Write:
+  !  Call:
+
   use arrays
   implicit none
   integer, intent(in) :: j, i
