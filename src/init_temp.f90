@@ -185,8 +185,6 @@ do i = 1, inhom
     endif
 enddo
 
-!call RedefineTemp
-
 return
 end subroutine init_temp
 
@@ -276,42 +274,3 @@ subroutine sidewalltemp(i1, i2)
   endif
   return
 end subroutine sidewalltemp
-
-
-function cnd( j )
-use matprops
-implicit none
-integer j
-double precision :: cnd
-
-cnd = Eff_conduct(j,1)
-
-return
-end
-
-
-function htgen( j )
-use arrays
-use params
-implicit none
-integer :: j, iph
-double precision :: htgen, y
-
-y = - cord(j,1,2)*1.d-3
-
-iph = iphase(j,1)
-
-htgen = den(iph)*hs*exp(-y/hr) * 1.d+6
-
-return
-end
-
-
-!=========================================================
-subroutine RedefineTemp
-
-write(*,*) 'ATTENTION! Special form of initial temperature distribution !'
-
-return
-end
-
