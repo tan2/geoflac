@@ -2,6 +2,9 @@
 !  Distribution of real masses in nodes
 
 subroutine rmasses
+!  Read: area
+!  Write: rmass
+!  Call: Eff_dens
 use arrays
 use params
 use matprops

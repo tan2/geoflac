@@ -6,6 +6,11 @@ contains
 ! Density
 function Eff_dens( j, i)
   !$ACC routine seq
+
+  !  Read: cord, temp, stress0, iphase, phase_ratio
+  !  Write:
+  !  Call:
+
   use arrays
   use params
   use phases
@@ -114,6 +119,11 @@ end function Eff_dens
 !=================================================
 function Eff_cp( j, i )
 !$ACC routine seq
+
+!  Read: iphase
+!  Write:
+!  Call:
+
 use arrays
 use params
 implicit none
@@ -133,6 +143,11 @@ end function Eff_cp
 !=================================================
 function Eff_conduct( j, i )
 !$ACC routine seq
+
+!  Read: iphase
+!  Write:
+!  Call:
+
 use arrays
 use params
 implicit none
@@ -158,6 +173,11 @@ end function Eff_conduct
 
 function Eff_visc( j, i )
 !$ACC routine seq
+
+!  Read: cord, temp, e2sr, iphase, phase_ratio
+!  Write:
+!  Call:
+
 use arrays
 use params
 use phases

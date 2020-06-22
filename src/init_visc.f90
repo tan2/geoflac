@@ -1,5 +1,8 @@
 
 subroutine init_visc
+  !  Read:
+  !  Write: visn
+  !  Call: Eff_visc
   use arrays
   use params
   use matprops

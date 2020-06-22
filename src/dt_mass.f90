@@ -15,6 +15,11 @@
 
 subroutine dt_mass
 !$ACC routine(dlmin_prop) vector
+
+!  Read: vel, rmass, iphase, area
+!  Write: amass
+!  Call: dlmin_prop, Eff_conduct, Eff_cp
+
 use arrays
 use params
 use matprops
@@ -171,6 +176,11 @@ end
 
 function dlmin_prop()
 !$ACC routine vector
+
+!  Read: cord, area
+!  Write:
+!  Call:
+
 use arrays
 use params
 implicit none
