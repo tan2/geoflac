@@ -124,12 +124,12 @@ MODULE marker_data
     ! reset the markers within elements in the rectangular region
     do i = i1, i2
       do j = j1, j2
-
+        !$ACC loop
         do n = 1 , nmark_elem(j,i)
           kk = mark_id_elem(n,j,i)
           mark_phase(kk) = iph
         enddo
-
+        !$ACC end loop
       enddo
     enddo
     !$OMP end parallel do
