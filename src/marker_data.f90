@@ -101,7 +101,7 @@ MODULE marker_data
     mark_x(temp_kk) = x
     mark_y(temp_kk) = y
     mark_dead(temp_kk) = 1
-    mark_ID(temp_kk) = kk
+    mark_ID(temp_kk) = temp_kk
     mark_a1(temp_kk) = bar1
     mark_a2(temp_kk) = bar2
     mark_age(temp_kk) = age
