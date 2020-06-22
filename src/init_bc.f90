@@ -28,7 +28,6 @@ subroutine init_bc
   ! flags indicating whether material is coming from the sidewalls
   incoming_left = 0
   incoming_right = 0
-  !$ACC update device(incoming_left,incoming_right)
 
   !---------Number of side (nofside) -------------------------------
   !              4
@@ -99,7 +98,6 @@ subroutine init_bc
 
               if ((nbc(i).eq.1.or.nbc(i).eq.10).and.bca(i).gt.0) then
                   incoming_left = 1
-                  !$ACC update device(incoming_left)
               endif
           enddo
       endif
@@ -155,7 +153,6 @@ subroutine init_bc
 
               if ((nbc(i).eq.1.or.nbc(i).eq.10).and.bca(i).lt.0) then
                   incoming_right = 1
-                  !$ACC update device(incoming_right)
               endif
           enddo
       endif
@@ -193,6 +190,8 @@ subroutine init_bc
   ! Maximum node with applied stress
   !
   nopbmax = nnop
+  !$ACC update device(incoming_left, incoming_right, nopbmax) async(1)
+
   !
   ! Maximum applied velocity and/or
   ! Convert constant strain INTERNAL B.C.
@@ -385,11 +384,11 @@ subroutine vbcal
       enddo
   enddo
   if(vbc.eq.0.d0) vbc=1.d-10
+  !$ACC update device(vbc) async(1)
 
   open(13,file = 'vbc.s')
   write(13,*) vbc
   close(13)
-  !$ACC update device(vbc)
 
   return
 end subroutine vbcal
