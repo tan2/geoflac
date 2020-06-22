@@ -143,14 +143,13 @@ MODULE marker_data
   end subroutine newphase2marker
 
 
-  subroutine count_phase_ratio(j, i, iph)
+  subroutine count_phase_ratio(j, i)
     !$ACC routine vector
     use params
     use arrays
 
     integer, intent(in) :: j, i
-    integer, intent(out) :: iph
-    integer :: n, kk, ncounters(maxph), kph, nm
+    integer :: n, kk, ncounters(maxph), iph, kph, nm
 
     ncounters = 0
     !$ACC loop
@@ -172,6 +171,6 @@ MODULE marker_data
            iph = kk
        end if
     end do
-
+    iphase(j,i) = iph
   end subroutine count_phase_ratio
 END MODULE marker_data

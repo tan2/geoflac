@@ -5,7 +5,7 @@ subroutine marker2elem
   use params
   implicit none
 
-  integer :: kph(1), i, j, k, kinc, inc, iseed, nm
+  integer :: kph(1), i, j, kinc, inc, iseed, nm
   double precision :: x1, x2, y1, y2, xx, yy, rx, ry
 
   !character*200 msg
@@ -13,7 +13,7 @@ subroutine marker2elem
   ! Interpolate marker properties into elements
   ! Find the triangle in which each marker belongs
 
-  !$ACC parallel private(iseed, k, kph, nm)
+  !$ACC parallel private(iseed, kph, nm)
   iseed = 0
   !$ACC loop collapse(2)
   do i = 1 , nx-1
@@ -44,8 +44,7 @@ subroutine marker2elem
               kinc = kinc + 1
           enddo
 
-          call count_phase_ratio(j,i,k)
-          iphase(j,i) = k
+          call count_phase_ratio(j,i)
 
       enddo
   enddo

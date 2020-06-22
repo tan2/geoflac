@@ -211,8 +211,7 @@ do i = 1, nx-1
         if (itmp(j,i) == 0) cycle
 
         ! the phase of this element is the most abundant marker phase
-        call count_phase_ratio(j,i,iph)
-        iphase(j,i) = iph
+        call count_phase_ratio(j,i)
 
         ! When phase change occurs, the mineral would recrystalize and lost
         ! all plastic strain associated with this marker.
