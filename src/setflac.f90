@@ -54,33 +54,31 @@ andesitic_melt_vol = 0
 e2sr = 1d-16
 se2sr = 1d-16
 
-!Initialization
-!$ACC update device(temp, vel, stress0, force, amass, rmass, &
-!$ACC               area, dvol, strain, bc, ncod, junk2, xmpt, tkappa, &
-!$ACC               iphase, mark_id_elem, nmark_elem, &
-!$ACC               nopbou, ncodbou, idtracer, phase_ratio, dtopo, dhacc, extrusion, &
-!$ACC               andesitic_melt_vol, extr_acc, strainr, aps, visn, e2sr, &
+!! These arrays are not used below and can be uploaded to GPU early
+!$ACC update device(force, &
+!$ACC               dvol, strain, bc, ncod, junk2, xmpt, tkappa, &
+!$ACC               nopbou, ncodbou, dtopo, dhacc, extrusion, &
+!$ACC               andesitic_melt_vol, extr_acc, strainr, aps, &
 !$ACC               temp0, source, shrheat, bcstress, &
 !$ACC               pt, barcord, cold, cnew, numtr, &
-!$ACC               se2sr, sshrheat)
+!$ACC               se2sr, sshrheat) async(1)
 
 ! Distribution of REAL masses to nodes
+!$ACC update device(area, cord, temp, stress0, iphase, phase_ratio)
 call rmasses
 
 ! Initialization of viscosity
-!$ACC update self(irheol,visn,cord)
+!$ACC update device(e2sr)
 if( ivis_present.eq.1 ) call init_visc
-!$ACC update device(visn)
 
 ! Inertial masses and time steps (elastic and maxwell)
+!$ACC update device(vel)
 call dt_mass
 
 ! Initiate parameters for stress averaging
 dtavg=0
 nsrate=-1
-
-!Initialization
-!$ACC update device(dtavg, nsrate)
+!$ACC update device(dtavg, nsrate) async(1)
 
 return
 end
