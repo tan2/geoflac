@@ -28,10 +28,10 @@ call init_phase
 
 ! Setup markers
 if (iint_marker.eq.1) then
-call init_marker
+    call init_marker
+    ! Setup tracers
+    if (iint_tracer.eq.1) call init_tracer
 endif
-! Setup tracers
-if (iint_tracer.eq.1) call init_tracer
 
 ! Inverse Areas of triangles
 call init_areas
