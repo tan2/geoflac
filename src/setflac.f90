@@ -54,6 +54,13 @@ andesitic_melt_vol = 0
 e2sr = 1d-16
 se2sr = 1d-16
 
+!!! ============================================= !!!
+!!! From now on, the code below will run on GPUs
+!!! ============================================= !!!
+!$ACC update device(area, cord, temp, stress0, iphase, phase_ratio) async(2)
+!$ACC update device(e2sr) async(3)
+!$ACC update device(vel) async(4)
+
 !! These arrays are not used below and can be uploaded to GPU early
 !$ACC update device(force, &
 !$ACC               dvol, strain, bc, ncod, junk2, xmpt, tkappa, &
@@ -64,15 +71,15 @@ se2sr = 1d-16
 !$ACC               se2sr, sshrheat) async(1)
 
 ! Distribution of REAL masses to nodes
-!$ACC update device(area, cord, temp, stress0, iphase, phase_ratio)
+!$ACC wait(2)
 call rmasses
 
 ! Initialization of viscosity
-!$ACC update device(e2sr)
+!$ACC wait(3)
 if( ivis_present.eq.1 ) call init_visc
 
 ! Inertial masses and time steps (elastic and maxwell)
-!$ACC update device(vel)
+!$ACC wait(4)
 call dt_mass
 
 ! Initiate parameters for stress averaging
