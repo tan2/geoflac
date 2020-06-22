@@ -179,7 +179,6 @@ end do
 write(333,*) '# of markers', nmarkers
 
 !$ACC update device(cord,phase_ratio,iphase)
-call add_markers_if_too_few
 call count_phase_ratio_all
 
 return
