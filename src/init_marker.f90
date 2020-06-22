@@ -19,7 +19,6 @@ double precision :: ddx, ddy, dx, dy, r, rx, ry, xx, ycol1, ycol2, ycol3, ycol4,
 mark_id_elem = 0
 nmark_elem = 0
 nmarkers = 0
-!$ACC update device(nmarkers,mark_id_elem,nmark_elem)
 
 ! zones with 9 markers per elements
 ! calculate the id (element number) of the zones of high res
@@ -124,10 +123,7 @@ do i = 1 , nx-1
                 exit
             end do
 
-            !$ACC serial
             call add_marker(xx, yy, kph, 0.d0, nmarkers, j, i, inc)
-            !call add_marker(xx, yy, iphase(j,i), 0.d0, nmarkers, j, i, inc)
-            !$ACC end serial
             if(inc.eq.0) cycle
 
             l = l + 1
@@ -142,9 +138,7 @@ do i = 1,inhom
 
     ! Rectangular shape:
     if (igeom(i) .eq.0) then
-        !$ACC serial
         call newphase2marker(iy1(i),iy2(i),ix1(i),ix2(i),inphase(i))
-        !$ACC end serial
     endif
 
     ! Gauss shape:
@@ -156,9 +150,7 @@ do i = 1,inhom
     if (igeom (i) .eq.3) then
         do j = ix1(i),ix2(i)
             k = nint(float(iy2(i)-iy1(i))/float(ix2(i)-ix1(i))*(j-ix1(i))) + iy1(i)
-            !$ACC serial
             call newphase2marker(k,k,j,j,inphase(i))
-            !$ACC end serial
         end do
     endif
 
@@ -168,9 +160,7 @@ do i = 1,inhom
             k1 = floor(float(iy2(i)-iy1(i))/float(ix2(i)-ix1(i))*(j-ix1(i))) + iy1(i)
             k2 = ceiling(float(iy2(i)-iy1(i))/float(ix2(i)-ix1(i))*(j-ix1(i))) + iy1(i)
             if( inphase(i) .ge. 0) then
-                !$ACC serial
                 call newphase2marker(k1,k2,j,j,inphase(i))
-                !$ACC end serial
             endif
         end do
     endif
