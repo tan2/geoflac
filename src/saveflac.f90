@@ -17,7 +17,7 @@ integer :: i, nrec, nwords
 !$ACC update self(nloop, time, nmarkers, nmtracers, dt, &
 !$ACC             cord, dhacc, extr_acc, vel, &
 !$ACC             strain, stress0, temp, iphase, source)
-!$ACC update self(mark_a1, mark_a2, mark_x, mark_y, mark_age, &
+!$ACC update self(mark_a1, mark_a2, mark_age, &
 !$ACC             mark_dead, mark_ntriag, mark_phase, mark_ID)
 
 ! define record number and write it to contents
@@ -109,6 +109,7 @@ deallocate(dum2)
 if(iint_marker.eq.1) then
 
 call bar2euler
+!$ACC update self(mark_x, mark_y)
 
 allocate(dum1(nmarkers))
 nwords= nmarkers
