@@ -235,6 +235,7 @@ enddo
 !$ACC               nmark_elem, mark_id_elem)
 
 call marker2elem
+call count_phase_ratio_all
 
 endif
 

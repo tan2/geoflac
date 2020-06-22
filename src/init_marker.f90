@@ -180,6 +180,7 @@ write(333,*) '# of markers', nmarkers
 
 !$ACC update device(cord,phase_ratio,iphase)
 call marker2elem
+call count_phase_ratio_all
 
 return
 end subroutine init_marker

@@ -149,12 +149,8 @@ MODULE marker_data
 
                 kinc = kinc + 1
             enddo
-
-            call count_phase_ratio(j,i)
-
         enddo
     enddo
-
     !$ACC end parallel
     return
   end subroutine marker2elem
@@ -223,4 +219,18 @@ MODULE marker_data
     end do
     iphase(j,i) = iph
   end subroutine count_phase_ratio
+
+
+  subroutine count_phase_ratio_all
+    use params
+    integer :: i, j
+    !$ACC parallel loop collapse(2)
+    do i = 1, nx-1
+      do j = 1, nz-1
+        call count_phase_ratio(j,i)
+      enddo
+    enddo
+    !$ACC end loop
+  end subroutine count_phase_ratio_all
+
 END MODULE marker_data
