@@ -178,8 +178,10 @@ end do
 
 write(333,*) '# of markers', nmarkers
 
-!$ACC update device(cord,phase_ratio,iphase)
+!!! This is the first GPU code during initialization
+!$ACC update device(nmark_elem, mark_id_elem)
 call count_phase_ratio_all
-
+!$ACC update host(phase_ratio, iphase)
+!!! Part of initialization later still runs on CPU
 return
 end subroutine init_marker
