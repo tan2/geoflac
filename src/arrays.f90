@@ -40,7 +40,7 @@ module arrays
   !$ACC declare create(cord, temp, vel, stress0, force, amass, rmass, &
   !$ACC                area, dvol, strain, bc, ncod, junk2, xmpt, tkappa, itmp, &
   !$ACC                iphase, &
-  !$ACC                nopbou, ncodbou, idtracer, phase_ratio, dtopo, dhacc, extrusion, &
+  !$ACC                nopbou, ncodbou, phase_ratio, dtopo, dhacc, extrusion, &
   !$ACC                andesitic_melt_vol, extr_acc, strainr, aps, visn, e2sr, &
   !$ACC                temp0, source, shrheat, bcstress, se2sr, sshrheat, &
   !$ACC                pt, barcord, cold, cnew, numtr, &
@@ -106,7 +106,7 @@ contains
     !$ACC update device(cord, temp, vel, stress0, force, amass, rmass, &
     !$ACC               area, dvol, strain, bc, ncod, junk2, xmpt, tkappa, itmp, &
     !$ACC               iphase, &
-    !$ACC               nopbou, ncodbou, idtracer, phase_ratio, dtopo, dhacc, extrusion, &
+    !$ACC               nopbou, ncodbou, phase_ratio, dtopo, dhacc, extrusion, &
     !$ACC               andesitic_melt_vol, extr_acc, strainr, aps, visn, e2sr, &
     !$ACC               temp0, source, shrheat, bcstress, se2sr, sshrheat, &
     !$ACC               pt, barcord, cold, cnew, numtr, &

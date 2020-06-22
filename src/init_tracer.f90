@@ -10,7 +10,6 @@ integer :: i, j, k, kk, n, nn
 allocate(ielem(nz, nx))
 ielem = 0
 nmtracers = 0
-!$ACC update device(nmtracers)
 
 do kk = 1,nmarkers
     n = mark_ntriag(kk)
@@ -25,7 +24,6 @@ do kk = 1,nmarkers
                  j >= ity1(n) .and. j <= ity2(n)) then
                 ielem(j,i) = 1
                 nmtracers = nmtracers + 1
-                !$ACC update device(nmtracers)
                 ! Storing the array index of this marker, assuming that
                 ! markers never move in the array
                 idtracer(nmtracers) = kk
