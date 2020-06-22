@@ -6,6 +6,7 @@
 ! real_area = 0.5* (1./area(n,t))
 
 subroutine init_areas
+!$ACC routine gang
 use arrays
 use params
 implicit none
@@ -13,6 +14,7 @@ implicit none
 integer :: i, j
 double precision :: x1, x2, x3, x4, y1, y2, y3, y4, det, det1
 
+!$ACC loop collapse(2)
 do 13 i = 1,nx-1
     do 13 j = 1,nz-1
 
@@ -46,7 +48,7 @@ do 13 i = 1,nx-1
         det1 = 1.d0/det
         area(j,i,4) = det1
         if( area(j,i,1).lt.0.or.area(j,i,2).lt.0.or.area(j,i,3).lt.0.or.area(j,i,4).lt.0 ) then
-            call SysMsg('INIT_AREAS: Negative area!')
+            !call SysMsg('INIT_AREAS: Negative area!')
             stop 41
         endif
 13 continue

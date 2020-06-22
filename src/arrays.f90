@@ -31,7 +31,9 @@ module arrays
   
   ! remeshing arrays
   real*8, allocatable :: pt(:,:,:), barcord(:,:,:), &
-            cold(:,:,:), cnew(:,:,:)
+            cold(:,:,:), cnew(:,:,:), &
+            cordo(:,:,:), dhnew(:), extnew(:),&
+            dummy1(:,:), dummy2(:,:)
   integer, allocatable :: numtr(:,:)
 
 
@@ -41,7 +43,8 @@ module arrays
   !$ACC                nopbou, ncodbou, idtracer, phase_ratio, dtopo, dhacc, extrusion, &
   !$ACC                andesitic_melt_vol, extr_acc, strainr, aps, visn, e2sr, &
   !$ACC                temp0, source, shrheat, bcstress, se2sr, sshrheat, &
-  !$ACC                pt, barcord, cold, cnew, numtr)
+  !$ACC                pt, barcord, cold, cnew, numtr, &
+  !$ACC                cordo, dhnew, extnew, dummy1, dummy2)
 contains
 
   subroutine allocate_arrays(nz, nx)
@@ -87,6 +90,11 @@ contains
 
     allocate(pt((nz-1)*(nx-1)*2, 2, 3), barcord(nz, nx, 3), &
              cold(nz, nx, 2), cnew(nz, nx, 2))
+    allocate(cordo(nz, nx, 2))
+    allocate(dhnew(nx-1))
+    allocate(extnew(nx-1))
+    allocate(dummy1(nz-1,nx-1))
+    allocate(dummy2(nz,nx))
     allocate(numtr(nz, nx))
 
     ! tmp arrays used in subroutines
@@ -101,7 +109,8 @@ contains
     !$ACC               nopbou, ncodbou, idtracer, phase_ratio, dtopo, dhacc, extrusion, &
     !$ACC               andesitic_melt_vol, extr_acc, strainr, aps, visn, e2sr, &
     !$ACC               temp0, source, shrheat, bcstress, se2sr, sshrheat, &
-    !$ACC               pt, barcord, cold, cnew, numtr)
+    !$ACC               pt, barcord, cold, cnew, numtr, &
+    !$ACC               cordo, dhnew, extnew, dummy1, dummy2)
 
   end subroutine allocate_arrays
 

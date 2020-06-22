@@ -1,5 +1,8 @@
  
 subroutine remesh
+!$ACC routine(rem_interpolate) worker
+!$ACC routine(sidewalltemp) seq
+!$ACC routine(init_areas) gang
 use arrays
 use params
 use phases
@@ -7,15 +10,9 @@ use marker_data
 implicit none
 
 integer :: nzt,nxt
-double precision, allocatable :: dummy(:,:), cordo(:,:,:), dhnew(:), extnew(:)
 integer :: i, i1, i2, idist, ii, j, jj, k, l, iph
 double precision :: densT, dh, dh1, dh2, dp, dpt, &
                     press, rogh, tmpr
-!$ACC declare create(dummy, cordo, dhnew, extnew)
-
-allocate(cordo(1:nz,1:nx,1:2))
-allocate(dhnew(nx-1), extnew(nx-1))
-!$ACC update device(cordo, dhnew, extnew)
 
 !$ACC kernels
 ! Save old mesh for interpolations
@@ -23,13 +20,18 @@ cordo = cord
 !$ACC end kernels
 
 ! Create The New grid (cord) using cordo(nz,i,2) for the bottom and cordo(1,i,2) for the surface
-call rem_cord(cordo)
+! XXX TODO: ACC rem_cord
+call rem_cord
 
 ! Interpolate accumulated topo change
+!$ACC kernels
 dhnew(:) = 0
 extnew(:) = 0
+!$ACC end kernels
 
 i2 = 1
+!$ACC data copyin(i2)
+!$ACC parallel loop
 ! for each new element i
 do i = 1, nx-1
     ! for each old node, starting from i2
@@ -55,26 +57,33 @@ do i = 1, nx-1
         end if
     end do
 end do
+!$ACC end parallel
+
 ! special treatment for the last new element
+!$ACC kernels
 i = nx - 1
 i1 = i2
 if (cordo(1,i1,1) <= cord(1,i,1)) then
     dhnew(i) = dhnew(i) + dhacc(i1) * (cord(1,i+1,1) - cord(1,i,1))
     extnew(i) = extnew(i) + extr_acc(i1) * (cord(1,i+1,1) - cord(1,i,1))
 end if
+!$ACC end kernels
+!$ACC end data
 
+!$ACC parallel
 dhacc(1:nx-1) = dhnew / (cord(1,2:nx,1) - cord(1,1:nx-1,1))
 extr_acc(1:nx-1) = extnew / (cord(1,2:nx,1) - cord(1,1:nx-1,1))
-deallocate(dhnew, extnew)
+!$ACC end parallel
 
 ! REMESHING FOR ELEMENT-WISE PROPERTIES
 ! Linear interpolation in baricentric coordinates defined as centers of old mesh
 nxt = nx-1
 nzt = nz-1
-allocate( dummy(nzt,nxt) )
+!$ACC data copyin (nxt,nzt)
 
 ! Old mesh - old-element centers
 ! New mesh - new-element centers
+!$ACC parallel loop collapse(2)
 do i = 1, nx-1
     do j = 1, nz-1
         cold(j,i,1) = 0.25d0*( cordo(j,i,1)+cordo(j+1,i,1)+cordo(j,i+1,1)+cordo(j+1,i+1,1) )
@@ -83,6 +92,7 @@ do i = 1, nx-1
         cnew(j,i,2) = 0.25d0*( cord(j,i,2)+cord(j+1,i,2)+cord(j,i+1,2)+cord(j+1,i+1,2) )
     enddo
 enddo
+!$ACC end parallel
 
 ! Calculate parameters of old-mesh triangles
 call rem_trpars(nzt, nxt)
@@ -90,17 +100,18 @@ call rem_trpars(nzt, nxt)
 ! Baricentric coordinates of new-elements centers
 call rem_barcord(nzt, nxt)
 
-
 ! Do interpolations
 
 ! Interpolate Stress (in quadralaterals)
+!$ACC parallel loop collapse(2)
 do k = 1,4
     do l = 1,4
-        dummy(1:nzt,1:nxt) = stress0(1:nzt,1:nxt,k,l)
-        call rem_interpolate( dummy, nzt, nxt )
-        stress0(1:nzt,1:nxt,k,l) = dummy(1:nzt,1:nxt)
+        dummy1(1:nzt,1:nxt) = stress0(1:nzt,1:nxt,k,l)
+        call rem_interpolate( dummy1, nzt, nxt )
+        stress0(1:nzt,1:nxt,k,l) = dummy1(1:nzt,1:nxt)
     end do
 end do
+!$ACC end parallel
 
 ! HOOK
 ! Remeshing mode 3 - see user_luc.f90
@@ -108,37 +119,44 @@ end do
 
 
 ! Interpolate strains
+!$ACC parallel loop
 do k = 1, 3
-    dummy(1:nzt,1:nxt) = strain(1:nzt,1:nxt,k)
-    call rem_interpolate( dummy, nzt, nxt )
-    strain(1:nzt,1:nxt,k) = dummy(1:nzt,1:nxt)
+    dummy1(1:nzt,1:nxt) = strain(1:nzt,1:nxt,k)
+    call rem_interpolate( dummy1, nzt, nxt )
+    strain(1:nzt,1:nxt,k) = dummy1(1:nzt,1:nxt)
 end do
+!$ACC end parallel
 
 
 ! plastic strain
-dummy(1:nzt,1:nxt) = aps(1:nzt,1:nxt)
-call rem_interpolate( dummy, nzt, nxt )
+!$ACC kernels 
+dummy1(1:nzt,1:nxt) = aps(1:nzt,1:nxt)
+call rem_interpolate( dummy1, nzt, nxt )
+!$ACC loop
 do i = 1, nxt
     do j = 1, nzt
-        if( dummy(j,i) .ge. 0.d0 ) then
-            aps(j,i) = dummy(j,i)
+        if( dummy1(j,i) .ge. 0.d0 ) then
+            aps(j,i) = dummy1(j,i)
         else
             aps(j,i) = 0.
         endif
 !       write(*,*) i,j,aps(j,i)
     end do
 end do
+!$ACC end kernels
         
 ! viscosity
-dummy(1:nzt,1:nxt) = visn(1:nzt,1:nxt)
-call rem_interpolate( dummy, nzt, nxt )
-visn(1:nzt,1:nxt) = dummy(1:nzt,1:nxt)
+!$ACC kernels
+dummy1(1:nzt,1:nxt) = visn(1:nzt,1:nxt)
+call rem_interpolate( dummy1, nzt, nxt )
+visn(1:nzt,1:nxt) = dummy1(1:nzt,1:nxt)
+!$ACC end kernels
 
 ! phases
 ! XXX: Assuming material is coming from the left or right boundary
 ! and is within 3-element distance from the boundary and has the
 ! same layered structure as the 4th element away from the boundary
-
+!$ACC serial
 idist = 2
 if(incoming_left==1) then
     aps(1:nz-1, 1:1+idist) = 0.0d0
@@ -199,33 +217,34 @@ if(incoming_right==1) then
 
     call newphase2marker(j, nz-1, nx-1-idist, nx-1, iph_col5(nzone_age))
 endif
+!$ACC end serial
 
 !!$! XXX: the bottom elements must be mantle material, otherwise
 !!$! too much deformation can occur(?)
 !!$aps(nz-3:nz-1, 1:nx-1) = 0.0d0
 !!$call newphase2marker(nz-3, nz-1, 1, nx-1, kmant1)
 
-
 ! sources
-dummy(1:nzt,1:nxt) = source(1:nzt,1:nxt)
-call rem_interpolate( dummy, nzt, nxt )
-source(1:nzt,1:nxt) = dummy(1:nzt,1:nxt)
-
-
-deallocate( dummy )
-
+!$ACC kernels
+dummy1(1:nzt,1:nxt) = source(1:nzt,1:nxt)
+call rem_interpolate( dummy1, nzt, nxt )
+source(1:nzt,1:nxt) = dummy1(1:nzt,1:nxt)
+!$ACC end kernels
+!$ACC end data
 
 ! REMESHING FOR NODE-WISE PROPERTIES
 ! Linear interpolation in baricentric coordinates of old mesh
 nxt = nx
 nzt = nz
-allocate( dummy(nzt,nxt) )
+!$ACC data copyin (nxt, nzt)
 
 ! Old mesh - old coordinates points
+!$ACC kernels
 cold(1:nz,1:nx,1:2) = cordo(1:nz,1:nx,1:2)
 temp0(1:nz,1:nx) = temp(1:nz,1:nx)
 ! New mesh - new coordinates points
 cnew(1:nz,1:nx,1:2) = cord(1:nz,1:nx,1:2)
+!$ACC end kernels
 ! Calculate parameters of triangles of this mesh
 call rem_trpars(nzt, nxt)
 
@@ -235,27 +254,35 @@ call rem_barcord(nzt, nxt)
 ! Do node-wise interpolations
 
 ! Velocities (in nodes)
+!$ACC kernels
 do k = 1, 2
-    dummy(1:nzt,1:nxt) = vel(1:nzt,1:nxt,k)
-    call rem_interpolate( dummy, nzt, nxt )
-    vel(1:nzt,1:nxt,k) = dummy(1:nzt,1:nxt)
+    dummy2(1:nzt,1:nxt) = vel(1:nzt,1:nxt,k)
+    call rem_interpolate( dummy2, nzt, nxt )
+    vel(1:nzt,1:nxt,k) = dummy2(1:nzt,1:nxt)
 end do
+!$ACC end kernels
 
 ! Temperatures (in nodes) 
-dummy(1:nzt,1:nxt) = temp(1:nzt,1:nxt)
-call rem_interpolate( dummy, nzt, nxt )
-temp(1:nzt,1:nxt) = dummy(1:nzt,1:nxt)
-deallocate( dummy )
+!$ACC kernels
+dummy2(1:nzt,1:nxt) = temp(1:nzt,1:nxt)
+call rem_interpolate( dummy2, nzt, nxt )
+temp(1:nzt,1:nxt) = dummy2(1:nzt,1:nxt)
+!$ACC end kernels
+!$ACC end data
 
 ! Changing the temperature of left-/right- most elements
 ! in accordance to initial temperature
+!$ACC serial
 if(incoming_left==1) call sidewalltemp(1,1+idist)
 if(incoming_right==1) call sidewalltemp(nx-idist,nx)
+!$ACC end serial
 
 ! AFTER INTERPOLATIONS - RECALCULATE SOME DEPENDENT VARIABLES
 
 ! Calculation of areas of triangle
+!$ACC parallel
 call init_areas
+!$ACC end parallel
 
 ! Distribution of masses in nodes
 call rmasses
@@ -265,14 +292,9 @@ call rmasses
 call dt_mass
 
 ! drop the time step to the smallest one
+!$ACC serial
 dt = min(dt_elastic, dt_maxwell)
-!$ACC update device(dt)
-
-deallocate(cordo)
-
-!$ACC update device(cord, dhacc, extr_acc, cnew, pt, barcord, numtr, &
-!$ACC               cold, stress0, strain, aps, visn, source, temp0, cnew, &
-!$ACC               vel, temp, area, dt, rmass) 
+!$ACC end serial
 
 return 
 end
@@ -290,6 +312,7 @@ integer, intent(in) :: nzt, nxt
 integer :: i, j, k, n
 double precision :: x1, x2, x3, y1, y2, y3, det
 
+!$ACC parallel
 do i = 1,nxt-1
     do j = 1,nzt-1
         do k = 1,2
@@ -331,6 +354,7 @@ do i = 1,nxt-1
         end do
     end do
 end do     
+!$ACC end parallel
 
 return
 end
@@ -350,6 +374,7 @@ double precision :: perr, xx, yy, amodmin, amod, a1, a2, a3, dist1, dist2, dist3
 
 perr = 1.d-4
 
+!$ACC parallel loop collapse(2)
 do i = 1, nxt
     do j = 1, nzt
         xx = cnew(j,i,1)
@@ -467,6 +492,7 @@ do i = 1, nxt
 
     end do
 end do
+!$ACC end parallel
 
 return
 end                    
@@ -476,6 +502,7 @@ end
 ! interpolation
 !===============================================
 subroutine rem_interpolate(arr, nzt, nxt)
+!$ACC routine worker
 use arrays
 use params
 implicit none
@@ -486,7 +513,7 @@ double precision :: f1, f2, f3
 
 
 dummy = arr
-
+!$ACC loop collapse(2)
 do i = 1, nxt
     do j = 1, nzt
 
@@ -536,6 +563,7 @@ do i = 1, nxt
 !        endif
     end do
 end do
+
 
 return
 

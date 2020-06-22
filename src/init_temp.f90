@@ -235,6 +235,7 @@ end subroutine init_temp
 
 
 subroutine sidewalltemp(i1, i2)
+  !$ACC routine seq
   use arrays, only : temp, cord, source
   use params
   use phases

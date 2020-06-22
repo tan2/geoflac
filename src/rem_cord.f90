@@ -1,12 +1,14 @@
-subroutine rem_cord(cordo)
+subroutine rem_cord
+!$ACC routine (mesh1) seq
 use arrays
 use params
 implicit none
-double precision :: cordo(nz,nx,2), rmesh1(nx)
+double precision :: rmesh1(nx)
 integer :: i, j, ii
 double precision :: xl, xr, xx, zcorr, zl, zr, zz, total_area
 logical, parameter:: do_volcorrection = .false.
 
+!$ACC parallel loop
 ! X - coordinate
 do j = 1, nz
 
@@ -25,14 +27,18 @@ do j = 1, nz
     end do
 
 end do
+!$ACC end parallel
 
+!$ACC kernels
 ! Z-coordinate correction for volume change
 if( mode_rem.eq.1 .and. do_volcorrection ) then
     zcorr = -( total_area(0)-rzbo*rxbo ) / abs(xr-xl)
 else
     zcorr = 0
 endif
+!$ACC end kernels
 
+!$ACC parallel loop
 ! Z - coordinate
 do i = 1, nx
 
@@ -68,6 +74,7 @@ do i = 1, nx
     end do
 
 end do
+!$ACC end parallel
 
 return
 end
