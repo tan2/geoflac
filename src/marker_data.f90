@@ -110,7 +110,7 @@ MODULE marker_data
   end subroutine add_marker
 
 
-  subroutine marker2elem
+  subroutine add_markers_if_too_few
     use myrandom_mod
     use arrays
     use params
@@ -129,7 +129,7 @@ MODULE marker_data
             !  if there are too few markers in the element, create a new one
             !  with age 0 (similar to initial marker)
             !if(kinc.le.4) then
-            !    write(msg,*) 'marker2elem: , create a new marker in the element (i,j))', i, j
+            !    write(msg,*) 'add_markers_if_too_few: , create a new marker in the element (i,j))', i, j
             !    call SysMsg(msg)
             !endif
             do while (kinc.le.4)
@@ -153,7 +153,7 @@ MODULE marker_data
     enddo
     !$ACC end parallel
     return
-  end subroutine marker2elem
+  end subroutine add_markers_if_too_few
 
 
   subroutine newphase2marker (j1, j2, i1, i2, iph)

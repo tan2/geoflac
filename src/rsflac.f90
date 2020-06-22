@@ -234,7 +234,7 @@ enddo
 !$ACC               mark_dead, mark_ntriag, mark_phase, mark_ID, &
 !$ACC               nmark_elem, mark_id_elem)
 
-call marker2elem
+call add_markers_if_too_few
 call count_phase_ratio_all
 
 endif

@@ -100,7 +100,7 @@ do while( time .le. time_max )
       ! If markers are present recalculate a1,a2 local coordinates and assign elements with phase ratio vector
       if (iint_marker.eq.1) then
         call lpeuler2bar
-        call marker2elem
+        call add_markers_if_too_few
         call count_phase_ratio_all
       endif
     endif
