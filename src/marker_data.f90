@@ -144,4 +144,20 @@ MODULE marker_data
     end do
     iphase(j,i) = iph
   end subroutine count_phase_ratio
+
+
+  subroutine count_phase_ratio_all
+    use params
+    integer :: i, j
+
+    !$OMP parallel do
+    do i = 1, nx-1
+      do j = 1, nz-1
+        call count_phase_ratio(j,i)
+      enddo
+    enddo
+    !$OMP end parallel do
+
+  end subroutine count_phase_ratio_all
+
 END MODULE marker_data

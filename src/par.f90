@@ -100,6 +100,7 @@ do while( time .le. time_max )
       if (iint_marker.eq.1) then
         call lpeuler2bar
         call marker2elem
+        call count_phase_ratio_all
       endif
     endif
   endif
