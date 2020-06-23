@@ -164,7 +164,7 @@ enddo
 !$ACC serial
 dt = min(dt_elastic, dt_maxwell)
 !$ACC end serial
-
+!$ACC update self(dt)
 return
 end
 
