@@ -55,6 +55,11 @@ MODULE marker_data
 
     !$ACC routine seq
     !$ACC routine(check_inside) seq
+
+    !  Read: nmark_elem
+    !  Write: nmark_elem, mark_id_elem, mark_*
+    !  Call: check_inside
+
     use arrays
     use params
     implicit none
@@ -158,6 +163,11 @@ MODULE marker_data
 
   subroutine newphase2marker (j1, j2, i1, i2, iph)
     !$ACC routine gang
+
+    !  Read: nmark_elem, mark_id_elem
+    !  Write: mark_phase, iphase, phase_ratio
+    !  Call:
+
     use arrays
     use params
     implicit none
@@ -191,6 +201,11 @@ MODULE marker_data
 
   subroutine count_phase_ratio(j, i)
     !$ACC routine vector
+
+    !  Read: nmark_elem, mark_id_elem
+    !  Write: mark_phase, iphase, phase_ratio
+    !  Call:
+
     use params
     use arrays
 
