@@ -1,5 +1,10 @@
 subroutine lpeuler2bar
 !$ACC routine(euler2bar) seq
+
+!  Read: mark_dead, mark_ntriag, mark_x, mark_y, nmark_elem
+!  Write: mark_dead, mark_a1, mark_a2, mark_ntriag, nmark_elem, mark_id_elem
+!  Call: euler2bar
+
 USE marker_data
 use arrays
 use params
