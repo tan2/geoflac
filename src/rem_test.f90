@@ -13,6 +13,7 @@ integer function itest_mesh()
   integer :: iv(4), jv(4), i, ii, imint, j, jmint, k
   double precision :: angle(3), testcr, shortening, dx_accr, &
                       pi, raddeg, degrad, xa, xb, xxal, xxbl, ya, yb
+  real*8 :: local_anglemint
 
   itest_mesh = 0
 
@@ -43,11 +44,16 @@ integer function itest_mesh()
   imint = 0
   jmint = 0
 
-  !$ACC parallel loop collapse(3) create(iv, jv, angle) private(i,j) copyout(anglemint) reduction(min:anglemint)
+  !$ACC data create (local_anglemint)
+  !$ACC serial
+  local_anglemint = anglemint
+  !$ACC end serial
+  !$ACC parallel loop collapse(3) private(i,j,iv,jv,xa,ya,xxal,xb,yb,xxbl)
   do i = 1, nx-1
       do j = 1,nz-1
           ! loop for each 4 sub-triangles
           do ii = 1,4
+              local_anglemint = anglemint
               if (ii.eq.1) then
                   iv(1) = i ; jv(1) = j ; iv(2) = i ; jv(2) = j+1 ; iv(3) = i+1 ; jv(3) = j
               elseif (ii.eq.2) then
@@ -76,19 +82,25 @@ integer function itest_mesh()
               ! min angle in one trianle
               anglemin1 = min(angle(1),angle(2),angle(3))
               ! min angle in the whole mesh
-              anglemint = min(anglemint, anglemin1)
-              if( anglemin1 .eq. anglemint ) then
+              local_anglemint = min(local_anglemint, anglemin1)
+              if( anglemin1 .eq. local_anglemint ) then
                   !$ACC atomic write
                   imint = i
                   !$ACC atomic write
                   jmint = j
               endif
-
           end do
 
       end do
   end do
   !$ACC end parallel
+
+  !$ACC serial
+  anglemint = local_anglemint
+  !$ACC end serial
+  !$ACC end data 
+
+  !$ACC update self (anglemint)
 
   if( dtout_screen .ne. 0 ) then
       write (6,'(A,F6.2,A,I3,A,I3,A,F5.2)') '        min.angle=',anglemint,' j=', jmint, ' i=',imint, ' dt(yr)=',dt/sec_year

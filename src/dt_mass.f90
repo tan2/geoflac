@@ -30,7 +30,7 @@ double precision, parameter :: c1d12 = 1.d0/12.d0
 integer i, j, k, iph, iblk, jblk
 double precision :: dlmin, vel_max, dt_m, diff
 double precision :: pwave, dens, vel_sound, rho_inert, rho_inert2, am3, dte, dtt
-double precision :: rmu, visc_cut
+double precision :: rmu, visc_cut, local_dt_elastic
 
 ! minimal propagation distance
 !$ACC parallel
@@ -57,7 +57,6 @@ elseif (idt_scale.eq.2) then
 endif
 dtmax_therm = 1.d+28
 dt_maxwell = 1.d+28
-
 !$ACC end serial
 
 !$ACC parallel
@@ -78,15 +77,19 @@ else
 end if
 !$ACC end parallel
 
+!Prevent global variables from being parallelized
+!$ACC data create(local_dt_elastic)
 do iblk = 0, 1
     do jblk = 0, 1
 
-        !$ACC parallel loop collapse(2) copyin(iblk, jblk)
+        !$ACC parallel copyin(iblk, jblk) 
+        !$ACC loop collapse(2) private(iph, pwave, dens, &
+        !$ACC          vel_sound, rho_inert, rho_inert2, am3, dte, diff, dtt, dt_m, rmu)
         !$OMP parallel do private(iph, pwave, dens, vel_sound, rho_inert, rho_inert2, &
         !$OMP                     am3, dte, diff, dtt, dt_m, rmu)
         do i = 1+iblk, nx-1, 2
             do j = 1+jblk, nz-1, 2
-
+                local_dt_elastic = dt_elastic
                 iph     = iphase(j,i)
                 pwave   = rl(iph) + 0.6666d0*rm(iph)
                 dens    = den(iph)
@@ -126,10 +129,10 @@ do iblk = 0, 1
                     amass(j+1,i+1) = amass(j+1,i+1) + am3
                     amass(j  ,i+1) = amass(j  ,i+1) + am3
 
-                else  ! idt_scale=0
+                else   ! idt_scale=0
                     ! Find the dtime for given geometry, density and elas_mod
                     dte = frac*dlmin*sqrt(dens/pwave)
-                    dt_elastic = min(dt_elastic,dte)
+                    local_dt_elastic = min(local_dt_elastic,dte)
                 endif
 
                 ! Find the maximum THERMAL time step from Stability Criterion
@@ -157,14 +160,15 @@ do iblk = 0, 1
         enddo
         !$OMP end parallel do
         !$ACC end parallel
-
     enddo
 enddo
 
 !$ACC serial
+dt_elastic = local_dt_elastic
 dt = min(dt_elastic, dt_maxwell)
 !$ACC end serial
 !$ACC update self(dt)
+!$ACC end data
 return
 end
 
