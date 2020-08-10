@@ -14,6 +14,7 @@ integer n, i, j, ii, iph
 double precision :: tmpr, densT, dh1, dh2, dh, dPT, dP, press, rogh
 
 n = 0
+pisos = 0d0
 do 51 i = 1,nx-1
     if(iphase(1,i) == kocean1 .or. iphase(1,i) == kocean2) then
         ! oceanic crust under 8000 meter of ocean (density = 1030)
