@@ -63,7 +63,7 @@ ifeq ($(F90), gfortran)
 		CFLAGS += -O0 -Wall -fbounds-check -ftrapv -fbacktrace -fdump-core \
 			-Waliasing -Walign-commons -Wampersand -Wintrinsic-shadow \
 			-Wline-truncation -Wsurprising -Wunderflow \
-			-finit-integer=-99 -finit-real=nan -frange-check -Werror
+			-finit-real=nan -frange-check -Werror -Wno-unused-variable
 	endif
 
 	ifeq ($(coverage), 1)
