@@ -1,15 +1,18 @@
-syntax:glob
-
 # files created by build
 src/*.mod
 src/*.o
 src/flac
-src/0.patch
+src/snapshot.diff
 util/*.pyc
-util/flac2vtk
+util/__pycache__
 
-# files created by 'hg revert'
+# files created by VCS
 *.orig
+*.rej
+
+# results created by flac under examples/
+examples/**
+!examples/*.inp
 
 # temporary files from vi
 *.swp
@@ -23,6 +26,3 @@ src/*.gcda
 src/*.gcno
 src/*.gcov
 
-# directory for running tests
-src/tmp/
-src/tibet/
