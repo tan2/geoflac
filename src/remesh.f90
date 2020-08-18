@@ -456,7 +456,7 @@ do i = 1, nxt
 end do
 
 return
-end                    
+end
 
 
 !===============================================
@@ -464,7 +464,6 @@ end
 !===============================================
 subroutine rem_interpolate( nzt, nxt, arr )
 use arrays
-use params
 implicit none
 integer :: nzt,nxt
 double precision :: dummy(nzt,nxt),arr(nzt,nxt)
@@ -499,28 +498,6 @@ do i = 1, nxt
         endif
 
         arr(j,i) = barcord(j,i,1)*f1 + barcord(j,i,2)*f2 + barcord(j,i,3)*f3
-!  For the phases make sure that you do not create new phases
-!        iph_int = 0
-!       if(iph_int.eq.1) then
-!     xmax1 = max(int(f1+0.5d0),int(f2+0.5d0))
-!        xmax2 = int(f3+0.5d0)
-!        xmax = max(xmax1,xmax2)
-!        xmin1 = min(int(f1+0.5d0),int(f2+0.5d0))
-!        xmin2 = int(f3+0.5d0)
-!        xmin = min(xmin1,xmin2)
-!        xnorm = abs(xmax -xmin)
-!        xavr = abs(xmax+xmin)*0.5d0
-!        if (xnorm.eq.0.d0) goto 132
-!        if(arr(j,i).lt.xavr) then 
-!        xvalnorm = abs((xmin-arr(j,i))/xnorm)
-!        else
-!        xvalnorm = abs((xmax-arr(j,i))/xnorm)
-!        endif
-!        if (xvalnorm.ge.0.5d0) arr(j,i) = xmax-xvalnorm
-!        if (xvalnorm.lt.0.5d0) arr(j,i) = xmin+xvalnorm
-!132     arr(j,i) = xmin
-!        if(arr(j,i).eq.0.d0) arr(j,i) = 1.d0
-!        endif
     end do
 end do
 
