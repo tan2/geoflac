@@ -5,9 +5,8 @@ implicit none
 double precision :: cordo(nz,nx,2), rmesh1(nx)
 integer :: i, j, ii
 double precision :: xl, xr, xx, zcorr, zl, zr, zz, total_area
-logical do_volcorrection
+logical, parameter :: do_volcorrection = .false.
 
-do_volcorrection = .false.
 ! in the case of accretion iac_rem = 1 just remesh the center with 2 
 ! elts  and cutoff one elt on each sides
 if (iac_rem.eq.1) then
