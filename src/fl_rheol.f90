@@ -61,20 +61,13 @@ do 3 i = 1,nx-1
             dv = dvol(j,i,k)
             s11p(k) = stress0(j,i,1,k) + stherm 
             s22p(k) = stress0(j,i,2,k) + stherm 
-            if(ny_inject.gt.0.and.j.le.nelem_inject) then
-                !XXX: iinj is un-init'd if ny_inject is not 1 or 2.
-                if(i.eq.iinj) then
-                    s11p(k) = stress0(j,i,1,k) + stherm +sarc1
-                    s22p(k) = stress0(j,i,2,k) + stherm +sarc2
-                endif
-            endif
             s12p(k) = stress0(j,i,3,k) 
             s33p(k) = stress0(j,i,4,k) + stherm
             s11v(k) = s11p(k)
             s22v(k) = s22p(k)
             s12v(k) = s12p(k)
             s33v(k) = s33p(k)
-!!            if(abs(sarc11).gt.0.) write(*,*) i,j,sarc11,sarc22
+
             if (irh.eq.1) then
                 ! elastic
                 call elastic(bulkm,rmu,s11p(k),s22p(k),s33p(k),s12p(k),de11,de22,de12)
