@@ -33,25 +33,6 @@ integer function itest_mesh()
       endif
   end if
 
-  !!! test by dx ratio in the first layer
-  !dxratmax = 1000.
-  !if(ny_inject.eq.2) dxratmax = 10.
-  !dxmin = 1.d20
-  !dxmax = -1.d20
-  !do i = 1, nx-1
-  !    dx = cord(1,i+1,1) - cord(1,i,1)
-  !    if( dx .lt. dxmin ) dxmin = dx
-  !    if( dx .gt. dxmax ) dxmax = dx
-  !enddo
-  !if( dxmin.lt.0 .or. dxmax/dxmin.gt.dxratmax ) then
-  !    if( dtout_screen .ne. 0 ) then
-  !        print *, 'Remeshing due dxmax/dxmin criteria required: ', dxmin, dxmax
-  !    else
-  !        call SysMsg('TEST_MESH: Remeshing due dxmax/dxmin criteria required')
-  !    endif
-  !    itest_mesh = 1
-  !    return
-  !endif
 
   ! test mesh in the case of accretion at the center
   if (ny_inject.eq.2) then

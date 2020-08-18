@@ -24,52 +24,6 @@ if (irtemp .gt. 0) then
 endif
 
 select case(iynts)
-case (1)
-    ! Temperature structure for ridges
-    ! uses setup for viscosity from Alexei
-    do i = 1,nx-1
-        do j = 1,nz-1
-            xc = 0.25*(cord (j,i  ,1) + cord(j+1,i  ,1) + &
-                 cord (j,i+1,1) + cord(j+1,i+1,1))
-            yc = 0.25*(cord (j,i  ,2) + cord(j+1,i  ,2) + &
-                 cord (j,i+1,2) + cord(j+1,i+1,2))
-            !       Line
-            if (igeotherm .eq.0) geoth = g_y0c
-            !       Gauss perturbation
-            if (igeotherm .eq.1 ) then
-                geoth = g_y0c + g_amplitude*exp(-((xc-g_x0)/g_width)**2.)
-            endif
-            !       Linear perturbation
-            if (igeotherm .eq.2) then
-                if ( abs(g_x0-xc).lt.g_width) geoth = g_y0c+ &
-                     g_amplitude*(1.-abs(g_x0-xc)/g_width)
-                if ( abs(g_x0-xc).ge.g_width) geoth = g_y0c
-            endif
-
-            ! Temperatures
-            ! E-fold depends on x (correction due to lateral change in geotherm)
-
-            if(yc.ge.geoth) then
-                temp(j,i)=t_top+((tbos-t_top)/geoth)*yc
-            else
-                temp(j,i)=tbos + ((tbos-t_top)/(0.5*geoth))*(yc-geoth)
-            endif
-            if(temp(j,i).gt.t_bot) temp(j,i) = t_bot
-        enddo
-    enddo
-    do j = 1, nz
-        temp(j,nx) = temp(j,nx-2)
-    enddo
-    do i = 1, nx
-        temp(nz,i) = temp(nz-1,i)
-    enddo
-
-    open( 1, file='temp0.dat' )
-    do j = 1,nz
-        write(1,'(f5.1,1x,f6.1,1x,f6.1,1x,f6.1)') -cord (j,1,2)*1.e-3, temp(j,1)
-    end do
-    close(1)
-
 case (2)
     !!  geotherm of a given age accross the box with variable age
     cond_c = 2.2
@@ -308,38 +262,3 @@ subroutine sidewalltemp(i1, i2)
   endif
   return
 end subroutine sidewalltemp
-
-
-function cnd( j )
-include 'precision.inc'
-
-cnd = Eff_conduct(j,1)
-
-return
-end
-
-
-function htgen( j )
-use arrays
-use params
-include 'precision.inc'
-
-y = - cord(j,1,2)*1.e-3
-
-iph = iphase(j,1)
-
-htgen = den(iph)*hs*exp(-y/hr) * 1.e+6
-
-return
-end
-
-
-!=========================================================
-subroutine RedefineTemp
-include 'precision.inc'
-
-write(*,*) 'ATTENTION! Special form of initial temperature distribution !'
-
-return
-end
-

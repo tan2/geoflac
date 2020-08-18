@@ -72,31 +72,6 @@ function Eff_dens( j, i)
 end function Eff_dens
 
 
-!!$!==============================================
-!!$! Melt fraction
-!!$!==============================================
-!!$function Eff_melt(iph, tmpr)
-!!$include 'precision.inc'
-!!$include 'params.inc'
-!!$
-!!$if( tmpr .lt. ts(iph) ) then
-!!$    ! below solidus
-!!$    fm = 0.
-!!$elseif( tmpr .lt. tk(iph) ) then
-!!$    fm = fk(iph)/(tk(iph)-ts(iph)) * (tmpr-ts(iph))
-!!$    fm = min(max(fm, 0.), 1.)
-!!$elseif( tmpr .lt. tl(iph) ) then
-!!$    fm = (1.-fk(iph))/(tl(iph)-tk(iph))*(tmpr-tk(iph)) + fk(iph)
-!!$    fm = min(max(fm, 0.), 1.)
-!!$else
-!!$    fm = 1.
-!!$endif
-!!$
-!!$Eff_melt = fm
-!!$
-!!$return
-!!$end function Eff_melt
-!!$
 
 !=================================================
 ! Effective Heat Capacity incorporating latent heat
@@ -112,33 +87,6 @@ HeatLatent = 420000.
 iph = iphase(j,i)
 Eff_cp = cp(iph)
 
-
-!!$tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
-!!$if( tmpr .lt. ts(iph) ) then
-!!$    Eff_cp = cp(iph)
-!!$elseif( tmpr .lt. tk(iph) ) then
-!!$    Eff_cp = cp(iph) + HeatLatent * fk(iph)/(tk(iph)-ts(iph))
-!!$elseif( tmpr .lt. tl(iph) ) then
-!!$    Eff_cp = cp(iph) + HeatLatent * (1.-fk(iph))/(tl(iph)-tk(iph))
-!!$else
-!!$    Eff_cp = cp(iph)
-!!$endif
-!!$
-!!$
-!!$! HOOK
-!!$! Intrusions - melting effect - see user_ab.f90
-!!$if( if_intrus .eq. 1 ) then
-!!$    HeatLatent = 420000.
-!!$
-!!$    tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
-!!$    if( tmpr .lt. ts(iph) ) then
-!!$        Eff_cp = cp(iph)
-!!$    elseif( tmpr .lt. tl(iph)+1 ) then
-!!$        Eff_cp = cp(iph) + HeatLatent/(tl(iph)-ts(iph))
-!!$    else
-!!$        Eff_cp = cp(iph)
-!!$    endif
-!!$endif
 
 return
 end function Eff_cp
@@ -157,17 +105,6 @@ if (iint_marker.ne.1) then
     iph = iphase(j,i)
     cond = conduct(iph)
 
-    !if( den(iph) .lt. 3000. ) then  ! for crustal material
-    !    tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
-    !    if( tmpr.lt.25 ) tmpr = 25.
-    !    Eff_conduct = -0.38*dlog(tmpr) + 4.06
-    !endif
-
-    ! HOOK
-    ! Hydrothermal alteration of thermal diffusivity  - see user_luc.f90
-    if( if_hydro .eq. 1 ) then
-        cond = HydroDiff(j,i)*den(iph)*cp(iph)
-    endif
     Eff_conduct = cond
 
 else
@@ -179,22 +116,10 @@ else
 
         cond = conduct(k)
 
-        !if( den(k) .lt. 3000. ) then  ! for crustal material
-        !    tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
-        !    if( tmpr.lt.25 ) tmpr = 25.
-        !    Eff_conduct = -0.38*dlog(tmpr) + 4.06
-        !endif
-
-        ! HOOK
-        ! Hydrothermal alteration of thermal diffusivity  - see user_luc.f90
-        if( if_hydro .eq. 1 ) then
-            cond = HydroDiff(j,i)*den(k)*cp(k)
-        endif
         Eff_conduct = Eff_conduct + phase_ratio(k,j,i)*cond
     enddo
 endif
 
-!write(*,*) Eff_conduct, cond
 return
 end function Eff_conduct
 
@@ -242,18 +167,6 @@ if (iint_marker.ne.1) then
     vis = 0.25 * srat**pow*(0.75*acoef(iph))**pow1* &
          exp(eactiv(iph)/(pln(iph)*r*(tmpr+273.)))*1.e+6
 
-!!$    ! Effect of melt
-!!$    fmelt_crit = 0.05
-!!$    fmelt = Eff_melt(iph, tmpr)
-!!$    if( fmelt .gt. 0. ) then
-!!$        if( fmelt .lt. fmelt_crit ) then
-!!$            vislog = fmelt/fmelt_crit*dlog10(v_min/vis) + dlog10(vis)
-!!$            vis = 10.**vislog
-!!$        else
-!!$            vis = v_min
-!!$        endif
-!!$    endif
-
 
     ! limiting from above (quasi-Peierls)
     !sIImax = 5.e+8
@@ -277,19 +190,6 @@ else
 
         vis = 0.25 * srat**pow*(0.75*acoef(k))**pow1* &
              exp(eactiv(k)/(pln(k)*r*(tmpr+273.)))*1.e+6
-
-        ! Effect of melt
-        !fmelt_crit = 0.05
-        !fmelt = Eff_melt(k, tmpr)
-        !if( fmelt .gt. 0. ) then
-        !    if( fmelt .lt. fmelt_crit ) then
-        !        vislog = fmelt/fmelt_crit*dlog10(v_min/vis) + dlog10(vis)
-        !        vis = 10.**vislog
-        !    else
-        !        vis = v_min
-        !    endif
-        !endif
-
 
         ! limiting from above (quasi-Peierls)
         !sIImax = 5.e+8

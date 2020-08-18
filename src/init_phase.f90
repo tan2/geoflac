@@ -76,29 +76,6 @@ do i = 1,inhom
         end do
     endif
 
-    ! Gauss shape:
-    if (igeom(i).eq.1.or.igeom(i).eq.2) then
-        ! symmetric case:
-        if (igeom(i).eq.1) then
-            ixc  = (ix1(i)+ix2(i))/2  
-            iwidth = (ix2(i)-ix1(i))
-        else
-            ixc    = ix1(i)
-            iwidth = ix2(i)-ix1(i)  
-        endif
- 
-        iamp = iy2(i)-iy1(i)
-  
-        do j = ix1(i),ix2(i)
-            itop = itop_geom(j,ixc,iwidth,iamp) 
-            do k = iy1(i),iy2(i)
-                if (k .ge. (iy2(i)-itop)) then 
-                    iphase(k,j) = inphase(i)
-                endif
-            end do
-        end do
-    endif
-
     ! weak zone at 45 degree
     if (igeom (i) .eq.3) then
         do j = ix1(i),ix2(i)
@@ -132,15 +109,3 @@ end do
 
 return
 end
-
-
-!==========================================================
-! Gauss perturbation at the top of heterogenity 
-function itop_geom(j,ixc,iwidth,iamp) 
-    
-    itop_geom = int(iamp*exp(-(float(j-ixc)/(0.5*float(iwidth)))**2.))
-
-return
-end 
-
-
