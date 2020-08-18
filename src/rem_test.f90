@@ -85,8 +85,8 @@ integer function itest_mesh()
   end do
 
   if( dtout_screen .ne. 0 ) then
-      write (6,'(A,F5.2,A,I3,A,I3,A,F5.2)') '        min.angle=',anglemint,' j=', jmint, ' i=',imint, ' dt(yr)=',dt/sec_year
-      write (333,'(A,F5.2,A,I3,A,I3,A,F5.2)') '        min.angle=',anglemint,' j=', jmint, ' i=',imint, ' dt(yr)=',dt/sec_year
+      write (6,'(A,F6.2,A,I3,A,I3,A,F5.2)') '        min.angle=',anglemint,' j=', jmint, ' i=',imint, ' dt(yr)=',dt/sec_year
+      write (333,'(A,F6.2,A,I3,A,I3,A,F5.2)') '        min.angle=',anglemint,' j=', jmint, ' i=',imint, ' dt(yr)=',dt/sec_year
       flush (333)
   endif
   ! check if the angle is smaller than angle of remeshing  
