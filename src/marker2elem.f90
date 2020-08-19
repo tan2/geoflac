@@ -6,7 +6,7 @@ subroutine marker2elem
   implicit none
 
   integer :: kph(1), i, j, k, kinc, inc, iseed
-  double precision :: x1, x2, y1, y2, xx, yy, rx, ry
+  double precision :: x1, x2, y1, y2, xx, yy, r1, r2
 
   !character*200 msg
 
@@ -25,16 +25,21 @@ subroutine marker2elem
           !    call SysMsg(msg)
           !endif
           do while (kinc.le.4)
-              x1 = min(cord(j  ,i  ,1), cord(j+1,i  ,1))
-              y1 = min(cord(j  ,i  ,2), cord(j  ,i+1,2))
-              x2 = max(cord(j+1,i+1,1), cord(j  ,i+1,1))
-              y2 = max(cord(j+1,i+1,2), cord(j+1,i  ,2))
+              call myrandom(iseed, r1)
+              call myrandom(iseed, r2)
 
-              call myrandom(iseed, rx)
-              call myrandom(iseed, ry)
+              ! (x1, y1) and (x2, y2)
+              x1 = cord(j  ,i,1)*(1-r1) + cord(j  ,i+1,1)*r1
+              y1 = cord(j  ,i,2)*(1-r1) + cord(j  ,i+1,2)*r1
+              x2 = cord(j+1,i,1)*(1-r1) + cord(j+1,i+1,1)*r1
+              y2 = cord(j+1,i,2)*(1-r1) + cord(j+1,i+1,2)*r1
 
-              xx = x1 + rx*(x2-x1)
-              yy = y1 + ry*(y2-y1)
+              ! connect
+              ! (this point is not uniformly distributed within the element area
+              ! and is biased against the thicker side of the element, but this
+              ! point is almost gauranteed to be inside the element)
+              xx = x1*(1-r2) + x2*r2
+              yy = y1*(1-r2) + y2*r2
 
               call add_marker(xx, yy, iphase(j,i), 0.d0, nmarkers, j, i, inc)
               if(inc.le.0) cycle

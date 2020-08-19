@@ -212,7 +212,7 @@ subroutine resurface
           if (chgtopo > 0.d0) then
               ! sedimentation, add a sediment marker
               !print *, 'add sediment', i, chgtopo, elz
-             call add_marker_at_top(i, 0.05d0, elz, ksed2, nmarkers, time)
+              call add_marker_at_top(i, 0.1d0, elz, ksed2, nmarkers, time)
           else
               ! erosion, remove the top marker
               !print *, 'erosion', i, chgtopo, elz
@@ -255,10 +255,10 @@ subroutine resurface
           ! add/remove markers if topo changed too much
           ! extrusion, add an arc marker
           n_to_add = ceiling(chgtopo2 / elz * kinc)
-          dz = chgtopo2 / elz / (n_to_add+1)
-          !print *, 'add arc', i, chgtopo2, elz, n_to_add, dz
+          dz_ratio = min(chgtopo2 / elz, 1.0d0)
+          !print *, 'add arc', i, chgtopo2, elz, n_to_add, dz_ratio
           do ii = 1, n_to_add
-              call add_marker_at_top(i, dz*ii, elz, karc1, nmarkers, time)
+              call add_marker_at_top(i, dz_ratio, elz, karc1, nmarkers, time)
           enddo
 
           extr_acc(i) = 0
@@ -278,16 +278,23 @@ subroutine add_marker_at_top(i, dz_ratio, elz, kph, nmarkers, time)
   include 'precision.inc'
 
   do while(.true.)
-     call random_number(rx)
-     call random_number(ry)
+     call random_number(r1)
+     call random_number(r2)
      j = 1
-     x1 = min(cord(j  ,i  ,1), cord(j+1,i  ,1))
-     y1 = min(cord(j  ,i  ,2), cord(j  ,i+1,2))
-     x2 = max(cord(j+1,i+1,1), cord(j  ,i+1,1))
-     y2 = max(cord(j+1,i+1,2), cord(j+1,i  ,2))
 
-     xx = x1 + rx*(x2-x1)
-     yy = y1 + ry*(y2-y1) - dz_ratio*elz
+     ! (x1, y1) and (x2, y2)
+     x1 = cord(j  ,i,1)*(1-r1) + cord(j  ,i+1,1)*r1
+     y1 = cord(j  ,i,2)*(1-r1) + cord(j  ,i+1,2)*r1
+     x2 = cord(j+1,i,1)*(1-r1) + cord(j+1,i+1,1)*r1
+     y2 = cord(j+1,i,2)*(1-r1) + cord(j+1,i+1,2)*r1
+
+     ! connect the above two points
+     ! (this point is not uniformly distributed within the element area
+     ! and is biased against the thicker side of the element, but this
+     ! point is almost gauranteed to be inside the element)
+     r2 = r2 * dz_ratio
+     xx = x1*(1-r2) + x2*r2
+     yy = y1*(1-r2) + y2*r2
 
      call add_marker(xx, yy, kph, time, nmarkers, 1, i, inc)
      if(inc==1 .or. inc==-1) exit
