@@ -290,7 +290,7 @@ subroutine add_marker_at_top(i, dz_ratio, elz, kph, nmarkers, time)
      yy = y1 + ry*(y2-y1) - dz_ratio*elz
 
      call add_marker(xx, yy, kph, time, nmarkers, 1, i, inc)
-     if(inc==1) exit
+     if(inc==1 .or. inc==-1) exit
      !write(333,*) 'add_marker_at_top failed: ', xx, yy, rx, elz, kph
      !write(333,*) '  ', cord(1,i,:)
      !write(333,*) '  ', cord(1,i+1,:)

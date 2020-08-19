@@ -125,7 +125,7 @@ do i = 1 , nx-1
 
             call add_marker(xx, yy, kph, 0.d0, nmarkers, j, i, inc)
             !call add_marker(xx, yy, iphase(j,i), 0.d0, nmarkers, j, i, inc)
-            if(inc.eq.0) cycle
+            if(inc.le.0) cycle
 
             l = l + 1
             !print *, xx, yy, mark_a1(kk), mark_a2(kk), mark_ntriag(kk)

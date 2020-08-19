@@ -64,7 +64,7 @@ MODULE marker_data
         !write(msg*) 'Too many markers at element:', i, j, nmark_elem(j,i)
         !call SysMsg(msg)
         !call SysMsg('Marker skipped, not added!')
-        inc = 0
+        inc = -1
         return
     endif
     ! recording the id of markers belonging to the element
