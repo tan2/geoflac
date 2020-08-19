@@ -212,7 +212,7 @@ subroutine resurface
           if (chgtopo > 0.d0) then
               ! sedimentation, add a sediment marker
               !print *, 'add sediment', i, chgtopo, elz
-             call add_marker_at_top(i, 0.05d0, elz, ksed2, nmarkers)
+             call add_marker_at_top(i, 0.05d0, elz, ksed2, nmarkers, time)
           else
               ! erosion, remove the top marker
               !print *, 'erosion', i, chgtopo, elz
@@ -258,7 +258,7 @@ subroutine resurface
           dz = chgtopo2 / elz / (n_to_add+1)
           !print *, 'add arc', i, chgtopo2, elz, n_to_add, dz
           do ii = 1, n_to_add
-              call add_marker_at_top(i, dz*ii, elz, karc1, nmarkers)
+              call add_marker_at_top(i, dz*ii, elz, karc1, nmarkers, time)
           enddo
 
           extr_acc(i) = 0
@@ -272,15 +272,23 @@ subroutine resurface
 end subroutine resurface
 
 
-subroutine add_marker_at_top(i, dz_ratio, elz, kph, nmarkers)
+subroutine add_marker_at_top(i, dz_ratio, elz, kph, nmarkers, time)
   use marker_data
   use arrays
   include 'precision.inc'
 
   do while(.true.)
      call random_number(rx)
-     xx = cord(1,i,1) + rx * (cord(1,i+1,1) - cord(1,i,1))
-     yy = cord(1,i,2) + rx * (cord(1,i+1,2) - cord(1,i,2)) - dz_ratio*elz
+     call random_number(ry)
+     j = 1
+     x1 = min(cord(j  ,i  ,1), cord(j+1,i  ,1))
+     y1 = min(cord(j  ,i  ,2), cord(j  ,i+1,2))
+     x2 = max(cord(j+1,i+1,1), cord(j  ,i+1,1))
+     y2 = max(cord(j+1,i+1,2), cord(j+1,i  ,2))
+
+     xx = x1 + rx*(x2-x1)
+     yy = y1 + ry*(y2-y1) - dz_ratio*elz
+
      call add_marker(xx, yy, kph, time, nmarkers, 1, i, inc)
      if(inc==1) exit
      !write(333,*) 'add_marker_at_top failed: ', xx, yy, rx, elz, kph
