@@ -43,13 +43,13 @@ integer :: nx,nz,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
 
 real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
      dx_rem,angle_rem,anglemin1,anglemint,topo_kappa,fac_kappa, &
-     velbc_l,velbc_r,v_min,v_max,efoldc, &
+     v_min,v_max,efoldc, &
      g_x0,g_y0c,g_amplitude,g_width, &
      rate_inject, &
      bca(maxbc),bcb(maxbc),bcc(maxbc),xReyn, &
      bcd(maxbc),bce(maxbc),bcf(maxbc),bcg(maxbc),bch(maxbc),bci(maxbc), &
      dt_scale,strain_inert,vbc,amul,ratl,ratu,frac, &
-     dtmax_therm,dt_maxwell,fracm,srate0, &
+     dtmax_therm,dt_maxwell,fracm, &
      dt_elastic,demf, &
      dtout_screen,dtout_file,dtsave_file, &
      visc(maxph),den(maxph),alfa(maxph),beta(maxph),pln(maxph), &
