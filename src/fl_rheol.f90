@@ -138,20 +138,20 @@ do 3 i = 1,nx-1
         
             ! For A and B couple:
             ! area(n,it) is INVERSE of "real" DOUBLE area (=1./det)
-            quad_area = 1.d0/(area(j,i,1)+area(j,i,2))
+            quad_area = 1.d0/area(j,i,1) + 1.d0/area(j,i,2)
             s0a=0.5d0*(stress0(j,i,1,1)+stress0(j,i,2,1))
             s0b=0.5d0*(stress0(j,i,1,2)+stress0(j,i,2,2))
-            s0=(s0a*area(j,i,2)+s0b*area(j,i,1))*quad_area
+            s0=(s0a/area(j,i,2)+s0b/area(j,i,1))/quad_area
             stress0(j,i,1,1) = stress0(j,i,1,1) - s0a + s0
             stress0(j,i,2,1) = stress0(j,i,2,1) - s0a + s0
             stress0(j,i,1,2) = stress0(j,i,1,2) - s0b + s0
             stress0(j,i,2,2) = stress0(j,i,2,2) - s0b + s0
 
             ! For C and D couple:
-            quad_area = 1.d0/(area(j,i,3)+area(j,i,4))
+            quad_area = 1.d0/area(j,i,3) + 1.d0/area(j,i,4)
             s0a=0.5d0*(stress0(j,i,1,3)+stress0(j,i,2,3))
             s0b=0.5d0*(stress0(j,i,1,4)+stress0(j,i,2,4))
-            s0=(s0a*area(j,i,4)+s0b*area(j,i,3))*quad_area
+            s0=(s0a/area(j,i,4)+s0b/area(j,i,3))/quad_area
             stress0(j,i,1,3) = stress0(j,i,1,3) - s0a + s0
             stress0(j,i,2,3) = stress0(j,i,2,3) - s0a + s0
             stress0(j,i,1,4) = stress0(j,i,1,4) - s0b + s0
@@ -163,8 +163,8 @@ do 3 i = 1,nx-1
             ! Average the strain for pair of the triangles
             ! Note that area (n,it) is inverse of double area !!!!!
             aps(j,i) = aps(j,i) &
-                 + 0.5d0*( depl(1)*area(j,i,2)+depl(2)*area(j,i,1) ) / (area(j,i,1)+area(j,i,2)) &
-                 + 0.5d0*( depl(3)*area(j,i,4)+depl(4)*area(j,i,3) ) / (area(j,i,3)+area(j,i,4))
+                + 0.5d0*( depl(1)/area(j,i,2)+depl(2)/area(j,i,1) ) / (1.d0/area(j,i,1)+1.d0/area(j,i,2)) &
+                + 0.5d0*( depl(3)/area(j,i,4)+depl(4)/area(j,i,3) ) / (1.d0/area(j,i,3)+1.d0/area(j,i,4))
             if( aps(j,i) .lt. 0.d0 ) aps(j,i) = 0.d0
 
             !	write(*,*) depl(1),depl(2),depl(3),depl(4),area(j,i,1),area(j,i,2),area(j,i,3),area(j,i,4)
