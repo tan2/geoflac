@@ -212,7 +212,7 @@ subroutine resurface
           if (chgtopo > 0.d0) then
               ! sedimentation, add a sediment marker
               !print *, 'add sediment', i, chgtopo, elz
-              call add_marker_at_top(i, 0.1d0, elz, ksed2, nmarkers, time)
+              call add_marker_at_top(i, 0.1d0, time, ksed2, nmarkers)
           else
               ! erosion, remove the top marker
               !print *, 'erosion', i, chgtopo, elz
@@ -258,7 +258,7 @@ subroutine resurface
           dz_ratio = min(chgtopo2 / elz, 1.0d0)
           !print *, 'add arc', i, chgtopo2, elz, n_to_add, dz_ratio
           do ii = 1, n_to_add
-              call add_marker_at_top(i, dz_ratio, elz, karc1, nmarkers, time)
+              call add_marker_at_top(i, dz_ratio, time, karc1, nmarkers)
           enddo
 
           extr_acc(i) = 0
@@ -272,7 +272,7 @@ subroutine resurface
 end subroutine resurface
 
 
-subroutine add_marker_at_top(i, dz_ratio, elz, kph, nmarkers, time)
+subroutine add_marker_at_top(i, dz_ratio, time, kph, nmarkers)
   use marker_data
   use arrays
   include 'precision.inc'
