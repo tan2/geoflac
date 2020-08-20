@@ -42,7 +42,7 @@ integer :: nx,nz,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
      nloop,ifreq_avgsr,nsrate
 
 real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
-     dx_rem,angle_rem,anglemin1,anglemint,topo_kappa,fac_kappa, &
+     dx_rem,angle_rem,topo_kappa,fac_kappa, &
      v_min,v_max,efoldc, &
      g_x0,g_y0c,g_amplitude,g_width, &
      rate_inject, &

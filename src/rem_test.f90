@@ -9,9 +9,11 @@
 integer function itest_mesh()
   use arrays
   use params
-  include 'precision.inc'
-  dimension iv(4),jv(4),angle(3)
-
+  implicit none
+  integer :: iv(4), jv(4), i, ii, imint, j, jmint, k
+  double precision :: angle(3), testcr, shortening, dx_accr, &
+                      pi, raddeg, degrad, xa, xb, xxal, xxbl, ya, yb, &
+                      anglemin1, anglemint
 
   itest_mesh = 0
 
