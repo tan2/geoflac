@@ -50,7 +50,7 @@ real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
      bcd(maxbc),bce(maxbc),bcf(maxbc),bcg(maxbc),bch(maxbc),bci(maxbc), &
      dt_scale,strain_inert,vbc,amul,ratl,ratu,frac, &
      dtmax_therm,dt_maxwell,fracm,srate0, &
-     dt_elastic,dt_elastic0,demf,boff, &
+     dt_elastic,demf,boff, &
      dtout_screen,dtout_file,dtsave_file, &
      visc(maxph),den(maxph),alfa(maxph),beta(maxph),pln(maxph), &
      acoef(maxph),eactiv(maxph),rl(maxph),rm(maxph), &
