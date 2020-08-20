@@ -26,8 +26,6 @@ double precision, parameter :: heat_latent_magma = 4.2d5  ! J/kg, latent heat of
 !  2         2---3
 
 
-ntherm = ntherm+1
-
 ! saving old temperature
 !$DIR PREFER_PARALLEL
 if (istress_therm.gt.0) temp0(1:nz,1:nx) = temp(1:nz,1:nx)

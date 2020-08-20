@@ -17,7 +17,6 @@ open(11,file='nxnz.0')
 write(11,*) nx, nz
 close(11)
 
-nq = nx*nz
 nx = nx+1
 nz = nz+1
 nmarkers = 9*(nz-1)*(nx-1)

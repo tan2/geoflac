@@ -13,9 +13,9 @@ integer, parameter :: maxinh = 50   ! max # of inhomogeneities
 real*8, parameter :: sec_year = 3.1558d+7  ! seconds in a year
 
 
-integer :: nx,nz,nq,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
+integer :: nx,nz,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
      ny_rem,mode_rem,ntest_rem,ivis_shape,igeotherm, &
-     ny_inject,nelem_inject,nmass_update,nopbmax,iinj,nydrsides,nystressbc, &
+     ny_inject,nelem_inject,nmass_update,nopbmax,nydrsides,nystressbc, &
      nofbc,nofside(maxbc),nbc1(maxbc),nbc2(maxbc),nbc(maxbc), &
      mix_strain,mix_stress,lastsave,lastout, &
      io_vel,io_srII,io_eII,io_aps,io_sII,io_sxx,io_szz, &
@@ -29,14 +29,14 @@ integer :: nx,nz,nq,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
      nphasl,nzone_marker,nmarkers, iint_marker,iint_tracer,nzone_tracer, &
      ix1(maxinh),ix2(maxinh),iy1(maxinh),iy2(maxinh),inphase(maxinh), &
      igeom(maxinh),inhom, &
-     itherm,istress_therm,initial_geoth,itemp_bc,ix1t,ix2t,iy1t,iy2t,ishearh, &
-     ntherm,ixtb1(maxzone_age),ixtb2(maxzone_age),nzone_age,i_prestress, &
+     itherm,istress_therm,itemp_bc,ix1t,ix2t,iy1t,iy2t,ishearh, &
+     ixtb1(maxzone_age),ixtb2(maxzone_age),nzone_age,i_prestress, &
      iph_col1(maxzone_age),iph_col2(maxzone_age),iph_col3(maxzone_age), &
      iph_col4(maxzone_age),iph_col5(maxzone_age),iph_col_trans(maxzone_age), &
-     if_intrus,if_hydro, &
+     if_hydro, &
      nyhydro,iphsub, &
      movegrid,ndim,ifreq_visc,nmtracers,i_rey, &
-     iph_int,incoming_left,incoming_right, &
+     incoming_left,incoming_right, &
      iynts, iax1,iay1,ibx1,iby1,icx1,icy1,idx1,idy1, &
      ivis_present,n_boff_cutoff,idt_scale,ifreq_imasses,ifreq_rmasses, &
      nloop,ifreq_avgsr,nsrate
@@ -50,7 +50,7 @@ real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
      bcd(maxbc),bce(maxbc),bcf(maxbc),bcg(maxbc),bch(maxbc),bci(maxbc), &
      dt_scale,strain_inert,vbc,amul,ratl,ratu,frac, &
      dtmax_therm,dt_maxwell,fracm,srate0, &
-     dt_elastic,demf,boff, &
+     dt_elastic,demf, &
      dtout_screen,dtout_file,dtsave_file, &
      visc(maxph),den(maxph),alfa(maxph),beta(maxph),pln(maxph), &
      acoef(maxph),eactiv(maxph),rl(maxph),rm(maxph), &
