@@ -62,7 +62,7 @@ contains
 
     allocate(phase_ratio(20, nz-1, nx-1))
     allocate(dtopo(nx))
-    allocate(dhacc(nx))
+    allocate(dhacc(nx-1))
     allocate(extrusion(nx-1))
     allocate(andesitic_melt_vol(nx-1))
     allocate(extr_acc(nx-1))

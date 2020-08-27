@@ -67,7 +67,7 @@ enddo
 
 200 continue
 
-dhacc(1:nx) = 0.d0
+dhacc(:) = 0.d0
 extr_acc(1:nx-1) = 0.d0
 
 return
