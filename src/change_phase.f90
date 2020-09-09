@@ -172,7 +172,7 @@ do kk = 1 , nmarkers
     case (khydmant)
         if (tmpr > ts(khydmant)) then
             ! area(j,i) is INVERSE of "real" DOUBLE area (=1./det)
-            quad_area = 1.d0/(area(j,i,1)+area(j,i,2))
+            quad_area = 0.5d0/area(j,i,1) + 0.5d0/area(j,i,2)
             andesitic_melt_vol(i) = andesitic_melt_vol(i) + quad_area * vol_frac_melt / kinc
 
             !$OMP critical (change_phase1)
