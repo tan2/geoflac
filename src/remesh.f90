@@ -122,11 +122,6 @@ do i = 1, nxt
 !       write(*,*) i,j,aps(j,i)
     end do
 end do
-        
-! viscosity
-dummy(1:nzt,1:nxt) = visn(1:nzt,1:nxt)
-call rem_interpolate( nzt, nxt, dummy )
-visn(1:nzt,1:nxt) = dummy(1:nzt,1:nxt)
 
 ! phases
 ! XXX: Assuming material is coming from the left or right boundary
@@ -247,6 +242,7 @@ if(incoming_left==1) call sidewalltemp(1,1+idist)
 if(incoming_right==1) call sidewalltemp(nx-idist,nx)
 
 ! AFTER INTERPOLATIONS - RECALCULATE SOME DEPENDENT VARIABLES
+if( ivis_present.eq.1 ) call init_visc
 
 ! Calculation of areas of triangle
 call init_areas
