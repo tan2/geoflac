@@ -37,10 +37,10 @@ module arrays
 
 contains
 
-  subroutine allocate_arrays(nz, nx)
+  subroutine allocate_arrays(nz, nx, nphase)
     implicit none
 
-    integer, intent(in) :: nz, nx
+    integer, intent(in) :: nz, nx, nphase
 
     allocate(cord(nz, nx, 2))
     allocate(temp(nz, nx))
@@ -60,7 +60,7 @@ contains
     allocate(ncodbou(((nz-1)+(nx-1))*2, 3))
     allocate(idtracer((nz-1)*(nx-1)*2))
 
-    allocate(phase_ratio(20, nz-1, nx-1))
+    allocate(phase_ratio(nphase, nz-1, nx-1))
     allocate(dtopo(nx))
     allocate(dhacc(nx-1))
     allocate(extrusion(nx-1))
