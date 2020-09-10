@@ -14,7 +14,7 @@ integer function itest_mesh()
   double precision :: angle(3), testcr, shortening, dx_accr, &
                       pi, raddeg, degrad, xa, xb, xxal, xxbl, ya, yb, &
                       anglemin1, anglemint
-
+  call check_nan
   itest_mesh = 0
 
   ! if remeshing with adding material on the sides then

@@ -179,10 +179,12 @@ SRCS =	\
 	saveflac.f90 \
 	setflac.f90
 
+SRCS2 = check_nan.f90
 
 MODULES = $(MODULE_SRCS:.f90=.mod)
 MODULE_OBJS = $(MODULE_SRCS:.f90=.o)
 OBJS = $(SRCS:.f90=.o)
+OBJS2 = $(SRCS2:.f90=.o)
 
 EXE = flac
 
@@ -201,14 +203,18 @@ endif
 
 all: $(EXE) take-snapshot
 
-$(EXE): $(MODULE_OBJS) $(OBJS)
-	$(F90) $(LDFLAGS) $(MODULE_OBJS) $(OBJS) -o $@
+$(EXE): $(MODULE_OBJS) $(OBJS) $(OBJS2)
+	$(F90) $(LDFLAGS) $(MODULE_OBJS) $(OBJS) $(OBJS2) -o $@
 
 $(MODULE_OBJS): %.o : %.f90
 	$(F90) $(CFLAGS) -c $<
 
 $(OBJS): %.o : %.f90 $(MODULES)
 	$(F90) $(CFLAGS) -c $<
+
+# these subroutine cannot be compiled with high optimization
+$(OBJS2): %.o : %.f90 $(MODULES)
+	$(F90) -O2 -c $<
 
 take-snapshot:
 	@# snapshot of the code for building the executable
@@ -245,7 +251,7 @@ endif
 
 
 clean:
-	@rm -f $(MODULES) $(MODULE_OBJS) $(OBJS) $(EXE)
+	@rm -f $(MODULES) $(MODULE_OBJS) $(OBJS) $(OBJS2) $(EXE)
 
 clean-data:
 	@rm -f *.0 *.rs sys.msg marker_init.asc vbc.s area.dat output.asc temp0.dat
