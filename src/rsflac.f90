@@ -5,15 +5,11 @@ subroutine rsflac
 use arrays
 use params
 USE marker_data
+implicit none
 
-include 'precision.inc'
-
-
-parameter( kindr=8, kindi=4 )
-
-real(kindr), allocatable :: dum1(:),dum2(:,:)
-integer(kindi), allocatable :: dum11(:), idum2(:,:)
-real*8 rtime, rdt
+integer, parameter :: kindr=8, kindi=4
+integer :: nrec, nwords, i, j, k, iph, n
+real*8 rtime, rdt, time_my
 character*200 msg
 
 ! TODO: include tracer information for restart
@@ -80,17 +76,13 @@ close (1)
 
 
 ! 2-D (nx-1)*(nz-1) arrays - elements defined
-allocate( dum2(nz-1,nx-1) )
-
 nwords = (nz-1)*(nx-1)
 
 ! Phases
-allocate( idum2(nz-1,nx-1) )
 open (1,file='phase.rs',access='direct',recl=nwords*kindr)
-read (1,rec=nrec) idum2
+read (1,rec=nrec) iphase
 close (1)
-iphase(1:nz-1,1:nx-1) = idum2(1:nz-1,1:nx-1)
-deallocate( idum2 )
+
 
 ! Check if viscous rheology present
 ivis_present = 0
@@ -103,18 +95,13 @@ end do
 
 ! Plastic strain
 open (1,file='aps.rs',access='direct',recl=nwords*kindr) 
-read (1,rec=nrec) dum2
+read (1,rec=nrec) aps
 close (1)
-aps(1:nz-1,1:nx-1) = dum2(1:nz-1,1:nx-1)
 
 ! Heat sources
 open (1,file='source.rs',access='direct',recl=nwords*kindr) 
-read (1,rec=nrec) dum2
+read (1,rec=nrec) source
 close (1)
-source(1:nz-1,1:nx-1) = dum2(1:nz-1,1:nx-1)
-
-deallocate( dum2 )
-
 
 if (iint_marker.eq.1) then
 ! Markers
