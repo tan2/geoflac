@@ -247,23 +247,25 @@ class Flac(object):
         n = int(tmp[frame-1,2])
 
         suffix = '.%06d.0' % frame
-        dead = self._read_data('markdead' + suffix, count=n, dtype=np.int32)
+        f2 = open('marker2' + suffix)
+        dead = self._read_data(f2, count=n, dtype=np.int32)
+        tmp = self._read_data(f2, count=n, dtype=np.int32)
+        phase = self._remove_dead_markers(tmp, dead)
+        f2.close()
 
-        tmp = self._read_data('markx' + suffix, count=n)
+        f1 = open('marker1' + suffix)
+        tmp = self._read_data(f1, count=n)
         x = self._remove_dead_markers(tmp, dead)
 
-        tmp = self._read_data('marky' + suffix, count=n)
+        tmp = self._read_data(f1, count=n)
         z = self._remove_dead_markers(tmp, dead)
 
-        tmp = self._read_data('markage' + suffix, count=n)
+        tmp = self._read_data(f1, count=n)
         age = self._remove_dead_markers(tmp, dead)
-
-        tmp = self._read_data('markphase' + suffix, count=n, dtype=np.int32)
-        phase = self._remove_dead_markers(tmp, dead)
 
         tmp = np.arange(n)
         ID = self._remove_dead_markers(tmp, dead)
-
+        f1.close()
         return x, z, age, phase, ID
 
 

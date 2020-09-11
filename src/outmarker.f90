@@ -13,7 +13,6 @@ character*100 fn
 call bar2euler
 
 nrec = 0
-D1d = 0.d0
 ! define record number and write it to contents
 if( lastout .eq. 1 ) then
     nrec = 1
@@ -38,49 +37,40 @@ close(1)
 !! output as a single unformatted file. Output different files for each record.
 
 ! Coordinates  [km]
-nwords = nmarkers 
+nwords = nmarkers
+write(fn,'(A,I6.6,A)') 'marker1.', nrec, '.0'
+open (1,file=fn,access='direct',recl=nwords*kindr)
+
 do i = 1, nmarkers
     D1d(i)= real(mark_x(i) * 1d-3)
 enddo
-write(fn,'(A,I6.6,A)') 'markx.', nrec, '.0'
-open (1,file=fn,access='direct',recl=nwords*kindr)
 write (1,rec=1) D1d
-close (1)
 
 do i = 1,nmarkers
     D1d(i)= real(mark_y(i) * 1d-3)
 enddo
-write(fn,'(A,I6.6,A)') 'marky.', nrec, '.0'
-open (1,file=fn,access='direct',recl=nwords*kindr)
-write (1,rec=1) D1d
-close (1)
+write (1,rec=2) D1d
 
 ! Age [Myrs]
 do i = 1,nmarkers
     D1d(i)= real(mark_age(i) / sec_year / 1.d6)
 enddo
-write(fn,'(A,I6.6,A)') 'markage.', nrec, '.0'
-open (1,file=fn,access='direct',recl=nwords*kindr)
-write (1,rec=1) D1d
+write (1,rec=3) D1d
 close (1)
 
 
-D1i = 0
-do l = 1,nmarkers
-    D1i(l)= mark_phase(l)
-enddo
-write(fn,'(A,I6.6,A)') 'markphase.', nrec, '.0'
-open (1,file=fn,access='direct',recl=nwords*kindr)
-write (1,rec=1) D1i
-close (1)
-
+write(fn,'(A,I6.6,A)') 'marker2.', nrec, '.0'
+open (1,file=fn,access='direct',recl=nwords*kindi)
 
 do l = 1,nmarkers
     D1i(l)= mark_dead(l)
 enddo
-write(fn,'(A,I6.6,A)') 'markdead.', nrec, '.0'
-open (1,file=fn,access='direct',recl=nwords*kindr)
 write (1,rec=1) D1i
+
+do l = 1,nmarkers
+    D1i(l)= mark_phase(l)
+enddo
+write (1,rec=2) D1i
 close (1)
 
 return
