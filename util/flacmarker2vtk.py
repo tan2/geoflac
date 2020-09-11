@@ -11,7 +11,7 @@ from flac2vtk import vts_dataarray
 
 
 # filtering markers to only those within the domain bounds (in km)
-filtering = True
+filtering = False
 xmin = 300
 xmax = 700
 zmin = -50
@@ -106,24 +106,38 @@ def vtp_footer(f):
 
 
 if __name__ == '__main__':
-
-    if len(sys.argv) < 2:
-        print('''usage: flacmarker2vtk.py path [frame_min [frame_max]]
+    doc = '''usage: flacmarker2vtk.py [-f xmin,xmax,zmin,zmax] path [frame_min [frame_max]]
 
 Processing flac marker output to VTK format.
 
 If frame_min is -1, start from the latest vtp file.
 If frame_max is not given, processing to latest frames
-If both frame_min and frame_max are not given, processing all frames''')
+If both frame_min and frame_max are not given, processing all frames
+
+-f xmin,xmax,zmin,zmax: if provided, only output markers within the domain range (in km)
+'''
+
+    if len(sys.argv) < 2:
+        print(doc)
         sys.exit(1)
 
-    path = sys.argv[1]
+    try:
+        n = 0
+        if sys.argv[1] == '-f':
+            filtering = True
+            xmin, xmax, zmin, zmax = (float(f) for f in sys.argv[2].split(','))
+            n = 2
 
-    start = 1
-    end = -1
-    if len(sys.argv) >= 3:
-        start = int(sys.argv[2])
-        if len(sys.argv) >= 4:
-            end = int(sys.argv[3])
+        path = sys.argv[n+1]
+
+        start = 1
+        end = -1
+        if len(sys.argv) >= n+3:
+            start = int(sys.argv[n+2])
+            if len(sys.argv) >= n+4:
+                end = int(sys.argv[n+3])
+    except:
+        print(doc, '\n')
+        raise
 
     main(path, start, end)
