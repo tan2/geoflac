@@ -272,6 +272,13 @@ call AdvanceToNextInputLine( 4 )
 read(4,*)  ifreq_visc
 call AdvanceToNextInputLine( 4 )
 read(4,*)  ifreq_avgsr
+
+if (mod(ntest_rem, ifreq_rmasses) + mod(ntest_rem, ifreq_imasses) &
+    + mod(ntest_rem, ifreq_visc) + mod(ntest_rem, ifreq_avgsr) .ne. 0) then
+        call SysMsg('ntest_rem must be multiples of process frequency')
+        stop
+endif
+
 ! acceleration parameters
 call AdvanceToNextInputLine( 4 )
 read(4,*) amul, ratl, ratu
