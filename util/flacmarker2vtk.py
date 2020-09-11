@@ -3,7 +3,8 @@
 '''Convert the binary marker output of flac to VTK (vtp) files.
 '''
 
-import sys, os
+from __future__ import print_function
+import sys, os, glob
 import numpy as np
 import flac
 from flac2vtk import vts_dataarray
@@ -37,15 +38,21 @@ def main(path, start=1, end=-1):
     if end == -1:
         end = fl.nrec
 
+    if start == -1:
+        vtplist = sorted(glob.glob('flacmarker.*.vtp'))
+        lastframe = int(vtplist[-1][11:-4]) if vtplist else 0
+        start = lastframe + 1
+
     for i in range(start, end+1):
         x, z, age, phase, ID = fl.read_markers(i)
         if filtering:
             x, z, age, phase, ID = filter_marker(x, z, age, phase, ID)
         nmarkers = len(x)
 
-        print 'Writing record #%d, model time=%.3e, %d markers' % (i, fl.time[i-1], nmarkers)
+        print('Writing record #%d, model time=%.3e, %d markers' % (i, fl.time[i-1], nmarkers), end='\r')
+        sys.stdout.flush()
         fvtp = open('flacmarker.%06d.vtp' % i, 'w')
-        vtp_header(fvtp, nmarkers)
+        vtp_header(fvtp, nmarkers, fl.time[i-1], fl.steps[i-1])
 
         # point-based data
         fvtp.write('  <PointData>\n')
@@ -67,16 +74,25 @@ def main(path, start=1, end=-1):
 
         vtp_footer(fvtp)
         fvtp.close()
+    print()
     return
 
 
-def vtp_header(f, npoints):
+def vtp_header(f, npoints, time, step):
     f.write(
 '''<?xml version="1.0"?>
 <VTKFile type="PolyData" version="0.1" byte_order="LittleEndian" compressor="vtkZLibDataCompressor">
 <PolyData>
+<FieldData>
+  <DataArray type="Float32" Name="TIME" NumberOfTuples="1" format="ascii">
+    {1}
+  </DataArray>
+  <DataArray type="Float32" Name="CYCLE" NumberOfTuples="1" format="ascii">
+    {2}
+  </DataArray>
+</FieldData>
 <Piece NumberOfPoints="{0}">
-'''.format(npoints))
+'''.format(npoints, time, step))
     return
 
 
@@ -92,11 +108,13 @@ def vtp_footer(f):
 if __name__ == '__main__':
 
     if len(sys.argv) < 2:
-        print '''usage: flacmarker2vtk.py path [step_min [step_max]]
+        print('''usage: flacmarker2vtk.py path [frame_min [frame_max]]
 
 Processing flac marker output to VTK format.
-If step_max is not given, processing to latest steps
-If both step_min and step_max are not given, processing all steps'''
+
+If frame_min is -1, start from the latest vtp file.
+If frame_max is not given, processing to latest frames
+If both frame_min and frame_max are not given, processing all frames''')
         sys.exit(1)
 
     path = sys.argv[1]
