@@ -164,7 +164,7 @@ if( topo_kappa .gt. 0.d0 ) then
     dhacc(1:nx-1) = dhacc(1:nx-1) + 0.5d0 * (dtopo(1:nx-1) + dtopo(2:nx))
 
     ! adjust markers
-    if(mod(nloop, 100) .eq. 0) then
+    if(mod(nloop, ifreq_avgsr) .eq. 0) then
 !!$        print *, 'max sed/erosion rate (m/yr):' &
 !!$             , maxval(dtopo(1:nx)) * 3.16d7 / dt &
 !!$             , minval(dtopo(1:nx)) * 3.16d7 / dt
