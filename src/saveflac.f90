@@ -6,11 +6,10 @@ subroutine saveflac
 use arrays
 use params
 USE marker_data
-include 'precision.inc'
+implicit none
 
-parameter( kindr=8, kindi=4 )
-real(kindr), allocatable :: dum1(:),dum2(:,:)
-integer(kindi), allocatable :: dum11(:), idum2(:,:)
+integer, parameter :: kindr=8, kindi=4
+integer nrec, nwords
 real*8 rtime, rdt
 
 ! define record number and write it to contents
@@ -73,31 +72,23 @@ close (1)
 
 
 ! 2-D (nx-1)*(nz-1) arrays - elements defined
-allocate( dum2(nz-1,nx-1) )
-
 nwords = (nz-1)*(nx-1)
 
 ! Phases
-allocate( idum2(nz-1,nx-1) )
-idum2(1:nz-1,1:nx-1) = iphase(1:nz-1,1:nx-1)
 open (1,file='phase.rs',access='direct',recl=nwords*kindr)
-write (1,rec=nrec) idum2
+write (1,rec=nrec) iphase
 close (1)
-deallocate(idum2)
 
 ! Plastic strain
-dum2(1:nz-1,1:nx-1) = aps(1:nz-1,1:nx-1)
 open (1,file='aps.rs',access='direct',recl=nwords*kindr) 
-write (1,rec=nrec) dum2
+write (1,rec=nrec) aps
 close (1)
 
 
 ! Heat sources
-dum2(1:nz-1,1:nx-1) = source(1:nz-1,1:nx-1)
 open (1,file='source.rs',access='direct',recl=nwords*kindr) 
-write (1,rec=nrec) dum2
+write (1,rec=nrec) source
 close (1)
-deallocate(dum2)
 
 ! Markers
 if(iint_marker.eq.1) then
