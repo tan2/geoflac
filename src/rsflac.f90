@@ -177,16 +177,8 @@ endif
 ! Calculate AREAS (Important: iphase is needed to calculate area!)
 call init_areas
 
-! Distribution of REAL masses to nodes
-call rmasses
-
 ! Boundary conditions
 call init_bc
-
-! Inertial masses and time steps (elastic, maxwell and max_thermal)
-call dt_mass
-
-if( ivis_present.eq.1 ) call init_visc
 
 temp0 = temp
 shrheat = 0
@@ -196,6 +188,14 @@ extrusion = 0
 andesitic_melt_vol = 0
 se2sr = 1d-16
 e2sr = 1d-16
+
+! Distribution of REAL masses to nodes
+call rmasses
+
+if( ivis_present.eq.1 ) call init_visc
+
+! Inertial masses and time steps (elastic, maxwell and max_thermal)
+call dt_mass
 
 ! Initiate parameters for stress averaging
 dtavg=0
