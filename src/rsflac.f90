@@ -117,89 +117,38 @@ deallocate( dum2 )
 
 
 if (iint_marker.eq.1) then
-
-
 ! Markers
-nwords= nmarkers
-allocate (dum1(nmarkers))
-! Markers
-open (1,file='xmarker.rs',access='direct',recl=nwords*kindr)
-read (1,rec=nrec) dum1
+nwords = nmarkers
+nrec = 1
+open (1,file='marker1.rs',access='direct',recl=nwords*kindr)
+read (1,rec=nrec) mark_a1(1:nmarkers)
+nrec = nrec + 1
+read (1,rec=nrec) mark_a2(1:nmarkers)
+nrec = nrec + 1
+read (1,rec=nrec) mark_x(1:nmarkers)
+nrec = nrec + 1
+read (1,rec=nrec) mark_y(1:nmarkers)
+nrec = nrec + 1
+read (1,rec=nrec) mark_age(1:nmarkers)
+nrec = nrec + 1
 close (1)
-do i = 1,nmarkers
-mark_x(i) = dum1(i)
-enddo
 
-
-open (1,file='ymarker.rs',access='direct',recl=nwords*kindr)
-read (1,rec=nrec) dum1
+nrec = 1
+open (1,file='marker2.rs',access='direct',recl=nwords*kindi)
+read (1,rec=nrec) mark_dead(1:nmarkers)
+nrec = nrec + 1
+read (1,rec=nrec) mark_ntriag(1:nmarkers)
+nrec = nrec + 1
+read (1,rec=nrec) mark_phase(1:nmarkers)
+nrec = nrec + 1
+read (1,rec=nrec) mark_ID(1:nmarkers)
+nrec = nrec + 1
 close (1)
-do i = 1,nmarkers
-mark_y(i) = dum1(i)
-enddo
-
-
-open (1,file='xa1marker.rs',access='direct',recl=nwords*kindr)
-read (1,rec=nrec) dum1
-close (1)
-do i = 1,nmarkers
-mark_a1(i) = dum1(i)
-enddo
-
-
-open (1,file='xa2marker.rs',access='direct',recl=nwords*kindr)
-read (1,rec=nrec) dum1
-close (1)
-do i = 1,nmarkers
-mark_a2(i) = dum1(i)
-enddo
-
-
-open (1,file='xagemarker.rs',access='direct',recl=nwords*kindr)
-read (1,rec=nrec) dum1
-close (1)
-do i = 1,nmarkers
-mark_age(i) = dum1(i)
-enddo
-
-
-allocate(dum11(nmarkers))
-
-open (1,file='xIDmarker.rs',access='direct',recl=nwords*kindi)
-read (1,rec=nrec) dum11
-close (1)
-do i = 1,nmarkers
-mark_ID(i) = dum11(i)
-enddo
-
-
-open (1,file='xntriagmarker.rs',access='direct',recl=nwords*kindi)
-read (1,rec=nrec) dum11
-close (1)
-do i = 1,nmarkers
-mark_ntriag(i) = dum11(i)
-enddo
-
-open (1,file='xphasemarker.rs',access='direct',recl=nwords*kindi)
-read (1,rec=nrec) dum11
-close (1)
-do i = 1,nmarkers
-mark_phase(i) = dum11(i)
-enddo
-
-open (1,file='xdeadmarker.rs',access='direct',recl=nwords*kindi)
-read (1,rec=nrec) dum11
-close (1)
-do i = 1,nmarkers
-mark_dead(i) = dum11(i)
-enddo
-
-deallocate(dum11)
 
 ! recount marker phase
 mark_id_elem(:,:,:) = 0
 nmark_elem(:,:) = 0
-print *, nmarkers
+print *, '# of markers:', nmarkers
 do n = 1, nmarkers
     if(mark_dead(n) .eq. 0) cycle
 

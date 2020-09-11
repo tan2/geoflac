@@ -99,73 +99,36 @@ write (1,rec=nrec) dum2
 close (1)
 deallocate(dum2)
 
-if(iint_marker.eq.1) then
-
-call bar2euler
-
-allocate(dum1(nmarkers))
-nwords= nmarkers
 ! Markers
-do i = 1,nmarkers
-dum1(i) = mark_x(i)
-enddo
-open (1,file='xmarker.rs',access='direct',recl=nwords*kindr) 
-write (1,rec=nrec) dum1 
-close (1)
-do i = 1,nmarkers
-dum1(i) = mark_y(i)
-enddo
-open (1,file='ymarker.rs',access='direct',recl=nwords*kindr) 
-write (1,rec=nrec) dum1 
-close (1)
-do i = 1,nmarkers
-dum1(i) = mark_a1(i)
-enddo
-open (1,file='xa1marker.rs',access='direct',recl=nwords*kindr) 
-write (1,rec=nrec) dum1 
-close (1)
-do i = 1,nmarkers
-dum1(i) = mark_a2(i)
-enddo
-open (1,file='xa2marker.rs',access='direct',recl=nwords*kindr) 
-write (1,rec=nrec) dum1 
-close (1)
-do i = 1,nmarkers
-dum1(i) = mark_age(i)
-enddo
-open (1,file='xagemarker.rs',access='direct',recl=nwords*kindr)
-write (1,rec=nrec) dum1 
-close (1)
-deallocate(dum1)
+if(iint_marker.eq.1) then
+     call bar2euler
 
-allocate(dum11(nmarkers))
-do i = 1,nmarkers
-dum11(i) = mark_ID(i)
-enddo
-open (1,file='xIDmarker.rs',access='direct',recl=nwords*kindi) 
-write (1,rec=nrec) dum11 
-close (1)
-do i = 1,nmarkers
-dum11(i) = mark_ntriag(i)
-!write(*,*) mark_ntriag(i),dum11(i)
-enddo
-open (1,file='xntriagmarker.rs',access='direct',recl=nwords*kindi) 
-write (1,rec=nrec) dum11 
-close (1)
-do i = 1,nmarkers
-dum11(i) = mark_phase(i)
-enddo
-open (1,file='xphasemarker.rs',access='direct',recl=nwords*kindi) 
-write (1,rec=nrec) dum11 
-close (1)
-do i = 1,nmarkers
-dum11(i) = mark_dead(i)
-enddo
-open (1,file='xdeadmarker.rs',access='direct',recl=nwords*kindi)
-write (1,rec=nrec) dum11
-close (1)
-deallocate(dum11)
+     nwords = nmarkers
+     nrec = 1
+     open (1,file='marker1.rs',access='direct',recl=nwords*kindr)
+     write (1,rec=nrec) mark_a1(1:nmarkers)
+     nrec = nrec + 1
+     write (1,rec=nrec) mark_a2(1:nmarkers)
+     nrec = nrec + 1
+     write (1,rec=nrec) mark_x(1:nmarkers)
+     nrec = nrec + 1
+     write (1,rec=nrec) mark_y(1:nmarkers)
+     nrec = nrec + 1
+     write (1,rec=nrec) mark_age(1:nmarkers)
+     nrec = nrec + 1
+     close (1)
 
+     nrec = 1
+     open (1,file='marker2.rs',access='direct',recl=nwords*kindi)
+     write (1,rec=nrec) mark_dead(1:nmarkers)
+     nrec = nrec + 1
+     write (1,rec=nrec) mark_ntriag(1:nmarkers)
+     nrec = nrec + 1
+     write (1,rec=nrec) mark_phase(1:nmarkers)
+     nrec = nrec + 1
+     write (1,rec=nrec) mark_ID(1:nmarkers)
+     nrec = nrec + 1
+     close (1)
 endif
 
 return 
