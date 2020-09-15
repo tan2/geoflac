@@ -358,7 +358,7 @@ do i = 1, nxt
                     n = 2*( (nzt-1)*(io-1)+jo-1 ) + k
                     a1 = pt(n,1,1) + xx*pt(n,1,2) + yy*pt(n,1,3)
                     a2 = pt(n,2,1) + xx*pt(n,2,2) + yy*pt(n,2,3)
-                    a3 = 1. - a1 - a2
+                    a3 = 1.d0 - a1 - a2
                     amod = a1*a1 + a2*a2 + a3*a3
                     if( amod .lt. amodmin ) then
                         amodmin = amod
