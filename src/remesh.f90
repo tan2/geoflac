@@ -7,8 +7,8 @@ implicit none
 
 integer :: nzt,nxt
 double precision, allocatable :: dummy(:,:), cordo(:,:,:), dhnew(:), extnew(:)
-integer :: i, i1, i2, idist, ii, j, jj, k, l, iph
-double precision :: densT, dh, dh1, dh2, dp, dpt, &
+integer :: i, idist, ii, j, jj, k, l, iph
+double precision :: xl, xr, densT, dh, dh1, dh2, dp, dpt, &
                     press, rogh, tmpr
 allocate(cordo(1:nz,1:nx,1:2))
 
@@ -18,49 +18,43 @@ cordo = cord
 ! Create The New grid (cord) using cordo(nz,i,2) for the bottom and cordo(1,i,2) for the surface
 call rem_cord(cordo)
 
-! Interpolate accumulated topo change
+
+
+!===========================================================================!
+! Length-weighted interpolation of accumulated topo change on the surface
 allocate(dhnew(nx-1), extnew(nx-1))
 dhnew(:) = 0
 extnew(:) = 0
 
-i2 = 1
-! for each new element i
-do i = 1, nx-1
-    ! for each old node, starting from i2
-    do i1 = i2, nx-1
-        if (cordo(1,i1,1) <= cord(1,i,1)) cycle
-        if (cordo(1,i1,1) < cord(1,i+1,1)) then
-            if (i1 /= 1) then
-                if (cordo(1,i1-1,1) >= cord(1,i,1)) then
-                    dhnew(i) = dhnew(i) + dhacc(i1-1) * (cordo(1,i1,1) - cordo(1,i-1,1))
-                    extnew(i) = extnew(i) + extr_acc(i1-1) * (cordo(1,i1,1) - cordo(1,i-1,1))
-                else
-                    dhnew(i) = dhnew(i) + dhacc(i1-1) * (cordo(1,i1,1) - cord(1,i,1))
-                    extnew(i) = extnew(i) + extr_acc(i1-1) * (cordo(1,i1,1) - cord(1,i,1))
-                end if
-            end if
-        else
-            if (i1 /= 1) then
-                dhnew(i) = dhnew(i) + dhacc(i1-1) * (cord(1,i+1,1) - cordo(1,i1-1,1))
-                extnew(i) = extnew(i) + extr_acc(i1-1) * (cord(1,i+1,1) - cordo(1,i1-1,1))
-            end if
-            i2 = i1
-            exit
-        end if
-    end do
-end do
-! special treatment for the last new element
-i = nx - 1
-i1 = i2
-if (cordo(1,i1,1) <= cord(1,i,1)) then
-    dhnew(i) = dhnew(i) + dhacc(i1) * (cord(1,i+1,1) - cord(1,i,1))
-    extnew(i) = extnew(i) + extr_acc(i1) * (cord(1,i+1,1) - cord(1,i,1))
-end if
+i = 1 ! index of new mesh
+ii = 1 ! index of old mesh
+xl = cord(1,i,1)
+! loop over each old element
+do
+    xr = min(cordo(1,ii+1,1), cord(1,i+1,1))
+    if (xl < xr) then
+        ! integration
+        dhnew(i) = dhnew(i) + dhacc(ii) * (xr - xl)
+        extnew(i) = extnew(i) + extr_acc(ii) * (xr - xl)
+    endif
 
+    if (xr == cordo(1,ii+1,1)) then
+        ii = ii + 1
+    else
+        i = i + 1
+    endif
+    if (max(i,ii) == nx) exit
+    xl = xr
+    xr = min(cordo(1,ii+1,1), cord(1,i+1,1))
+enddo
+! divided by segment length
 dhacc(1:nx-1) = dhnew / (cord(1,2:nx,1) - cord(1,1:nx-1,1))
 extr_acc(1:nx-1) = extnew / (cord(1,2:nx,1) - cord(1,1:nx-1,1))
+
 deallocate(dhnew, extnew)
 
+
+!===========================================================================!
 ! REMESHING FOR ELEMENT-WISE PROPERTIES
 ! Linear interpolation in baricentric coordinates defined as centers of old mesh
 nxt = nx-1
