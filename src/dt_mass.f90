@@ -164,8 +164,9 @@ integer :: i, j
 double precision :: dlmin_prop, dlmin, dl, dlm
 dlmin = 1.d+28
 
-do 1 i = 1,nx-1
-    do 1 j = 1,nz-1
+!$OMP parallel do private(dl, dlm) reduction(min:dlmin)
+do i = 1,nx-1
+    do j = 1,nz-1
 
         ! side 1-2 (triangles 1 and 3)
         dl = sqrt( (cord(j+1,i  ,1)-cord(j  ,i  ,1))**2 + (cord(j+1,i  ,2)-cord(j  ,i  ,2))**2 )
@@ -209,7 +210,9 @@ do 1 i = 1,nx-1
         dlm = 1.d0/(area(j,i,2)*dl)
         dlmin = min(dlmin, dlm)
 
-1 continue
+    enddo
+enddo
+!$OMP end parallel do
 
 dlmin_prop = dlmin
 
