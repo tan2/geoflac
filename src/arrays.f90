@@ -6,20 +6,14 @@ module arrays
   save
 
   ! fortran array allocatable
-  real*8, allocatable:: cord(:,:,:), temp(:,:), vel(:,:,:), stress0(:,:,:,:), &
+  double precision, allocatable:: cord(:,:,:), temp(:,:), vel(:,:,:), stress0(:,:,:,:), &
        force(:,:,:), amass(:,:), rmass(:,:), &
        area(:,:,:), dvol(:,:,:), strain(:,:,:), bc(:,:,:)
 
-  integer, allocatable:: ncod(:,:,:)
-
-  ! temporary array
-  real*8, allocatable :: junk2(:,:), xmpt(:,:,:), tkappa(:)
-  integer, allocatable :: itmp(:,:)
-
-  integer, allocatable :: iphase(:,:), &
+  integer, allocatable :: ncod(:,:,:), iphase(:,:), &
       nopbou(:,:), ncodbou(:,:), idtracer(:)
 
-  real*8, allocatable :: phase_ratio(:,:,:), &
+  double precision, allocatable :: phase_ratio(:,:,:), &
       dtopo(:), dhacc(:), extrusion(:), &
       andesitic_melt_vol(:), extr_acc(:), &
       strainr(:,:,:,:), &
@@ -28,13 +22,16 @@ module arrays
       bcstress(:,:)
 
   double precision, allocatable :: se2sr(:,:), sshrheat(:,:)
-  
+
   ! remeshing arrays
-  real*8, allocatable :: pt(:,:,:), barcord(:,:,:), &
+  double precision, allocatable :: pt(:,:,:), barcord(:,:,:), &
             cold(:,:,:), cnew(:,:,:), &
             cordo(:,:,:), dhnew(:), extnew(:)
   integer, allocatable :: numtr(:,:)
 
+  ! temporary array
+  double precision, allocatable :: junk2(:,:), xmpt(:,:,:), tkappa(:)
+  integer, allocatable :: itmp(:,:)
 
 contains
 
