@@ -30,7 +30,7 @@ module arrays
   integer, allocatable :: numtr(:,:)
 
   ! temporary array
-  double precision, allocatable :: junk2(:,:), xmpt(:,:,:), tkappa(:)
+  double precision, allocatable :: dummy1(:,:), xmpt(:,:,:), tkappa(:)
   integer, allocatable :: itmp(:,:)
 
 contains
@@ -83,7 +83,7 @@ contains
     allocate(dhnew(nx-1), extnew(nx-1))
 
     ! tmp arrays used in subroutines
-    allocate(junk2(nz, nx))
+    allocate(dummy1(nz, nx))
     allocate(xmpt(2,3,(nz-1)*(nx-1)*2))
     allocate(tkappa(nx))
     allocate(itmp(nz, nx))
