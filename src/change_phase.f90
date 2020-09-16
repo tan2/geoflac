@@ -187,7 +187,7 @@ enddo
 !$OMP end parallel
 
 ! storing plastic strain in temporary array
-dummy(1:nz-1,1:nx-1) = aps(1:nz-1,1:nx-1)
+dummye(1:nz-1,1:nx-1) = aps(1:nz-1,1:nx-1)
 
 !$OMP parallel do private(iph, kinc)
 ! recompute phase ratio of those changed elements
@@ -203,7 +203,7 @@ do i = 1, nx-1
         ! When phase change occurs, the mineral would recrystalize and lost
         ! all plastic strain associated with this marker.
         kinc = nmark_elem(j,i)
-        aps(j,i) = max(aps(j,i) - dummy(j,i) / float(kinc), 0d0)
+        aps(j,i) = max(aps(j,i) - dummye(j,i) / float(kinc), 0d0)
     enddo
 enddo
 !$OMP end parallel do

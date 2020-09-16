@@ -77,9 +77,7 @@ call rem_barcord(nzt, nxt)
 ! Interpolate Stress (in quadralaterals)
 do k = 1,4
     do l = 1,4
-        dummy(1:nzt,1:nxt) = stress0(1:nzt,1:nxt,k,l)
-        call rem_interpolate( nzt, nxt, dummy )
-        stress0(1:nzt,1:nxt,k,l) = dummy(1:nzt,1:nxt)
+        call rem_interpolate( nzt, nxt, dummye, stress0(:,:,k,l) )
     end do
 end do
 
@@ -90,20 +88,15 @@ end do
 
 ! Interpolate strains
 do k = 1, 3
-    dummy(1:nzt,1:nxt) = strain(1:nzt,1:nxt,k)
-    call rem_interpolate( nzt, nxt, dummy )
-    strain(1:nzt,1:nxt,k) = dummy(1:nzt,1:nxt)
+    call rem_interpolate( nzt, nxt, dummye, strain(:,:,k) )
 end do
 
 
 ! plastic strain
-dummy(1:nzt,1:nxt) = aps(1:nzt,1:nxt)
-call rem_interpolate( nzt, nxt, dummy )
+call rem_interpolate( nzt, nxt, dummye, aps )
 do i = 1, nxt
     do j = 1, nzt
-        if( dummy(j,i) .ge. 0.d0 ) then
-            aps(j,i) = dummy(j,i)
-        else
+        if( aps(j,i) .lt. 0.d0 ) then
             aps(j,i) = 0.d0
         endif
 !       write(*,*) i,j,aps(j,i)
@@ -183,9 +176,7 @@ endif
 
 
 ! sources
-dummy(1:nzt,1:nxt) = source(1:nzt,1:nxt)
-call rem_interpolate( nzt, nxt, dummy )
-source(1:nzt,1:nxt) = dummy(1:nzt,1:nxt)
+call rem_interpolate( nzt, nxt, dummye, source )
 
 
 ! REMESHING FOR NODE-WISE PROPERTIES
@@ -208,15 +199,11 @@ call rem_barcord(nzt,nxt)
 
 ! Velocities (in nodes)
 do k = 1, 2
-    dummy(1:nzt,1:nxt) = vel(1:nzt,1:nxt,k)
-    call rem_interpolate( nzt, nxt, dummy )
-    vel(1:nzt,1:nxt,k) = dummy(1:nzt,1:nxt)
+    call rem_interpolate( nzt, nxt, dummyn, vel(:,:,k) )
 end do
 
 ! Temperatures (in nodes) 
-dummy(1:nzt,1:nxt) = temp(1:nzt,1:nxt)
-call rem_interpolate( nzt, nxt, dummy )
-temp(1:nzt,1:nxt) = dummy(1:nzt,1:nxt)
+call rem_interpolate( nzt, nxt, dummyn, temp )
 
 ! Changing the temperature of left-/right- most elements
 ! in accordance to initial temperature
@@ -435,16 +422,16 @@ end
 !===============================================
 ! interpolation
 !===============================================
-subroutine rem_interpolate( nzt, nxt, arr )
+subroutine rem_interpolate( nzt, nxt, dummy, arr )
 use arrays
 implicit none
 integer :: nzt,nxt
-double precision :: arr(nzt,nxt)
+double precision :: dummy(nzt,nxt), arr(nzt,nxt)
 integer :: i, j, io, jo, numq
 double precision :: f1, f2, f3
 
 
-dummy(1:nzt,1:nxt) = arr
+dummy = arr
 
 do i = 1, nxt
     do j = 1, nzt
