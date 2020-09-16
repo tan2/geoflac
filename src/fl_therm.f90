@@ -6,7 +6,6 @@ use arrays
 use params
 include 'precision.inc'
 
-double precision :: flux(nz-1,nx-1,2,2), add_source(nz-1,nx-1)
 double precision, parameter :: heat_latent_magma = 4.2d5  ! J/kg, latent heat of freezing magma
 
 ! real_area = 0.5* (1./area(n,t))
@@ -83,8 +82,8 @@ do i = 1,nx-1
 
         ! Additional sources - radiogenic and shear heating
         tmpr = 0.25d0*(t1 + t2 + t3 + t4)
-        !add_source(j,i) = ( source(j,i) + dissip/den(iph) - 600.d0*cp_eff*Eff_melt(iph,tmpr)) / cp_eff
-        add_source(j,i) = ( source(j,i) + dissip/den(iph) ) / cp_eff
+        !dummye(j,i) = ( source(j,i) + dissip/den(iph) - 600.d0*cp_eff*Eff_melt(iph,tmpr)) / cp_eff
+        dummye(j,i) = ( source(j,i) + dissip/den(iph) ) / cp_eff
 
         ! (1) A element:
         flux(j,i,1,1) = -diff * ( t1*(y2-y3)+t2*(y3-y1)+t3*(y1-y2) ) * area(j,i,1)
@@ -121,7 +120,7 @@ do i = 1,nx
 
             real_area13 = 0.5d0/area(j-1,i-1,2)/3.d0
             area_n = area_n + real_area13
-            rhs = rhs + add_source(j-1,i-1)*real_area13
+            rhs = rhs + dummye(j-1,i-1)*real_area13
 
         endif
 
@@ -141,7 +140,7 @@ do i = 1,nx
 
             real_area13 = 0.5d0/area(j-1,i  ,1)/3.d0
             area_n = area_n + real_area13
-            rhs = rhs + add_source(j-1,i  )*real_area13
+            rhs = rhs + dummye(j-1,i  )*real_area13
 
             ! triangle B
             ! side 1-2
@@ -156,7 +155,7 @@ do i = 1,nx
 
             real_area13 = 0.5d0/area(j-1,i  ,2)/3.d0
             area_n = area_n + real_area13
-            rhs = rhs + add_source(j-1,i  )*real_area13
+            rhs = rhs + dummye(j-1,i  )*real_area13
 
         endif
         
@@ -176,7 +175,7 @@ do i = 1,nx
 
             real_area13 = 0.5d0/area(j  ,i-1,1)/3.d0
             area_n = area_n + real_area13
-            rhs = rhs + add_source(j  ,i-1)*real_area13
+            rhs = rhs + dummye(j  ,i-1)*real_area13
 
             ! triangle B
             ! side 1-2
@@ -191,7 +190,7 @@ do i = 1,nx
 
             real_area13 = 0.5d0/area(j  ,i-1,2)/3.d0
             area_n = area_n + real_area13
-            rhs = rhs + add_source(j  ,i-1)*real_area13
+            rhs = rhs + dummye(j  ,i-1)*real_area13
 
         endif
 
@@ -210,7 +209,7 @@ do i = 1,nx
 
             real_area13 = 0.5d0/area(j  ,i  ,1)/3.d0
             area_n = area_n + real_area13
-            rhs = rhs + add_source(j  ,i  )*real_area13
+            rhs = rhs + dummye(j  ,i  )*real_area13
 
         endif
 
