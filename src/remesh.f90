@@ -5,7 +5,6 @@ use marker_data
 implicit none
 
 integer :: nzt,nxt
-double precision, allocatable :: dummy(:,:)
 integer :: i, idist, ii, j, jj, k, l, iph
 double precision :: xl, xr, densT, dh, dh1, dh2, dp, dpt, &
                     press, rogh, tmpr
@@ -54,7 +53,6 @@ extr_acc(1:nx-1) = extnew / (cord(1,2:nx,1) - cord(1,1:nx-1,1))
 ! Linear interpolation in baricentric coordinates defined as centers of old mesh
 nxt = nx-1
 nzt = nz-1
-allocate( dummy(nzt,nxt) )
 
 ! Old mesh - old-element centers
 ! New mesh - new-element centers
@@ -190,14 +188,10 @@ call rem_interpolate( nzt, nxt, dummy )
 source(1:nzt,1:nxt) = dummy(1:nzt,1:nxt)
 
 
-deallocate( dummy )
-
-
 ! REMESHING FOR NODE-WISE PROPERTIES
 ! Linear interpolation in baricentric coordinates of old mesh
 nxt = nx
 nzt = nz
-allocate( dummy(nzt,nxt) )
 
 ! Old mesh - old coordinates points
 cold(1:nz,1:nx,1:2) = cordo(1:nz,1:nx,1:2)
@@ -223,7 +217,6 @@ end do
 dummy(1:nzt,1:nxt) = temp(1:nzt,1:nxt)
 call rem_interpolate( nzt, nxt, dummy )
 temp(1:nzt,1:nxt) = dummy(1:nzt,1:nxt)
-deallocate( dummy )
 
 ! Changing the temperature of left-/right- most elements
 ! in accordance to initial temperature
@@ -446,12 +439,12 @@ subroutine rem_interpolate( nzt, nxt, arr )
 use arrays
 implicit none
 integer :: nzt,nxt
-double precision :: dummy(nzt,nxt),arr(nzt,nxt)
+double precision :: arr(nzt,nxt)
 integer :: i, j, io, jo, numq
 double precision :: f1, f2, f3
 
 
-dummy = arr
+dummy(1:nzt,1:nxt) = arr
 
 do i = 1, nxt
     do j = 1, nzt
