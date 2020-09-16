@@ -30,7 +30,7 @@ module arrays
   integer, allocatable :: numtr(:,:)
 
   ! temporary array
-  double precision, allocatable :: dummyn(:,:), dummye(:,:), xmpt(:,:,:), tkappa(:)
+  double precision, allocatable :: dummyn(:,:), dummye(:,:), xmpt(:,:,:), stmpn(:)
   integer, allocatable :: itmp(:,:)
 
 contains
@@ -86,7 +86,7 @@ contains
     allocate(dummyn(nz, nx))
     allocate(dummye(nz-1, nx-1))
     allocate(xmpt(2,3,(nz-1)*(nx-1)*2))
-    allocate(tkappa(nx))
+    allocate(stmpn(nx))
     allocate(itmp(nz, nx))
 
   end subroutine allocate_arrays

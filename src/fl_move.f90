@@ -142,16 +142,16 @@ include 'precision.inc'
 if( topo_kappa .gt. 0.d0 ) then
 
     topomean = sum(cord(1,:,2)) / nx
-    tkappa = topo_kappa
+    stmpn = topo_kappa ! elevation-dep. topo diffusivity
     ! higher elevation has higher erosion rate
     do i = 1, nx
-        if (cord(1,i,1) > topomean) tkappa(i) = topo_kappa * (1 + (cord(1,i,1) - topomean) * fac_kappa)
+        if (cord(1,i,1) > topomean) stmpn(i) = topo_kappa * (1 + (cord(1,i,1) - topomean) * fac_kappa)
     enddo
 
     do i = 2, nx-1
 
-        snder = ( tkappa(i+1)*(cord(1,i+1,2)-cord(1,i  ,2))/(cord(1,i+1,1)-cord(1,i  ,1)) - &
-            tkappa(i-1)*(cord(1,i  ,2)-cord(1,i-1,2))/(cord(1,i  ,1)-cord(1,i-1,1)) ) / &
+        snder = ( stmpn(i+1)*(cord(1,i+1,2)-cord(1,i  ,2))/(cord(1,i+1,1)-cord(1,i  ,1)) - &
+            stmpn(i-1)*(cord(1,i  ,2)-cord(1,i-1,2))/(cord(1,i  ,1)-cord(1,i-1,1)) ) / &
             (cord(1,i+1,1)-cord(1,i-1,1))
         dtopo(i) = dt * snder
     end do
