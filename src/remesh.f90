@@ -1,4 +1,3 @@
- 
 subroutine remesh
 use arrays
 use params
@@ -6,23 +5,21 @@ use marker_data
 implicit none
 
 integer :: nzt,nxt
-double precision, allocatable :: dummy(:,:), cordo(:,:,:), dhnew(:), extnew(:)
+double precision, allocatable :: dummy(:,:)
 integer :: i, idist, ii, j, jj, k, l, iph
 double precision :: xl, xr, densT, dh, dh1, dh2, dp, dpt, &
                     press, rogh, tmpr
-allocate(cordo(1:nz,1:nx,1:2))
 
 ! Save old mesh for interpolations
 cordo = cord
 
 ! Create The New grid (cord) using cordo(nz,i,2) for the bottom and cordo(1,i,2) for the surface
-call rem_cord(cordo)
+call rem_cord
 
 
 
 !===========================================================================!
 ! Length-weighted interpolation of accumulated topo change on the surface
-allocate(dhnew(nx-1), extnew(nx-1))
 dhnew(:) = 0
 extnew(:) = 0
 
@@ -50,8 +47,6 @@ enddo
 ! divided by segment length
 dhacc(1:nx-1) = dhnew / (cord(1,2:nx,1) - cord(1,1:nx-1,1))
 extr_acc(1:nx-1) = extnew / (cord(1,2:nx,1) - cord(1,1:nx-1,1))
-
-deallocate(dhnew, extnew)
 
 
 !===========================================================================!
@@ -248,9 +243,7 @@ call rmasses
 ! 2) dt_mech with a given  Real Masses (idt_scale = 0)
 call dt_mass
 
-deallocate(cordo)
-
-return 
+return
 end
 
 

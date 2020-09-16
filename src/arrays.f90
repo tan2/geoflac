@@ -31,7 +31,8 @@ module arrays
   
   ! remeshing arrays
   real*8, allocatable :: pt(:,:,:), barcord(:,:,:), &
-            cold(:,:,:), cnew(:,:,:)
+            cold(:,:,:), cnew(:,:,:), &
+            cordo(:,:,:), dhnew(:), extnew(:)
   integer, allocatable :: numtr(:,:)
 
 
@@ -81,6 +82,8 @@ contains
     allocate(pt((nz-1)*(nx-1)*2, 2, 3), barcord(nz, nx, 3), &
              cold(nz, nx, 2), cnew(nz, nx, 2))
     allocate(numtr(nz, nx))
+    allocate(cordo(nz,nx,2))
+    allocate(dhnew(nx-1), extnew(nx-1))
 
     ! tmp arrays used in subroutines
     allocate(junk2(nz, nx))
