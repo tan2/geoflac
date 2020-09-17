@@ -56,6 +56,7 @@ nzt = nz-1
 
 ! Old mesh - old-element centers
 ! New mesh - new-element centers
+!$OMP parallel do
 do i = 1, nx-1
     do j = 1, nz-1
         cold(j,i,1) = 0.25d0*( cordo(j,i,1)+cordo(j+1,i,1)+cordo(j,i+1,1)+cordo(j+1,i+1,1) )
@@ -64,6 +65,7 @@ do i = 1, nx-1
         cnew(j,i,2) = 0.25d0*( cord(j,i,2)+cord(j+1,i,2)+cord(j,i+1,2)+cord(j+1,i+1,2) )
     enddo
 enddo
+!$OMP end parallel do
 
 ! Calculate parameters of old-mesh triangles
 call rem_trpars(nzt, nxt)
@@ -94,6 +96,7 @@ end do
 
 ! plastic strain
 call rem_interpolate( nzt, nxt, dummye, aps )
+!$OMP parallel do
 do i = 1, nxt
     do j = 1, nzt
         if( aps(j,i) .lt. 0.d0 ) then
@@ -102,6 +105,7 @@ do i = 1, nxt
 !       write(*,*) i,j,aps(j,i)
     end do
 end do
+!$OMP end parallel do
 
 ! phases
 ! XXX: Assuming material is coming from the left or right boundary
@@ -184,11 +188,14 @@ call rem_interpolate( nzt, nxt, dummye, source )
 nxt = nx
 nzt = nz
 
+!$OMP task
 ! Old mesh - old coordinates points
 cold(1:nz,1:nx,1:2) = cordo(1:nz,1:nx,1:2)
 temp0(1:nz,1:nx) = temp(1:nz,1:nx)
 ! New mesh - new coordinates points
 cnew(1:nz,1:nx,1:2) = cord(1:nz,1:nx,1:2)
+!$OMP end task
+
 ! Calculate parameters of triangles of this mesh
 call rem_trpars(nzt,nxt)
 
@@ -239,6 +246,7 @@ integer :: nzt,nxt
 integer :: i, j, k, n
 double precision :: x1, x2, x3, y1, y2, y3, det
 
+!$OMP parallel do private(x1,x2,x3,y1,y2,y3,det,n)
 do i = 1,nxt-1
     do j = 1,nzt-1
         do k = 1,2
@@ -279,7 +287,8 @@ do i = 1,nxt-1
             pt(n,2,3)=(x1-x3)/det
         end do
     end do
-end do     
+end do
+!$OMP end parallel do
 
 return
 end
@@ -297,6 +306,8 @@ integer :: nzt,nxt
 
 perr = 1.d-4
 
+!$OMP parallel do private(xx,yy,l, lt,io,jo,k,n,a1,a2,a3,amod,amodmin,nmin, &
+!$OMP                     numqu,dist1,dist2,dist3)
 do i = 1, nxt
     do j = 1, nzt
         xx = cnew(j,i,1)
@@ -414,6 +425,7 @@ do i = 1, nxt
 
     end do
 end do
+!$OMP end parallel do
 
 return
 end
@@ -433,6 +445,7 @@ double precision :: f1, f2, f3
 
 dummy = arr
 
+!$OMP parallel do private(numq,io,jo,f1,f2,f3)
 do i = 1, nxt
     do j = 1, nzt
 
@@ -460,6 +473,7 @@ do i = 1, nxt
         arr(j,i) = barcord(j,i,1)*f1 + barcord(j,i,2)*f2 + barcord(j,i,3)*f3
     end do
 end do
+!$end parallel do
 
 return
 
