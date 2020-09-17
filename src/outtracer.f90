@@ -5,7 +5,7 @@ use params
 
 include 'precision.inc'
 parameter( kindr=4 )
-real xik(nmtracers),timtrk(nmtracers),xtrak(nmtracers),ytrak(nmtracers),temptrak(nmtracers),phtrak(nmtracers)
+real xtrak(nmtracers),ytrak(nmtracers),temptrak(nmtracers),phtrak(nmtracers)
 real prestrak(nmtracers),straintrak(nmtracers)
 real(kindr) D1d(nmtracers)
 
@@ -37,9 +37,6 @@ call bar2euler
 
 do kk = 1,nmtracers
     id = idtracer(kk)
-    xik(kk) = float(kk)
-    ! time in myrs
-    timtrk(kk) = real(time/sec_year/1.d6)
 
     if(mark_dead(id) .eq. 0) then
         xtrak(kk) = 0.d0
@@ -66,18 +63,6 @@ do kk = 1,nmtracers
 enddo
 
 D1d = 0.d0
-do i = 1, nmtracers
-D1d(i) = xik(i)
-enddo
-open (1,file='outtrackID.0',access='direct',recl=nwords*kindr)
-write (1,rec=nrec) D1d 
-close (1)
-do i = 1, nmtracers
-D1d(i) = timtrk(i)
-enddo
-open (1,file='outtracktime.0',access='direct',recl=nwords*kindr)
-write (1,rec=nrec) D1d 
-close (1)
 do i = 1, nmtracers
 D1d(i) = xtrak(i)
 enddo
