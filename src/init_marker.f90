@@ -25,6 +25,8 @@ nmarkers = 0
 !call random_seed
 !write(333,*) 'Call to random_seed(), result may be stochastic'
 
+!$OMP parallel do private(a,b,points,dx,dy,l,kph,rx,ry,ddx,ddy,xx,yy,n, &
+!$OMP                     ycol1,ycol2,ycol3,ycol4,i1,i2,r,yyy,inc)
 do i = 1 , nx-1
     do j = 1 , nz-1
         ! Alog the edge of an element; a and b are the nodes
@@ -131,6 +133,7 @@ do i = 1 , nx-1
         enddo
     enddo
 enddo
+!$OMP end parallel do
 
 !   Put initial heterogeneities
 do i = 1,inhom

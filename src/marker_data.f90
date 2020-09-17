@@ -44,22 +44,21 @@ MODULE marker_data
     ! marker not added. Otherwise, marker is added to "mark" array and kk
     ! incremented by 1.
     !
-    ! *** This subroutine is not thread-safe. DON'T CALL IT WITHIN
-    ! *** OPENMP/OMP SECTION.
-  
+    ! *** This subroutine is thread-safe only if each thread call has a different
+    ! *** (j,i) pair. OTHERWISE, DON'T CALL IT WITHIN OPENMP/OMP SECTION.
+
     use arrays
     use params
     implicit none
     integer :: iph, kk, j, i, inc
     double precision :: x, y, age
-    integer :: ntr
+    integer :: ntr, kk_local
     double precision :: bar1, bar2
-  
-    character*200 msg
-  
+    !character*200 msg
+
     call check_inside(x , y, bar1, bar2, ntr, i, j, inc)
     if(inc.eq.0) return
-  
+
     if(nmark_elem(j,i) == max_markers_per_elem) then
         !write(msg*) 'Too many markers at element:', i, j, nmark_elem(j,i)
         !call SysMsg(msg)
@@ -67,21 +66,23 @@ MODULE marker_data
         inc = -1
         return
     endif
+    !$OMP atomic update
+    kk = kk + 1
+    kk_local = kk
+
     ! recording the id of markers belonging to the element
     nmark_elem(j,i) = nmark_elem(j,i) + 1
-    mark_id_elem(nmark_elem(j,i),j,i) = kk + 1
+    mark_id_elem(nmark_elem(j,i),j,i) = kk_local
 
-    kk = kk + 1
-  
-    mark_x(kk) = x
-    mark_y(kk) = y
-    mark_dead(kk) = 1
-    mark_ID(kk) = kk
-    mark_a1(kk) = bar1
-    mark_a2(kk) = bar2
-    mark_age(kk) = age
-    mark_ntriag(kk) = ntr
-    mark_phase(kk) = iph
+    mark_x(kk_local) = x
+    mark_y(kk_local) = y
+    mark_dead(kk_local) = 1
+    mark_ID(kk_local) = kk_local
+    mark_a1(kk_local) = bar1
+    mark_a2(kk_local) = bar2
+    mark_age(kk_local) = age
+    mark_ntriag(kk_local) = ntr
+    mark_phase(kk_local) = iph
 
   end subroutine add_marker
 

@@ -14,6 +14,7 @@ subroutine marker2elem
   ! Find the triangle in which each marker belongs
 
   iseed = 0
+  !$OMP parallel do private(kinc,r1,r2,x1,y1,x2,y2,xx,yy,inc)
   do i = 1 , nx-1
       do j = 1 , nz-1
           kinc = nmark_elem(j,i)
@@ -51,6 +52,7 @@ subroutine marker2elem
 
       enddo
   enddo
+  !$OMP end parallel do
 
   return
 end subroutine marker2elem
