@@ -30,7 +30,7 @@ else
     nrec = nrec + 1
     backspace(1) ! Neede for further writing since EOF has been reached.
 endif
-write( 1, '(i6,1x,i8,1x,i8,1x,f7.3)' ) nrec, nloop,nmarkers, time/sec_year/1.d6
+write( 1, '(i6,1x,i8,1x,i8,1x,f10.6)' ) nrec, nloop,nmarkers, time/sec_year/1.d6
 close(1)
 
 !! Since the number of markers changes with time, the marker data cannot be
