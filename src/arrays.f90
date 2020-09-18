@@ -29,6 +29,10 @@ module arrays
             cordo(:,:,:), dhnew(:), extnew(:)
   integer, allocatable :: numtr(:,:)
 
+  ! tracer arrays
+  real, allocatable ::tracerx(:), tracerz(:), tracert(:), tracerp(:), tracere(:)
+  integer, allocatable :: tracerph(:)
+
   ! temporary array
   double precision, allocatable :: dummyn(:,:), dummye(:,:), stmpn(:)
   integer, allocatable :: itmp(:,:)
@@ -91,4 +95,17 @@ contains
 
   end subroutine allocate_arrays
 
+
+  subroutine allocate_tracer_arrays(nmtracers)
+    implicit none
+
+    integer, intent(in) :: nmtracers
+
+    allocate(tracerx(nmtracers))
+    allocate(tracerz(nmtracers))
+    allocate(tracert(nmtracers))
+    allocate(tracerp(nmtracers))
+    allocate(tracere(nmtracers))
+    allocate(tracerph(nmtracers))
+  end subroutine allocate_tracer_arrays
 end module arrays

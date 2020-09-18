@@ -277,23 +277,24 @@ class Flac(object):
         ntracers = int(tmp[0,1])
         n = ntracerrec * ntracers
 
-        time = self._read_data('outtracktime.0', count=n)
-        x = self._read_data('outtrackxx.0', count=n)
+        time = tmp[:,3]
+
+        x = self._read_data('tracerx.0', count=n)
         x.shape = (ntracerrec, ntracers)
 
-        z = self._read_data('outtrackyy.0', count=n)
+        z = self._read_data('tracerz.0', count=n)
         z.shape = (ntracerrec, ntracers)
 
-        T = self._read_data('outtracktemp.0', count=n)
+        T = self._read_data('tracert.0', count=n)
         T.shape = (ntracerrec, ntracers)
 
-        p = self._read_data('outtrackpres.0', count=n)
+        p = self._read_data('tracerp.0', count=n)
         p.shape = (ntracerrec, ntracers)
 
-        e = self._read_data('outtrackstrain.0', count=n)
+        e = self._read_data('tracere.0', count=n)
         e.shape = (ntracerrec, ntracers)
 
-        phase = self._read_data('outtrackphase.0', count=n)
+        phase = self._read_data('tracerph.0', count=n, dtype=np.int32)
         phase.shape = (ntracerrec, ntracers)
 
         return x, z, T, p, e, phase

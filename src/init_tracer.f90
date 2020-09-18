@@ -29,5 +29,7 @@ do kk = 1,nmarkers
         enddo
     endif
 enddo
+
+call allocate_tracer_arrays(nmtracers)
 return
 end subroutine init_tracer
