@@ -30,7 +30,9 @@ module arrays
   integer, allocatable :: numtr(:,:)
 
   ! tracer arrays
-  real, allocatable ::tracerx(:), tracerz(:), tracert(:), tracerp(:), tracere(:)
+  real, allocatable ::tracerx(:), tracerz(:), tracervx(:), tracervz(:), &
+      tracert(:), tracerp(:), tracere(:), traceredot(:), &
+      tracersxx(:), tracerszz(:), tracersxz(:)
   integer, allocatable :: tracerph(:)
 
   ! temporary array
@@ -103,9 +105,15 @@ contains
 
     allocate(tracerx(nmtracers))
     allocate(tracerz(nmtracers))
+    allocate(tracervx(nmtracers))
+    allocate(tracervz(nmtracers))
     allocate(tracert(nmtracers))
     allocate(tracerp(nmtracers))
     allocate(tracere(nmtracers))
+    allocate(traceredot(nmtracers))
+    allocate(tracersxx(nmtracers))
+    allocate(tracerszz(nmtracers))
+    allocate(tracersxz(nmtracers))
     allocate(tracerph(nmtracers))
   end subroutine allocate_tracer_arrays
 end module arrays

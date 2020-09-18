@@ -291,13 +291,25 @@ class Flac(object):
         p = self._read_data('tracerp.0', count=n)
         p.shape = (ntracerrec, ntracers)
 
+        sxx = self._read_data('tracersxx.0', count=n)
+        sxx.shape = (ntracerrec, ntracers)
+
+        szz = self._read_data('tracerszz.0', count=n)
+        szz.shape = (ntracerrec, ntracers)
+
+        sxz = self._read_data('tracersxz.0', count=n)
+        sxz.shape = (ntracerrec, ntracers)
+
         e = self._read_data('tracere.0', count=n)
         e.shape = (ntracerrec, ntracers)
+
+        edot = self._read_data('traceredot.0', count=n)
+        edot.shape = (ntracerrec, ntracers)
 
         phase = self._read_data('tracerph.0', count=n, dtype=np.int32)
         phase.shape = (ntracerrec, ntracers)
 
-        return x, z, T, p, e, phase
+        return x, z, T, p, sxx, szz, sxz, e, edot, phase
 
 
     def _read_data(self, fileobj, columns=1,
