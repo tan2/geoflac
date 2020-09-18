@@ -27,6 +27,7 @@ endif
 write( 1, '(i6,1x,i8,1x,i8,1x,f10.6)' ) nrec, nmtracers,nloop,  time/sec_year/1.d6
 close(1)
 
+!$OMP parallel do private(id,n,nn,k,j,i,ba1,ba2,ba3,x,z,vx,vz,tmpr,si,sxx,szz,sxz)
 do kk = 1,nmtracers
     id = idtracer(kk)
 
@@ -90,6 +91,7 @@ do kk = 1,nmtracers
         tracerph(kk) = mark_phase(id)
     endif
 enddo
+!$OMP end parallel do
 
 nwords = nmtracers
 
