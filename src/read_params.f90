@@ -187,8 +187,8 @@ do i = 1, nphase
          plstrain1(i),plstrain2(i),fric1(i),fric2(i),cohesion1(i),cohesion2(i), &
          dilat1(i),dilat2(i), &
          conduct(i),cp(i),ts(i),tl(i),tk(i),fk(i)
-    print *, i
 end do
+print *, i, 'phases'
 ! Flag to take initial phase distribution from a file
 call AdvanceToNextInputLine( 4 )
 read(4,*) irphase
