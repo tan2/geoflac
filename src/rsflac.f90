@@ -165,6 +165,14 @@ enddo
 call marker2elem
 call count_phase_ratio_all
 
+if (iint_tracer.eq.1) then
+    ! Tracers
+    nwords = nmtracers
+    open (1,file='tracer.rs',access='direct',recl=nwords*kindi)
+    read (1,rec=1) idtracer(1:nmtracers)
+    close (1)
+endif
+
 endif
 
 ! Pressure at the bottom: pisos 
