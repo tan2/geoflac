@@ -10,7 +10,7 @@ use arrays
 use params
 include 'precision.inc'
 
-
+!$OMP parallel do
 do 13 i = 1,nx-1
     do 13 j = 1,nz-1
 
@@ -48,7 +48,7 @@ do 13 i = 1,nx-1
             stop 41
         endif
 13 continue
-
+!$OMP end parallel do
 return
 end
 
@@ -79,6 +79,7 @@ use params
 include 'precision.inc'
 
 area_t = 0
+!$OMP parallel do reduction(+:area_t)
 do i = 1,nx-1
     do j = 1,nz-1
 
@@ -104,6 +105,7 @@ do i = 1,nx-1
 
     end do
 end do
+!$OMP end parallel do
 
 total_area = area_t
 
