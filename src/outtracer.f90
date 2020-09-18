@@ -31,10 +31,6 @@ endif
 write( 1, '(i6,1x,i8,1x,i8,1x,f10.6)' ) nrec, nmtracers,nloop,  time/sec_year/1.d6
 close(1)
 
-! Coordinates  [km]
-nwords = nmtracers
-call bar2euler
-
 do kk = 1,nmtracers
     id = idtracer(kk)
 
@@ -52,9 +48,33 @@ do kk = 1,nmtracers
         j = mod(nn, nz-1) + 1
         i = nn/(nz-1) + 1
 
-        xtrak(kk) = real(mark_x(id))
-        ytrak(kk) = real(mark_y(id))
-        tmpr = real(0.25d0*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1)))
+        ba1 = mark_a1(kk)
+        ba2 = mark_a2(kk)
+        ba3 = 1.0d0 - ba1 - ba2
+
+        if (k .eq. 1) then
+            i1 = i
+            i2 = i
+            i3 = i + 1
+            j1 = j
+            j2 = j + 1
+            j3 = j
+        else
+            i1 = i + 1
+            i2 = i
+            i3 = i + 1
+            j1 = j
+            j2 = j + 1
+            j3 = j + 1
+        endif
+
+        ! interpolate nodal values to the marker
+        x = cord(j1,i1,1)*ba1 + cord(j2,i2,1)*ba2 + cord(j3,i3,1)*ba3
+        y = cord(j1,i1,2)*ba1 + cord(j2,i2,2)*ba2 + cord(j3,i3,2)*ba3
+        tmpr = temp(j1,i1)*ba1 + temp(j2,i2)*ba2 + temp(j3,i3)*ba3
+
+        xtrak(kk) = real(x) * 1.e-3
+        ytrak(kk) = real(y) * 1.e-3
         temptrak(kk) = real(tmpr)
         prestrak(kk) = real(stressI(j,i))
         straintrak(kk) = real(strainII(j,i))
@@ -62,7 +82,11 @@ do kk = 1,nmtracers
     endif
 enddo
 
+nwords = nmtracers
+
 D1d = 0.d0
+
+! Coordinates  [km]
 do i = 1, nmtracers
 D1d(i) = xtrak(i)
 enddo
