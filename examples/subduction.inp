@@ -37,7 +37,7 @@
 ; upper left and lower right corners of the elements
 1 1 50 10          i1,j1,i2,j2 
 ;
-1, 1.   number of rectangular zones with tracers (stores x,y,P,T), frequency of storage in 1000yrs.
+1, 1.   number of rectangular zones with tracers (stores x,z,T,P,etc), frequency of storage in 1000yrs.
 ; upper left and lower right corners of the elements
 1 1 70 15           i1,j1,i2,j2 
 ;
