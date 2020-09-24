@@ -19,7 +19,7 @@ call fl_srate
 
 ! Changing marker phases
 ! XXX: change_phase is slow, don't call it every loop
-if( mod(nloop, 10).eq.0 ) call change_phase
+if( mod(nloop, ifreq_rmasses).eq.0 ) call change_phase
 
 ! Update stresses by constitutive law (and mix isotropic stresses)
 call fl_rheol
