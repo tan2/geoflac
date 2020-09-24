@@ -1,4 +1,5 @@
 subroutine init_marker
+use myrandom_mod
 use arrays
 use params
 use marker_data
@@ -8,7 +9,7 @@ double precision :: a(3,2), b(3,2), points(9,2)
 double precision, parameter :: half = 0.5d0
 double precision, parameter :: onesixth = 0.1666666666666666666666d0
 double precision, parameter :: fivesixth = 0.8333333333333333333333d0
-integer :: i, j, i1, i2, iamp, inc, itop, iwidth, ixc, k, k1, k2, kph, n, l
+integer :: i, j, i1, i2, iamp, inc, itop, iwidth, ixc, k, k1, k2, kph, n, l, iseed
 double precision :: ddx, ddy, dx, dy, r, rx, ry, xx, ycol1, ycol2, ycol3, ycol4, &
                     yy, yyy
 mark_id_elem = 0
@@ -18,6 +19,7 @@ nmark_elem = 0
 ! Distribute evenly first then randomize the distribution
 ! to start 9 markers per elements
 nmarkers = 0
+iseed = 0
 
 ! zones with 9 markers per elements
 ! calculate the id (element number) of the zones of high res
@@ -26,7 +28,7 @@ nmarkers = 0
 !write(333,*) 'Call to random_seed(), result may be stochastic'
 
 !$OMP parallel do private(a,b,points,dx,dy,l,kph,rx,ry,ddx,ddy,xx,yy,n, &
-!$OMP                     ycol1,ycol2,ycol3,ycol4,i1,i2,r,yyy,inc)
+!$OMP                     ycol1,ycol2,ycol3,ycol4,i1,i2,r,yyy,inc,iseed)
 do i = 1 , nx-1
     do j = 1 , nz-1
         ! Alog the edge of an element; a and b are the nodes
@@ -77,8 +79,8 @@ do i = 1 , nx-1
             kph = iphase(j,i)
 
             ! position of the marker
-            call random_number(rx)
-            call random_number(ry)
+            call myrandom(iseed, rx)
+            call myrandom(iseed, ry)
             rx = 0.5d0 - rx
             ry = 0.5d0 - ry
             ddx = dx*rx/3
