@@ -54,8 +54,11 @@ def compare(old, new):
 
 
 frame = int(sys.argv[1])
-curdir = os.getcwd()
 olddir = 'orig/'
+if len(sys.argv) > 2:
+    olddir = sys.argv[2] + '/'
+
+curdir = os.getcwd()
 newdir = './'
 
 # name holder
