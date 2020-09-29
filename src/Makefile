@@ -1,8 +1,8 @@
 # -*- Makefile -*-
 #
-# Makefile for flac
+# Makefile for geoflac
 #
-# Author: Eh Tan <tan2@mail.utexas.edu>
+# Author: Eh Tan <tan2@earth.sinica.edu.tw>
 #
 
 ## Execute "make" if making production run. Or "make debug=1" for debugging run.
@@ -17,13 +17,13 @@
 ## Select default fortran 90 compiler
 ########################################################################
 
-## GNU version >= 4.2, otherwise openmp won't work
+## GNU version >= 5, otherwise openmp and ieee_is_nan won't work
 F90 = gfortran
 
 ## Intel, tested with v11.1
 #F90 = ifort
 
-## PGI group
+## PGI group, tested with 2017
 #F90 = pgf90
 
 ## Sun
@@ -51,7 +51,7 @@ gprof = 0
 ## (Usually you won't need to modify anything below)
 ########################################################################
 
-## for GNU gfortran >= 4.2
+## for GNU gfortran >= 5
 ifeq ($(F90), gfortran)
 	ifeq ($(omp), 1)
 		CFLAGS += -fopenmp
@@ -99,7 +99,7 @@ ifeq ($(F90), pgf90)
 		LDFLAGS += -mp
 	endif
         ifeq ($(debug), 0)
-                CFLAGS += -O3 -fast -fastsse -Mnoframe -Mipa=fast
+                CFLAGS += -O3 -fast -fastsse -Mnoframe -Minfo=all
         else
                CFLAGS += -O0 -Mbounds -Mchkstk -traceback
                LDFLAGS +=
