@@ -4,6 +4,7 @@ program DREZINA
 use arrays
 use params
 use marker_data
+use nvtx_mod
 
 character*200 inputfile
 real*4 secnds,time0
@@ -93,14 +94,24 @@ do while( time .le. time_max )
     if( itest_mesh() .eq. 1 ) then
       ! If there are markers recalculate their x,y global coordinate and assign them aps, eII, press, temp
       if(iint_marker.eq.1) then
+        call nvtxStartRange('bar2euler')
         call bar2euler
+        call nvtxEndRange()
       endif
+      call nvtxStartRange('remesh')
       call remesh
+      call nvtxEndRange()
       ! If markers are present recalculate a1,a2 local coordinates and assign elements with phase ratio vector
       if (iint_marker.eq.1) then
+        call nvtxStartRange('lpeuler2bar')
         call lpeuler2bar
+        call nvtxEndRange()
+        call nvtxStartRange('marker2elem')
         call marker2elem
+        call nvtxEndRange()
+        call nvtxStartRange('count_phase_ratio_all')
         call count_phase_ratio_all
+        call nvtxEndRange()
       endif
     endif
   endif
