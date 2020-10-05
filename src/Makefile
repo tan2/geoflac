@@ -102,7 +102,7 @@ ifeq ($(F90), pgf90)
 	endif
 	ifeq ($(acc), 1)
 		CFLAGS += -acc -ta=tesla:cc70,managed -Mcuda -Minfo=accel
-		LDFLAGS += -acc -ta=tesla:cc70,managed -Mcuda
+		LDFLAGS += -acc -ta=tesla:cc70,managed -Mcuda -lnvToolsExt
 	endif
         ifeq ($(debug), 0)
                 CFLAGS += -O3 -fast
@@ -143,6 +143,10 @@ MODULE_SRCS = \
 	arrays.f90 \
 	phases.f90 \
 	marker_data.f90
+
+ifeq ($(acc), 1)
+	MODULE_SRCS += nvtx_mod.f90
+endif
 
 SRCS =	\
 	bar2euler.f90 \
