@@ -320,7 +320,7 @@ read(4,*) lastsave
 close (iu)
 
 !$ACC update device(nx,nz,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
-!$ACC     ny_rem,mode_rem,ntest_remivis_shape,igeotherm, &
+!$ACC     ny_rem,mode_rem,ntest_rem,ivis_shape,igeotherm, &
 !$ACC     ny_inject,nelem_inject,nmass_update,nopbmax,nydrsides,nystressbc, &
 !$ACC     nofbc,nofside(maxbc),nbc1(maxbc),nbc2(maxbc),nbc(maxbc), &
 !$ACC     mix_strain,mix_stress,lastsave,lastout, &

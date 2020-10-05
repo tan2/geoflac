@@ -1,6 +1,7 @@
 !------ Visco - Elasticity (Maxwell rheology)
 subroutine maxwell (bulkm,rmu0,viscosity,s11,s22,s33,s12,de11,de22,de33,de12,dv,&
      ndim,dt)
+!$ACC routine seq
 implicit none
 
 integer, intent(in) :: ndim
@@ -23,8 +24,8 @@ end if
 temp = rmu/(2.*viscosity) * dt 
 
 if ( temp .gt. 0.5 ) then
-    write( msgstr, '(A,A,e8.1,A,e7.1,A,e7.1)' ) 'Maxwell: time step!',' visc=',viscosity,' m0=',rmu0,' m=',rmu
-    call SysMsg(msgstr)
+!    write( msgstr, '(A,A,e8.1,A,e7.1,A,e7.1)' ) 'Maxwell: time step!',' visc=',viscosity,' m0=',rmu0,' m=',rmu
+!    call SysMsg(msgstr)
     stop 22
 endif 
      

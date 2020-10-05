@@ -2,6 +2,7 @@
 
 subroutine plastic(bulkm,rmu,coh,phi,psi,depls,ipls,diss,hardn,s11,s22,s33,s12,de11,de22,de33,de12,&
      ten_off,ndim)
+!$ACC routine seq
 implicit none
 
 integer, intent(in) :: ndim
@@ -242,6 +243,7 @@ end
 ! Prepare plastic properties depending on softening, weighted by phase ratio
 
 subroutine pre_plast (i,j,coh,phi,psi,hardn)
+!$ACC routine seq
 use arrays
 use params
 include 'precision.inc'

@@ -3,6 +3,11 @@
 !  Calculate total finite strain and plastic strain  
     
 subroutine fl_rheol
+!$ACC routine(pre_plast) seq
+!$ACC routine(elastic) seq
+!$ACC routine(maxwell) seq
+!$ACC routine(plastic) seq
+
 use arrays
 use params
 implicit none

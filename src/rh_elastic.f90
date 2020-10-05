@@ -1,6 +1,7 @@
 ! Linear Elastic Model   (Plane strain)
 
 subroutine elastic(bulkm,rmu,s11,s22,s33,s12,de11,de22,de12)
+!$ACC routine seq
 implicit none
 
 real*8, intent(in) :: bulkm, rmu, de11, de22, de12

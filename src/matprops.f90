@@ -119,6 +119,7 @@ end function Eff_conduct
 ! Therefore there is a coefficient 1.e+6 
 
 function Eff_visc( j, i )
+!$ACC routine seq
 use arrays
 use params
 include 'precision.inc'
