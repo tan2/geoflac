@@ -9,6 +9,7 @@ include 'precision.inc'
 
 nloop = 0
 time = 0.d0
+!$ACC update device(nloop,time)
 
 ! Mesh generator
 call init_cord
@@ -53,18 +54,38 @@ andesitic_melt_vol = 0
 e2sr = 1d-16
 se2sr = 1d-16
 
+!!! ============================================= !!!
+!!! From now on, the code below will run on GPUs
+!!! ============================================= !!!
+!$ACC update device(area, cord, temp, stress0, iphase, phase_ratio) async(2)
+!$ACC update device(e2sr) async(3)
+!$ACC update device(vel) async(4)
+
+!! These arrays are not used below and can be uploaded to GPU early
+!$ACC update device(force, &
+!$ACC               dvol, strain, bc, ncod, junk2, xmpt, tkappa, &
+!$ACC               nopbou, ncodbou, dtopo, dhacc, extrusion, &
+!$ACC               andesitic_melt_vol, extr_acc, strainr, aps, &
+!$ACC               temp0, source, shrheat, bcstress, &
+!$ACC               pt, barcord, cold, cnew, numtr, &
+!$ACC               se2sr, sshrheat) async(1)
+
 ! Distribution of REAL masses to nodes
+!$ACC wait(2)
 call rmasses
 
 ! Initialization of viscosity
+!$ACC wait(3)
 if( ivis_present.eq.1 ) call init_visc
 
 ! Inertial masses and time steps (elastic and maxwell)
+!$ACC wait(4)
 call dt_mass
 
 ! Initiate parameters for stress averaging
 dtavg=0
 nsrate=-1
+!$ACC update device(dtavg, nsrate) async(1)
 
 return
 end
