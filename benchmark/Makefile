@@ -20,6 +20,6 @@ set:
 
 cmp:
 	${RUN_TEST}
-	python3 compare.py ${FRAME} ${ORIG}
+	python3 compare.py ${ORIG} ${FRAME}
 
 .PHONY: all set cmp

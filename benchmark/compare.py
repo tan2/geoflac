@@ -70,13 +70,11 @@ def compare(old, new):
     return
 
 
-frame = int(sys.argv[1])
-olddir = 'orig/'
-if len(sys.argv) > 2:
-    olddir = sys.argv[2] + '/'
+olddir = sys.argv[1]
+frame = int(sys.argv[2])
 
 curdir = os.getcwd()
-newdir = './'
+newdir = curdir
 
 # name holder
 old = 0
@@ -89,7 +87,7 @@ try:
     flo = flac.Flac()
     old = read_data(flo, frame)
 
-    os.chdir('../' + newdir)
+    os.chdir(newdir)
     fln = flac.Flac()
     new = read_data(fln, frame)
 
