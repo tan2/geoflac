@@ -14,6 +14,11 @@ def read_data(fl, frame):
     stuff.x, stuff.z = fl.read_mesh(frame)
     stuff.vx, stuff.vz = fl.read_vel(frame)
 
+    stuff.aps = fl.read_aps(frame)
+    stuff.sxx = fl.read_sxx(frame)
+    stuff.szz = fl.read_szz(frame)
+    stuff.sxz = fl.read_sxz(frame)
+
     stuff.m_x, stuff.m_z, stuff.m_age, stuff.m_phase, stuff.m_ID = \
         fl.read_markers(frame)
     return stuff
@@ -40,6 +45,18 @@ def compare(old, new):
 
     max, sigma = reldiff(old.vz, new.vz)
     print('  Z velocity:\t', max, sigma)
+
+    max, sigma = reldiff(old.aps, new.aps)
+    print('  Pl. strain:\t', max, sigma)
+
+    max, sigma = reldiff(old.sxx, new.sxx)
+    print('  Stress xx:\t', max, sigma)
+
+    max, sigma = reldiff(old.szz, new.szz)
+    print('  Stress zz:\t', max, sigma)
+
+    max, sigma = reldiff(old.sxz, new.sxz)
+    print('  Stress xz:\t', max, sigma)
 
     max, sigma = reldiff(old.m_x, new.m_x)
     print('  Marker X:\t', max, sigma)
