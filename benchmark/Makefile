@@ -16,7 +16,7 @@ set:
 	rm -rf ${ORIG}
 	mkdir -p ${ORIG}
 	mv *.0 *.rs sys.msg output.asc _contents.save vbc.s ${ORIG}
-	git log -1 HEAD > ${ORIG}/version
+	cp ../src/snapshot.diff ${ORIG}
 
 cmp:
 	${RUN_TEST}
