@@ -1,6 +1,7 @@
 
-CASE := test-tiny.inp
+#CASE := test-tiny.inp
 CASE := test-tiny-long.inp
+#CASE := test-big.inp
 FRAME := 4
 
 # Use single cpu for omp to avoid round-off errors
