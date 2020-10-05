@@ -54,38 +54,71 @@ andesitic_melt_vol = 0
 e2sr = 1d-16
 se2sr = 1d-16
 
-!!! ============================================= !!!
-!!! From now on, the code below will run on GPUs
-!!! ============================================= !!!
-!$ACC update device(area, cord, temp, stress0, iphase, phase_ratio) async(2)
-!$ACC update device(e2sr) async(3)
-!$ACC update device(vel) async(4)
+!$ACC update device(nx,nz,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
+!$ACC     ny_rem,mode_rem,ntest_rem,ivis_shape,igeotherm, &
+!$ACC     ny_inject,nelem_inject,nmass_update,nopbmax,nydrsides,nystressbc, &
+!$ACC     nofbc,nofside(maxbc),nbc1(maxbc),nbc2(maxbc),nbc(maxbc), &
+!$ACC     mix_strain,mix_stress,lastsave,lastout, &
+!$ACC     io_vel,io_srII,io_eII,io_aps,io_sII,io_sxx,io_szz, &
+!$ACC     io_sxz,io_pres,io_temp,io_phase,io_visc,io_unused,io_density, &
+!$ACC     io_src,io_diss,io_forc,io_hfl,io_topo, &
+!$ACC     irphase,irtemp,ircoord, &
+!$ACC     nphase,mphase,irheol(maxph), &
+!$ACC     ltop(maxphasel),lbottom(maxphasel),lphase(maxphasel), &
+!$ACC     imx1(maxtrzone),imx2(maxtrzone),imy1(maxtrzone),imy2(maxtrzone), &
+!$ACC     itx1(maxtrzone),itx2(maxtrzone),ity1(maxtrzone),ity2(maxtrzone), &
+!$ACC     nphasl,nzone_marker,nmarkers, iint_marker,iint_tracer,nzone_tracer, &
+!$ACC     ix1(maxinh),ix2(maxinh),iy1(maxinh),iy2(maxinh),inphase(maxinh), &
+!$ACC     igeom(maxinh),inhom, &
+!$ACC     itherm,istress_therm,itemp_bc,ix1t,ix2t,iy1t,iy2t,ishearh, &
+!$ACC     ixtb1(maxzone_age),ixtb2(maxzone_age),nzone_age,i_prestress, &
+!$ACC     iph_col1(maxzone_age),iph_col2(maxzone_age),iph_col3(maxzone_age), &
+!$ACC     iph_col4(maxzone_age),iph_col5(maxzone_age),iph_col_trans(maxzone_age), &
+!$ACC     if_hydro, &
+!$ACC     nyhydro,iphsub, &
+!$ACC     movegrid,ndim,ifreq_visc,nmtracers,i_rey, &
+!$ACC     incoming_left,incoming_right, &
+!$ACC     iynts, iax1,iay1,ibx1,iby1,icx1,icy1,idx1,idy1, &
+!$ACC     ivis_present,n_boff_cutoff,idt_scale,ifreq_imasses,ifreq_rmasses, &
+!$ACC     nloop,ifreq_avgsr,nsrate)
 
-!! These arrays are not used below and can be uploaded to GPU early
-!$ACC update device(force, &
-!$ACC               dvol, strain, bc, ncod, junk2, xmpt, tkappa, &
-!$ACC               nopbou, ncodbou, dtopo, dhacc, extrusion, &
-!$ACC               andesitic_melt_vol, extr_acc, strainr, aps, &
-!$ACC               temp0, source, shrheat, bcstress, &
-!$ACC               pt, barcord, cold, cnew, numtr, &
-!$ACC               se2sr, sshrheat) async(1)
+!$ACC update device(x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
+!$ACC     dx_rem,angle_rem,topo_kappa,fac_kappa, &
+!$ACC     v_min,v_max,efoldc, &
+!$ACC     g_x0,g_y0c,g_amplitude,g_width, &
+!$ACC     rate_inject, &
+!$ACC     bca(maxbc),bcb(maxbc),bcc(maxbc),xReyn, &
+!$ACC     bcd(maxbc),bce(maxbc),bcf(maxbc),bcg(maxbc),bch(maxbc),bci(maxbc), &
+!$ACC     dt_scale,strain_inert,vbc,amul,ratl,ratu,frac, &
+!$ACC     dtmax_therm,dt_maxwell,fracm, &
+!$ACC     dt_elastic,demf, &
+!$ACC     dtout_screen,dtout_file,dtsave_file, &
+!$ACC     visc(maxph),den(maxph),alfa(maxph),beta(maxph),pln(maxph), &
+!$ACC     acoef(maxph),eactiv(maxph),rl(maxph),rm(maxph), &
+!$ACC     plstrain1(maxph),plstrain2(maxph),fric1(maxph),fric2(maxph), &
+!$ACC     cohesion1(maxph),cohesion2(maxph), &
+!$ACC     dilat1(maxph),dilat2(maxph), &
+!$ACC     conduct(maxph),cp(maxph), &
+!$ACC     ts(maxph),tl(maxph),tk(maxph),fk(maxph), &
+!$ACC     ten_off,tau_heal,dt_outtracer,xinitaps(maxinh), &
+!$ACC     t_top,t_bot,hs,hr,temp_per,bot_bc, &
+!$ACC     hc1(maxzone_age),hc2(maxzone_age),hc3(maxzone_age),hc4(maxzone_age), &
+!$ACC     age_1(maxzone_age),g,pisos,drosub,damp_vis, &
+!$ACC     dtavg, tbos, &
+!$ACC     time,dt,time_max)
 
 ! Distribution of REAL masses to nodes
-!$ACC wait(2)
 call rmasses
 
 ! Initialization of viscosity
-!$ACC wait(3)
 if( ivis_present.eq.1 ) call init_visc
 
 ! Inertial masses and time steps (elastic and maxwell)
-!$ACC wait(4)
 call dt_mass
 
 ! Initiate parameters for stress averaging
 dtavg=0
 nsrate=-1
-!$ACC update device(dtavg, nsrate) async(1)
 
 return
 end
