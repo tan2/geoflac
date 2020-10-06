@@ -47,11 +47,11 @@ end subroutine bar2euler
 
 
 subroutine shape_functions(j, i, shp2)
+  !$ACC routine seq
   use arrays
 
   include 'precision.inc'
   double precision, intent(out) :: shp2(2,3,2)
-!$ACC kernels loop
   do k = 1 , 2
       if (k.eq.1) then
           x1 = cord(j  ,i  ,1)
@@ -90,6 +90,7 @@ end subroutine shape_functions
 !
 ! solve for x and y
 subroutine bar2xy(ba1, ba2, shp, x, y)
+  !$ACC routine seq
   use arrays
 
   include 'precision.inc'
