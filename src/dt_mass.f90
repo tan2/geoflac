@@ -14,7 +14,9 @@
 !   j+1,i        j+1,i+1
 
 subroutine dt_mass
-
+!$ACC routine(dlmin_prop) gang
+!$ACC routine(Eff_cp) seq
+!$ACC routine(Eff_conduct) seq
 use arrays
 use params
 implicit none
@@ -64,10 +66,13 @@ else
     amass = 0
 end if
 
+!$ACC update device(dt_elastic, dt_maxwell)
+
 do iblk = 1, 2
     do jblk = 1, 2
         !$OMP parallel do private(iph, pwave, dens, vel_sound, rho_inert, rho_inert2, &
         !$OMP                     am3, dte, diff, dtt, dt_m, rmu)
+        !$ACC parallel loop collapse(2)
         do i = iblk, nx-1, 2
             do j = jblk, nz-1, 2
 
@@ -144,8 +149,9 @@ do iblk = 1, 2
     enddo
 enddo
 
+!$ACC update self(dt_elastic, dt_maxwell)
 dt = min(dt_elastic, dt_maxwell)
-!$ACC update device(dt, dt_elastic, dt_maxwell)
+!$ACC update device(dt)
 return
 end
 
@@ -156,6 +162,7 @@ end
 !   dlmin = Area/Dmax for each triangle
 
 function dlmin_prop()
+!$ACC routine gang
 use arrays
 use params
 implicit none
@@ -165,6 +172,7 @@ double precision :: dlmin_prop, dlmin, dl, dlm
 dlmin = 1.d+28
 
 !$OMP parallel do private(dl, dlm) reduction(min:dlmin)
+!$ACC loop collapse(2)
 do i = 1,nx-1
     do j = 1,nz-1
 
@@ -212,6 +220,7 @@ do i = 1,nx-1
 
     enddo
 enddo
+!$ACC end loop
 !$OMP end parallel do
 
 dlmin_prop = dlmin
