@@ -56,10 +56,7 @@ call nvtxEndRange()
 
 ! Adjust inertial masses or time step due to deformations
 call nvtxStartRange('dt_mass')
-if( mod(nloop,ifreq_imasses) .eq. 0 ) then
-    call dt_mass
-!$ACC update device(dt)
-end if
+if( mod(nloop,ifreq_imasses) .eq. 0 ) call dt_mass
 call nvtxEndRange()
 
 500 continue

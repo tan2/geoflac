@@ -60,7 +60,7 @@ ifeq ($(F90), gfortran)
 		LDFLAGS += -fopenmp
 	endif
 	ifeq ($(debug), 0)
-		CFLAGS += -O3 -ffast-math
+		CFLAGS += -O2
 	else
 		CFLAGS += -O0 -Wall -fbounds-check -ftrapv -fbacktrace -fdump-core \
 			-Waliasing -Walign-commons -Wampersand -Wintrinsic-shadow \
@@ -105,7 +105,7 @@ ifeq ($(F90), pgf90)
 		LDFLAGS += -acc -ta=tesla:cc70,managed -Mcuda -lnvToolsExt
 	endif
         ifeq ($(debug), 0)
-                CFLAGS += -O3 -fast
+                CFLAGS += -O2
         else
                CFLAGS += -O0 -Mbounds -Mchkstk -traceback
                LDFLAGS +=
@@ -125,7 +125,7 @@ ifeq ($(F90), f90)
 # -fpover=yes: Provide run-time overflow check during READ
 # -xcheck=%all: Enable all run-time check
 	ifeq ($(debug), 0)
-		CFLAGS += -O3 -r8const -fast -xloopinfo -s -xipo
+		CFLAGS += -O2 -r8const -xloopinfo -s -xipo
 	else
 		CFLAGS += -w3 -r8const -C -fpover=yes -xcheck=%all
 	endif

@@ -274,13 +274,15 @@ end subroutine resurface
 
 
 subroutine add_marker_at_top(i, dz_ratio, time, kph, nmarkers)
+  use myrandom_mod
   use marker_data
   use arrays
   include 'precision.inc'
 
+  iseed = nloop
   do while(.true.)
-     call random_number(r1)
-     call random_number(r2)
+     call myrandom(iseed, r1)
+     call myrandom(iseed, r2)
      j = 1
 
      ! (x1, y1) and (x2, y2)

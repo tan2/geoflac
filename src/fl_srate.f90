@@ -1,7 +1,6 @@
 
 ! Calculation of strain rates from velocities 
 ! Mixed of volumetric strain_rates (for incompressible flow)
-
 subroutine fl_srate
 use arrays
 use params
@@ -17,6 +16,10 @@ double precision :: x1,y1,x2,y2,x3,y3,x4,y4, &
 !$OMP         vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4, &
 !$OMP         em,eda,edb,s11,s22,s12, &
 !$OMP         srII,srI,srs2,stII)
+!$ACC parallel loop collapse(2) private(i,j,x1,y1,x2,y2,x3,y3,x4,y4, &
+!$ACC         vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4, &
+!$ACC         em,eda,edb,s11,s22,s12, &
+!$ACC         srII,srI,srs2,stII)
 do 2  i = 1,nx-1
     do 2  j = 1,nz-1
 
@@ -109,10 +112,14 @@ do 2  i = 1,nx-1
 !$OMP end parallel do
 ! following block is needed for averaging
 dtavg = dtavg + dt
-
+!$ACC update device(dtavg)
 ! re-initialisation after navgsr steps
 if( nsrate .eq. ifreq_avgsr ) then
 !$OMP parallel do
+!$ACC parallel loop collapse(2) private(i,j,x1,y1,x2,y2,x3,y3,x4,y4, &
+!$ACC         vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4, &
+!$ACC         em,eda,edb,s11,s22,s12, &
+!$ACC         srII,srI,srs2,stII)
     do i = 1,nx-1
         do j = 1, nz-1
             e2sr(j,i) = se2sr(j,i) / dtavg
@@ -126,6 +133,10 @@ if( nsrate .eq. ifreq_avgsr ) then
     nsrate = 0
 elseif( nsrate .eq. -1 ) then
 !$OMP parallel do
+!$ACC parallel loop collapse(2) private(i,j,x1,y1,x2,y2,x3,y3,x4,y4, &
+!$ACC         vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4, &
+!$ACC         em,eda,edb,s11,s22,s12, &
+!$ACC         srII,srI,srs2,stII)
     do i = 1,nx-1
         do j = 1, nz-1
             e2sr(j,i) = se2sr(j,i) / dtavg
