@@ -29,6 +29,7 @@ double precision :: pwave, dens, vel_sound, rho_inert, rho_inert2, am3, dte, dtt
 double precision :: rmu, visc_cut
 
 ! minimal propagation distance
+!$ACC kernels
 dlmin = dlmin_prop()
 if (idt_scale .eq. 0) then
     ! find dt below
@@ -65,7 +66,9 @@ if (idt_scale .eq. 0) then
 else
     amass = 0
 end if
+!$ACC end kernels
 
+!XXX: This is needed, but why?
 !$ACC update device(dt_elastic, dt_maxwell)
 
 do iblk = 1, 2
