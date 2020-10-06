@@ -30,12 +30,13 @@ double precision :: D(3,3)  ! diffusion operator
 !$ACC kernels
 ! saving old temperature
 if (istress_therm.gt.0) temp0(:,:) = temp(:,:)
-
+!$ACC end kernels
 
 !$OMP Parallel private(i,j,iph,cp_eff,cond_eff,dissip,diff,quad_area, &
 !$OMP                  x1,x2,x3,x4,y1,y2,y3,y4,t1,t2,t3,t4,tmpr, &
 !$OMP                  qs,real_area13,area_n,rhs)
 !$OMP do
+!$ACC parallel loop
 do i = 1,nx-1
     j = 1  ! top
     !iph = iphase(j,i)
@@ -43,12 +44,14 @@ do i = 1,nx-1
 
     ! area(j,i) is INVERSE of "real" DOUBLE area (=1./det)
     quad_area = 0.5d0/area(j,i,1) + 0.5d0/area(j,i,2)
-
+    !$ACC atomic update
     temp(j,i  ) = temp(j,i  ) + andesitic_melt_vol(i) * heat_latent_magma / quad_area / cp_eff
+    !$ACC atomic update
     temp(j,i+1) = temp(j,i+1) + andesitic_melt_vol(i) * heat_latent_magma / quad_area / cp_eff
 end do
 !$OMP end do
 
+!$ACC parallel loop collapse(2)
 !$OMP do
 do i = 1,nx-1
     do j = 1,nz-1
@@ -100,7 +103,7 @@ do i = 1,nx-1
 end do    
 !$OMP end do
 
-
+!$ACC parallel loop collapse(2)
 !$OMP do
 do i = 1,nx
     do j = 1,nz
@@ -223,6 +226,7 @@ end do
 !$OMP end do
 
 ! Boundary conditions (top and bottom)
+!$ACC kernels loop
 !$OMP do
 do i = 1,nx
 
@@ -239,6 +243,7 @@ end do
 !$OMP end do
 
 ! Boundary conditions: dt/dx =0 on left and right  
+!$ACC kernels loop
 !$OMP do
 do j = 1,nz
     temp(j ,1)  = temp(j,2)
@@ -246,7 +251,6 @@ do j = 1,nz
 end do
 !$OMP end do
 !$OMP end parallel
-!$ACC end kernels
 
 return
 end 
