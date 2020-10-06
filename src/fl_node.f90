@@ -28,8 +28,7 @@ include 'precision.inc'
 !    assemblage of forces is COUNTRE CLOCK-WISE !
 !
 
-boff = 0
-
+!$ACC kernels
 drat = dt / dt_elastic
 if (drat .lt. 1.d0) drat = 1.d0
 
@@ -387,5 +386,6 @@ if (i_prestress.eq.1.and.time.lt.600.d3*sec_year) then
         enddo
     enddo
 endif
+!$ACC end kernels
 return
 end subroutine fl_node
