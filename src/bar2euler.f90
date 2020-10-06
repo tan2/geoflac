@@ -7,7 +7,7 @@ include 'precision.inc'
 double precision :: shp2(2,3,2)
 
 ! calculate the new paramters for the triangles
-!$ACC kernels loop
+!$ACC parallel loop private(shp2)
 !$OMP parallel do private(shp2)
 do i = 1 , nmarkers
   if (mark_dead(i).eq.0) cycle
