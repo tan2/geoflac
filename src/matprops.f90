@@ -1,6 +1,7 @@
 !==============================================
 ! Density
 function Eff_dens( j, i)
+  !$ACC routine seq
   use arrays
   use params
   use phases
@@ -77,6 +78,7 @@ end function Eff_dens
 ! Effective Heat Capacity incorporating latent heat
 !=================================================
 function Eff_cp( j, i )
+!$ACC routine seq
 use arrays
 use params
 implicit none
@@ -95,6 +97,7 @@ end function Eff_cp
 ! Effective Thermal Conductivity
 !=================================================
 function Eff_conduct( j, i )
+!$ACC routine seq
 use arrays
 use params
 implicit none
