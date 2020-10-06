@@ -3,7 +3,7 @@
 ! Update and apply the boundary conditins in STRESSES 
 !
 !--------------------------------------------------------------------
-subroutine bc_update  
+subroutine bc_update
   !----------------------- determ. boundary conditions -----------
   !$ACC routine(Eff_dens) seq
   use arrays
@@ -17,7 +17,9 @@ subroutine bc_update
   ! -------------------------------------------------------------
   !$ACC kernels
   force = 0.0d0
+  !$ACC end kernels
 
+  !$ACC serial
   if (nydrsides.eq. 1) then
       rogh = 0.d0
       do j=1,nz-1
@@ -80,10 +82,12 @@ subroutine bc_update
       enddo
 
   endif
+  !$ACC end serial
 
   !----------------------------------
   ! APPLY  STATIC STRESSES:
   !----------------------------------
+  !$ACC kernels loop
   do i=1,nopbmax
 
       ii1 = nopbou(i,1)
@@ -99,10 +103,14 @@ subroutine bc_update
 
       s_normal = bcstress(i,1)
       !           projection on x
+      !$ACC atomic update
       force(jj1,ii1,1) = force(jj1,ii1,1)-0.5d0*s_normal*dly
+      !$ACC atomic update
       force(jj2,ii2,1) = force(jj2,ii2,1)-0.5d0*s_normal*dly
       !           projection on z
+      !$ACC atomic update
       force(jj1,ii1,2) = force(jj1,ii1,2)+0.5d0*s_normal*dlx
+      !$ACC atomic update
       force(jj2,ii2,2) = force(jj2,ii2,2)+0.5d0*s_normal*dlx
       !       write(*,*) jj1,jj2,ii1,ii2,s_normal,force(jj1,ii1,1), force(jj2,ii2,1)
       !
@@ -111,10 +119,14 @@ subroutine bc_update
 
       s_shear  = bcstress(i,2)
       !           projection on x
+      !$ACC atomic update
       force(jj1,ii1,1) = force(jj1,ii1,1)+0.5d0*s_shear*dlx
+      !$ACC atomic update
       force(jj2,ii2,1) = force(jj2,ii2,1)+0.5d0*s_shear*dlx
       !           projection on z
+      !$ACC atomic update
       force(jj1,ii1,2) = force(jj1,ii1,2)+0.5d0*s_shear*dly
+      !$ACC atomic update
       force(jj2,ii2,2) = force(jj2,ii2,2)+0.5d0*s_shear*dly
 
 
@@ -126,6 +138,5 @@ subroutine bc_update
       !       write(*,*) bcstress(i,3)
       !       endif
   enddo
-  !$ACC end kernels
   return
 end subroutine bc_update
