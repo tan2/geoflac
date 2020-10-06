@@ -1,4 +1,6 @@
 subroutine change_phase
+!$ACC routine(newphase2marker) gang
+!$ACC routine(count_phase_ratio) seq
 USE marker_data
 use arrays
 use params
@@ -6,9 +8,9 @@ use phases
 
 implicit none
 
-integer :: kph(1), jj, j, i, iph, nelem_serp, &
+integer :: jj, j, i, iph, nelem_serp, &
            jbelow, k, kinc, kk, n
-double precision :: ratio(20), yy, dep2, depth, press, quad_area, &
+double precision :: yy, dep2, depth, press, quad_area, &
                     tmpr, trpres, trpres2, vol_frac_melt
 
 ! max. depth (m) of eclogite phase transition
@@ -27,6 +29,7 @@ real*8, parameter :: partial_melt_temp = 600.d0
 ! thickness of new crust
 real*8, parameter :: new_crust_thickness = 7.d3
 
+!$ACC kernels
 ! search the element for melting
 do jj = 1, nz-1
    ! search for crustal depth
@@ -99,6 +102,7 @@ do kk = 1 , nmarkers
                  phase_ratio(kocean2,jbelow,i) > 0.8d0 .or. &
                  phase_ratio(karc1,jbelow,i) > 0.8d0 .or. &
                  phase_ratio(ksed1,jbelow,i) > 0.8d0) then
+                !$ACC atomic write
                 !$OMP critical (change_phase1)
                 itmp(j,i) = 1
                 !$OMP end critical (change_phase1)
@@ -111,6 +115,7 @@ do kk = 1 , nmarkers
         ! this helps with localization
         !if(tmpr > 300.d0 .and. tmpr < 400.d0 &
         !     .and. stressII(j,i)*strainII(j,i) > 4.d6) then
+        !    !$ACC atomic write
         !    !$OMP critical (change_phase1)
         !    !itmp(j,i) = 1
         !    !$OMP end critical (change_phase1)
@@ -131,6 +136,7 @@ do kk = 1 , nmarkers
             if(phase_ratio(kocean1,jbelow,i) > 0.8d0 .or. &
                 phase_ratio(kocean2,jbelow,i) > 0.8d0 .or. &
                 phase_ratio(ksed1,jbelow,i) > 0.8d0) then
+                !$ACC atomic write
                 !$OMP critical (change_phase1)
                 itmp(j,i) = 1
                 !$OMP end critical (change_phase1)
@@ -144,6 +150,7 @@ do kk = 1 , nmarkers
         trpres = -0.3d9 + 2.2d6*tmpr
         press = mantle_density * g * depth
         if (tmpr < min_eclogite_temp .or. depth < min_eclogite_depth .or. press < trpres) cycle
+        !$ACC atomic write
         !$OMP critical (change_phase1)
         itmp(j,i) = 1
         !$OMP end critical (change_phase1)
@@ -157,6 +164,7 @@ do kk = 1 , nmarkers
         trpres2 = 2.1d9 + (0.2d9 - 2.1d9) * (tmpr - 730.d0) / (650.d0 - 730.d0)
         press = mantle_density * g * depth
         if (tmpr < serpentine_temp .or. (press < trpres .and. press > trpres2)) cycle
+        !$ACC atomic write
         !$OMP critical (change_phase1)
         itmp(j,i) = 1
         !$OMP end critical (change_phase1)
@@ -165,6 +173,7 @@ do kk = 1 , nmarkers
         ! dehydration, sediment -> schist/gneiss
         ! from sediment solidus in Nichols et al., Nature, 1994
         if (tmpr < 650d0 .or. depth < 20d3) cycle
+        !$ACC atomic write
         !$OMP critical (change_phase1)
         itmp(j,i) = 1
         !$OMP end critical (change_phase1)
@@ -175,6 +184,7 @@ do kk = 1 , nmarkers
             quad_area = 0.5d0/area(j,i,1) + 0.5d0/area(j,i,2)
             andesitic_melt_vol(i) = andesitic_melt_vol(i) + quad_area * vol_frac_melt / kinc
 
+            !$ACC atomic write
             !$OMP critical (change_phase1)
             itmp(j,i) = 1
             !$OMP end critical (change_phase1)
@@ -207,6 +217,7 @@ do i = 1, nx-1
     enddo
 enddo
 !$OMP end parallel do
+!$ACC end kernels
 
 return
 end subroutine change_phase
