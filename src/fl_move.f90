@@ -268,6 +268,7 @@ subroutine resurface
 
       end if
   end do
+!$ACC update device(nmarkers)
 
 end subroutine resurface
 

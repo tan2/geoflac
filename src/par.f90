@@ -108,6 +108,7 @@ do while( time .le. time_max )
         call nvtxEndRange()
         call nvtxStartRange('marker2elem')
         call marker2elem
+!$ACC update device(nmarkers)
         call nvtxEndRange()
         call nvtxStartRange('count_phase_ratio_all')
         call count_phase_ratio_all

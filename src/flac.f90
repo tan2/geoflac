@@ -20,6 +20,7 @@ if (itherm .eq.2) goto 500  ! Thermal calculation only
 ! Calculation of strain rates from velocity
 call nvtxStartRange('fl_srate')
 call fl_srate
+!$ACC update device(dtavg,nsrate)
 call nvtxEndRange()
 
 ! Changing marker phases
@@ -55,7 +56,10 @@ call nvtxEndRange()
 
 ! Adjust inertial masses or time step due to deformations
 call nvtxStartRange('dt_mass')
-if( mod(nloop,ifreq_imasses) .eq. 0 ) call dt_mass
+if( mod(nloop,ifreq_imasses) .eq. 0 ) then
+    call dt_mass
+!$ACC update device(dt)
+end if
 call nvtxEndRange()
 
 500 continue
