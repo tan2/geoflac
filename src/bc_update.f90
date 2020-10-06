@@ -5,6 +5,7 @@
 !--------------------------------------------------------------------
 subroutine bc_update  
   !----------------------- determ. boundary conditions -----------
+  !$ACC routine(Eff_dens) seq
   use arrays
   use params
   include 'precision.inc'
@@ -14,6 +15,7 @@ subroutine bc_update
   !   Update for hydrostatic force (normal to the surface)
   !   Shear component = 0 (perfect fluid)
   ! -------------------------------------------------------------
+  !$ACC kernels
   force = 0.0d0
 
   if (nydrsides.eq. 1) then
@@ -124,6 +126,6 @@ subroutine bc_update
       !       write(*,*) bcstress(i,3)
       !       endif
   enddo
-
+  !$ACC end kernels
   return
 end subroutine bc_update
