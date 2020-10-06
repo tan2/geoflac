@@ -144,8 +144,9 @@ do iblk = 1, 2
     enddo
 enddo
 
+!$ACC update self(dt_elastic, dt_maxwell)
 dt = min(dt_elastic, dt_maxwell)
-!$ACC update device(dt, dt_elastic, dt_maxwell, dtmax_therm)
+!$ACC update device(dt)
 return
 end
 
