@@ -16,10 +16,7 @@ double precision :: x1,y1,x2,y2,x3,y3,x4,y4, &
 !$OMP         vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4, &
 !$OMP         em,eda,edb,s11,s22,s12, &
 !$OMP         srII,srI,srs2,stII)
-!$ACC parallel loop collapse(2) private(i,j,x1,y1,x2,y2,x3,y3,x4,y4, &
-!$ACC         vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4, &
-!$ACC         em,eda,edb,s11,s22,s12, &
-!$ACC         srII,srI,srs2,stII)
+!$ACC kernels loop
 do 2  i = 1,nx-1
     do 2  j = 1,nz-1
 
@@ -107,7 +104,6 @@ do 2  i = 1,nx-1
         s12 = 0.25d0 * (stress0(j,i,3,1)+stress0(j,i,3,2)+stress0(j,i,3,3)+stress0(j,i,3,4))
         stII = 0.5d0 * sqrt((s11-s22)**2 + 4*s12*s12)
         if( srII.ne.0.d0 ) sshrheat(j,i) = sshrheat(j,i) + stII/srII*srs2*dt
-
 2 continue
 !$OMP end parallel do
 ! following block is needed for averaging
@@ -116,10 +112,7 @@ dtavg = dtavg + dt
 ! re-initialisation after navgsr steps
 if( nsrate .eq. ifreq_avgsr ) then
 !$OMP parallel do
-!$ACC parallel loop collapse(2) private(i,j,x1,y1,x2,y2,x3,y3,x4,y4, &
-!$ACC         vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4, &
-!$ACC         em,eda,edb,s11,s22,s12, &
-!$ACC         srII,srI,srs2,stII)
+!$ACC kernels loop
     do i = 1,nx-1
         do j = 1, nz-1
             e2sr(j,i) = se2sr(j,i) / dtavg
@@ -133,10 +126,7 @@ if( nsrate .eq. ifreq_avgsr ) then
     nsrate = 0
 elseif( nsrate .eq. -1 ) then
 !$OMP parallel do
-!$ACC parallel loop collapse(2) private(i,j,x1,y1,x2,y2,x3,y3,x4,y4, &
-!$ACC         vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4, &
-!$ACC         em,eda,edb,s11,s22,s12, &
-!$ACC         srII,srI,srs2,stII)
+!$ACC kernels loop
     do i = 1,nx-1
         do j = 1, nz-1
             e2sr(j,i) = se2sr(j,i) / dtavg
@@ -147,8 +137,6 @@ elseif( nsrate .eq. -1 ) then
 endif
 
 nsrate = nsrate + 1
-!--------------
-!$ACC update device(dtavg,nsrate)
 
 return
 end 
