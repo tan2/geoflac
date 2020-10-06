@@ -70,6 +70,7 @@ end subroutine euler2bar
 
 
 subroutine check_inside(x,y,bar1,bar2,ntr,i,j,inc)
+  !$ACC routine seq
   use arrays
   use params
 

@@ -1,6 +1,7 @@
 ! -*- F90 -*-
 
 program DREZINA
+!$ACC routine(marker2elem) gang
 use arrays
 use params
 use marker_data
@@ -107,12 +108,16 @@ do while( time .le. time_max )
         call lpeuler2bar
         call nvtxEndRange()
         call nvtxStartRange('marker2elem')
+        !$ACC kernels
         call marker2elem
-!$ACC update device(nmarkers)
+        !$ACC end kernels
         call nvtxEndRange()
         call nvtxStartRange('count_phase_ratio_all')
+        !$ACC kernels
         call count_phase_ratio_all
+        !$ACC end kernels
         call nvtxEndRange()
+        !$ACC update self(nmarkers)
       endif
     endif
   endif

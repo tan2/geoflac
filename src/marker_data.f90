@@ -38,6 +38,8 @@ MODULE marker_data
   end subroutine
 
   subroutine add_marker(x, y, iph, age, kk, j, i, inc)
+    !$ACC routine seq
+    !$ACC routine(check_inside) seq
     ! Add a marker at physical coordinate (x, y), with phase iph and age, to
     ! element (j, i). The current (before adding thsi marker) marker size
     ! is kk. If (x, y) is not within the element, inc is set to 0 and
@@ -67,6 +69,7 @@ MODULE marker_data
         return
     endif
     !$OMP atomic update
+    !$ACC atomic update
     kk = kk + 1
     kk_local = kk
 
@@ -151,6 +154,7 @@ MODULE marker_data
 
 
   subroutine count_phase_ratio_all
+    !$ACC routine gang
     use params
     integer :: i, j
 

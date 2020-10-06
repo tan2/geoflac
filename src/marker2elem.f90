@@ -1,4 +1,5 @@
-subroutine marker2elem 
+subroutine marker2elem
+  !$ACC routine gang
   use myrandom_mod
   use marker_data
   use arrays
@@ -15,6 +16,7 @@ subroutine marker2elem
 
   iseed = 0
   !$OMP parallel do private(kinc,r1,r2,x1,y1,x2,y2,xx,yy,inc)
+  !$ACC loop collapse(2)
   do i = 1 , nx-1
       do j = 1 , nz-1
           kinc = nmark_elem(j,i)
