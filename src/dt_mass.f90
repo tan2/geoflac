@@ -22,7 +22,7 @@ implicit none
 double precision :: dlmin_prop
 double precision, parameter :: c1d12 = 1.d0/12.d0
 integer i, j, k, iph, iblk, jblk
-double precision :: dlmin, vel_max, dt_m, diff, Eff_cp, Eff_conduct
+double precision :: dlmin, dtmax_therm, vel_max, dt_m, diff, Eff_cp, Eff_conduct
 double precision :: pwave, dens, vel_sound, rho_inert, rho_inert2, am3, dte, dtt
 double precision :: rmu, visc_cut
 
