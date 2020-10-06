@@ -2,6 +2,8 @@
 ! Calculate thermal field in explict form
 
 subroutine fl_therm
+!$ACC routine(Eff_cp) seq
+!$ACC routine(Eff_conduct) seq
 use arrays
 use params
 include 'precision.inc'
@@ -25,7 +27,7 @@ double precision :: D(3,3)  ! diffusion operator
 !  | /         / |
 !  2         2---3
 
-
+!$ACC kernels
 ! saving old temperature
 if (istress_therm.gt.0) temp0(:,:) = temp(:,:)
 
@@ -244,6 +246,7 @@ do j = 1,nz
 end do
 !$OMP end do
 !$OMP end parallel
+!$ACC end kernels
 
 return
 end 
