@@ -88,7 +88,7 @@ MODULE marker_data
 
 
   subroutine newphase2marker (j1, j2, i1, i2, iph)
-    !$ACC routine gang
+    !$ACC routine worker
     use arrays
     use params
     implicit none

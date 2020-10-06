@@ -1,5 +1,5 @@
 subroutine change_phase
-!$ACC routine(newphase2marker) gang
+!$ACC routine(newphase2marker) worker
 !$ACC routine(count_phase_ratio) seq
 USE marker_data
 use arrays
@@ -29,7 +29,7 @@ real*8, parameter :: partial_melt_temp = 600.d0
 ! thickness of new crust
 real*8, parameter :: new_crust_thickness = 7.d3
 
-!$ACC kernels
+!$ACC serial
 ! search the element for melting
 do jj = 1, nz-1
    ! search for crustal depth
@@ -37,7 +37,9 @@ do jj = 1, nz-1
    if (cord(1,1,2) - dep2 >= new_crust_thickness) exit
 end do
 j = min(max(2, jj), nz-1)
+!$ACC end serial
 
+!$ACC parallel loop
 do i = 1, nx-1
   iph = iphase(j,i)
   if (iph==kmant1 .or. iph==kmant2) then
@@ -48,7 +50,7 @@ do i = 1, nx-1
   end if
 end do
 
-
+!$ACC kernels
 ! nelem_inject was used for magma injection, reused here for serpentization
 nelem_serp = nelem_inject
 ! rate_inject was used for magma injection, reused here for dehydration melting
@@ -56,10 +58,12 @@ vol_frac_melt = rate_inject
 andesitic_melt_vol(1:nx-1) = 0
 
 itmp = 0  ! indicates which element has phase-changed markers
+!$ACC end kernels
 
 
 !$OMP parallel private(kk,i,j,k,n,tmpr,depth,iph,press,jbelow,trpres,trpres2,kinc,quad_area,yy)
 !$OMP do schedule(guided)
+!$ACC parallel loop
 do kk = 1 , nmarkers
     if (mark_dead(kk).eq.0) cycle
 
@@ -182,10 +186,11 @@ do kk = 1 , nmarkers
         if (tmpr > ts(khydmant)) then
             ! area(j,i) is INVERSE of "real" DOUBLE area (=1./det)
             quad_area = 0.5d0/area(j,i,1) + 0.5d0/area(j,i,2)
-            andesitic_melt_vol(i) = andesitic_melt_vol(i) + quad_area * vol_frac_melt / kinc
 
-            !$ACC atomic write
             !$OMP critical (change_phase1)
+            !$ACC atomic update
+            andesitic_melt_vol(i) = andesitic_melt_vol(i) + quad_area * vol_frac_melt / kinc
+            !$ACC atomic write
             itmp(j,i) = 1
             !$OMP end critical (change_phase1)
             mark_phase(kk) = kmant1
@@ -196,10 +201,13 @@ enddo
 !$OMP end do
 !$OMP end parallel
 
+!$ACC kernels
 ! storing plastic strain in temporary array
 dummye(1:nz-1,1:nx-1) = aps(1:nz-1,1:nx-1)
+!$ACC end kernels
 
 !$OMP parallel do private(iph, kinc)
+!$ACC parallel loop collapse(2)
 ! recompute phase ratio of those changed elements
 do i = 1, nx-1
     do j = 1, nz-1
@@ -217,7 +225,6 @@ do i = 1, nx-1
     enddo
 enddo
 !$OMP end parallel do
-!$ACC end kernels
 
 return
 end subroutine change_phase
