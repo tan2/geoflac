@@ -145,7 +145,7 @@ do iblk = 1, 2
 enddo
 
 dt = min(dt_elastic, dt_maxwell)
-
+!$ACC update device(dt)
 return
 end
 

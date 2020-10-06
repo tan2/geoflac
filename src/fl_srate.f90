@@ -137,6 +137,7 @@ endif
 
 nsrate = nsrate + 1
 !--------------
+!$ACC update device(dtavg,nsrate)
 
 return
 end 

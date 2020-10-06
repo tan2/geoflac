@@ -82,7 +82,7 @@ do while( time .le. time_max )
 
     nloop = nloop + 1
     time = time + dt
-
+!$ACC update device(time,nloop)
     dtacc_screen = dtacc_screen + dt
     dtacc_file   = dtacc_file   + dt
     dtacc_save   = dtacc_save   + dt

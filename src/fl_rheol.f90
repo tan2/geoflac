@@ -7,6 +7,7 @@ subroutine fl_rheol
 !$ACC routine(elastic) seq
 !$ACC routine(maxwell) seq
 !$ACC routine(plastic) seq
+!$ACC routine(Eff_visc) seq
 
 use arrays
 use params
@@ -24,6 +25,7 @@ double precision :: Eff_visc
 integer :: i, j, k, iph, irh, &
            ipls
 
+
 !$OMP Parallel Private(i,j,k,iph,irh,bulkm,rmu,coh,phi,psi, &
 !$OMP                  stherm,hardn,vis, &
 !$OMP                  de11,de22,de12,de33,dv, &
@@ -33,6 +35,7 @@ integer :: i, j, k, iph, irh, &
 !$OMP                  sII_plas,sII_visc, &
 !$OMP                  quad_area,s0a,s0b,s0)
 !$OMP do schedule(guided)
+!$ACC parallel loop collapse(2) private(depl, s11p, s22p,s12p,s33p,s11v,s22v,s12v,s33v)
 do 3 i = 1,nx-1
     do 3 j = 1,nz-1
         ! iphase (j,i) is number of a phase NOT a rheology
