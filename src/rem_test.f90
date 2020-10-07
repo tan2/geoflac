@@ -6,16 +6,18 @@
 ! 2) Find the zone where it is needed to be remeshed:
 ! go from the left to the right and backwards
  
-integer function itest_mesh()
+subroutine itest_mesh(need_remeshing)
   use arrays
   use params
   implicit none
+  integer, intent(out) :: need_remeshing
   integer :: iv(4), jv(4), i, ii, imint, j, jmint, k
   double precision :: angle(3), testcr, shortening, dx_accr, &
                       pi, raddeg, degrad, xa, xb, xxal, xxbl, ya, yb, &
                       anglemin1, anglemint
+
   call check_nan
-  itest_mesh = 0
+  need_remeshing = 0
 
   ! if remeshing with adding material on the sides then
   ! remesh at pre-given shortening
@@ -24,17 +26,9 @@ integer function itest_mesh()
       testcr = dx_rem * rxbo / (nx-1)
       shortening = abs(cord(1,nx,1) - cord(1,1,1) - rxbo)
       if ( shortening .gt. testcr ) then
-          if( dtout_screen .ne. 0 ) then
-              print *, 'Remeshing due to shortening required: ', shortening
-              write(333,*) 'Remeshing due to shortening required: ', shortening
-          else
-              call SysMsg('TEST_MESH: Remeshing due to shortening required')
-          endif
-          itest_mesh = 1
-          return
+          need_remeshing = 2
       endif
   end if
-
   pi = 3.14159265358979323846d0
   degrad = pi/180.d0
   raddeg = 180.d0/pi
@@ -42,6 +36,7 @@ integer function itest_mesh()
   imint = 0
   jmint = 0
 
+  if (need_remeshing == 0) then
   do i = 1, nx-1
       do j = 1,nz-1
           ! loop for each 4 sub-triangles
@@ -75,11 +70,7 @@ integer function itest_mesh()
               anglemin1 = min(angle(1),angle(2),angle(3))
 
               ! min angle in the whole mesh
-              if( anglemin1 .lt. anglemint ) then
-                  anglemint = anglemin1
-                  imint = i
-                  jmint = j
-              endif
+              anglemint = min(anglemint, anglemin1)
 
           end do
 
@@ -87,8 +78,8 @@ integer function itest_mesh()
   end do
 
   if( dtout_screen .ne. 0 ) then
-      write (6,'(A,F6.2,A,I3,A,I3,A,F5.2)') '        min.angle=',anglemint,' j=', jmint, ' i=',imint, ' dt(yr)=',dt/sec_year
-      write (333,'(A,F6.2,A,I3,A,I3,A,F5.2)') '        min.angle=',anglemint,' j=', jmint, ' i=',imint, ' dt(yr)=',dt/sec_year
+      write (6,'(A,F6.2,A,F10.6)') '        min.angle=',anglemint, '     dt(yr)=',dt/sec_year
+      write (333,'(A,F6.2,A,F10.6)') '        min.angle=',anglemint, '     dt(yr)=',dt/sec_year
       flush (333)
   endif
   ! check if the angle is smaller than angle of remeshing  
@@ -99,8 +90,16 @@ integer function itest_mesh()
       else
           call SysMsg('TEST_MESH: Remeshing due to angle required.')
       endif
-      itest_mesh = 1
+      need_remeshing = 1
+  endif
+  endif
+
+  if( (dtout_screen .ne. 0)  .and. (need_remeshing .eq. 2) ) then
+      print *, 'Remeshing due to shortening required: ', shortening
+      write(333,*) 'Remeshing due to shortening required: ', shortening
+  else
+      call SysMsg('TEST_MESH: Remeshing due to shortening required')
   endif
 
   return
-end function itest_mesh
+end subroutine itest_mesh

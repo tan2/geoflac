@@ -9,7 +9,7 @@ use nvtx_mod
 
 character*200 inputfile
 real*4 secnds,time0
-integer :: narg, iargc, j, itest_mesh, irestart
+integer :: narg, iargc, j, irestart
 double precision :: dtacc_file, dtacc_save, dtacc_screen, dtacc_tracer
 
 narg = iargc()
@@ -92,7 +92,8 @@ do while( time .le. time_max )
 
   ! Remeshing
   if( ny_rem.eq.1 .and. itherm.ne.2 ) then
-    if( itest_mesh() .eq. 1 ) then
+    call itest_mesh(need_remeshing)
+    if( need_remeshing .ne. 0 ) then
       ! If there are markers recalculate their x,y global coordinate and assign them aps, eII, press, temp
       if(iint_marker.eq.1) then
         call nvtxStartRange('bar2euler')
