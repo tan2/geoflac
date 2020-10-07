@@ -102,7 +102,7 @@ ifeq ($(F90), pgf90)
 	endif
 	ifeq ($(acc), 1)
 		CFLAGS += -acc -ta=tesla:cc70,managed -Mcuda -Minfo=accel
-		LDFLAGS += -acc -ta=tesla:cc70,managed -Mcuda -lnvToolsExt
+		LDFLAGS += -acc -ta=tesla:cc70,managed -Mcuda
 	endif
         ifeq ($(debug), 0)
                 CFLAGS += -O2
@@ -110,6 +110,7 @@ ifeq ($(F90), pgf90)
                CFLAGS += -O0 -Mbounds -Mchkstk -traceback
                LDFLAGS +=
         endif
+	LDFLAGS += -lnvToolsExt -Mcuda
 endif
 
 ## for Solaris
@@ -142,11 +143,8 @@ MODULE_SRCS = \
 	params.f90 \
 	arrays.f90 \
 	phases.f90 \
-	marker_data.f90
-
-ifeq ($(acc), 1)
-	MODULE_SRCS += nvtx_mod.f90
-endif
+	marker_data.f90 \
+	nvtx_mod.f90
 
 SRCS =	\
 	bar2euler.f90 \
