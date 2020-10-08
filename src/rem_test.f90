@@ -22,6 +22,7 @@ subroutine itest_mesh(need_remeshing)
   ! if remeshing with adding material on the sides then
   ! remesh at pre-given shortening
   ! dx_rem*dx - critical distance of shortnening
+  !$ACC serial
   if( mode_rem .eq. 11.or.mode_rem.eq.3 ) then
       testcr = dx_rem * rxbo / (nx-1)
       shortening = abs(cord(1,nx,1) - cord(1,1,1) - rxbo)
@@ -29,6 +30,8 @@ subroutine itest_mesh(need_remeshing)
           need_remeshing = 2
       endif
   end if
+  !$ACC end serial
+
   pi = 3.14159265358979323846d0
   degrad = pi/180.d0
   raddeg = 180.d0/pi
@@ -37,6 +40,7 @@ subroutine itest_mesh(need_remeshing)
   jmint = 0
 
   if (need_remeshing == 0) then
+    !$ACC parallel loop collapse(3) private(iv,jv,angle)
     do i = 1, nx-1
         do j = 1,nz-1
             ! loop for each 4 sub-triangles
