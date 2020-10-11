@@ -128,6 +128,7 @@ end
 ! ONE-D mesh
 !==========================================================================
 subroutine mesh1 (x1,x2,xmesh,n,nzon,nelz,sizez)
+!$ACC routine seq
 implicit none
 double precision :: x1, x2, xmesh(n), sizez(nzon)
 integer :: n, nzon, nelz(nzon), k, i, nel

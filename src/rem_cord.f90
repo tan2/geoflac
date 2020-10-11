@@ -1,4 +1,5 @@
 subroutine rem_cord
+!$ACC routine(mesh1) seq
 use arrays
 use params
 implicit none
@@ -7,6 +8,7 @@ double precision :: xl, xr, xx, zcorr, zl, zr, zz, total_area
 logical, parameter :: do_volcorrection = .false.
 
 ! X - coordinate
+!$ACC kernels
 do j = 1, nz
 
     if( mode_rem.eq.1 ) then
@@ -71,7 +73,7 @@ do i = 1, nx
     end do
 
 end do
-
+!$ACC end kernels
 
 return
 end
