@@ -14,12 +14,14 @@ if (movegrid .eq. 0) return
 
 !$OMP parallel private(i)
 !$OMP do
+!$ACC kernels
 do i = 1,nx
 !    write(*,*) cord(j,i,1),cord(j,i,2),vel(j,i,1),vel(j,i,2),dt
     cord(:,i,1) = cord(:,i,1) + vel(:,i,1)*dt
     cord(:,i,2) = cord(:,i,2) + vel(:,i,2)*dt
 !    write(*,*) cord(j,i,1),cord(j,i,2)
 enddo
+!$ACC end kernels
 !$OMP end do
 !$OMP end parallel
 
@@ -32,6 +34,7 @@ if( topo_kappa.gt.0.d0) call diff_topo
 !$OMP                  det,dw12,s11,s22,s12)
 !$OMP do
 !--- Adjusting Stresses And Updating Areas Of Elements
+!$ACC parallel loop collapse(2)
 do  i = 1,nx-1
     do  j = 1,nz-1
 
@@ -141,6 +144,7 @@ include 'precision.inc'
 !EROSION PROCESSES
 if( topo_kappa .gt. 0.d0 ) then
 
+    !$ACC kernels
     topomean = sum(cord(1,:,2)) / nx
     stmpn = topo_kappa ! elevation-dep. topo diffusivity
     ! higher elevation has higher erosion rate
@@ -162,6 +166,7 @@ if( topo_kappa .gt. 0.d0 ) then
 
     ! accumulated topo change since last resurface
     dhacc(1:nx-1) = dhacc(1:nx-1) + 0.5d0 * (dtopo(1:nx-1) + dtopo(2:nx))
+    !$ACC end kernels
 
     ! adjust markers
     if(mod(nloop, ifreq_avgsr) .eq. 0) then
@@ -173,6 +178,7 @@ if( topo_kappa .gt. 0.d0 ) then
 endif
 
 ! magma extrusion
+!$ACC kernels
 if ( .true. ) then
     ! grid spacing in x
     extrusion(1:nx-1) = cord(1,2:nx,1) - cord(1,1:nx-1,1)
@@ -183,6 +189,7 @@ if ( .true. ) then
     cord(1,1:nx-1,2) = cord(1,1:nx-1,2) + extrusion(1:nx-1)
     cord(1,2:nx  ,2) = cord(1,2:nx  ,2) + extrusion(1:nx-1)
 endif
+!$ACC end kernels
 
 return
 end subroutine diff_topo
@@ -191,6 +198,9 @@ end subroutine diff_topo
 
 
 subroutine resurface
+  !$ACC routine(bar2xy) seq
+  !$ACC routine(shape_functions) seq
+  !$ACC routine(add_marker_at_top) seq
   use marker_data
   use arrays
   use params
@@ -199,6 +209,7 @@ subroutine resurface
 
   dimension shp2(2,3,2)
 
+  !$ACC kernels
   do i = 1, nx-1
       ! averge thickness of this element
       elz = 0.5d0 * (cord(1,i,2) - cord(2,i,2) + cord(1,i+1,2) - cord(2,i+1,2))
@@ -268,12 +279,15 @@ subroutine resurface
 
       end if
   end do
-!$ACC update device(nmarkers)
+  !$ACC end kernels
+  !$ACC update self(nmarkers)
 
 end subroutine resurface
 
 
 subroutine add_marker_at_top(i, dz_ratio, time, kph, nmarkers)
+  !$ACC routine seq
+  !$ACC routine(add_marker) seq
   use myrandom_mod
   use marker_data
   use arrays
