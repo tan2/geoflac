@@ -33,7 +33,7 @@ end if
 ! Check dimensions for the mesh (number of elements and sizes)  
 call test_grid
 !  X - component 
-call mesh1 (x0,x0+rxbo,rmesh1,nzonx,nelz_x,sizez_x) 
+call mesh1 (x0,x0+rxbo,rmesh1,nx,nzonx,nelz_x,sizez_x) 
 
 do i = 1,nx
     cord (:,i,1) =  rmesh1(i)
@@ -41,7 +41,7 @@ end do
 
 !  Z - component
 do j = 1,nz
-    call mesh1 (z0,z0+rzbo,rmesh1,nzony,nelz_y,sizez_y)
+    call mesh1 (z0,z0+rzbo,rmesh1,nz,nzony,nelz_y,sizez_y)
     cord (j,:,2) =  rmesh1(j)
 end do
 
@@ -127,11 +127,10 @@ end
 !==========================================================================
 ! ONE-D mesh
 !==========================================================================
-subroutine mesh1 (x1,x2,xmesh,nzon,nelz,sizez)
-use params
+subroutine mesh1 (x1,x2,xmesh,n,nzon,nelz,sizez)
 implicit none
-double precision :: x1, x2, xmesh(nx+nz), sizez(maxzone)
-integer :: nzon, nelz(maxzone), k, i, nel
+double precision :: x1, x2, xmesh(n), sizez(nzon)
+integer :: n, nzon, nelz(nzon), k, i, nel
 double precision :: xbeg, xend, elemsize
 
 nel = 1

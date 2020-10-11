@@ -17,7 +17,7 @@ do j = 1, nz
         xr = x0 + rxbo
     endif
 
-    call mesh1( xl,xr,stmpn,nzonx,nelz_x,sizez_x )
+    call mesh1( xl,xr,stmpn,nx,nzonx,nelz_x,sizez_x )
 
     do i = 1, nx
         cord(j,i,1) = stmpn(i)
@@ -63,7 +63,9 @@ do i = 1, nx
     if( mode_rem .eq. 3.or.mode_rem.eq.1 ) cord(nz,i,2) = z0 + rzbo
 
     ! Creating Mesh inside of the boundaries
-    call mesh1 (cord(1,i,2),cord(nz,i,2),stmpn,nzony,nelz_y,sizez_y)
+    !FIXME: stmpn is of size nx, not nz.
+    if (nz > nx) stop 7
+    call mesh1 (cord(1,i,2),cord(nz,i,2),stmpn,nz,nzony,nelz_y,sizez_y)
     do j = 1, nz
         cord(j,i,2) = stmpn(j)
     end do
