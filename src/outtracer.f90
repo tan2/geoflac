@@ -79,8 +79,8 @@ do kk = 1,nmtracers
 
         tracerx(kk) = real(x) * 1.e-3
         tracerz(kk) = real(z) * 1.e-3
-        tracervx(kk) = real(vx) * 100 * sec_year
-        tracervz(kk) = real(vz) * 100 * sec_year
+        tracervx(kk) = real(vx) * 100 * real(sec_year)
+        tracervz(kk) = real(vz) * 100 * real(sec_year)
         tracert(kk) = real(tmpr)
         tracerp(kk) = real(si) * (-1e-8)
         tracersxx(kk) = real(sxx) * 1e-8
