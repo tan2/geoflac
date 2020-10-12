@@ -10,13 +10,16 @@ double precision :: xl, xr, densT, dh, dh1, dh2, dp, dpt, &
                     press, rogh, tmpr
 
 ! Save old mesh for interpolations
+!$ACC kernels
 cordo = cord
+!$ACC end kernels
 
 ! Create The New grid (cord) using cordo(nz,i,2) for the bottom and cordo(1,i,2) for the surface
 call rem_cord
 
 
 
+!$ACC kernels
 !===========================================================================!
 ! Length-weighted interpolation of accumulated topo change on the surface
 dhnew(:) = 0
@@ -47,6 +50,7 @@ enddo
 ! divided by segment length
 dhacc(1:nx-1) = dhnew / (cord(1,2:nx,1) - cord(1,1:nx-1,1))
 extr_acc(1:nx-1) = extnew / (cord(1,2:nx,1) - cord(1,1:nx-1,1))
+!$ACC end kernels
 
 
 !===========================================================================!
@@ -58,6 +62,7 @@ nzt = nz-1
 ! Old mesh - old-element centers
 ! New mesh - new-element centers
 !$OMP parallel do
+!$ACC parallel loop collapse(2)
 do i = 1, nx-1
     do j = 1, nz-1
         cold(j,i,1) = 0.25d0*( cordo(j,i,1)+cordo(j+1,i,1)+cordo(j,i+1,1)+cordo(j+1,i+1,1) )
