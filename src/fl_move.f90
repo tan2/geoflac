@@ -34,7 +34,7 @@ if( topo_kappa.gt.0.d0) call diff_topo
 !$OMP                  det,dw12,s11,s22,s12)
 !$OMP do
 !--- Adjusting Stresses And Updating Areas Of Elements
-!x$ACC parallel loop collapse(2)
+!$ACC parallel loop collapse(2)
 do  i = 1,nx-1
     do  j = 1,nz-1
 

@@ -21,21 +21,13 @@ do i = 1,nx-1
     do j = 1,nz-1
 
         ! Coordinates and strain rates on the element
-        !$ACC atomic read
         x1 = cord(j  ,i  ,1)
-        !$ACC atomic read
         y1 = cord(j  ,i  ,2)
-        !$ACC atomic read
         x2 = cord(j+1,i  ,1)
-        !$ACC atomic read
         y2 = cord(j+1,i  ,2)
-        !$ACC atomic read
         x3 = cord(j  ,i+1,1)
-        !$ACC atomic read
         y3 = cord(j  ,i+1,2)
-        !$ACC atomic read
         x4 = cord(j+1,i+1,1)
-        !$ACC atomic read
         y4 = cord(j+1,i+1,2)
  
         ! Velocities:

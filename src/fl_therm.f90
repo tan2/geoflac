@@ -81,14 +81,9 @@ do i = 1,nx-1
         y3 = cord (j  ,i+1,2)
         x4 = cord (j+1,i+1,1)
         y4 = cord (j+1,i+1,2)
-        !XXX: why is atomic needed here for correct results?
-        !$ACC atomic read
         t1 = temp (j   ,i  )
-        !$ACC atomic read
         t2 = temp (j+1 ,i  )
-        !$ACC atomic read
         t3 = temp (j   ,i+1)
-        !$ACC atomic read
         t4 = temp (j+1 ,i+1)
 
         ! Additional sources - radiogenic and shear heating
