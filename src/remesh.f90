@@ -103,6 +103,7 @@ end do
 ! plastic strain
 call rem_interpolate( nzt, nxt, dummye, aps )
 !$OMP parallel do
+!$ACC parallel loop collapse(2)
 do i = 1, nxt
     do j = 1, nzt
         if( aps(j,i) .lt. 0.d0 ) then
@@ -195,11 +196,13 @@ nxt = nx
 nzt = nz
 
 !$OMP task
+!$ACC kernels
 ! Old mesh - old coordinates points
 cold(1:nz,1:nx,1:2) = cordo(1:nz,1:nx,1:2)
 temp0(1:nz,1:nx) = temp(1:nz,1:nx)
 ! New mesh - new coordinates points
 cnew(1:nz,1:nx,1:2) = cord(1:nz,1:nx,1:2)
+!$ACC end kernels
 !$OMP end task
 
 ! Calculate parameters of triangles of this mesh
