@@ -105,7 +105,7 @@ ifeq ($(F90), pgf90)
 		LDFLAGS += -acc -ta=tesla:cc70,managed,nofma -Mcuda
 	endif
         ifeq ($(debug), 0)
-                CFLAGS += -O2
+                CFLAGS += -O2 -Mnofma -Minfo=all
         else
                CFLAGS += -O0 -Mbounds -Mchkstk -traceback
                LDFLAGS +=
