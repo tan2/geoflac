@@ -253,6 +253,7 @@ integer :: i, j, k, n
 double precision :: x1, x2, x3, y1, y2, y3, det
 
 !$OMP parallel do private(x1,x2,x3,y1,y2,y3,det,n)
+!$ACC parallel loop collapse(3)
 do i = 1,nxt-1
     do j = 1,nzt-1
         do k = 1,2
@@ -314,6 +315,7 @@ perr = 1.d-4
 
 !$OMP parallel do private(xx,yy,l, lt,io,jo,k,n,a1,a2,a3,amod,amodmin,nmin, &
 !$OMP                     numqu,dist1,dist2,dist3)
+!$ACC parallel loop collapse(2) 
 do i = 1, nxt
     do j = 1, nzt
         xx = cnew(j,i,1)
@@ -452,6 +454,7 @@ double precision :: f1, f2, f3
 dummy = arr
 
 !$OMP parallel do private(numq,io,jo,f1,f2,f3)
+!$ACC parallel loop collapse(2)
 do i = 1, nxt
     do j = 1, nzt
 
