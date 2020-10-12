@@ -121,63 +121,107 @@ end do
 
 idist = 2
 if(incoming_left==1) then
+    !$ACC kernels
     aps(1:nz-1, 1:1+idist) = 0.0d0
+    !$ACC end kernels
 
+    !$ACC serial copyout(jj)
     do jj = 1, nz-1
         if((cord(1,1,2) - 0.5d0*(cord(jj,1,2)+cord(jj+1,1,2))) > hc1(1)*1d3) exit
     enddo
-    call newphase2marker(1, jj-1, 1, 1+idist, iph_col1(1))
-    j = jj
+    !$ACC end serial
 
+    !$ACC kernels
+    call newphase2marker(1, jj-1, 1, 1+idist, iph_col1(1))
+    !$ACC end kernels
+
+    j = jj
+    !$ACC serial copyout(jj)
     do jj = j, nz-1
         if((cord(1,1,2) - 0.5d0*(cord(jj,1,2)+cord(jj+1,1,2))) > hc2(1)*1d3) exit
     enddo
-    call newphase2marker(j, jj-1, 1, 1+idist, iph_col2(1))
-    j = jj
+    !$ACC end serial
 
+    !$ACC kernels
+    call newphase2marker(j, jj-1, 1, 1+idist, iph_col2(1))
+    !$ACC end kernels
+
+    j = jj
+    !$ACC serial copyout(jj)
     do jj = j, nz-1
         if((cord(1,1,2) - 0.5d0*(cord(jj,1,2)+cord(jj+1,1,2))) > hc3(1)*1d3) exit
     enddo
-    call newphase2marker(j, jj-1, 1, 1+idist, iph_col3(1))
-    j = jj
+    !$ACC end serial
 
+    !$ACC kernels
+    call newphase2marker(j, jj-1, 1, 1+idist, iph_col3(1))
+    !$ACC end kernels
+
+    j = jj
+    !$ACC serial copyout(jj)
     do jj = j, nz-1
         if((cord(1,1,2) - 0.5d0*(cord(jj,1,2)+cord(jj+1,1,2))) > hc4(1)*1d3) exit
     enddo
-    call newphase2marker(j, jj-1, 1, 1+idist, iph_col4(1))
-    j = jj
+    !$ACC end serial
 
-    call newphase2marker(j, nz-1, 1, 1+idist, iph_col5(1))
+    !$ACC kernels
+    call newphase2marker(j, jj-1, 1, 1+idist, iph_col4(1))
+    !$ACC end kernels
+    !$ACC kernels
+    call newphase2marker(jj, nz-1, 1, 1+idist, iph_col5(1))
+    !$ACC end kernels
 endif
 
 if(incoming_right==1) then
+    !$ACC kernels
     aps(1:nz-1, nx-1-idist:nx-1) = 0.0d0
+    !$ACC end kernels
 
+    !$ACC serial copyout(jj)
     do jj = 1, nz-1
         if((cord(1,nx,2) - 0.5d0*(cord(jj,nx,2)+cord(jj+1,nx,2))) > hc1(nzone_age)*1d3) exit
     enddo
-    call newphase2marker(1, jj-1, nx-1-idist, nx-1, iph_col1(nzone_age))
-    j = jj
+    !$ACC end serial
 
+    !$ACC kernels
+    call newphase2marker(1, jj-1, nx-1-idist, nx-1, iph_col1(nzone_age))
+    !$ACC end kernels
+
+    j = jj
+    !$ACC serial copyout(jj)
     do jj = j, nz-1
         if((cord(1,nx,2) - 0.5d0*(cord(jj,nx,2)+cord(jj+1,nx,2))) > hc2(nzone_age)*1d3) exit
     enddo
-    call newphase2marker(j, jj-1, nx-1-idist, nx-1, iph_col2(nzone_age))
-    j = jj
+    !$ACC end serial
 
+    !$ACC kernels
+    call newphase2marker(j, jj-1, nx-1-idist, nx-1, iph_col2(nzone_age))
+    !$ACC end kernels
+
+    j = jj
+    !$ACC serial copyout(jj)
     do jj = j, nz-1
         if((cord(1,nx,2) - 0.5d0*(cord(jj,nx,2)+cord(jj+1,nx,2))) > hc3(nzone_age)*1d3) exit
     enddo
-    call newphase2marker(j, jj-1, nx-1-idist, nx-1, iph_col3(nzone_age))
-    j = jj
+    !$ACC end serial
 
+    !$ACC kernels
+    call newphase2marker(j, jj-1, nx-1-idist, nx-1, iph_col3(nzone_age))
+    !$ACC end kernels
+
+    j = jj
+    !$ACC serial copyout(jj)
     do jj = j, nz-1
         if((cord(1,nx,2) - 0.5d0*(cord(jj,nx,2)+cord(jj+1,nx,2))) > hc4(nzone_age)*1d3) exit
     enddo
-    call newphase2marker(j, jj-1, nx-1-idist, nx-1, iph_col4(nzone_age))
-    j = jj
+    !$ACC end serial
 
-    call newphase2marker(j, nz-1, nx-1-idist, nx-1, iph_col5(nzone_age))
+    !$ACC kernels
+    call newphase2marker(j, jj-1, nx-1-idist, nx-1, iph_col4(nzone_age))
+    !$ACC end kernels
+    !$ACC kernels
+    call newphase2marker(jj, nz-1, nx-1-idist, nx-1, iph_col5(nzone_age))
+    !$ACC end kernels
 endif
 
 !!$! XXX: the bottom elements must be mantle material, otherwise
