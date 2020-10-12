@@ -26,7 +26,7 @@ i = 1 ! index of new mesh
 ii = 1 ! index of old mesh
 xl = cord(1,i,1)
 ! loop over each old element
-do
+do while (max(i,ii) < nx)
     xr = min(cordo(1,ii+1,1), cord(1,i+1,1))
     if (xl < xr) then
         ! integration
@@ -39,9 +39,10 @@ do
     else
         i = i + 1
     endif
-    if (max(i,ii) == nx) exit
-    xl = xr
-    xr = min(cordo(1,ii+1,1), cord(1,i+1,1))
+    if (max(i,ii) < nx) then
+        xl = xr
+        xr = min(cordo(1,ii+1,1), cord(1,i+1,1))
+    endif
 enddo
 ! divided by segment length
 dhacc(1:nx-1) = dhnew / (cord(1,2:nx,1) - cord(1,1:nx-1,1))
