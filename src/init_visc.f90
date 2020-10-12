@@ -1,10 +1,12 @@
 
 subroutine init_visc
+  !$ACC routine(Eff_visc) seq
   use arrays
   use params
   include 'precision.inc'
 
   !$OMP parallel do
+  !$ACC parallel loop collapse(2)
   do i = 1,nx-1
       do j = 1,nz-1
           visn(j,i) = Eff_visc(j,i)
