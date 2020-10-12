@@ -40,7 +40,9 @@ goto 20
 20 continue
 
 if ( irestart .eq. 1 ) then  !file exists - restart
+    call nvtxStartRange('rsflac')
     call rsflac
+    call nvtxEndRange()
     if( dtout_screen .ne. 0 ) then
         write(6,*) 'you CONTINUE from  ', nloop, ' step'
     else
@@ -53,10 +55,14 @@ else ! file does not exist - new start
     else
         call SysMsg('you have NEW start conditions')
     endif
+    call nvtxStartRange('setflac')
     call setflac
+    call nvtxEndRange()
     ! Output of initial configuration
+    call nvtxStartRange('output')
     call outflac
     if (iint_marker.eq.1) call outmarker
+    call nvtxEndRange()
 end if
 
 
@@ -79,7 +85,9 @@ do while( time .le. time_max )
 
   do j = 1, ntest_rem
     ! FLAC
+    call nvtxStartRange('flac')
     call flac
+    call nvtxEndRange()
 
     nloop = nloop + 1
     time = time + dt
@@ -97,6 +105,7 @@ do while( time .le. time_max )
     call nvtxEndRange()
     if( need_remeshing .ne. 0 ) then
       ! If there are markers recalculate their x,y global coordinate and assign them aps, eII, press, temp
+      call nvtxStartRange('do_remeshing')
       if(iint_marker.eq.1) then
         call nvtxStartRange('bar2euler')
         call bar2euler
@@ -122,10 +131,12 @@ do while( time .le. time_max )
         call nvtxEndRange()
         !$ACC update self(nmarkers)
       endif
+      call nvtxEndRange()
     endif
   endif
 
     ! OUTPUT  
+  call nvtxStartRange('output')
   if( dtout_file .ne. 0 ) then 
     if( dtacc_file .gt. dtout_file ) then
       call outflac
@@ -146,6 +157,7 @@ do while( time .le. time_max )
       dtacc_save = 0
     endif
   endif
+  call nvtxEndRange()
 
 end do
 
