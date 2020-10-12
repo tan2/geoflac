@@ -48,6 +48,7 @@ endif
 
 dtmax_therm = 1.d+28
 dt_maxwell = 1.d+28
+!$ACC update device(dt_elastic, dt_maxwell)
 
 vel_max = 0.d0
 
@@ -67,14 +68,11 @@ else
 end if
 !$ACC end kernels
 
-!XXX: This is needed, but why?
-!$ACC update device(dt_elastic, dt_maxwell)
-
 do iblk = 1, 2
     do jblk = 1, 2
         !$OMP parallel do private(iph, pwave, dens, vel_sound, rho_inert, rho_inert2, &
         !$OMP                     am3, dte, diff, dtt, dt_m, rmu)
-        !$ACC parallel loop collapse(2)
+        !$ACC parallel loop collapse(2) reduction(min:dt_elastic) reduction(min:dt_maxwell)
         do i = iblk, nx-1, 2
             do j = jblk, nz-1, 2
 
