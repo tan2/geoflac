@@ -1,4 +1,6 @@
 subroutine euler2bar(x,y,bar1,bar2,ntr,ii,jj,inc)
+!$ACC routine seq
+!$ACC routine(check_inside) seq
 
 use arrays
 use params
