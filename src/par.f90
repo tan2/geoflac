@@ -124,11 +124,6 @@ do while( time .le. time_max )
         call marker2elem
         !$ACC end kernels
         call nvtxEndRange()
-        call nvtxStartRange('count_phase_ratio_all')
-        !$ACC kernels
-        call count_phase_ratio_all
-        !$ACC end kernels
-        call nvtxEndRange()
         !$ACC update self(nmarkers)
       endif
       call nvtxEndRange()

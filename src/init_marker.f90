@@ -169,7 +169,6 @@ end do
 write(333,*) '# of markers', nmarkers
 
 call marker2elem
-call count_phase_ratio_all
 
 return
 end subroutine init_marker

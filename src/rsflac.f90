@@ -163,7 +163,6 @@ do n = 1, nmarkers
 enddo
 
 call marker2elem
-call count_phase_ratio_all
 
 if (iint_tracer.eq.1) then
     ! Tracers
