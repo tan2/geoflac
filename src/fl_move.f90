@@ -14,14 +14,13 @@ if (movegrid .eq. 0) return
 
 !$OMP parallel private(i)
 !$OMP do
-!$ACC kernels
+!$ACC parallel loop async(1)
 do i = 1,nx
 !    write(*,*) cord(j,i,1),cord(j,i,2),vel(j,i,1),vel(j,i,2),dt
     cord(:,i,1) = cord(:,i,1) + vel(:,i,1)*dt
     cord(:,i,2) = cord(:,i,2) + vel(:,i,2)*dt
 !    write(*,*) cord(j,i,1),cord(j,i,2)
 enddo
-!$ACC end kernels
 !$OMP end do
 !$OMP end parallel
 
@@ -34,7 +33,7 @@ if( topo_kappa.gt.0.d0) call diff_topo
 !$OMP                  det,dw12,s11,s22,s12)
 !$OMP do
 !--- Adjusting Stresses And Updating Areas Of Elements
-!$ACC parallel loop collapse(2)
+!$ACC parallel loop collapse(2) async(1)
 do  i = 1,nx-1
     do  j = 1,nz-1
 
@@ -129,6 +128,7 @@ do  i = 1,nx-1
 enddo
 !$OMP end do
 !$OMP end parallel
+!$acc wait(1)
 return
 end subroutine fl_move
 
@@ -139,19 +139,37 @@ end subroutine fl_move
 subroutine diff_topo
 use arrays
 use params
+use nvtx_mod
 include 'precision.inc'
 
 !EROSION PROCESSES
 if( topo_kappa .gt. 0.d0 ) then
 
-    !$ACC kernels
-    topomean = sum(cord(1,:,2)) / nx
-    stmpn = topo_kappa ! elevation-dep. topo diffusivity
+    !topomean = sum(cord(1,:,2)) / nx
+    topomean = 0
+
+    !$acc enter data copyin(topomean) async(1)
+
+    !$acc parallel loop async(1)
+    do i = 1, nx
+        !$acc atomic update
+        topomean = topomean + cord(1,i,2)
+    enddo
+
+    !$acc parallel loop async(1)
+    do i = 1, nx
+        stmpn(i) = topo_kappa ! elevation-dep. topo diffusivity
+    enddo
+
     ! higher elevation has higher erosion rate
+    !$acc parallel loop async(1)
     do i = 1, nx
         if (cord(1,i,1) > topomean) stmpn(i) = topo_kappa * (1 + (cord(1,i,1) - topomean) * fac_kappa)
     enddo
 
+    !$acc exit data delete(topomean) async(1)
+
+    !$acc parallel loop async(1) private(snder)
     do i = 2, nx-1
 
         snder = ( stmpn(i+1)*(cord(1,i+1,2)-cord(1,i  ,2))/(cord(1,i+1,1)-cord(1,i  ,1)) - &
@@ -160,25 +178,37 @@ if( topo_kappa .gt. 0.d0 ) then
         dtopo(i) = dt * snder
     end do
 
+    !$acc kernels async(1)
     dtopo(1) = dtopo(2)
     dtopo(nx) = dtopo(nx-1)
-    cord(1,1:nx,2) = cord(1,1:nx,2) + dtopo(1:nx)
+    !$acc end kernels
+
+     !cord(1,1:nx,2) = cord(1,1:nx,2) + dtopo(1:nx)
+     !$acc parallel loop async(1)
+    do i = 1, nx
+        cord(1,i,2) = cord(1,i,2) + dtopo(i)
+    enddo
 
     ! accumulated topo change since last resurface
-    dhacc(1:nx-1) = dhacc(1:nx-1) + 0.5d0 * (dtopo(1:nx-1) + dtopo(2:nx))
-    !$ACC end kernels
+    !dhacc(1:nx-1) = dhacc(1:nx-1) + 0.5d0 * (dtopo(1:nx-1) + dtopo(2:nx))
+     !$acc parallel loop async(1)
+    do i = 1, nx-1
+        dhacc(i) = dhacc(i) + 0.5d0 * (dtopo(i) + dtopo(i + 1))
+    enddo
 
     ! adjust markers
     if(mod(nloop, ifreq_avgsr) .eq. 0) then
 !!$        print *, 'max sed/erosion rate (m/yr):' &
 !!$             , maxval(dtopo(1:nx)) * 3.16d7 / dt &
 !!$             , minval(dtopo(1:nx)) * 3.16d7 / dt
+        call nvtxStartRange('resurface')
         call resurface
+        call nvtxEndRange()
     end if
 endif
 
 ! magma extrusion
-!$ACC kernels
+!$ACC kernels async(1)
 if ( .true. ) then
     ! grid spacing in x
     extrusion(1:nx-1) = cord(1,2:nx,1) - cord(1,1:nx-1,1)
@@ -209,7 +239,7 @@ subroutine resurface
 
   dimension shp2(2,3,2)
 
-  !$ACC kernels
+  !$ACC kernels async(1)
   do i = 1, nx-1
       ! averge thickness of this element
       elz = 0.5d0 * (cord(1,i,2) - cord(2,i,2) + cord(1,i+1,2) - cord(2,i+1,2))
@@ -280,7 +310,7 @@ subroutine resurface
       end if
   end do
   !$ACC end kernels
-  !$ACC update self(nmarkers)
+  !$ACC update self(nmarkers) async(1)
 
 end subroutine resurface
 
