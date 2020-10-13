@@ -52,7 +52,7 @@ dt_maxwell = 1.d+28
 
 vel_max = 0.d0
 
-!$ACC kernels
+!$ACC parallel loop collapse(3) reduction(max:vel_max)
 do k = 1,2
 do i = 1,nx
 do j = 1,nz
@@ -61,6 +61,7 @@ enddo
 enddo
 enddo
 
+!$ACC kernels
 if (idt_scale .eq. 0) then
     amass = rmass
 else
