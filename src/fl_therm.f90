@@ -27,7 +27,7 @@ double precision :: D(3,3)  ! diffusion operator
 !  | /         / |
 !  2         2---3
 
-!$ACC kernels
+!$ACC kernels async(1)
 ! saving old temperature
 if (istress_therm.gt.0) temp0(:,:) = temp(:,:)
 !$ACC end kernels
@@ -36,7 +36,7 @@ if (istress_therm.gt.0) temp0(:,:) = temp(:,:)
 !$OMP                  x1,x2,x3,x4,y1,y2,y3,y4,t1,t2,t3,t4,tmpr, &
 !$OMP                  qs,real_area13,area_n,rhs)
 !$OMP do
-!$ACC parallel loop
+!$ACC parallel loop async(1)
 do i = 1,nx-1
     j = 1  ! top
     !iph = iphase(j,i)
@@ -51,7 +51,7 @@ do i = 1,nx-1
 end do
 !$OMP end do
 
-!$ACC parallel loop collapse(2)
+!$ACC parallel loop collapse(2) async(1)
 !$OMP do
 do i = 1,nx-1
     do j = 1,nz-1
@@ -103,7 +103,7 @@ do i = 1,nx-1
 end do    
 !$OMP end do
 
-!$ACC parallel loop collapse(2)
+!$ACC parallel loop collapse(2) async(1)
 !$OMP do
 do i = 1,nx
     do j = 1,nz
@@ -226,7 +226,7 @@ end do
 !$OMP end do
 
 ! Boundary conditions (top and bottom)
-!$ACC kernels loop
+!$ACC parallel loop async(1)
 !$OMP do
 do i = 1,nx
 
@@ -243,7 +243,7 @@ end do
 !$OMP end do
 
 ! Boundary conditions: dt/dx =0 on left and right  
-!$ACC kernels loop
+!$ACC parallel loop async(1)
 !$OMP do
 do j = 1,nz
     temp(j ,1)  = temp(j,2)
