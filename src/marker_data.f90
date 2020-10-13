@@ -1,5 +1,5 @@
 MODULE marker_data
-  integer, parameter :: max_markers = 10000000
+  integer :: max_markers
 
   !!! maximum number of ELEMENTS !!!
   integer, parameter :: max_markers_per_elem=32
@@ -14,6 +14,7 @@ MODULE marker_data
   integer, allocatable :: mark_ID(:)          ! unique ID-number
 
   integer, allocatable :: mark_id_elem(:,:,:), nmark_elem(:,:)
+  !$ACC declare create(max_markers)
 
   contains
 
@@ -21,8 +22,8 @@ MODULE marker_data
     implicit none
 
     integer, intent(in) :: nz, nx
-    integer :: max_markers
     max_markers = nz * nx * max_markers_per_elem
+    !$ACC update device(max_markers)
 
     allocate(mark_a1(max_markers), mark_a2(max_markers), &
              mark_x(max_markers), mark_y(max_markers), &
@@ -61,7 +62,7 @@ MODULE marker_data
     call check_inside(x , y, bar1, bar2, ntr, i, j, inc)
     if(inc.eq.0) return
 
-    if(nmark_elem(j,i) == max_markers_per_elem) then
+    if(nmark_elem(j,i) == max_markers_per_elem .or. kk == max_markers) then
         !write(msg*) 'Too many markers at element:', i, j, nmark_elem(j,i)
         !call SysMsg(msg)
         !call SysMsg('Marker skipped, not added!')
