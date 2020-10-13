@@ -126,8 +126,8 @@ do i = 1 , nx-1
                 exit
             end do
 
-            call add_marker(xx, yy, kph, 0.d0, nmarkers, j, i, inc)
-            !call add_marker(xx, yy, iphase(j,i), 0.d0, nmarkers, j, i, inc)
+            call add_marker(xx, yy, kph, 0.d0, j, i, inc)
+            !call add_marker(xx, yy, iphase(j,i), 0.d0, j, i, inc)
             if(inc.le.0) cycle
 
             l = l + 1

@@ -38,7 +38,7 @@ MODULE marker_data
 
   end subroutine
 
-  subroutine add_marker(x, y, iph, age, kk, j, i, inc)
+  subroutine add_marker(x, y, iph, age, j, i, inc)
     !$ACC routine seq
     !$ACC routine(check_inside) seq
     ! Add a marker at physical coordinate (x, y), with phase iph and age, to
@@ -53,7 +53,7 @@ MODULE marker_data
     use arrays
     use params
     implicit none
-    integer :: iph, kk, j, i, inc
+    integer :: iph, j, i, inc
     double precision :: x, y, age
     integer :: ntr, kk_local
     double precision :: bar1, bar2
@@ -62,7 +62,7 @@ MODULE marker_data
     call check_inside(x , y, bar1, bar2, ntr, i, j, inc)
     if(inc.eq.0) return
 
-    if(nmark_elem(j,i) == max_markers_per_elem .or. kk == max_markers) then
+    if(nmark_elem(j,i) == max_markers_per_elem .or. nmarkers == max_markers) then
         !write(msg*) 'Too many markers at element:', i, j, nmark_elem(j,i)
         !call SysMsg(msg)
         !call SysMsg('Marker skipped, not added!')
@@ -71,8 +71,8 @@ MODULE marker_data
     endif
     !$OMP atomic update
     !$ACC atomic update
-    kk = kk + 1
-    kk_local = kk
+    nmarkers = nmarkers + 1
+    kk_local = nmarkers
 
     ! recording the id of markers belonging to the element
     nmark_elem(j,i) = nmark_elem(j,i) + 1
