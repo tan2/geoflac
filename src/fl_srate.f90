@@ -16,7 +16,7 @@ double precision :: x1,y1,x2,y2,x3,y3,x4,y4, &
 !$OMP         vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4, &
 !$OMP         em,eda,edb,s11,s22,s12, &
 !$OMP         srII,srI,srs2,stII)
-!$ACC parallel loop collapse(2)
+!$ACC parallel loop collapse(2) async(1)
 do i = 1,nx-1
     do j = 1,nz-1
 
@@ -109,11 +109,11 @@ enddo
 !$OMP end parallel do
 ! following block is needed for averaging
 dtavg = dtavg + dt
-!$ACC update device(dtavg)
+!$ACC update device(dtavg) async(1)
 ! re-initialisation after navgsr steps
 if( nsrate .eq. ifreq_avgsr ) then
 !$OMP parallel do
-!$ACC kernels loop
+!$ACC parallel loop collapse(2) async(1)
     do i = 1,nx-1
         do j = 1, nz-1
             e2sr(j,i) = se2sr(j,i) / dtavg
@@ -127,7 +127,7 @@ if( nsrate .eq. ifreq_avgsr ) then
     nsrate = 0
 elseif( nsrate .eq. -1 ) then
 !$OMP parallel do
-!$ACC kernels loop
+!$ACC parallel loop collapse(2) async(1)
     do i = 1,nx-1
         do j = 1, nz-1
             e2sr(j,i) = se2sr(j,i) / dtavg
@@ -137,6 +137,7 @@ elseif( nsrate .eq. -1 ) then
 !$OMP end parallel do
 endif
 
+!$acc wait(1)
 nsrate = nsrate + 1
 !--------------
 
