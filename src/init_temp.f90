@@ -188,9 +188,13 @@ end subroutine init_temp
 subroutine sidewalltemp(i1, i2)
   use arrays, only : temp, cord, source
   use params
-  include 'precision.inc'
-
+  implicit none
   ! This subroutine is intended for remeshing.
+
+  integer, intent(in) :: i1, i2
+  double precision :: cond_c, cond_m, dens_c, dens_m, pi, diffusivity, y
+  integer :: n, i, j
+  
   cond_c = 2.2d0
   cond_m = 3.3d0
   dens_c = 2700.d0
