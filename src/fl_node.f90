@@ -28,7 +28,6 @@ include 'precision.inc'
 !    assemblage of forces is COUNTRE CLOCK-WISE !
 !
 
-!$ACC kernels
 drat = dt / dt_elastic
 if (drat .lt. 1.d0) drat = 1.d0
 
@@ -39,6 +38,7 @@ if (drat .lt. 1.d0) drat = 1.d0
 !$OMP                  iunknown, rho_water_g, water_depth)
 !
 !$OMP do
+!$ACC parallel loop collapse(2) async(1)
 do i = 1,nx
     do j = 1,nz
         if(nystressbc.eq.0) then
@@ -265,6 +265,7 @@ enddo
 ! BOUNDARY CONDITIONS
 if(nyhydro.gt.0) then
     !$OMP do
+     !$ACC parallel loop async(1)
     do i=1,nx
 
         ! pressure from water sea on top
@@ -302,9 +303,11 @@ if(nyhydro.gt.0) then
             force(1,i,2) = force(1,i,2)+0.5d0*press_norm_l*dlx_l+0.5d0*press_norm_r*dlx_r
         endif
     enddo
+    !$ACC end parallel
     !$OMP end do
 
     !$OMP do
+     !$ACC parallel loop async(1)
     do i=1,nx
 
         ! bottom support - Archimed force (normal to the surface, shear component = 0)
@@ -343,10 +346,12 @@ if(nyhydro.gt.0) then
         !write(*,*) i,pisos,force(nz,i,1),force(nz,i,2),press_norm_l,press_norm_r,dlx_l,dlx_r,dly_l,dly_r
 
     enddo
+    !$ACC end parallel
     !$OMP end do
 endif
 
 !$OMP do
+!$ACC parallel loop collapse(2) async(1)
 do i=1,nx
     do j=1,nz
 
@@ -372,10 +377,12 @@ do i=1,nx
         endif
     end do
 end do
+!$ACC end parallel
 !$OMP end do
 !$OMP end parallel
 ! Prestress to form the topo when density differences are present WITHOUT PUSHING OR PULLING!
 if (i_prestress.eq.1.and.time.lt.600.d3*sec_year) then
+     !$ACC parallel loop collapse(2) async(1)
      do k = 1,2
         do i = 1, nx
             vel(nz,i,k) = 0
@@ -385,7 +392,7 @@ if (i_prestress.eq.1.and.time.lt.600.d3*sec_year) then
             vel(j,nx,k) = 0
         enddo
     enddo
+    !$ACC end parallel
 endif
-!$ACC end kernels
 return
 end subroutine fl_node
