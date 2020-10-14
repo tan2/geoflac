@@ -48,11 +48,11 @@ endif
 
 dtmax_therm = 1.d+28
 dt_maxwell = 1.d+28
-!$ACC update device(dt_elastic, dt_maxwell)
+!$ACC update device(dt_elastic, dt_maxwell) async(1)
 
 vel_max = 0.d0
 
-!$ACC parallel loop collapse(3) reduction(max:vel_max)
+!$ACC parallel loop collapse(3) reduction(max:vel_max) async(1)
 do k = 1,2
 do i = 1,nx
 do j = 1,nz
@@ -61,7 +61,7 @@ enddo
 enddo
 enddo
 
-!$ACC kernels
+!$ACC kernels async(1)
 if (idt_scale .eq. 0) then
     amass = rmass
 else
@@ -73,7 +73,7 @@ do iblk = 1, 2
     do jblk = 1, 2
         !$OMP parallel do private(iph, pwave, dens, vel_sound, rho_inert, rho_inert2, &
         !$OMP                     am3, dte, diff, dtt, dt_m, rmu)
-        !$ACC parallel loop collapse(2) reduction(min:dt_elastic) reduction(min:dt_maxwell)
+        !$ACC parallel loop collapse(2) reduction(min:dt_elastic) reduction(min:dt_maxwell) async(1)
         do i = iblk, nx-1, 2
             do j = jblk, nz-1, 2
 
@@ -150,9 +150,9 @@ do iblk = 1, 2
     enddo
 enddo
 
-!$ACC update self(dt_elastic, dt_maxwell)
+!$ACC update self(dt_elastic, dt_maxwell) async(1)
 dt = min(dt_elastic, dt_maxwell)
-!$ACC update device(dt)
+!$ACC update device(dt) async(1)
 return
 end
 
