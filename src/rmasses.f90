@@ -18,14 +18,14 @@ double precision :: dens, Eff_dens
 ! real_area = 0.5* (1./area(n,t))
 !-----------------------------------
 
-!$ACC kernels
+!$ACC kernels async(1)
 rmass = 0
 !$ACC end kernels
 
 do iblk = 1, 2
     do jblk = 1, 2
         !$OMP parallel do private(dens)
-        !$ACC parallel loop collapse(2)
+        !$ACC parallel loop collapse(2) async(1)
         do i = iblk, nx-1, 2
             do j = jblk, nz-1, 2
 
