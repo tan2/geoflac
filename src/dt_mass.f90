@@ -73,7 +73,7 @@ do iblk = 1, 2
     do jblk = 1, 2
         !$OMP parallel do private(iph, pwave, dens, vel_sound, rho_inert, rho_inert2, &
         !$OMP                     am3, dte, diff, dtt, dt_m, rmu)
-        !$ACC parallel loop collapse(2) reduction(min:dt_elastic) reduction(min:dt_maxwell) async(1)
+        !$ACC parallel loop collapse(2) reduction(min:dt_elastic,dtmax_therm,dt_maxwell) async(1)
         do i = iblk, nx-1, 2
             do j = jblk, nz-1, 2
 
