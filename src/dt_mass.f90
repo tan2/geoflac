@@ -151,7 +151,7 @@ do iblk = 1, 2
 enddo
 
 !$ACC update self(dt_elastic, dt_maxwell) async(1)
-dt = min(dt_elastic, dt_maxwell)
+dt = min(min(dt_elastic, dt_maxwell), dtmax_therm)
 !$ACC update device(dt) async(1)
 return
 end
