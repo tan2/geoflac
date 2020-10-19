@@ -497,8 +497,9 @@ double precision :: dummy(nzt,nxt), arr(nzt,nxt)
 integer :: i, j, io, jo, numq
 double precision :: f1, f2, f3
 
-
+!$ACC kernels
 dummy = arr
+!$ACC end kernels
 
 !$OMP parallel do private(numq,io,jo,f1,f2,f3)
 !$ACC parallel loop collapse(2)
