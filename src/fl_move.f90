@@ -128,7 +128,7 @@ do  i = 1,nx-1
 enddo
 !$OMP end do
 !$OMP end parallel
-!$acc wait(1)
+!$ACC wait(1)
 return
 end subroutine fl_move
 
@@ -145,31 +145,23 @@ include 'precision.inc'
 !EROSION PROCESSES
 if( topo_kappa .gt. 0.d0 ) then
 
-    !topomean = sum(cord(1,:,2)) / nx
-    topomean = 0
+    !$ACC kernels async(1)
+    topomean = sum(cord(1,:,2)) / nx
+    !$ACC end kernels
 
-    !$acc enter data copyin(topomean) async(1)
-
-    !$acc parallel loop async(1)
-    do i = 1, nx
-        !$acc atomic update
-        topomean = topomean + cord(1,i,2)
-    enddo
-
-    !$acc parallel loop async(1)
+    !$ACC parallel loop async(1)
     do i = 1, nx
         stmpn(i) = topo_kappa ! elevation-dep. topo diffusivity
     enddo
 
     ! higher elevation has higher erosion rate
-    !$acc parallel loop async(1)
+    !$ACC parallel loop async(1)
     do i = 1, nx
         if (cord(1,i,1) > topomean) stmpn(i) = topo_kappa * (1 + (cord(1,i,1) - topomean) * fac_kappa)
     enddo
 
-    !$acc exit data delete(topomean) async(1)
 
-    !$acc parallel loop async(1) private(snder)
+    !$ACC parallel loop async(1) private(snder)
     do i = 2, nx-1
 
         snder = ( stmpn(i+1)*(cord(1,i+1,2)-cord(1,i  ,2))/(cord(1,i+1,1)-cord(1,i  ,1)) - &
@@ -178,20 +170,20 @@ if( topo_kappa .gt. 0.d0 ) then
         dtopo(i) = dt * snder
     end do
 
-    !$acc kernels async(1)
+    !$ACC kernels async(1)
     dtopo(1) = dtopo(2)
     dtopo(nx) = dtopo(nx-1)
-    !$acc end kernels
+    !$ACC end kernels
 
      !cord(1,1:nx,2) = cord(1,1:nx,2) + dtopo(1:nx)
-     !$acc parallel loop async(1)
+     !$ACC parallel loop async(1)
     do i = 1, nx
         cord(1,i,2) = cord(1,i,2) + dtopo(i)
     enddo
 
     ! accumulated topo change since last resurface
     !dhacc(1:nx-1) = dhacc(1:nx-1) + 0.5d0 * (dtopo(1:nx-1) + dtopo(2:nx))
-     !$acc parallel loop async(1)
+    !$ACC parallel loop async(1)
     do i = 1, nx-1
         dhacc(i) = dhacc(i) + 0.5d0 * (dtopo(i) + dtopo(i + 1))
     enddo
