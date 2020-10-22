@@ -15,12 +15,12 @@ subroutine bc_update
   !   Update for hydrostatic force (normal to the surface)
   !   Shear component = 0 (perfect fluid)
   ! -------------------------------------------------------------
-  !$ACC kernels
+  !$ACC kernels async(1)
   force = 0.0d0
   !$ACC end kernels
 
-  !$ACC serial
   if (nydrsides.eq. 1) then
+      !$ACC serial async(1)
       rogh = 0.d0
       do j=1,nz-1
           iph = iphase(j,1)
@@ -80,14 +80,14 @@ subroutine bc_update
 
           rogh = rogh +dP
       enddo
+      !$ACC end serial
 
   endif
-  !$ACC end serial
 
   !----------------------------------
   ! APPLY  STATIC STRESSES:
   !----------------------------------
-  !$ACC kernels loop
+  !$ACC kernels loop async(1)
   do i=1,nopbmax
 
       ii1 = nopbou(i,1)
