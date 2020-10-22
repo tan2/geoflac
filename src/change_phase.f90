@@ -29,7 +29,7 @@ real*8, parameter :: partial_melt_temp = 600.d0
 ! thickness of new crust
 real*8, parameter :: new_crust_thickness = 7.d3
 
-!$ACC serial
+!$ACC serial async(1)
 ! search the element for melting
 do jj = 1, nz-1
    ! search for crustal depth
@@ -39,7 +39,7 @@ end do
 j = min(max(2, jj), nz-1)
 !$ACC end serial
 
-!$ACC parallel loop
+!$ACC parallel loop async(1)
 do i = 1, nx-1
   iph = iphase(j,i)
   if (iph==kmant1 .or. iph==kmant2) then
@@ -50,7 +50,7 @@ do i = 1, nx-1
   end if
 end do
 
-!$ACC kernels
+!$ACC kernels async(2)
 ! nelem_inject was used for magma injection, reused here for serpentization
 nelem_serp = nelem_inject
 ! rate_inject was used for magma injection, reused here for dehydration melting
@@ -59,11 +59,11 @@ andesitic_melt_vol(1:nx-1) = 0
 
 itmp = 0  ! indicates which element has phase-changed markers
 !$ACC end kernels
-
+!$ACC wait(2)
 
 !$OMP parallel private(kk,i,j,k,n,tmpr,depth,iph,press,jbelow,trpres,trpres2,kinc,quad_area,yy)
 !$OMP do schedule(guided)
-!$ACC parallel loop
+!$ACC parallel loop async(1)
 do kk = 1 , nmarkers
     if (mark_dead(kk).eq.0) cycle
 
@@ -201,13 +201,14 @@ enddo
 !$OMP end do
 !$OMP end parallel
 
-!$ACC kernels
+!$ACC kernels async(2)
 ! storing plastic strain in temporary array
 dummye(1:nz-1,1:nx-1) = aps(1:nz-1,1:nx-1)
 !$ACC end kernels
+!$ACC wait(2)
 
 !$OMP parallel do private(iph, kinc)
-!$ACC parallel loop collapse(2)
+!$ACC parallel loop collapse(2) async(1)
 ! recompute phase ratio of those changed elements
 do i = 1, nx-1
     do j = 1, nz-1
