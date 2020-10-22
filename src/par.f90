@@ -91,7 +91,7 @@ do while( time .le. time_max )
 
     nloop = nloop + 1
     time = time + dt
-!$ACC update device(time,nloop)
+    !$ACC update device(time,nloop) async(1)
     dtacc_screen = dtacc_screen + dt
     dtacc_file   = dtacc_file   + dt
     dtacc_save   = dtacc_save   + dt
@@ -120,11 +120,11 @@ do while( time .le. time_max )
         call lpeuler2bar
         call nvtxEndRange()
         call nvtxStartRange('marker2elem')
-        !$ACC kernels
+        !$ACC kernels async(1)
         call marker2elem
         !$ACC end kernels
         call nvtxEndRange()
-        !$ACC update self(nmarkers)
+        !$ACC update self(nmarkers) async(1)
       endif
       call nvtxEndRange()
     endif
