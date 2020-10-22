@@ -149,10 +149,11 @@ if( topo_kappa .gt. 0.d0 ) then
     topomean = sum(cord(1,:,2)) / nx
     !$ACC end kernels
 
-    !$ACC parallel loop async(1)
+    !$ACC parallel loop async(2)
     do i = 1, nx
         stmpn(i) = topo_kappa ! elevation-dep. topo diffusivity
     enddo
+    !$ACC wait(2)
 
     ! higher elevation has higher erosion rate
     !$ACC parallel loop async(1)
@@ -175,14 +176,12 @@ if( topo_kappa .gt. 0.d0 ) then
     dtopo(nx) = dtopo(nx-1)
     !$ACC end kernels
 
-     !cord(1,1:nx,2) = cord(1,1:nx,2) + dtopo(1:nx)
-     !$ACC parallel loop async(1)
+    !$ACC parallel loop async(1)
     do i = 1, nx
         cord(1,i,2) = cord(1,i,2) + dtopo(i)
     enddo
 
     ! accumulated topo change since last resurface
-    !dhacc(1:nx-1) = dhacc(1:nx-1) + 0.5d0 * (dtopo(1:nx-1) + dtopo(2:nx))
     !$ACC parallel loop async(1)
     do i = 1, nx-1
         dhacc(i) = dhacc(i) + 0.5d0 * (dtopo(i) + dtopo(i + 1))
@@ -200,8 +199,8 @@ if( topo_kappa .gt. 0.d0 ) then
 endif
 
 ! magma extrusion
-!$ACC kernels async(1)
 if ( .true. ) then
+    !$ACC kernels async(1)
     ! grid spacing in x
     extrusion(1:nx-1) = cord(1,2:nx,1) - cord(1,1:nx-1,1)
     ! height of extrusion = volume of extrusion / grid spacing in x
@@ -210,8 +209,8 @@ if ( .true. ) then
 
     cord(1,1:nx-1,2) = cord(1,1:nx-1,2) + extrusion(1:nx-1)
     cord(1,2:nx  ,2) = cord(1,2:nx  ,2) + extrusion(1:nx-1)
+    !$ACC end kernels
 endif
-!$ACC end kernels
 
 return
 end subroutine diff_topo
