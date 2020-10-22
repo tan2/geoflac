@@ -112,8 +112,8 @@ dtavg = dtavg + dt
 !$ACC update device(dtavg) async(1)
 ! re-initialisation after navgsr steps
 if( nsrate .eq. ifreq_avgsr ) then
-!$OMP parallel do
-!$ACC parallel loop collapse(2) async(1)
+    !$OMP parallel do
+    !$ACC parallel loop collapse(2) async(1)
     do i = 1,nx-1
         do j = 1, nz-1
             e2sr(j,i) = se2sr(j,i) / dtavg
@@ -122,19 +122,19 @@ if( nsrate .eq. ifreq_avgsr ) then
             sshrheat(j,i) = 0.d0
         end do
     end do
-!$OMP end parallel do
+    !$OMP end parallel do
     dtavg = 0
     nsrate = 0
 elseif( nsrate .eq. -1 ) then
-!$OMP parallel do
-!$ACC parallel loop collapse(2) async(1)
+    !$OMP parallel do
+    !$ACC parallel loop collapse(2) async(1)
     do i = 1,nx-1
         do j = 1, nz-1
             e2sr(j,i) = se2sr(j,i) / dtavg
             shrheat(j,i) = sshrheat(j,i) / dtavg
         end do
     end do
-!$OMP end parallel do
+    !$OMP end parallel do
 endif
 
 !$acc wait(1)
