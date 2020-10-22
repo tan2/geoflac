@@ -22,15 +22,24 @@ subroutine itest_mesh(need_remeshing)
   ! if remeshing with adding material on the sides then
   ! remesh at pre-given shortening
   ! dx_rem*dx - critical distance of shortnening
-  !$ACC serial
   if( mode_rem .eq. 11.or.mode_rem.eq.3 ) then
+      !$ACC serial
       testcr = dx_rem * rxbo / (nx-1)
       shortening = abs(cord(1,nx,1) - cord(1,1,1) - rxbo)
       if ( shortening .gt. testcr ) then
           need_remeshing = 2
       endif
+      !$ACC end serial
+
+      if( need_remeshing .eq. 2 ) then
+          if( dtout_screen .ne. 0 ) then
+              print *, 'Remeshing due to shortening required: ', shortening
+              write(333,*) 'Remeshing due to shortening required: ', shortening
+          else
+              call SysMsg('TEST_MESH: Remeshing due to shortening required')
+          endif
+      endif
   end if
-  !$ACC end serial
 
   pi = 3.14159265358979323846d0
   degrad = pi/180.d0
@@ -96,13 +105,6 @@ subroutine itest_mesh(need_remeshing)
         endif
         need_remeshing = 1
     endif
-  endif
-
-  if( (dtout_screen .ne. 0)  .and. (need_remeshing .eq. 2) ) then
-      print *, 'Remeshing due to shortening required: ', shortening
-      write(333,*) 'Remeshing due to shortening required: ', shortening
-  else
-      call SysMsg('TEST_MESH: Remeshing due to shortening required')
   endif
 
   return
