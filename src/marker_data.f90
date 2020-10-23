@@ -62,17 +62,21 @@ MODULE marker_data
     call check_inside(x , y, bar1, bar2, ntr, i, j, inc)
     if(inc.eq.0) return
 
-    if(nmark_elem(j,i) == max_markers_per_elem .or. nmarkers == max_markers) then
+    !$OMP critical (add_marker1)
+    !FIXME: potential racing condition in ACC
+    !$ACC atomic update
+    nmarkers = nmarkers + 1
+    !$ACC atomic read
+    kk_local = nmarkers
+    !$OMP end critical
+
+    if(nmark_elem(j,i) == max_markers_per_elem .or. kk_local >= max_markers-1) then
         !write(msg*) 'Too many markers at element:', i, j, nmark_elem(j,i)
         !call SysMsg(msg)
         !call SysMsg('Marker skipped, not added!')
         inc = -1
         return
     endif
-    !$OMP atomic update
-    !$ACC atomic update
-    nmarkers = nmarkers + 1
-    kk_local = nmarkers
 
     ! recording the id of markers belonging to the element
     nmark_elem(j,i) = nmark_elem(j,i) + 1
