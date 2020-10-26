@@ -120,11 +120,11 @@ do while( time .le. time_max )
         call lpeuler2bar
         call nvtxEndRange()
         call nvtxStartRange('marker2elem')
-        !$ACC kernels async(1)
+        !x$ACC kernels async(1)
         call marker2elem
-        !$ACC end kernels
+        !x$ACC end kernels
         call nvtxEndRange()
-        !$ACC update self(nmarkers) async(1)
+        !$ACC update device(nmarkers) async(1)
       endif
       call nvtxEndRange()
     endif
