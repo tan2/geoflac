@@ -101,11 +101,11 @@ ifeq ($(F90), pgf90)
 		LDFLAGS += -mp
 	endif
 	ifeq ($(acc), 1)
-		CFLAGS += -acc -ta=tesla:cc70,managed,nofma -Mnofma -Mcuda -Minfo=accel
-		LDFLAGS += -acc -ta=tesla:cc70,managed,nofma -Mcuda
+		CFLAGS += -acc -ta=tesla:cc70,managed -Mcuda -Minfo=accel
+		LDFLAGS += -acc -ta=tesla:cc70,managed -Mcuda
 	endif
         ifeq ($(debug), 0)
-                CFLAGS += -O2 -Mnofma -Minfo=all
+                CFLAGS += -O2 -Minfo=all
         else
                CFLAGS += -O0 -Mbounds -Mchkstk -traceback
                LDFLAGS +=
