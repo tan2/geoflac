@@ -84,7 +84,6 @@ call rem_trpars(nzt, nxt)
 call nvtxStartRange('rem_ebarcord')
 call rem_barcord(nzt, nxt)
 call nvtxEndRange()
-!$ACC wait(1)
 
 ! Do interpolations
 
@@ -108,8 +107,10 @@ end do
 
 ! plastic strain
 call rem_interpolate( nzt, nxt, dummye, aps )
+
+
 !$OMP parallel do
-!$ACC parallel loop collapse(2)
+!$ACC parallel loop collapse(2) async(1)
 do i = 1, nxt
     do j = 1, nzt
         if( aps(j,i) .lt. 0.d0 ) then
@@ -127,105 +128,111 @@ end do
 
 idist = 2
 if(incoming_left==1) then
-    !$ACC kernels
+    !$ACC kernels async(1)
     aps(1:nz-1, 1:1+idist) = 0.0d0
     !$ACC end kernels
 
-    !$ACC serial copyout(jj)
+    !$ACC serial copyout(jj) async(1)
     do jj = 1, nz-1
         if((cord(1,1,2) - 0.5d0*(cord(jj,1,2)+cord(jj+1,1,2))) > hc1(1)*1d3) exit
     enddo
     !$ACC end serial
 
-    !$ACC kernels
+    !$ACC kernels async(1)
     call newphase2marker(1, jj-1, 1, 1+idist, iph_col1(1))
     !$ACC end kernels
 
+    !$ACC wait(1)
     j = jj
-    !$ACC serial copyout(jj)
+    !$ACC serial copyout(jj) async(1)
     do jj = j, nz-1
         if((cord(1,1,2) - 0.5d0*(cord(jj,1,2)+cord(jj+1,1,2))) > hc2(1)*1d3) exit
     enddo
     !$ACC end serial
 
-    !$ACC kernels
+    !$ACC kernels async(1)
     call newphase2marker(j, jj-1, 1, 1+idist, iph_col2(1))
     !$ACC end kernels
 
+    !$ACC wait(1)
     j = jj
-    !$ACC serial copyout(jj)
+    !$ACC serial copyout(jj) async(1)
     do jj = j, nz-1
         if((cord(1,1,2) - 0.5d0*(cord(jj,1,2)+cord(jj+1,1,2))) > hc3(1)*1d3) exit
     enddo
     !$ACC end serial
 
-    !$ACC kernels
+    !$ACC kernels async(1)
     call newphase2marker(j, jj-1, 1, 1+idist, iph_col3(1))
     !$ACC end kernels
 
+    !$ACC wait(1)
     j = jj
-    !$ACC serial copyout(jj)
+    !$ACC serial copyout(jj) async(1)
     do jj = j, nz-1
         if((cord(1,1,2) - 0.5d0*(cord(jj,1,2)+cord(jj+1,1,2))) > hc4(1)*1d3) exit
     enddo
     !$ACC end serial
 
-    !$ACC kernels
+    !$ACC kernels async(1)
     call newphase2marker(j, jj-1, 1, 1+idist, iph_col4(1))
     !$ACC end kernels
-    !$ACC kernels
+    !$ACC kernels async(1)
     call newphase2marker(jj, nz-1, 1, 1+idist, iph_col5(1))
     !$ACC end kernels
 endif
 
 if(incoming_right==1) then
-    !$ACC kernels
+    !$ACC kernels async(1)
     aps(1:nz-1, nx-1-idist:nx-1) = 0.0d0
     !$ACC end kernels
 
-    !$ACC serial copyout(jj)
+    !$ACC serial copyout(jj) async(1)
     do jj = 1, nz-1
         if((cord(1,nx,2) - 0.5d0*(cord(jj,nx,2)+cord(jj+1,nx,2))) > hc1(nzone_age)*1d3) exit
     enddo
     !$ACC end serial
 
-    !$ACC kernels
+    !$ACC kernels async(1)
     call newphase2marker(1, jj-1, nx-1-idist, nx-1, iph_col1(nzone_age))
     !$ACC end kernels
 
+    !$ACC wait(1)
     j = jj
-    !$ACC serial copyout(jj)
+    !$ACC serial copyout(jj) async(1)
     do jj = j, nz-1
         if((cord(1,nx,2) - 0.5d0*(cord(jj,nx,2)+cord(jj+1,nx,2))) > hc2(nzone_age)*1d3) exit
     enddo
     !$ACC end serial
 
-    !$ACC kernels
+    !$ACC kernels async(1)
     call newphase2marker(j, jj-1, nx-1-idist, nx-1, iph_col2(nzone_age))
     !$ACC end kernels
 
+    !$ACC wait(1)
     j = jj
-    !$ACC serial copyout(jj)
+    !$ACC serial copyout(jj) async(1)
     do jj = j, nz-1
         if((cord(1,nx,2) - 0.5d0*(cord(jj,nx,2)+cord(jj+1,nx,2))) > hc3(nzone_age)*1d3) exit
     enddo
     !$ACC end serial
 
-    !$ACC kernels
+    !$ACC kernels async(1)
     call newphase2marker(j, jj-1, nx-1-idist, nx-1, iph_col3(nzone_age))
     !$ACC end kernels
 
+    !$ACC wait(1)
     j = jj
-    !$ACC serial copyout(jj)
+    !$ACC serial copyout(jj) async(1)
     do jj = j, nz-1
         if((cord(1,nx,2) - 0.5d0*(cord(jj,nx,2)+cord(jj+1,nx,2))) > hc4(nzone_age)*1d3) exit
     enddo
     !$ACC end serial
 
-    !$ACC kernels
+    !$ACC kernels async(1)
     call newphase2marker(j, jj-1, nx-1-idist, nx-1, iph_col4(nzone_age))
     !$ACC end kernels
-    !$ACC kernels
+    !$ACC kernels async(1)
     call newphase2marker(jj, nz-1, nx-1-idist, nx-1, iph_col5(nzone_age))
     !$ACC end kernels
 endif
@@ -309,7 +316,7 @@ integer :: i, j, k, n
 double precision :: x1, x2, x3, y1, y2, y3, det
 
 !$OMP parallel do private(x1,x2,x3,y1,y2,y3,det,n)
-!$ACC parallel loop collapse(3)
+!$ACC parallel loop collapse(3) async(1)
 do i = 1,nxt-1
     do j = 1,nzt-1
         do k = 1,2
