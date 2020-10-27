@@ -37,6 +37,10 @@ do j = jbeg, jend
     enddo
 enddo
 
+! More extensive search
+! disabled since most models won't need this
+if(.false.) then
+
 ! search all surface elem
 do i = 1, nx-1
     call check_inside(x,y,bar1,bar2,ntr,i,1,inc)
@@ -64,6 +68,7 @@ do j = 1, nz-1
         endif
     enddo
 enddo
+endif
 
 inc = 0
 return
