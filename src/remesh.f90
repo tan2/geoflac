@@ -11,7 +11,7 @@ double precision :: xl, xr, densT, dh, dh1, dh2, dp, dpt, &
                     press, rogh, tmpr
 
 ! Save old mesh for interpolations
-!$ACC kernels
+!$ACC kernels async(1)
 cordo = cord
 !$ACC end kernels
 
@@ -22,7 +22,7 @@ call nvtxEndRange()
 
 
 
-!$ACC kernels
+!$ACC kernels async(1)
 !===========================================================================!
 ! Length-weighted interpolation of accumulated topo change on the surface
 dhnew(:) = 0

@@ -7,7 +7,7 @@ integer :: i, j, ii
 double precision :: xl, xr, xx, zl, zr, zz
 
 ! X - coordinate
-!$ACC kernels
+!$ACC parallel loop async(1)
 do j = 1, nz
 
     if( mode_rem.eq.1 ) then
@@ -28,6 +28,7 @@ end do
 
 
 ! Z - coordinate
+!$ACC kernels async(1)
 do i = 1, nx
 
     !  Top and bottom Z coordinates by interpolation from an old grid
@@ -65,6 +66,5 @@ do i = 1, nx
 
 end do
 !$ACC end kernels
-
 return
 end
