@@ -61,11 +61,12 @@ extr_acc(1:nx-1) = extnew / (cord(1,2:nx,1) - cord(1,1:nx-1,1))
 ! Linear interpolation in baricentric coordinates defined as centers of old mesh
 nxt = nx-1
 nzt = nz-1
+!$ACC wait(1)
 
 ! Old mesh - old-element centers
 ! New mesh - new-element centers
 !$OMP parallel do
-!$ACC parallel loop collapse(2)
+!$ACC parallel loop collapse(2) async(1)
 do i = 1, nx-1
     do j = 1, nz-1
         cold(j,i,1) = 0.25d0*( cordo(j,i,1)+cordo(j+1,i,1)+cordo(j,i+1,1)+cordo(j+1,i+1,1) )
@@ -83,7 +84,7 @@ call rem_trpars(nzt, nxt)
 call nvtxStartRange('rem_ebarcord')
 call rem_barcord(nzt, nxt)
 call nvtxEndRange()
-
+!$ACC wait(1)
 
 ! Do interpolations
 
@@ -262,6 +263,7 @@ call nvtxStartRange('rem_nbarcord')
 call rem_barcord(nzt,nxt)
 call nvtxEndRange()
 
+!$ACC wait(1)
 ! Do node-wise interpolations
 
 ! Velocities (in nodes)
@@ -369,7 +371,7 @@ perr = 1.d-4
 
 !$OMP parallel do private(xx,yy,l, lt,io,jo,k,n,a1,a2,a3,amod,amodmin,nmin, &
 !$OMP                     numqu,dist1,dist2,dist3)
-!$ACC parallel loop collapse(2) 
+!$ACC parallel loop collapse(2) async(1)
 do i = 1, nxt
     do j = 1, nzt
         xx = cnew(j,i,1)
@@ -504,12 +506,12 @@ double precision :: dummy(nzt,nxt), arr(nzt,nxt)
 integer :: i, j, io, jo, numq
 double precision :: f1, f2, f3
 
-!$ACC kernels
+!$ACC kernels async(1)
 dummy = arr
 !$ACC end kernels
 
 !$OMP parallel do private(numq,io,jo,f1,f2,f3)
-!$ACC parallel loop collapse(2)
+!$ACC parallel loop collapse(2) async(1)
 do i = 1, nxt
     do j = 1, nzt
 
