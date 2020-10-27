@@ -81,7 +81,7 @@ se2sr = 1d-16
 !$ACC     incoming_left,incoming_right, &
 !$ACC     iynts, iax1,iay1,ibx1,iby1,icx1,icy1,idx1,idy1, &
 !$ACC     ivis_present,n_boff_cutoff,idt_scale,ifreq_imasses,ifreq_rmasses, &
-!$ACC     nloop,ifreq_avgsr,nsrate)
+!$ACC     nloop,ifreq_avgsr,nsrate) async(1)
 
 !$ACC update device(x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
 !$ACC     dx_rem,angle_rem,topo_kappa,fac_kappa, &
@@ -106,7 +106,7 @@ se2sr = 1d-16
 !$ACC     hc1(maxzone_age),hc2(maxzone_age),hc3(maxzone_age),hc4(maxzone_age), &
 !$ACC     age_1(maxzone_age),g,pisos,drosub,damp_vis, &
 !$ACC     dtavg, tbos, &
-!$ACC     time,dt,time_max)
+!$ACC     time,dt,time_max) async(1)
 
 ! Distribution of REAL masses to nodes
 call nvtxStartRange('rmasses')
