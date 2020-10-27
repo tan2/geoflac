@@ -4,8 +4,7 @@ use arrays
 use params
 implicit none
 integer :: i, j, ii
-double precision :: xl, xr, xx, zcorr, zl, zr, zz, total_area
-logical, parameter :: do_volcorrection = .false.
+double precision :: xl, xr, xx, zl, zr, zz
 
 ! X - coordinate
 !$ACC kernels
@@ -28,14 +27,6 @@ do j = 1, nz
 end do
 
 
-! Z-coordinate correction for volume change
-if( mode_rem.eq.1 .and. do_volcorrection ) then
-    zcorr = -( total_area(0)-rzbo*rxbo ) / abs(xr-xl)
-else
-    zcorr = 0
-endif
- 
-
 ! Z - coordinate
 do i = 1, nx
 
@@ -54,7 +45,7 @@ do i = 1, nx
                     zl = cordo(j,ii,2)
                     zr = cordo(j,ii+1,2)
                     zz = zl + (xx-xl)*(zr-zl)/(xr-xl)
-                    cord(j,i,2) = zz + zcorr
+                    cord(j,i,2) = zz
                     exit
                 endif
             end do
