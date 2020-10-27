@@ -162,7 +162,7 @@ if( topo_kappa .gt. 0.d0 ) then
     enddo
 
 
-    !$ACC parallel loop async(1) private(snder)
+    !$ACC parallel loop async(1)
     do i = 2, nx-1
 
         snder = ( stmpn(i+1)*(cord(1,i+1,2)-cord(1,i  ,2))/(cord(1,i+1,1)-cord(1,i  ,1)) - &
@@ -176,15 +176,17 @@ if( topo_kappa .gt. 0.d0 ) then
     dtopo(nx) = dtopo(nx-1)
     !$ACC end kernels
 
+
+    ! accumulated topo change since last resurface
+    !$ACC wait(1)
+    !$ACC parallel loop async(2)
+    do i = 1, nx-1
+        dhacc(i) = dhacc(i) + 0.5d0 * (dtopo(i) + dtopo(i + 1))
+    enddo
+
     !$ACC parallel loop async(1)
     do i = 1, nx
         cord(1,i,2) = cord(1,i,2) + dtopo(i)
-    enddo
-
-    ! accumulated topo change since last resurface
-    !$ACC parallel loop async(1)
-    do i = 1, nx-1
-        dhacc(i) = dhacc(i) + 0.5d0 * (dtopo(i) + dtopo(i + 1))
     enddo
 
     ! adjust markers
