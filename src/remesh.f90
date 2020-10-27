@@ -61,7 +61,6 @@ extr_acc(1:nx-1) = extnew / (cord(1,2:nx,1) - cord(1,1:nx-1,1))
 ! Linear interpolation in baricentric coordinates defined as centers of old mesh
 nxt = nx-1
 nzt = nz-1
-!$ACC wait(1)
 
 ! Old mesh - old-element centers
 ! New mesh - new-element centers
@@ -270,7 +269,6 @@ call nvtxStartRange('rem_nbarcord')
 call rem_barcord(nzt,nxt)
 call nvtxEndRange()
 
-!$ACC wait(1)
 ! Do node-wise interpolations
 
 ! Velocities (in nodes)

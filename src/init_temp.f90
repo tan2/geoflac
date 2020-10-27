@@ -216,7 +216,7 @@ subroutine sidewalltemp(i1, i2)
 
 !!$  if(iph_col3(n)==kocean1 .or. iph_col3(n)==kocean2) then
       !! Oceanic geotherm (half space cooling model)
-      !$ACC parallel loop collapse(2)
+      !$ACC parallel loop collapse(2) async(1)
       do i = i1, i2
           do j = 1,nz
               ! depth in km
@@ -260,12 +260,12 @@ subroutine sidewalltemp(i1, i2)
 !!$  endif
 
   if(i1 == 1) then
-      !$ACC parallel loop
+      !$ACC parallel loop async(1)
       do i = i1, i2
           source(1:nz-1,i) = source(1:nz-1,i2+1)
       enddo
   else
-      !$ACC parallel loop
+      !$ACC parallel loop async(1)
       do i = i1, i2
           source(1:nz-1,i) = source(1:nz-1,i1-1)
       enddo
