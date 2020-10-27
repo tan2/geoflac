@@ -20,7 +20,6 @@ if (itherm .eq.2) goto 500  ! Thermal calculation only
 ! Calculation of strain rates from velocity
 call nvtxStartRange('fl_srate')
 call fl_srate
-!$ACC update device(dtavg,nsrate)
 call nvtxEndRange()
 
 ! Changing marker phases

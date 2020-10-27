@@ -11,6 +11,9 @@ double precision :: x1,y1,x2,y2,x3,y3,x4,y4, &
          em,eda,edb,s11,s22,s12, &
          srII,srI,srs2,stII
 
+dtavg = dtavg + dt
+!$ACC update device(dtavg) async(2)
+
 !$OMP parallel do &
 !$OMP private(i,j,x1,y1,x2,y2,x3,y3,x4,y4, &
 !$OMP         vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4, &
@@ -108,8 +111,8 @@ do i = 1,nx-1
 enddo
 !$OMP end parallel do
 ! following block is needed for averaging
-dtavg = dtavg + dt
-!$ACC update device(dtavg) async(1)
+
+!$ACC wait(2)
 ! re-initialisation after navgsr steps
 if( nsrate .eq. ifreq_avgsr ) then
     !$OMP parallel do
