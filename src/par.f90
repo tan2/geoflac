@@ -105,7 +105,6 @@ do while( time .le. time_max )
     call nvtxEndRange()
     if( need_remeshing .ne. 0 ) then
       ! If there are markers recalculate their x,y global coordinate and assign them aps, eII, press, temp
-      call nvtxStartRange('do_remeshing')
       if(iint_marker.eq.1) then
         call nvtxStartRange('bar2euler')
         call bar2euler
@@ -126,7 +125,6 @@ do while( time .le. time_max )
         call nvtxEndRange()
         !$ACC update device(nmarkers) async(1)
       endif
-      call nvtxEndRange()
     endif
   endif
 
