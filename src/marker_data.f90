@@ -68,7 +68,7 @@ MODULE marker_data
     nmarkers = nmarkers + 1
     !$ACC atomic read
     kk_local = nmarkers
-    !$OMP end critical
+    !$OMP end critical (add_marker1)
 
     if(nmark_elem(j,i) == max_markers_per_elem .or. kk_local >= max_markers-1) then
         !write(msg*) 'Too many markers at element:', i, j, nmark_elem(j,i)
