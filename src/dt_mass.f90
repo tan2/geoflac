@@ -61,13 +61,15 @@ enddo
 enddo
 enddo
 
-!$ACC kernels async(1)
 if (idt_scale .eq. 0) then
-    amass = rmass
-else
-    amass = 0
-end if
+!$ACC kernels async(1)
+    amass(:) = rmass(:)
 !$ACC end kernels
+else
+!$ACC kernels async(1)
+    amass(:) = 0
+!$ACC end kernels
+end if
 
 do iblk = 1, 2
     do jblk = 1, 2
