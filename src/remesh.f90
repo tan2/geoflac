@@ -373,6 +373,7 @@ integer :: nzt,nxt
 
 
 perr = 1.d-4
+mm = 4  ! search range, might be extended if find grid / coarse grid is large
 
 !$OMP parallel do private(xx,yy,l, lt,io,jo,k,n,a1,a2,a3,amod,amodmin,nmin, &
 !$OMP                     numqu,dist1,dist2,dist3)
@@ -385,28 +386,8 @@ do i = 1, nxt
         amodmin = 1.d+10
 
         numtr(j,i) = 0
-        do l = 0, max( nxt-1, nzt-1 )
-            do lt = 1, max(8*l,1)
-                if( lt .le. 2*l ) then
-                    jo = j - l
-                    io = i + lt-1 - l
-                elseif( lt .le. 4*l ) then
-                    jo = j + lt-2*l - l - 1
-                    io = i + l
-                elseif( lt .le. 6*l ) then
-                    jo = j + l
-                    io = i + lt-4*l - l
-                elseif( lt .le. 8*l ) then
-                    jo = j + lt-6*l - l
-                    io = i - l
-                else ! only at l=0
-                    jo = j
-                    io = i
-                endif
-
-                if( io.lt.1 .or. io.gt.nxt-1 ) cycle
-                if( jo.lt.1 .or. jo.gt.nzt-1 ) cycle
-
+        do io = max(1, i-mm), min(nxt-1, i+mm)
+            do jo = max(1, j-mm), min(nzt-1, j+mm)
                 do k = 1, 2
                     n = 2*( (nzt-1)*(io-1)+jo-1 ) + k
                     a1 = pt(n,1,1) + xx*pt(n,1,2) + yy*pt(n,1,3)
