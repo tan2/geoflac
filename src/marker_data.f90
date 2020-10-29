@@ -23,7 +23,7 @@ MODULE marker_data
 
     integer, intent(in) :: nz, nx
     max_markers = nz * nx * max_markers_per_elem
-    !$ACC update device(max_markers)
+    !$ACC update device(max_markers) async(1)
 
     allocate(mark_a1(max_markers), mark_a2(max_markers), &
              mark_x(max_markers), mark_y(max_markers), &
