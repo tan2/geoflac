@@ -252,7 +252,7 @@ nxt = nx
 nzt = nz
 
 !$OMP task
-!$ACC kernels
+!$ACC kernels async(1)
 ! Old mesh - old coordinates points
 cold(1:nz,1:nx,1:2) = cordo(1:nz,1:nx,1:2)
 temp0(1:nz,1:nx) = temp(1:nz,1:nx)

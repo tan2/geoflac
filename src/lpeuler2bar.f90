@@ -8,10 +8,11 @@ include 'precision.inc'
 
 character*200 msg
 
-!$ACC kernels
+!$ACC kernels async(1)
 mark_id_elem(:,:,:) = 0
 nmark_elem(:,:) = 0
 !$ACC end kernels
+!$ACC wait(1)
 
 !$OMP parallel do private(n,k,j,i,xx,yy,bar1,bar2,ntr,inc)
 !x$ACC parallel loop  !! disabled until "ACC critical" becomes avaiable

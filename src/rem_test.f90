@@ -23,14 +23,14 @@ subroutine itest_mesh(need_remeshing)
   ! remesh at pre-given shortening
   ! dx_rem*dx - critical distance of shortnening
   if( mode_rem .eq. 11.or.mode_rem.eq.3 ) then
-      !$ACC serial
+      !$ACC serial wait(1)
       testcr = dx_rem * rxbo / (nx-1)
       shortening = abs(cord(1,nx,1) - cord(1,1,1) - rxbo)
       if ( shortening .gt. testcr ) then
           need_remeshing = 2
       endif
       !$ACC end serial
-
+      !$ACC wait(1)
       if( need_remeshing .eq. 2 ) then
           if( dtout_screen .ne. 0 ) then
               print *, 'Remeshing due to shortening required: ', shortening
@@ -49,7 +49,7 @@ subroutine itest_mesh(need_remeshing)
   jmint = 0
 
   if (need_remeshing == 0) then
-    !$ACC parallel loop collapse(3) private(iv,jv,angle)
+    !$ACC parallel loop collapse(3) private(iv,jv,angle) async(1)
     do i = 1, nx-1
         do j = 1,nz-1
             ! loop for each 4 sub-triangles
@@ -91,6 +91,7 @@ subroutine itest_mesh(need_remeshing)
     end do
 
     if( dtout_screen .ne. 0 ) then
+        !$ACC wait(1)
         write (6,'(A,F6.2,A,F10.6)') '        min.angle=',anglemint, '     dt(yr)=',dt/sec_year
         write (333,'(A,F6.2,A,F10.6)') '        min.angle=',anglemint, '     dt(yr)=',dt/sec_year
         flush (333)
