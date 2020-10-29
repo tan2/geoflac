@@ -140,7 +140,6 @@ elseif( nsrate .eq. -1 ) then
     !$OMP end parallel do
 endif
 
-!$ACC wait(1)
 nsrate = nsrate + 1
 !--------------
 

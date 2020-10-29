@@ -128,7 +128,6 @@ do  i = 1,nx-1
 enddo
 !$OMP end do
 !$OMP end parallel
-!$ACC wait(1)
 return
 end subroutine fl_move
 
