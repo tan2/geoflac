@@ -35,7 +35,7 @@ integer :: i, j, k, iph, irh, &
 !$OMP                  sII_plas,sII_visc, &
 !$OMP                  quad_area,s0a,s0b,s0)
 !$OMP do schedule(guided)
-!$ACC parallel loop gang vector collapse(2) private(depl,s11p,s22p,s12p,s33p,s11v,s22v,s12v,s33v)
+!$ACC parallel loop gang vector collapse(2) private(depl,s11p,s22p,s12p,s33p,s11v,s22v,s12v,s33v) async(1)
 do 3 i = 1,nx-1
     do 3 j = 1,nz-1
         ! iphase (j,i) is number of a phase NOT a rheology
