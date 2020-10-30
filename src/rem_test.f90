@@ -23,7 +23,7 @@ subroutine itest_mesh(need_remeshing)
   ! remesh at pre-given shortening
   ! dx_rem*dx - critical distance of shortnening
   if( mode_rem .eq. 11.or.mode_rem.eq.3 ) then
-      !$ACC serial wait(1)
+      !$ACC serial async(1)
       testcr = dx_rem * rxbo / (nx-1)
       shortening = abs(cord(1,nx,1) - cord(1,1,1) - rxbo)
       if ( shortening .gt. testcr ) then
