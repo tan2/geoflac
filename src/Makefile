@@ -110,7 +110,7 @@ ifeq ($(F90), pgf90)
                CFLAGS += -O0 -Mbounds -Mchkstk -traceback
                LDFLAGS +=
         endif
-	LDFLAGS += -lnvToolsExt -Mcuda
+	#LDFLAGS += -lnvToolsExt -Mcuda
 endif
 
 ## for Solaris
@@ -143,8 +143,7 @@ MODULE_SRCS = \
 	params.f90 \
 	arrays.f90 \
 	phases.f90 \
-	marker_data.f90 \
-	nvtx_mod.f90
+	marker_data.f90
 
 SRCS =	\
 	bar2euler.f90 \

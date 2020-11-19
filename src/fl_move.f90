@@ -138,7 +138,6 @@ end subroutine fl_move
 subroutine diff_topo
 use arrays
 use params
-use nvtx_mod
 include 'precision.inc'
 
 !EROSION PROCESSES
@@ -193,9 +192,7 @@ if( topo_kappa .gt. 0.d0 ) then
 !!$        print *, 'max sed/erosion rate (m/yr):' &
 !!$             , maxval(dtopo(1:nx)) * 3.16d7 / dt &
 !!$             , minval(dtopo(1:nx)) * 3.16d7 / dt
-        call nvtxStartRange('resurface')
         call resurface
-        call nvtxEndRange()
     end if
 endif
 
