@@ -12,7 +12,7 @@ double precision :: xl, xr, densT, dh, dh1, dh2, dp, dpt, &
 
 ! Save old mesh for interpolations
 !$ACC kernels async(1)
-cordo(:) = cord(:)
+cordo(:,:,:) = cord(:,:,:)
 !$ACC end kernels
 
 ! Create The New grid (cord) using cordo(nz,i,2) for the bottom and cordo(1,i,2) for the surface

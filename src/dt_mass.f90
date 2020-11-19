@@ -63,11 +63,11 @@ enddo
 
 if (idt_scale .eq. 0) then
 !$ACC kernels async(1)
-    amass(:) = rmass(:)
+    amass(:,:) = rmass(:,:)
 !$ACC end kernels
 else
 !$ACC kernels async(1)
-    amass(:) = 0
+    amass(:,:) = 0
 !$ACC end kernels
 end if
 
