@@ -107,9 +107,8 @@ do kk = 1 , nmarkers
                  phase_ratio(karc1,jbelow,i) > 0.8d0 .or. &
                  phase_ratio(ksed1,jbelow,i) > 0.8d0) then
                 !$ACC atomic write
-                !$OMP critical (change_phase1)
+                !$OMP atomic write
                 itmp(j,i) = 1
-                !$OMP end critical (change_phase1)
                 mark_phase(kk) = kweak
                 exit
             endif
@@ -120,9 +119,8 @@ do kk = 1 , nmarkers
         !if(tmpr > 300.d0 .and. tmpr < 400.d0 &
         !     .and. stressII(j,i)*strainII(j,i) > 4.d6) then
         !    !$ACC atomic write
-        !    !$OMP critical (change_phase1)
+        !    !$OMP atomic write
         !    !itmp(j,i) = 1
-        !    !$OMP end critical (change_phase1)
         !    mark_phase(kk) = kweakmc
         !endif
 
@@ -141,9 +139,8 @@ do kk = 1 , nmarkers
                 phase_ratio(kocean2,jbelow,i) > 0.8d0 .or. &
                 phase_ratio(ksed1,jbelow,i) > 0.8d0) then
                 !$ACC atomic write
-                !$OMP critical (change_phase1)
+                !$OMP atomic write
                 itmp(j,i) = 1
-                !$OMP end critical (change_phase1)
                 mark_phase(kk) = kserp
                 exit
             endif
@@ -155,9 +152,8 @@ do kk = 1 , nmarkers
         press = mantle_density * g * depth
         if (tmpr < min_eclogite_temp .or. depth < min_eclogite_depth .or. press < trpres) cycle
         !$ACC atomic write
-        !$OMP critical (change_phase1)
+        !$OMP atomic write
         itmp(j,i) = 1
-        !$OMP end critical (change_phase1)
         mark_phase(kk) = keclg
     case (kserp)
         ! dehydration, serpentinite -> hydrated mantle
@@ -169,38 +165,35 @@ do kk = 1 , nmarkers
         press = mantle_density * g * depth
         if (tmpr < serpentine_temp .or. (press < trpres .and. press > trpres2)) cycle
         !$ACC atomic write
-        !$OMP critical (change_phase1)
+        !$OMP atomic write
         itmp(j,i) = 1
-        !$OMP end critical (change_phase1)
         mark_phase(kk) = khydmant
     case (ksed2)
         ! compaction, uncosolidated sediment -> sedimentary rock
         if (tmpr > 250d0 .and. depth < 7d3) cycle
         !$ACC atomic write
-        !$OMP critical (change_phase1)
+        !$OMP atomic write
         itmp(j,i) = 1
-        !$OMP end critical (change_phase1)
         mark_phase(kk) = ksed1
     case (ksed1)
         ! dehydration, sedimentary rock -> schist
         ! from sediment solidus in Nichols et al., Nature, 1994
         if (tmpr < 650d0 .or. depth < 20d3) cycle
         !$ACC atomic write
-        !$OMP critical (change_phase1)
+        !$OMP atomic write
         itmp(j,i) = 1
-        !$OMP end critical (change_phase1)
         mark_phase(kk) = kmetased
     case (khydmant)
         if (tmpr > ts(khydmant)) then
             ! area(j,i) is INVERSE of "real" DOUBLE area (=1./det)
             quad_area = 0.5d0/area(j,i,1) + 0.5d0/area(j,i,2)
 
-            !$OMP critical (change_phase1)
             !$ACC atomic update
+            !$OMP atomic update
             andesitic_melt_vol(i) = andesitic_melt_vol(i) + quad_area * vol_frac_melt / kinc
             !$ACC atomic write
+            !$OMP atomic write
             itmp(j,i) = 1
-            !$OMP end critical (change_phase1)
             mark_phase(kk) = kmant1
         endif
     end select
