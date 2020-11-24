@@ -49,6 +49,7 @@ subroutine itest_mesh(need_remeshing)
   jmint = 0
 
   if (need_remeshing == 0) then
+    !$OMP parallel do collapse(3) private(iv,jv,angle)
     !$ACC parallel loop collapse(3) private(iv,jv,angle) async(1)
     do i = 1, nx-1
         do j = 1,nz-1
