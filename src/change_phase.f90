@@ -173,8 +173,16 @@ do kk = 1 , nmarkers
         itmp(j,i) = 1
         !$OMP end critical (change_phase1)
         mark_phase(kk) = khydmant
-    case (ksed1, ksed2)
-        ! dehydration, sediment -> schist/gneiss
+    case (ksed2)
+        ! compaction, uncosolidated sediment -> sedimentary rock
+        if (tmpr > 250d0 .and. depth < 7d3) cycle
+        !$ACC atomic write
+        !$OMP critical (change_phase1)
+        itmp(j,i) = 1
+        !$OMP end critical (change_phase1)
+        mark_phase(kk) = ksed1
+    case (ksed1)
+        ! dehydration, sedimentary rock -> schist
         ! from sediment solidus in Nichols et al., Nature, 1994
         if (tmpr < 650d0 .or. depth < 20d3) cycle
         !$ACC atomic write
