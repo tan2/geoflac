@@ -19,13 +19,13 @@
 ########################################################################
 
 ## GNU version >= 5, otherwise openmp and ieee_is_nan won't work
-#F90 = gfortran
+F90 = gfortran
 
 ## Intel, tested with v11.1
 #F90 = ifort
 
 ## PGI group, tested with 2017
-F90 = pgf90
+#F90 = pgf90
 
 ## Sun
 #F90 = f90
@@ -42,8 +42,8 @@ LDFLAGS =
 ## default command line options
 ########################################################################
 debug = 0
-omp = 0
-acc = 1
+omp = 1
+acc = 0
 coverage = 0
 gprof = 0
 
