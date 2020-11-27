@@ -17,17 +17,36 @@ call check_inside(x,y,bar1,bar2,ntr,i,j,inc)
 if(inc .eq. 1) return
 
 ! search the neighboring elem
-ibeg = ii-2
-iend = ii+2
-jbeg = jj-2
-jend = jj+2
-if (ibeg.le.0) ibeg = 1
-if (jbeg.le.0) jbeg = 1
-if (iend.ge.nx) iend = nx-1
-if (jend.ge.nz) jend = nz-1
+n1 = 2
+do j = max(1, jj-n1), min(nz-1, jj+n1)
+    do i = max(1, ii-n1), min(nx-1, ii+n1)
+        if (i == ii .and. j == jj) cycle  ! already checked
+        call check_inside(x,y,bar1,bar2,ntr,i,j,inc)
+        if(inc .eq. 1) then
+            ii = i
+            jj = j
+            return
+        endif
+    enddo
+enddo
 
-do j = jbeg, jend
-    do i = ibeg ,iend
+n2 = 6
+do j = max(1, jj-n2), min(nz-1, jj+n2)
+    do i = max(1, ii-n2), min(nx-1, ii+n2)
+        if (abs(i - ii) <= n1 .and. abs(j - jj) <= n1) cycle  ! already checked
+        call check_inside(x,y,bar1,bar2,ntr,i,j,inc)
+        if(inc .eq. 1) then
+            ii = i
+            jj = j
+            return
+        endif
+    enddo
+enddo
+
+n3 = 12
+do j = max(1, jj-n3), min(nz-1, jj+n3)
+    do i = max(1, ii-n3), min(nx-1, ii+n3)
+        if (abs(i - ii) <= n2 .and. abs(j - jj) <= n2) cycle  ! already checked
         call check_inside(x,y,bar1,bar2,ntr,i,j,inc)
         if(inc .eq. 1) then
             ii = i
