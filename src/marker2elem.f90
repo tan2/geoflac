@@ -6,7 +6,7 @@ subroutine marker2elem
   use params
   implicit none
 
-  integer :: kph(1), i, j, k, kinc, inc, iseed
+  integer :: kph(1), i, j, k, kinc, inc, iseed, icount
   double precision :: x1, x2, y1, y2, xx, yy, r1, r2
 
   !character*200 msg
@@ -15,11 +15,12 @@ subroutine marker2elem
   ! Find the triangle in which each marker belongs
 
   iseed = 0
-  !$OMP parallel do private(kinc,r1,r2,x1,y1,x2,y2,xx,yy,inc)
+  !$OMP parallel do private(kinc,r1,r2,x1,y1,x2,y2,xx,yy,inc,icount)
   !$ACC loop collapse(2)
   do i = 1 , nx-1
       do j = 1 , nz-1
           kinc = nmark_elem(j,i)
+          icount = 0
 
           !  if there are too few markers in the element, create a new one
           !  with age 0 (similar to initial marker)
@@ -45,6 +46,8 @@ subroutine marker2elem
               yy = y1*(1-r2) + y2*r2
 
               call add_marker(xx, yy, iphase(j,i), 0.d0, j, i, inc)
+              icount = icount + 1
+              if(icount > 100) stop 133
               if(inc.le.0) cycle
 
               kinc = kinc + 1

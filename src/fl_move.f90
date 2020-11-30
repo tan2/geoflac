@@ -313,6 +313,7 @@ subroutine add_marker_at_top(i, dz_ratio, time, loop, kph)
   include 'precision.inc'
 
   iseed = loop
+  icount = 0
   do while(.true.)
      call myrandom(iseed, r1)
      call myrandom(iseed, r2)
@@ -334,6 +335,8 @@ subroutine add_marker_at_top(i, dz_ratio, time, loop, kph)
 
      call add_marker(xx, yy, kph, time, 1, i, inc)
      if(inc==1 .or. inc==-1) exit
+     icount = icount + 1
+     if(icount > 100) stop 134
      !write(333,*) 'add_marker_at_top failed: ', xx, yy, rx, elz, kph
      !write(333,*) '  ', cord(1,i,:)
      !write(333,*) '  ', cord(1,i+1,:)
