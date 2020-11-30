@@ -3,5 +3,5 @@ subroutine check_nan
     use arrays
     implicit none
 
-    !if (any(ieee_is_nan(cord))) stop 'cord becomes NaN!'
+    if (any(ieee_is_nan(cord))) stop 'cord becomes NaN!'
 end subroutine check_nan
