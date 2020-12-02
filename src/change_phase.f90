@@ -195,6 +195,7 @@ do kk = 1 , nmarkers
             !$OMP atomic write
             itmp(j,i) = 1
             mark_phase(kk) = kmant1
+            print *, 'hyd melting:', kk, i, j
         endif
     end select
 

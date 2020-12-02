@@ -1,7 +1,8 @@
 
 !  Calculations of forces from stresses
 subroutine fl_node
-use arrays
+     use ieee_arithmetic
+     use arrays
 use params
 include 'precision.inc'
 
@@ -347,6 +348,7 @@ if(nyhydro.gt.0) then
     enddo
     !$OMP end do
 endif
+if (any(ieee_is_nan(force))) stop 'force becomes NaN!'
 
 !$OMP do
 !$ACC parallel loop collapse(2) async(1)
@@ -390,5 +392,6 @@ if (i_prestress.eq.1.and.time.lt.600.d3*sec_year) then
         enddo
     enddo
 endif
+if (any(ieee_is_nan(vel))) stop 'vel becomes NaN!'
 return
 end subroutine fl_node

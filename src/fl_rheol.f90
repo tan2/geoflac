@@ -9,6 +9,7 @@ subroutine fl_rheol
 !$ACC routine(plastic) seq
 !$ACC routine(Eff_visc) seq
 
+    use ieee_arithmetic
 use arrays
 use params
 implicit none
@@ -190,6 +191,9 @@ do 3 i = 1,nx-1
 3 continue
 !$OMP end do
 !$OMP end parallel
+
+if (any(ieee_is_nan(stress0))) stop 'stress0 becomes NaN!'
+if (any(ieee_is_nan(strain))) stop 'strain becomes NaN!'
 
 return
 end

@@ -2,6 +2,7 @@
 ! Move grid and adjust stresses due to rotation
 
 subroutine fl_move
+    use ieee_arithmetic
 use arrays
 use params
 include 'precision.inc'
@@ -26,6 +27,7 @@ enddo
 
 ! Diffuse topography
 if( topo_kappa.gt.0.d0) call diff_topo
+if (any(ieee_is_nan(cord))) stop 'cord becomes NaN!'
 
 
 !$OMP parallel private(i,j,x1,y1,x2,y2,x3,y3,x4,y4, &
