@@ -10,7 +10,7 @@ This will generate a binary "flac".
 Supported compilers:
 gfortran -- GNU (default), v4.2 or later, otherwise openmp is disabled
 ifort    -- Intel
-pgfortran-- PGI, the only compiler for openacc
+pgf90    -- PGI, the only compiler for openacc
 f90      -- Sun Studio (less tested)
 
 The default is to build optimized binary with openmp. Several command line
