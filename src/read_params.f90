@@ -188,7 +188,7 @@ do i = 1, nphase
          dilat1(i),dilat2(i), &
          conduct(i),cp(i),ts(i),tl(i),tk(i),fk(i)
 end do
-print *, i, 'phases'
+print *, nphase, 'phases'
 ! Flag to take initial phase distribution from a file
 call AdvanceToNextInputLine( 4 )
 read(4,*) irphase
