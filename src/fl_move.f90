@@ -140,6 +140,7 @@ end subroutine fl_move
 subroutine diff_topo
 use arrays
 use params
+use phases
 include 'precision.inc'
 
 !EROSION PROCESSES
