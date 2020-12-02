@@ -32,6 +32,8 @@ include 'precision.inc'
 drat = dt / dt_elastic
 if (drat .lt. 1.d0) drat = 1.d0
 
+if (any(ieee_is_nan(cord))) stop 'cord becomes NaN 1!'
+
 !$OMP parallel private(i, j, fx, fy, &
 !$OMP                  p_est, rosubg, &
 !$OMP                  press_norm_l, dlx_l, dly_l, &
@@ -262,6 +264,7 @@ do i = 1,nx
   enddo
 enddo
 !$OMP end do
+if (any(ieee_is_nan(force))) stop 'force becomes NaN 1!'
 
 ! BOUNDARY CONDITIONS
 if(nyhydro.gt.0) then
@@ -348,7 +351,7 @@ if(nyhydro.gt.0) then
     enddo
     !$OMP end do
 endif
-if (any(ieee_is_nan(force))) stop 'force becomes NaN!'
+if (any(ieee_is_nan(force))) stop 'force becomes NaN 2!'
 
 !$OMP do
 !$ACC parallel loop collapse(2) async(1)
