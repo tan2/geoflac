@@ -130,6 +130,8 @@ do  i = 1,nx-1
 enddo
 !$OMP end do
 !$OMP end parallel
+if (any(ieee_is_nan(area))) stop 'area becomes NaN!'
+
 return
 end subroutine fl_move
 
@@ -157,7 +159,7 @@ if( topo_kappa .gt. 0.d0 ) then
     !$ACC wait(2)
 
     !$ACC parallel loop async(1)
-    do i = 1, nx
+    do i = 1, nx-1
         ! higher erosion for sediments above mean topo
         if (iphase(1,i) == ksed2 .and. cord(1,i,2) > topomean) stmpn(i) = stmpn(i) * 10
     enddo
