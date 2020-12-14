@@ -28,6 +28,47 @@ include 'precision.inc'
 !    assemblage of forces is COUNTRE CLOCK-WISE !
 !
 
+!===========================================================
+program Sum
+! PARAMETER SET
+Integer n,i
+Double Precision A(1,4),S,c,t
+!open
+open(666,file='ns.txt',status='UNKNOWN')
+!
+n=4
+A(1,1)=1.0
+A(1,2)=10**20
+A(1,3)=1.0
+A(1,4)=-10**20
+
+! use FUN
+Call TEST(A,n,S)
+write(666,*) 'the Sum of A matrix is:',S
+End program Sum
+
+Subroutine TEST(A,n,S)
+implicit none
+Integer n,i
+Double Precision A(1,4),S,c,t,k
+
+S=0.0
+c=0.0
+Do i=1,n
+  t = S + A(1,i)
+  if (dabs(s) >= dabs(A(1,i))) then
+     c = (S - t) + A(1,i) + c
+  else
+     c = (A(1,i) - t) + S + c
+  endif
+  S = t
+Enddo
+k=S
+S=0.0
+S = k + c
+return
+end
+!===========================================================
 boff = 0
 
 drat = dt / dt_elastic
