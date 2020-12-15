@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import sys
+import sys, os, zlib, base64, glob
+
 try:
     import numpy as np
 except ImportError:
@@ -345,6 +346,317 @@ class Flac(object):
     def _remove_dead_markers(self, a, dead):
         b = a[dead==1]
         return b
+
+
+class FlacFromVTK(object):
+    '''Read flac data from vts or vtp files.
+       Try to maintain the same API as Flac()
+    '''
+
+    def __init__(self, swap_endian=False):
+        self.last_frame_read = None
+        self.cached_vts = None
+
+        allvts = glob.glob('flac.*.vts')
+        allvts.sort()
+        if allvts[0] != 'flac.000001.vts':
+            print('Error: missing first vts frame!')
+            sys.exit(1)
+        self.nrec = len(allvts)
+        self.frames = list(range(1, self.nrec+1))
+        self.steps = np.zeros(self.nrec)
+        self.time = np.zeros(self.nrec)
+        return
+
+
+    def _read_vtk(self, frame):
+        filename = 'flac.%06d.vts' % self.frames[frame]
+        print('Reading from', filename)
+        f = open(filename, 'r')
+        d = f.readlines()
+        for n, line in enumerate(d):
+            d[n] = line.strip()
+        self.last_frame_read = frame
+        self.cached_vts = d
+
+        # parse element size
+        s = '<StructuredGrid WholeExtent="'
+        if d[2][:len(s)] != s:
+            print('Error: invalid vtk data')
+            sys.exit(2)
+        a = d[2][len(s):].split(' ')
+        nex = int(a[1])
+        nez = int(a[3])
+        self.nx, self.nz = nex+1, nez+1
+        self.nnodes = self.nx * self.nz
+        self.nelements = nex * nez
+
+        # parse time and steps
+        s = '<DataArray type="Float32" Name="TIME" '
+        i = 4
+        if d[i][:len(s)] != s:
+            print('Error: invalid vtk data')
+            sys.exit(2)
+        self.time[frame] = float(d[i+1])
+
+        s = '<DataArray type="Float32" Name="CYCLE" '
+        i = 7
+        if d[i][:len(s)] != s:
+            print('Error: invalid vtk data')
+            sys.exit(2)
+        self.steps[frame] = float(d[i+1])
+        return d
+
+
+    def _get_vtk_data(self, frame):
+        if frame == self.last_frame_read:
+            data = self.cached_vts
+        else:
+            data = self._read_vtk(frame)
+        return data
+
+
+    def _unpack_vtk(self, line):
+        # 4 int32 (16 bytes) were base64-encoded, became 16*3/2 = 24 bytes
+        header = base64.standard_b64decode(line[:24].encode('ascii'))
+        data = line[24:].encode('ascii')
+        if int.from_bytes(header[:4], 'little', signed=True) != 1:
+            print('Error: invalid compressed vtk data')
+            sys.exit(2)
+
+        # size of original data
+        n = int.from_bytes(header[4:8], 'little', signed=True)
+        if int.from_bytes(header[8:12], 'little', signed=True) != n:
+            print('Error: invalid compressed vtk data')
+            sys.exit(2)
+
+        # size of zlib compressed data
+        m = int.from_bytes(header[12:], 'little', signed=True)
+
+        a = zlib.decompress(base64.standard_b64decode(data), bufsize=n)
+        return a
+
+
+    def _locate_line(self, data, name, dtype="Float32"):
+        s = '<DataArray type="%s" Name="%s"' % (dtype, name)
+        for n, line in enumerate(data):
+            if line[:len(s)] == s: break
+        else:
+            print('Error: reading data', s)
+            sys.exit(1)
+
+        line = self._unpack_vtk(data[n+1])
+        return line
+
+
+    def read_mesh(self, frame):
+        data = self._get_vtk_data(frame)
+        s = '<Points>'
+        for n, line in enumerate(data):
+            if line[:len(s)] == s: break
+        else:
+            print('Error: reading data', s)
+            sys.exit(1)
+
+        s = '<DataArray type="Float32"  NumberOfComponents="3" format="binary">'
+        if data[n+1] != s:
+            print('Error: reading data', s)
+            sys.exit(1)
+
+        a = self._unpack_vtk(data[n+2])
+        a = np.frombuffer(a, dtype=np.float32).reshape(-1,3)
+        x, z = a[:,0], a[:,1]
+        return x, z
+
+
+    def read_vel(self, frame):
+        data = self._get_vtk_data(frame)
+        a = self._locate_line(data, "Velocity")
+        a = np.frombuffer(a, dtype=np.float32).reshape(-1,3)
+        vx, vz = a[:,0], a[:,1]
+        return vx, vz
+
+
+    def read_temperature(self, frame):
+        data = self._get_vtk_data(frame)
+        a = self._locate_line(data, "Temperature")
+        T = np.frombuffer(a, dtype=np.float32)
+        return T
+
+
+    def read_aps(self, frame):
+        data = self._get_vtk_data(frame)
+        a = self._locate_line(data, "Plastic strain")
+        aps = np.frombuffer(a, dtype=np.float32)
+        return aps
+
+
+    def read_density(self, frame):
+        data = self._get_vtk_data(frame)
+        a = self._locate_line(data, "Density")
+        density = np.frombuffer(a, dtype=np.float32)
+        return density
+
+
+    def read_strain(self, frame):
+        return NotImplemented
+
+
+    def read_eII(self, frame):
+        data = self._get_vtk_data(frame)
+        a = self._locate_line(data, "eII")
+        eII = np.frombuffer(a, dtype=np.float32)
+        return eII
+
+
+    def read_sII(self, frame):
+        data = self._get_vtk_data(frame)
+        a = self._locate_line(data, "sII")
+        sII = np.frombuffer(a, dtype=np.float32)
+        return sII
+
+
+    def read_sxx(self, frame):
+        data = self._get_vtk_data(frame)
+        a = self._locate_line(data, "Sxx")
+        sxx = np.frombuffer(a, dtype=np.float32)
+        return sxx
+
+
+    def read_sxz(self, frame):
+        data = self._get_vtk_data(frame)
+        a = self._locate_line(data, "Sxz")
+        sxz = np.frombuffer(a, dtype=np.float32)
+        return sxz
+
+
+    def read_szz(self, frame):
+        data = self._get_vtk_data(frame)
+        a = self._locate_line(data, "Szz")
+        szz = np.frombuffer(a, dtype=np.float32)
+        return szz
+
+
+    def read_srII(self, frame):
+        data = self._get_vtk_data(frame)
+        a = self._locate_line(data, "Strain rate")
+        srII = np.frombuffer(a, dtype=np.float32)
+        return srII
+
+
+    def read_pres(self, frame):
+        return NotImplemented
+
+
+    def read_diss(self, frame):
+        return NotImplemented
+
+
+    def read_visc(self, frame):
+        data = self._get_vtk_data(frame)
+        a = self._locate_line(data, "Viscosity")
+        visc = np.frombuffer(a, dtype=np.float32)
+        return visc
+
+
+    def read_phase(self, frame):
+        data = self._get_vtk_data(frame)
+        a = self._locate_line(data, "Phase", "Int32")
+        phase = np.frombuffer(a, dtype=np.int32)
+        return phase
+
+
+    def read_markers(self, frame):
+        filename = 'flacmarker.%06d.vtp' % self.frames[frame]
+        print('Reading from', filename)
+        f = open(filename, 'r')
+        d = f.readlines()
+        for n, line in enumerate(d):
+            d[n] = line.strip()
+        data = d
+
+        # # parse # of markers (not dead)
+        # s = '<Piece NumberOfPoints="'
+        # if d[3][:len(s)] != s:
+        #     print('Error: invalid vtk data')
+        #     sys.exit(2)
+        # n = int(d[3][len(s):-2])
+
+        # read point data
+        a = self._locate_line(data, "age")
+        age = np.frombuffer(a, dtype=np.float32)
+
+        a = self._locate_line(data, "phase", dtype="Int32")
+        phase = np.frombuffer(a, dtype=np.int32)
+
+        a = self._locate_line(data, "ID", dtype="Int32")
+        ID = np.frombuffer(a, dtype=np.int32)
+
+        # read point coordinate
+        s = '<Points>'
+        for n, line in enumerate(data):
+            if line[:len(s)] == s: break
+        else:
+            print('Error: reading data', s)
+            sys.exit(1)
+
+        s = '<DataArray type="Float32"  NumberOfComponents="3" format="binary">'
+        if data[n+1] != s:
+            print('Error: reading data', s)
+            sys.exit(1)
+
+        a = self._unpack_vtk(data[n+2])
+        a = np.frombuffer(a, dtype=np.float32).reshape(-1,3)
+        x, z = a[:,0], a[:,1]
+
+        # True if not using thermochron
+        if (True): return x, z, age, phase, ID
+
+        # Thermochronology from Chase Shyu's work
+        '''
+        a = self._locate_line(data, "temp")
+        temp = np.frombuffer(a, dtype=np.float32)
+
+        a = self._locate_line(data, "tempmax")
+        tempmax = np.frombuffer(a, dtype=np.float32)
+
+        a = self._locate_line(data, "cooling rate")
+        coolingrate = np.frombuffer(a, dtype=np.float32)
+
+        a = self._locate_line(data, "zft age")
+        zft_age = np.frombuffer(a, dtype=np.float32)
+
+        a = self._locate_line(data, "zft if", dtype="Int32")
+        zft_if = np.frombuffer(a, dtype=np.int32)
+
+        a = self._locate_line(data, "zft Temp.")
+        zft_temp = np.frombuffer(a, dtype=np.float32)
+
+        a = self._locate_line(data, "zhe age")
+        zhe_age = np.frombuffer(a, dtype=np.float32)
+
+        a = self._locate_line(data, "zhe if", dtype="Int32")
+        zhe_if = np.frombuffer(a, dtype=np.int32)
+
+        a = self._locate_line(data, "zhe Temp.")
+        zhe_temp = np.frombuffer(a, dtype=np.float32)
+
+        chronage = [zft_age, zhe_age]
+        chronif = [zft_if, zhe_if]
+        chrontemp = [zft_temp, zhe_temp]
+        return x, z, age, temp, tempmax, coolingrate, phase, ID, \
+               chronage, chronif, chrontemp
+        '''
+
+################################################################
+### Replace Flac by Flac2 if only vts files are available
+################################################################
+#
+#if (not os.path.exists('_contents.0')) and os.path.exists('flac.000001.vts'):
+#    Flac = FlacFromVTK
+#
+################################################################
+
 
 
 def elem_coord(x, z):
