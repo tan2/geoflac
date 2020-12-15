@@ -10,17 +10,6 @@ except ImportError:
     sys.exit(1)
 
 try:
-    # python 2.7 or later
-    from collections import Counter
-except ImportError:
-    try:
-        # backport from http://code.activestate.com/recipes/576611
-        # must be installed somewhere on your PYTHONPATH
-        from counter import Counter
-    except ImportError:
-        pass
-
-try:
     # for interpolation
     from scipy import interpolate
 except ImportError:
