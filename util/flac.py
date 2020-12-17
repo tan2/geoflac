@@ -466,6 +466,8 @@ class FlacFromVTK(object):
         a = self._unpack_vtk(data[n+2])
         a = np.frombuffer(a, dtype=np.float32).reshape(-1,3)
         x, z = a[:,0], a[:,1]
+        x.shape = (self.nx, self.nz)
+        z.shape = (self.nx, self.nz)
         return x, z
 
 
@@ -474,6 +476,8 @@ class FlacFromVTK(object):
         a = self._locate_line(data, "Velocity")
         a = np.frombuffer(a, dtype=np.float32).reshape(-1,3)
         vx, vz = a[:,0], a[:,1]
+        vx.shape = (self.nx, self.nz)
+        vz.shape = (self.nx, self.nz)
         return vx, vz
 
 
@@ -481,6 +485,7 @@ class FlacFromVTK(object):
         data = self._get_vtk_data(frame)
         a = self._locate_line(data, "Temperature")
         T = np.frombuffer(a, dtype=np.float32)
+        T.shape = (self.nx-1, self.nz-1)
         return T
 
 
@@ -488,6 +493,7 @@ class FlacFromVTK(object):
         data = self._get_vtk_data(frame)
         a = self._locate_line(data, "Plastic strain")
         aps = np.frombuffer(a, dtype=np.float32)
+        aps.shape = (self.nx-1, self.nz-1)
         return aps
 
 
@@ -495,6 +501,7 @@ class FlacFromVTK(object):
         data = self._get_vtk_data(frame)
         a = self._locate_line(data, "Density")
         density = np.frombuffer(a, dtype=np.float32)
+        density.shape = (self.nx-1, self.nz-1)
         return density
 
 
@@ -506,6 +513,7 @@ class FlacFromVTK(object):
         data = self._get_vtk_data(frame)
         a = self._locate_line(data, "eII")
         eII = np.frombuffer(a, dtype=np.float32)
+        eII.shape = (self.nx-1, self.nz-1)
         return eII
 
 
@@ -513,6 +521,7 @@ class FlacFromVTK(object):
         data = self._get_vtk_data(frame)
         a = self._locate_line(data, "sII")
         sII = np.frombuffer(a, dtype=np.float32)
+        sII.shape = (self.nx-1, self.nz-1)
         return sII
 
 
@@ -520,6 +529,7 @@ class FlacFromVTK(object):
         data = self._get_vtk_data(frame)
         a = self._locate_line(data, "Sxx")
         sxx = np.frombuffer(a, dtype=np.float32)
+        sxx.shape = (self.nx-1, self.nz-1)
         return sxx
 
 
@@ -527,6 +537,7 @@ class FlacFromVTK(object):
         data = self._get_vtk_data(frame)
         a = self._locate_line(data, "Sxz")
         sxz = np.frombuffer(a, dtype=np.float32)
+        sxz.shape = (self.nx-1, self.nz-1)
         return sxz
 
 
@@ -534,6 +545,7 @@ class FlacFromVTK(object):
         data = self._get_vtk_data(frame)
         a = self._locate_line(data, "Szz")
         szz = np.frombuffer(a, dtype=np.float32)
+        szz.shape = (self.nx-1, self.nz-1)
         return szz
 
 
@@ -541,6 +553,7 @@ class FlacFromVTK(object):
         data = self._get_vtk_data(frame)
         a = self._locate_line(data, "Strain rate")
         srII = np.frombuffer(a, dtype=np.float32)
+        srII.shape = (self.nx-1, self.nz-1)
         return srII
 
 
@@ -556,6 +569,7 @@ class FlacFromVTK(object):
         data = self._get_vtk_data(frame)
         a = self._locate_line(data, "Viscosity")
         visc = np.frombuffer(a, dtype=np.float32)
+        visc.shape = (self.nx-1, self.nz-1)
         return visc
 
 
@@ -563,6 +577,7 @@ class FlacFromVTK(object):
         data = self._get_vtk_data(frame)
         a = self._locate_line(data, "Phase", "Int32")
         phase = np.frombuffer(a, dtype=np.int32)
+        phase.shape = (self.nx-1, self.nz-1)
         return phase
 
 
