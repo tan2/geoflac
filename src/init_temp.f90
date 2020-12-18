@@ -261,7 +261,7 @@ subroutine sidewalltemp(i1, i2)
 
   if(i1 == 1) then
       !$ACC parallel loop async(1)
-      do i = i1, i2
+      do i = i1, i2-1
           source(1:nz-1,i) = source(1:nz-1,i2+1)
       enddo
   else
