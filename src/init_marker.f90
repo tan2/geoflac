@@ -28,7 +28,7 @@ iseed = 0
 !write(333,*) 'Call to random_seed(), result may be stochastic'
 
 !$OMP parallel do private(a,b,points,dx,dy,l,kph,rx,ry,ddx,ddy,xx,yy,n, &
-!$OMP                     ycol1,ycol2,ycol3,ycol4,i1,i2,r,yyy,inc,iseed)
+!$OMP                     ycol1,ycol2,ycol3,ycol4,i1,i2,r,yyy,inc) firstprivate(iseed)
 do i = 1 , nx-1
     do j = 1 , nz-1
         ! Alog the edge of an element; a and b are the nodes
@@ -111,7 +111,6 @@ do i = 1 , nx-1
 
                 ! layer
                 yyy = yy * (-1d-3)
-
                 if (yyy.lt.ycol1) then
                     kph = iph_col1(n)
                 else if (yyy.lt.ycol2) then
