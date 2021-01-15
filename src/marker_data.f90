@@ -135,6 +135,8 @@ MODULE marker_data
     integer, intent(in) :: j, i
     integer :: n, kk, ncounters(maxph), iph, kph, nm
 
+    if (nmark_elem(j,i) == 0) stop 'No markers in element'
+
     ncounters = 0
     do n = 1, nmark_elem(j,i)
       kk = mark_id_elem(n,j,i)

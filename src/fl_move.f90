@@ -190,6 +190,7 @@ if( topo_kappa .gt. 0.d0 ) then
     !$ACC parallel loop async(1)
     do i = 1, nx
         cord(1,i,2) = cord(1,i,2) + dtopo(i)
+        if (cord(1,i,2) <= cord(2,i,2)) stop 40 ! too much erosion, reduce topo_kappa or reduce ntest_rem
     enddo
 
     ! adjust markers
