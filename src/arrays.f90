@@ -45,16 +45,17 @@ contains
     implicit none
 
     integer, intent(in) :: nz, nx, nphase
+    integer, parameter :: ntri = 4    ! triangles per element
 
     allocate(cord(nz, nx, 2))
     allocate(temp(nz, nx))
     allocate(vel(nz, nx, 2))
-    allocate(stress0(nz-1, nx-1, 4, 4))
+    allocate(stress0(nz-1, nx-1, 4, ntri))
     allocate(force(nz, nx, 2))
     allocate(amass(nz, nx))
     allocate(rmass(nz, nx))
-    allocate(area(nz-1, nx-1, 4))
-    allocate(dvol(nz-1, nx-1, 4))
+    allocate(area(nz-1, nx-1, ntri))
+    allocate(dvol(nz-1, nx-1, ntri))
     allocate(strain(nz-1, nx-1, 3))
     allocate(bc(nz, nx, 2))
 
@@ -70,7 +71,7 @@ contains
     allocate(extrusion(nx-1))
     allocate(andesitic_melt_vol(nx-1))
     allocate(extr_acc(nx-1))
-    allocate(strainr(3, 4, nz-1, nx-1))
+    allocate(strainr(3, ntri, nz-1, nx-1))
     allocate(flux(2, 2, nz-1, nx-1))
     allocate(aps(nz-1, nx-1))
     allocate(visn(nz-1, nx-1))
