@@ -236,8 +236,6 @@ subroutine resurface
   use phases
   include 'precision.inc'
 
-  dimension shp2(2,3,2)
-
   !$ACC kernels async(1)
   do i = 1, nx-1
       ! averge thickness of this element
@@ -247,66 +245,88 @@ subroutine resurface
       ! # of markers in this element
       kinc = nmark_elem(1,i)
 
-      if (abs(chgtopo*kinc) >= elz) then
-          ! add/remove markers if topo changed too much
-          if (chgtopo > 0.d0) then
-              ! sedimentation, add a sediment marker
-              !print *, 'add sediment', i, chgtopo, elz
-              call add_marker_at_top(i, 0.1d0, time, nloop, ksed2)
-          else
-              ! erosion, remove the top marker
-              !print *, 'erosion', i, chgtopo, elz
-              ymax = -1d30
-              nmax = 0
-              kmax = 0
-              call shape_functions(1,i,shp2)
-              do k = 1, nmark_elem(1,i)
-                  n = mark_id_elem(k, 1, i)
-                  ntriag = mark_ntriag(n)
-                  m = mod(ntriag,2) + 1
-                  call bar2xy(mark_a1(n), mark_a2(n), shp2(:,:,m), x, y)
-                  if(ymax < y) then
-                      ymax = y
-                      nmax = n
-                      kmax = k
-                  endif
-              end do
-              if (nmax .ne. 0) then
-                  mark_dead(nmax) = 0
-                  ! replace marker kmax with last marker
-                  mark_id_elem(kmax, 1, i) = mark_id_elem(nmark_elem(1, i), 1, i)
-                  nmark_elem(1, i) = nmark_elem(1, i) - 1
-              endif
-          endif
+      ichanged = 0
+      if (-chgtopo * kinc >= elz .and. kinc > 1) then
+            ! erosion, remove the topmost marker
+            ymax = -1d30
+            kmax = 0
+            ! find the topmost marker in this element
+            do k = 1, kinc
+                n = mark_id_elem(k, 1, i)
+                ntriag = mark_ntriag(n)
+                ! get physical coordinate (x, y) of marker n
+                m = mark_ntriag(i)
+                kk = mod(m-1, 2) + 1
+                jj = mod((m - kk) / 2, nz-1) + 1
+                ii = (m - kk) / 2 / (nz - 1) + 1
+                ba1 = mark_a1(n)
+                ba2 = mark_a2(n)
+                ba3 = 1.0d0 - ba1 - ba2
 
-          dhacc(i) = 0
+                if (kk .eq. 1) then
+                  i1 = ii
+                  i2 = ii
+                  i3 = ii + 1
+                  j1 = jj
+                  j2 = jj + 1
+                  j3 = jj
+                else
+                  i1 = ii + 1
+                  i2 = ii
+                  i3 = ii + 1
+                  j1 = jj
+                  j2 = jj + 1
+                  j3 = jj + 1
+                endif
+                y = cord(j1,i1,2)*ba1 + cord(j2,i2,2)*ba2 + cord(j3,i3,2)*ba3
+                if(ymax < y) then
+                    ymax = y
+                    kmax = k
+                endif
+            end do
+            ! delete (mark it as dead)
+            if (kmax .ne. 0) then
+                nmax = mark_id_elem(kmax, 1, i)
+                !write(6,*) 'erosion', i, nmax, chgtopo
+                ! replace marker kmax with the last marker
+                mark_id_elem(kmax, 1, i) = mark_id_elem(kinc, 1, i)
+                mark_id_elem(kinc, 1, i) = 0
+                mark_dead(nmax) = 0
+                nmark_elem(1, i) = nmark_elem(1, i) - 1
+            endif
 
-          ! recalculate phase ratio
-          call count_phase_ratio(1,i)
+            dhacc(i) = 0
+            ichanged = 1
+      endif
 
-      else
-          ! nothing to do
-      end if
+      if (chgtopo * kinc >= elz .and. kinc .ne. max_markers_per_elem) then
+            ! sedimentation, add a sediment marker
+            !write(6,*) 'sediment', i, chgtopo, elz
+            call add_marker_at_top(i, 0.1d0, time, nloop, ksed2)
 
-      ! change in topo
+            dhacc(i) = 0
+            ichanged = 1
+      endif
+
+      ! change in topo due to volcanism
       chgtopo2 = extr_acc(i)
+      if (chgtopo2 * kinc >= elz .and. kinc .ne. max_markers_per_elem) then
+            ! extrusion, add an arc marker
+            n_to_add = min(ceiling(chgtopo2 / elz * kinc), max_markers_per_elem - kinc)
+            dz_ratio = min(chgtopo2 / elz, 1.0d0)
+            !write(6,*) 'arc', i, chgtopo2, elz, n_to_add, dz_ratio
+            do ii = 1, n_to_add
+                call add_marker_at_top(i, dz_ratio, time, nloop+i+ii, karc1)
+            enddo
 
-      if (chgtopo2*kinc >= elz) then
-          ! add/remove markers if topo changed too much
-          ! extrusion, add an arc marker
-          n_to_add = ceiling(chgtopo2 / elz * kinc)
-          dz_ratio = min(chgtopo2 / elz, 1.0d0)
-          !print *, 'add arc', i, chgtopo2, elz, n_to_add, dz_ratio
-          do ii = 1, n_to_add
-              call add_marker_at_top(i, dz_ratio, time, nloop, karc1)
-          enddo
+            extr_acc(i) = 0
+            ichanged = 1
+      endif
 
-          extr_acc(i) = 0
-
-          ! recalculate phase ratio
-          call count_phase_ratio(1,i)
-
-      end if
+      if (ichanged == 1) then
+            ! recalculate phase ratio
+            call count_phase_ratio(1,i)
+      endif
   end do
   !$ACC end kernels
   !$ACC update self(nmarkers) async(1)
