@@ -179,6 +179,11 @@ if( topo_kappa .gt. 0.d0 ) then
     dtopo(nx) = dtopo(nx-1)
     !$ACC end kernels
 
+    !$ACC parallel loop async(1)
+    do i = 1, nx
+        ! erosion cannot erode over 0.9x element height
+        dtopo(i) = min(dtopo(i), 0.9*(cord(1,i,2)-cord(2,i,2)))
+    enddo
 
     ! accumulated topo change since last resurface
     !$ACC wait(1)
@@ -190,7 +195,6 @@ if( topo_kappa .gt. 0.d0 ) then
     !$ACC parallel loop async(1)
     do i = 1, nx
         cord(1,i,2) = cord(1,i,2) + dtopo(i)
-        if (cord(1,i,2) <= cord(2,i,2)) stop 40 ! too much erosion, reduce topo_kappa or reduce ntest_rem
     enddo
 
     ! adjust markers
