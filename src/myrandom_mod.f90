@@ -11,6 +11,7 @@ subroutine myrandom(iseed, r)
     integer, intent(inout) :: iseed
     double precision, intent(out) :: r
 
+    iseed = mod(iseed, 134456)
     iseed = mod(8121 * iseed + 28411, 134456 )
     r = (iseed * 1.0d0) / 134456
 
