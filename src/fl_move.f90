@@ -126,6 +126,24 @@ do  i = 1,nx-1
         stress0(j,i,1,4) = s11 + s12*2*dw12
         stress0(j,i,2,4) = s22 - s12*2*dw12
         stress0(j,i,3,4) = s12 + dw12*(s22-s11)
+
+        if (any(area(j,i,:) <= 0)) then
+            write(333, *) 'area', j, i, nloop
+            write(333, *) area(j,i,:)
+            write(333, *) 'cord:'
+            write(333, *) cord(j  ,i  ,:)
+            write(333, *) cord(j  ,i+1,:)
+            write(333, *) cord(j+1,i  ,:)
+            write(333, *) cord(j+1,i+1,:)
+            write(333, *) 'vel:'
+            write(333, *) vel(j  ,i  ,:)
+            write(333, *) vel(j  ,i+1,:)
+            write(333, *) vel(j+1,i  ,:)
+            write(333, *) vel(j+1,i+1,:)
+            flush(333)
+            call SysMsg('Negative area!')
+            stop 40
+        endif
     enddo
 enddo
 !$OMP end do
