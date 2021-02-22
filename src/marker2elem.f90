@@ -16,7 +16,7 @@ subroutine marker2elem
 
   iseed = 0
   !$OMP parallel do private(kinc,r1,r2,x1,y1,x2,y2,xx,yy,inc,icount) firstprivate(iseed)
-  !$ACC loop collapse(2) firstprivate(iseed)
+  !$ACC loop collapse(2) private(iseed)
   do i = 1 , nx-1
       do j = 1 , nz-1
           kinc = nmark_elem(j,i)
