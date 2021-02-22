@@ -2,8 +2,7 @@
 ! Calculation of strain rates from velocities 
 ! Mixed of volumetric strain_rates (for incompressible flow)
 subroutine fl_srate
-    use ieee_arithmetic
-    use arrays
+use arrays
 use params
 implicit none
 integer :: i,j
@@ -112,7 +111,6 @@ do i = 1,nx-1
 enddo
 !$OMP end parallel do
 ! following block is needed for averaging
-if (any(ieee_is_nan(strainr))) stop 'strainr becomes NaN!'
 
 !$ACC wait(2)
 ! re-initialisation after navgsr steps

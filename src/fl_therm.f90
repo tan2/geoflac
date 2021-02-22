@@ -4,7 +4,6 @@
 subroutine fl_therm
 !$ACC routine(Eff_cp) seq
 !$ACC routine(Eff_conduct) seq
-    use ieee_arithmetic
 use arrays
 use params
 include 'precision.inc'
@@ -252,8 +251,6 @@ do j = 1,nz
 end do
 !$OMP end do
 !$OMP end parallel
-
-if (any(ieee_is_nan(temp))) stop 'temp becomes NaN!'
 
 return
 end 

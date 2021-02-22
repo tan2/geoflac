@@ -2,7 +2,6 @@
 ! Move grid and adjust stresses due to rotation
 
 subroutine fl_move
-    use ieee_arithmetic
 use arrays
 use params
 include 'precision.inc'
@@ -27,7 +26,6 @@ enddo
 
 ! Diffuse topography
 if( topo_kappa.gt.0.d0) call diff_topo
-if (any(ieee_is_nan(cord))) stop 'cord becomes NaN!'
 
 
 !$OMP parallel private(i,j,x1,y1,x2,y2,x3,y3,x4,y4, &
@@ -128,27 +126,26 @@ do  i = 1,nx-1
         stress0(j,i,3,4) = s12 + dw12*(s22-s11)
 
         if (any(area(j,i,:) <= 0)) then
-            write(333, *) 'area', j, i, nloop
-            write(333, *) area(j,i,:)
-            write(333, *) 'cord:'
-            write(333, *) cord(j  ,i  ,:)
-            write(333, *) cord(j  ,i+1,:)
-            write(333, *) cord(j+1,i  ,:)
-            write(333, *) cord(j+1,i+1,:)
-            write(333, *) 'vel:'
-            write(333, *) vel(j  ,i  ,:)
-            write(333, *) vel(j  ,i+1,:)
-            write(333, *) vel(j+1,i  ,:)
-            write(333, *) vel(j+1,i+1,:)
-            flush(333)
-            call SysMsg('Negative area!')
+            ! write(333, *) 'area', j, i, nloop
+            ! write(333, *) area(j,i,:)
+            ! write(333, *) 'cord:'
+            ! write(333, *) cord(j  ,i  ,:)
+            ! write(333, *) cord(j  ,i+1,:)
+            ! write(333, *) cord(j+1,i  ,:)
+            ! write(333, *) cord(j+1,i+1,:)
+            ! write(333, *) 'vel:'
+            ! write(333, *) vel(j  ,i  ,:)
+            ! write(333, *) vel(j  ,i+1,:)
+            ! write(333, *) vel(j+1,i  ,:)
+            ! write(333, *) vel(j+1,i+1,:)
+            ! flush(333)
+            ! call SysMsg('Negative area!')
             stop 40
         endif
     enddo
 enddo
 !$OMP end do
 !$OMP end parallel
-if (any(ieee_is_nan(area))) stop 'area becomes NaN!'
 
 return
 end subroutine fl_move

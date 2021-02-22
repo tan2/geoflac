@@ -1,8 +1,7 @@
 
 !  Calculations of forces from stresses
 subroutine fl_node
-     use ieee_arithmetic
-     use arrays
+use arrays
 use params
 include 'precision.inc'
 
@@ -31,8 +30,6 @@ include 'precision.inc'
 
 drat = dt / dt_elastic
 if (drat .lt. 1.d0) drat = 1.d0
-
-if (any(ieee_is_nan(cord))) stop 'cord becomes NaN 1!'
 
 !$OMP parallel private(i, j, fx, fy, &
 !$OMP                  p_est, rosubg, &
@@ -264,7 +261,6 @@ do i = 1,nx
   enddo
 enddo
 !$OMP end do
-if (any(ieee_is_nan(force))) stop 'force becomes NaN 1!'
 
 ! BOUNDARY CONDITIONS
 if(nyhydro.gt.0) then
@@ -351,7 +347,6 @@ if(nyhydro.gt.0) then
     enddo
     !$OMP end do
 endif
-if (any(ieee_is_nan(force))) stop 'force becomes NaN 2!'
 
 !$OMP do
 !$ACC parallel loop collapse(2) async(1)
@@ -395,6 +390,5 @@ if (i_prestress.eq.1.and.time.lt.600.d3*sec_year) then
         enddo
     enddo
 endif
-if (any(ieee_is_nan(vel))) stop 'vel becomes NaN!'
 return
 end subroutine fl_node
