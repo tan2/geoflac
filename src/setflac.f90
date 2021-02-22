@@ -4,6 +4,7 @@
 subroutine setflac
 use arrays
 use params
+use nvtx_mod
 include 'precision.inc'
 
 
@@ -108,13 +109,19 @@ se2sr = 1d-16
 !$ACC     time,dt,time_max) async(1)
 
 ! Distribution of REAL masses to nodes
+call nvtxStartRange('rmasses')
 call rmasses
+call nvtxEndRange()
 
 ! Initialization of viscosity
+call nvtxStartRange('init_visc')
 if( ivis_present.eq.1 ) call init_visc
+call nvtxEndRange()
 
 ! Inertial masses and time steps (elastic and maxwell)
+call nvtxStartRange('dt_mass')
 call dt_mass
+call nvtxEndRange()
 
 ! Initiate parameters for stress averaging
 dtavg=0
