@@ -174,11 +174,11 @@ if( topo_kappa .gt. 0.d0 ) then
     enddo
     !$ACC wait(2)
 
-    !$ACC parallel loop async(1)
-    do i = 1, nx-1
-        ! higher erosion for sediments above mean topo
-        if (iphase(1,i) == ksed2 .and. cord(1,i,2) > topomean) stmpn(i) = stmpn(i) * 10
-    enddo
+    ! !$ACC parallel loop async(1)
+    ! do i = 1, nx-1
+    !     ! higher erosion for sediments above mean topo
+    !     if (iphase(1,i) == ksed2 .and. cord(1,i,2) > topomean) stmpn(i) = stmpn(i) * 10
+    ! enddo
 
 
     !$ACC parallel loop async(1)
