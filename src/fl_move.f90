@@ -197,8 +197,8 @@ if( topo_kappa .gt. 0.d0 ) then
 
     !$ACC parallel loop async(1)
     do i = 1, nx
-        ! erosion cannot erode over 0.9x element height
-        dtopo(i) = min(dtopo(i), 0.9*(cord(1,i,2)-cord(2,i,2)))
+        ! erosion cannot erode over 0.5x element height
+        dtopo(i) = min(dtopo(i), 0.5*(cord(1,i,2)-cord(2,i,2)))
     enddo
 
     ! accumulated topo change since last resurface
