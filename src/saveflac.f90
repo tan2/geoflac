@@ -93,6 +93,7 @@ close (1)
 ! Markers
 if(iint_marker.eq.1) then
      call bar2euler
+     !$ACC wait
 
      nwords = nmarkers
      nrec = 1
