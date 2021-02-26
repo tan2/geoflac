@@ -169,9 +169,12 @@ if( topo_kappa .gt. 0.d0 ) then
         stmpn(i) = topo_kappa ! elevation-dep. topo diffusivity
     enddo
 
-    !$ACC kernels async(1)
-    topomean = sum(cord(1,:,2)) / nx
-    !$ACC end kernels
+    topomean = 0
+    !$ACC parallel loop reduction(+:topomean) async(1)
+    do i = 1, nx
+        topomean = topomean + cord(1,i,2) / nx
+    enddo
+    !x$ACC end kernels
 
     !$ACC wait(2)
 
