@@ -18,6 +18,7 @@ cordo(:,:,:) = cord(:,:,:)
 ! Create The New grid (cord) using cordo(nz,i,2) for the bottom and cordo(1,i,2) for the surface
 call nvtxStartRange('rem_cord')
 call rem_cord
+!$ACC wait
 call nvtxEndRange()
 
 
@@ -82,6 +83,7 @@ call rem_trpars(nzt, nxt)
 ! Baricentric coordinates of new-elements centers
 call nvtxStartRange('rem_ebarcord')
 call rem_barcord(nzt, nxt)
+!$ACC wait
 call nvtxEndRange()
 
 ! Do interpolations
@@ -267,6 +269,7 @@ call rem_trpars(nzt,nxt)
 ! Baricentric coordinates of new-elements centers
 call nvtxStartRange('rem_nbarcord')
 call rem_barcord(nzt,nxt)
+!$ACC wait
 call nvtxEndRange()
 
 ! Do node-wise interpolations

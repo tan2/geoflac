@@ -102,21 +102,25 @@ do while( time .le. time_max )
   if( ny_rem.eq.1 .and. itherm.ne.2 ) then
     call nvtxStartRange('itest_mesh')
     call itest_mesh(need_remeshing)
+    !$ACC wait
     call nvtxEndRange()
     if( need_remeshing .ne. 0 ) then
       ! If there are markers recalculate their x,y global coordinate and assign them aps, eII, press, temp
       if(iint_marker.eq.1) then
         call nvtxStartRange('bar2euler')
         call bar2euler
+        !$ACC wait
         call nvtxEndRange()
       endif
       call nvtxStartRange('remesh')
       call remesh
+      !$ACC wait
       call nvtxEndRange()
       ! If markers are present recalculate a1,a2 local coordinates and assign elements with phase ratio vector
       if (iint_marker.eq.1) then
         call nvtxStartRange('lpeuler2bar')
         call lpeuler2bar
+        !$ACC wait
         call nvtxEndRange()
         call nvtxStartRange('marker2elem')
         !$ACC parallel async(1)
