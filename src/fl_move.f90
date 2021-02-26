@@ -164,14 +164,15 @@ include 'precision.inc'
 !EROSION PROCESSES
 if( topo_kappa .gt. 0.d0 ) then
 
-    !$ACC kernels async(1)
-    topomean = sum(cord(1,:,2)) / nx
-    !$ACC end kernels
-
     !$ACC parallel loop async(2)
     do i = 1, nx
         stmpn(i) = topo_kappa ! elevation-dep. topo diffusivity
     enddo
+
+    !$ACC kernels async(1)
+    topomean = sum(cord(1,:,2)) / nx
+    !$ACC end kernels
+
     !$ACC wait(2)
 
     ! !$ACC parallel loop async(1)
