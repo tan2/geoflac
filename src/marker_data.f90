@@ -115,14 +115,14 @@ MODULE marker_data
           mark_phase(kk) = iph
         enddo
 
+        iphase(j,i) = iph
+        phase_ratio(:,j,i) = 0.d0
+        phase_ratio(iph,j,i) = 1.d0
+
       enddo
     enddo
     !$OMP end parallel do
 
-    iphase(j1:j2,i1:i2) = iph
-    phase_ratio(:,j1:j2,i1:i2) = 0.d0
-    phase_ratio(iph,j1:j2,i1:i2) = 1.d0
-    !$ACC end loop
     return
   end subroutine newphase2marker
 
