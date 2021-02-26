@@ -15,7 +15,7 @@ subroutine marker2elem
   ! Find the triangle in which each marker belongs
 
   !$OMP parallel do private(kinc,r1,r2,x1,y1,x2,y2,xx,yy,inc,icount)
-  !$ACC loop collapse(2)
+  !$ACC loop collapse(2) gang vector
   do i = 1 , nx-1
       do j = 1 , nz-1
           iseed = nloop + i + j
