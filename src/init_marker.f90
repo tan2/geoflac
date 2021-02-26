@@ -73,6 +73,7 @@ do i = 1 , nx-1
         dy = cord(j+1,i,2) - cord(j,i,2)
 
 ! randomize the new coordinates inside the element
+        iseed = iseed + i + j
         l = 1
         do while (l .le. 9)
             ! initialize kph in case nzone_age = 0

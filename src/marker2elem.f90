@@ -14,11 +14,11 @@ subroutine marker2elem
   ! Interpolate marker properties into elements
   ! Find the triangle in which each marker belongs
 
-  iseed = 0
-  !$OMP parallel do private(kinc,r1,r2,x1,y1,x2,y2,xx,yy,inc,icount) firstprivate(iseed)
-  !$ACC loop collapse(2) private(iseed)
+  !$OMP parallel do private(kinc,r1,r2,x1,y1,x2,y2,xx,yy,inc,icount)
+  !$ACC loop collapse(2)
   do i = 1 , nx-1
       do j = 1 , nz-1
+          iseed = nloop + i + j
           kinc = nmark_elem(j,i)
           icount = 0
 

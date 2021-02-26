@@ -360,7 +360,7 @@ subroutine add_marker_at_top(i, dz_ratio, time, loop, kph)
   use arrays
   include 'precision.inc'
 
-  iseed = loop
+  iseed = loop + i
   icount = 0
   do while(.true.)
      call myrandom(iseed, r1)
