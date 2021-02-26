@@ -122,14 +122,14 @@ do while( time .le. time_max )
         !$ACC parallel async(1)
         call marker2elem
         !$ACC end parallel
-        call nvtxEndRange()
         !$ACC update self(nmarkers) async(1)
+        !$ACC wait
+        call nvtxEndRange()
       endif
     endif
   endif
 
     ! OUTPUT  
-  !$ACC wait
   call nvtxStartRange('output')
   if( dtout_file .ne. 0 ) then 
     if( dtacc_file .gt. dtout_file ) then
