@@ -12,10 +12,9 @@ character*200 msg
 mark_id_elem(:,:,:) = 0
 nmark_elem(:,:) = 0
 !$ACC end kernels
-!$ACC wait(1)
 
 !$OMP parallel do private(n,k,j,i,xx,yy,bar1,bar2,ntr,inc)
-!x$ACC parallel loop  !! disabled until "ACC critical" becomes avaiable
+!$ACC parallel loop async(1)
 do n = 1 , nmarkers
     if (mark_dead(n).eq.0) cycle
 
@@ -44,9 +43,11 @@ do n = 1 , nmarkers
         cycle
     endif
     !$OMP critical (lpeulerbar2)
+    !$ACC atomic capture
     ! recording the id of markers belonging to surface elements
     nmark_elem(j, i) = nmark_elem(j, i) + 1
     kk = nmark_elem(j, i)
+    !$ACC end atomic
     mark_id_elem(kk, j, i) = n
     !$OMP end critical (lpeulerbar2)
 enddo

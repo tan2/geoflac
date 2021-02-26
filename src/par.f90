@@ -119,16 +119,17 @@ do while( time .le. time_max )
         call lpeuler2bar
         call nvtxEndRange()
         call nvtxStartRange('marker2elem')
-        !x$ACC kernels async(1)
+        !$ACC parallel async(1)
         call marker2elem
-        !x$ACC end kernels
+        !$ACC end parallel
         call nvtxEndRange()
-        !$ACC update device(nmarkers) async(1)
+        !$ACC update self(nmarkers) async(1)
       endif
     endif
   endif
 
     ! OUTPUT  
+  !$ACC wait
   call nvtxStartRange('output')
   if( dtout_file .ne. 0 ) then 
     if( dtacc_file .gt. dtout_file ) then

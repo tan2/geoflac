@@ -28,6 +28,7 @@ subroutine marker2elem
           !    write(msg,*) 'marker2elem: , create a new marker in the element (i,j))', i, j
           !    call SysMsg(msg)
           !endif
+
           do while (kinc.le.4)
               call myrandom(iseed, r1)
               call myrandom(iseed, r2)

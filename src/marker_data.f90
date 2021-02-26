@@ -55,7 +55,7 @@ MODULE marker_data
     implicit none
     integer :: iph, j, i, inc
     double precision :: x, y, age
-    integer :: ntr, kk_local
+    integer :: ntr, kk_local, nn_local
     double precision :: bar1, bar2
     !character*200 msg
 
@@ -63,11 +63,10 @@ MODULE marker_data
     if(inc.eq.0) return
 
     !$OMP critical (add_marker1)
-    !FIXME: potential racing condition in ACC
-    !$ACC atomic update
+    !$ACC atomic capture
     nmarkers = nmarkers + 1
-    !$ACC atomic read
     kk_local = nmarkers
+    !$ACC end atomic
     !$OMP end critical (add_marker1)
 
     if(nmark_elem(j,i) == max_markers_per_elem .or. kk_local >= max_markers-1) then
@@ -80,6 +79,7 @@ MODULE marker_data
 
     ! recording the id of markers belonging to the element
     nmark_elem(j,i) = nmark_elem(j,i) + 1
+    nn_local = nmark_elem(j,i)
     mark_id_elem(nmark_elem(j,i),j,i) = kk_local
 
     mark_x(kk_local) = x
@@ -144,7 +144,9 @@ MODULE marker_data
       ncounters(iph) = ncounters(iph) + 1
     enddo
 
-    phase_ratio(1:nphase,j,i) = ncounters(1:nphase) / (nmark_elem(j,i) * 1.0d0)
+    do kk = 1, nphase
+      phase_ratio(kk,j,i) = ncounters(kk) / (nmark_elem(j,i) * 1.0d0)
+    enddo
 
     ! the phase of this element is the most abundant marker phase
     !kph = maxloc(ncounters)
