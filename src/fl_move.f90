@@ -258,7 +258,7 @@ subroutine resurface
   use phases
   include 'precision.inc'
 
-  !$ACC kernels async(1)
+  !$ACC serial private(dz_ratio) async(1)
   do i = 1, nx-1
       ! averge thickness of this element
       elz = 0.5d0 * (cord(1,i,2) - cord(2,i,2) + cord(1,i+1,2) - cord(2,i+1,2))
@@ -350,7 +350,7 @@ subroutine resurface
             call count_phase_ratio(1,i)
       endif
   end do
-  !$ACC end kernels
+  !$ACC end serial
   !$ACC update self(nmarkers) async(1)
 
 end subroutine resurface
