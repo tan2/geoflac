@@ -52,7 +52,7 @@ MODULE marker_data
     implicit none
     integer :: iph, j, i, inc
     double precision :: x, y, age
-    integer :: ntr, kk_local, nn_local
+    integer :: ntr, kk, nm
     double precision :: bar1, bar2
     !character*200 msg
 
@@ -62,19 +62,19 @@ MODULE marker_data
     !$OMP atomic capture
     !$ACC atomic capture
     nmarkers = nmarkers + 1
-    kk_local = nmarkers
+    kk = nmarkers
     !$ACC end atomic
     !$OMP end atomic
 
     !$OMP atomic capture
     !$ACC atomic capture
     nmark_elem(j,i) = nmark_elem(j,i) + 1
-    nn_local = nmark_elem(j,i)
+    nm = nmark_elem(j,i)
     !$ACC end atomic
     !$OMP end atomic
 
-    if(nn_local == max_markers_per_elem .or. kk_local >= max_markers-1) then
-        !write(msg*) 'Too many markers at element:', i, j, nn_local
+    if(nm == max_markers_per_elem .or. kk >= max_markers-1) then
+        !write(msg*) 'Too many markers at element:', i, j, nm
         !call SysMsg(msg)
         !call SysMsg('Marker skipped, not added!')
         inc = -1
@@ -82,17 +82,17 @@ MODULE marker_data
     endif
 
     ! recording the id of markers belonging to the element
-    mark_id_elem(nn_local,j,i) = kk_local
+    mark_id_elem(nm,j,i) = kk
 
-    mark_x(kk_local) = x
-    mark_y(kk_local) = y
-    mark_dead(kk_local) = 1
-    mark_ID(kk_local) = kk_local
-    mark_a1(kk_local) = bar1
-    mark_a2(kk_local) = bar2
-    mark_age(kk_local) = age
-    mark_ntriag(kk_local) = ntr
-    mark_phase(kk_local) = iph
+    mark_x(kk) = x
+    mark_y(kk) = y
+    mark_dead(kk) = 1
+    mark_ID(kk) = kk
+    mark_a1(kk) = bar1
+    mark_a2(kk) = bar2
+    mark_age(kk) = age
+    mark_ntriag(kk) = ntr
+    mark_phase(kk) = iph
 
   end subroutine add_marker
 
