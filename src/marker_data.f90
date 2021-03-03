@@ -46,9 +46,6 @@ MODULE marker_data
     ! is kk. If (x, y) is not within the element, inc is set to 0 and
     ! marker not added. Otherwise, marker is added to "mark" array and kk
     ! incremented by 1.
-    !
-    ! *** This subroutine is thread-safe only if each thread call has a different
-    ! *** (j,i) pair. OTHERWISE, DON'T CALL IT WITHIN OPENMP/OMP SECTION.
 
     use arrays
     use params
@@ -69,8 +66,15 @@ MODULE marker_data
     !$ACC end atomic
     !$OMP end atomic
 
-    if(nmark_elem(j,i) == max_markers_per_elem .or. kk_local >= max_markers-1) then
-        !write(msg*) 'Too many markers at element:', i, j, nmark_elem(j,i)
+    !$OMP atomic capture
+    !$ACC atomic capture
+    nmark_elem(j,i) = nmark_elem(j,i) + 1
+    nn_local = nmark_elem(j,i)
+    !$ACC end atomic
+    !$OMP end atomic
+
+    if(nn_local == max_markers_per_elem .or. kk_local >= max_markers-1) then
+        !write(msg*) 'Too many markers at element:', i, j, nn_local
         !call SysMsg(msg)
         !call SysMsg('Marker skipped, not added!')
         inc = -1
@@ -78,9 +82,7 @@ MODULE marker_data
     endif
 
     ! recording the id of markers belonging to the element
-    nmark_elem(j,i) = nmark_elem(j,i) + 1
-    nn_local = nmark_elem(j,i)
-    mark_id_elem(nmark_elem(j,i),j,i) = kk_local
+    mark_id_elem(nn_local,j,i) = kk_local
 
     mark_x(kk_local) = x
     mark_y(kk_local) = y
