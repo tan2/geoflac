@@ -2,7 +2,6 @@ subroutine remesh
 use arrays
 use params
 use marker_data
-use nvtx_mod
 implicit none
 
 integer :: nzt,nxt
@@ -16,10 +15,7 @@ cordo(:,:,:) = cord(:,:,:)
 !$ACC end kernels
 
 ! Create The New grid (cord) using cordo(nz,i,2) for the bottom and cordo(1,i,2) for the surface
-call nvtxStartRange('rem_cord')
 call rem_cord
-!$ACC wait
-call nvtxEndRange()
 
 
 
@@ -81,10 +77,7 @@ enddo
 call rem_trpars(nzt, nxt)
 
 ! Baricentric coordinates of new-elements centers
-call nvtxStartRange('rem_ebarcord')
 call rem_barcord(nzt, nxt)
-!$ACC wait
-call nvtxEndRange()
 
 ! Do interpolations
 
@@ -267,10 +260,7 @@ cnew(1:nz,1:nx,1:2) = cord(1:nz,1:nx,1:2)
 call rem_trpars(nzt,nxt)
 
 ! Baricentric coordinates of new-elements centers
-call nvtxStartRange('rem_nbarcord')
 call rem_barcord(nzt,nxt)
-!$ACC wait
-call nvtxEndRange()
 
 ! Do node-wise interpolations
 
