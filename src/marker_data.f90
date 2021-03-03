@@ -62,12 +62,12 @@ MODULE marker_data
     call check_inside(x , y, bar1, bar2, ntr, i, j, inc)
     if(inc.eq.0) return
 
-    !$OMP critical (add_marker1)
+    !$OMP atomic capture
     !$ACC atomic capture
     nmarkers = nmarkers + 1
     kk_local = nmarkers
     !$ACC end atomic
-    !$OMP end critical (add_marker1)
+    !$OMP end atomic
 
     if(nmark_elem(j,i) == max_markers_per_elem .or. kk_local >= max_markers-1) then
         !write(msg*) 'Too many markers at element:', i, j, nmark_elem(j,i)

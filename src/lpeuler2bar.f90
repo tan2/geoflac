@@ -42,14 +42,14 @@ do n = 1 , nmarkers
         mark_dead(n) = 0
         cycle
     endif
-    !$OMP critical (lpeulerbar2)
+    !$OMP atomic capture
     !$ACC atomic capture
     ! recording the id of markers belonging to surface elements
     nmark_elem(j, i) = nmark_elem(j, i) + 1
     kk = nmark_elem(j, i)
     !$ACC end atomic
+    !$OMP end atomic
     mark_id_elem(kk, j, i) = n
-    !$OMP end critical (lpeulerbar2)
 enddo
 !$OMP end parallel do
 
