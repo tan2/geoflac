@@ -11,7 +11,7 @@ implicit none
 integer :: jj, j, i, iph, nelem_serp, &
            jbelow, k, kinc, kk, n
 double precision :: yy, dep2, depth, press, quad_area, &
-                    tmpr, trpres, trpres2, vol_frac_melt
+                    tmpr, trtmpr, trpres, trpres2, vol_frac_melt
 
 ! max. depth (m) of eclogite phase transition
 real*8, parameter :: max_basalt_depth = 150.d3
@@ -128,6 +128,23 @@ do kk = 1 , nmarkers
     case (kmant1, kmant2)
         ! subuducted oceanic crust below mantle, mantle is serpentinized
         if(depth > max_basalt_depth) cycle
+
+        ! flux melting due to dehydration below
+        if(any( phase_ratio(khydmant, min(j+1,nz-1):min(j+30,nz-1), i) > 0.8d0 )) then
+            ! Water-saturated solidus from Grove et al., Nature, 2009
+            if ((depth > 80.d3 .and. tmpr > 800) .or. &
+                (depth <= 80.d3 .and. tmpr > 800 + 6.2e-8 * (depth - 80.d3)**2)) then
+
+                ! area(j,i) is INVERSE of "real" DOUBLE area (=1./det)
+                quad_area = 0.5d0/area(j,i,1) + 0.5d0/area(j,i,2)
+                !x$ACC atomic update
+                !x$OMP atomic update
+                !andesitic_melt_vol(i) = andesitic_melt_vol(i) + quad_area * vol_frac_melt / kinc
+                !print *, 'hyd melting:', kk, i, j
+                cycle
+            endif
+        endif
+
         ! Phase diagram taken from Ulmer and Trommsdorff, Nature, 1995
         ! Fixed points (730 C, 2.1 GPa) (500 C, 7.5 GPa)
         trpres = 2.1d9 + (7.5d9 - 2.1d9) * (tmpr - 730.d0) / (500.d0 - 730.d0)
@@ -168,7 +185,7 @@ do kk = 1 , nmarkers
         !$ACC atomic write
         !$OMP atomic write
         itmp(j,i) = 1
-        mark_phase(kk) = khydmant
+        mark_phase(kk) = kmant1
     case (ksed2)
         ! compaction, uncosolidated sediment -> sedimentary rock
         if (tmpr > 250d0 .and. depth < 7d3) cycle
@@ -185,19 +202,14 @@ do kk = 1 , nmarkers
         itmp(j,i) = 1
         mark_phase(kk) = kmetased
     case (khydmant)
-        if (tmpr > ts(khydmant)) then
-            ! area(j,i) is INVERSE of "real" DOUBLE area (=1./det)
-            quad_area = 0.5d0/area(j,i,1) + 0.5d0/area(j,i,2)
-
-            !$ACC atomic update
-            !$OMP atomic update
-            andesitic_melt_vol(i) = andesitic_melt_vol(i) + quad_area * vol_frac_melt / kinc
-            !$ACC atomic write
-            !$OMP atomic write
-            itmp(j,i) = 1
-            mark_phase(kk) = kmant1
-            print *, 'hyd melting:', kk, i, j
-        endif
+        ! dehydration of chlorite
+        ! Phase diagram from Groove et al. Nature, 2009
+        trtmpr = 880 - 35d-9 * (depth - 62d3)**2
+        if (tmpr < trtmpr) cycle
+        !$ACC atomic write
+        !$OMP atomic write
+        itmp(j,i) = 1
+        mark_phase(kk) = kmant1
     end select
 
 enddo
