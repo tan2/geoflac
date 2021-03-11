@@ -102,18 +102,18 @@ do kk = 1 , nmarkers
     case (kcont1, kcont2)
         ! subduction below continent, continent becomes weaker to
         ! facilitate further subduction
-        do jbelow = min(j+1,nz-1), min(j+3,nz-1)
-            if(phase_ratio(kocean1,jbelow,i) > 0.8d0 .or. &
-                 phase_ratio(kocean2,jbelow,i) > 0.8d0 .or. &
-                 phase_ratio(karc1,jbelow,i) > 0.8d0 .or. &
-                 phase_ratio(ksed1,jbelow,i) > 0.8d0) then
-                !$ACC atomic write
-                !$OMP atomic write
-                itmp(j,i) = 1
-                mark_phase(kk) = kweak
-                exit
-            endif
-        enddo
+        !do jbelow = min(j+1,nz-1), min(j+3,nz-1)
+        !    if(phase_ratio(kocean1,jbelow,i) > 0.8d0 .or. &
+        !         phase_ratio(kocean2,jbelow,i) > 0.8d0 .or. &
+        !         phase_ratio(karc1,jbelow,i) > 0.8d0 .or. &
+        !         phase_ratio(ksed1,jbelow,i) > 0.8d0) then
+        !        !$ACC atomic write
+        !        !$OMP atomic write
+        !        itmp(j,i) = 1
+        !        mark_phase(kk) = kweak
+        !        exit
+        !    endif
+        !enddo
 
         ! XXX: middle crust with high dissipation becomes weaker,
         ! this helps with localization
