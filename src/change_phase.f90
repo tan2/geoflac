@@ -11,7 +11,8 @@ implicit none
 integer :: jj, j, i, iph, nelem_serp, &
            jbelow, k, kinc, kk, n
 double precision :: yy, dep2, depth, press, quad_area, &
-                    tmpr, trtmpr, trpres, trpres2, vol_frac_melt
+                    tmpr, trtmpr, trpres, trpres2, &
+                    mantlesolidus, pmelt, vol_frac_melt
 
 ! max. depth (m) of eclogite phase transition
 real*8, parameter :: max_basalt_depth = 150.d3
@@ -34,7 +35,6 @@ real*8, parameter :: new_crust_thickness = 7.d3
 nelem_serp = nelem_inject
 ! rate_inject was used for magma injection, reused here for dehydration melting
 vol_frac_melt = rate_inject
-andesitic_melt_vol(1:nx-1) = 0
 
 itmp = 0  ! indicates which element has phase-changed markers
 !$ACC end kernels
@@ -129,22 +129,6 @@ do kk = 1 , nmarkers
         ! subuducted oceanic crust below mantle, mantle is serpentinized
         if(depth > max_basalt_depth) cycle
 
-        ! flux melting due to dehydration below
-        if(any( phase_ratio(khydmant, min(j+1,nz-1):min(j+30,nz-1), i) > 0.8d0 )) then
-            ! Water-saturated solidus from Grove et al., Nature, 2009
-            if ((depth > 80.d3 .and. tmpr > 800) .or. &
-                (depth <= 80.d3 .and. tmpr > 800 + 6.2e-8 * (depth - 80.d3)**2)) then
-
-                ! area(j,i) is INVERSE of "real" DOUBLE area (=1./det)
-                quad_area = 0.5d0/area(j,i,1) + 0.5d0/area(j,i,2)
-                !x$ACC atomic update
-                !x$OMP atomic update
-                !andesitic_melt_vol(i) = andesitic_melt_vol(i) + quad_area * vol_frac_melt / kinc
-                !print *, 'hyd melting:', kk, i, j
-                cycle
-            endif
-        endif
-
         ! Phase diagram taken from Ulmer and Trommsdorff, Nature, 1995
         ! Fixed points (730 C, 2.1 GPa) (500 C, 7.5 GPa)
         trpres = 2.1d9 + (7.5d9 - 2.1d9) * (tmpr - 730.d0) / (500.d0 - 730.d0)
@@ -238,6 +222,49 @@ do i = 1, nx-1
         ! all plastic strain associated with this marker.
         kinc = nmark_elem(j,i)
         aps(j,i) = max(aps(j,i) - dummye(j,i) / float(kinc), 0d0)
+    enddo
+enddo
+!$OMP end parallel do
+
+
+!$OMP parallel do private(tmpr, yy, depth, jj, mantlesolidus, pmelt)
+!$ACC parallel loop async(1)
+do i = 1, nx-1
+    do j = nz-1, 1, -1
+        fmelt(j,i) = 0
+        ! flux melting in the mantel wedge occurs above serpertine or chlorite
+        if (phase_ratio(kserp,j,i) > 0.8d0 .or. &
+            phase_ratio(khydmant,j,i) > 0.8d0) then
+
+            ! search the mantle above for regions above solidus
+            do jj = j, 1, -1
+                tmpr = 0.25d0 * (temp(jj,i)+temp(jj,i+1)+temp(jj+1,i)+temp(jj+1,i+1))
+
+                ! depth below the surface in m
+                yy = 0.25d0 * (cord(jj,i,2)+cord(jj,i+1,2)+cord(jj+1,i,2)+cord(jj+1,i+1,2))
+                depth = 0.5d0*(cord(1,i,2)+cord(1,i+1,2)) - yy
+
+                ! Water-saturated solidus from Grove et al., Nature, 2009
+                if (depth > 80.d3) then
+                    mantlesolidus = 800
+                else
+                    mantlesolidus = 800 + 6.2e-8 * (depth - 80.d3)**2
+                endif
+                if (tmpr > mantlesolidus) then
+                    ! fraction of partial melting
+                    ! XXX: assuming 10% of melting at 1300 C = solidus + 500 C
+                    pmelt = min((tmpr - mantlesolidus) / 500 * 0.1d0, 0.1d0)
+                    !$ACC atomic write
+                    !$OMP atomic write
+                    fmelt(jj,i) =  pmelt * (phase_ratio(kmant1, jj, i) + phase_ratio(kmant2, jj, i))
+                    !print *, jj, i, tmpr, pmelt
+                else
+                    fmelt(jj,i) = 0
+                endif
+            enddo
+            ! no need to look up further
+            exit
+        endif
     enddo
 enddo
 !$OMP end parallel do

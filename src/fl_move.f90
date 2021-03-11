@@ -226,12 +226,12 @@ if( topo_kappa .gt. 0.d0 ) then
 endif
 
 ! magma extrusion
-if ( .true. ) then
+if ( .false. ) then
     !$ACC kernels async(1)
     ! grid spacing in x
-    extrusion(1:nx-1) = cord(1,2:nx,1) - cord(1,1:nx-1,1)
+    !extrusion(1:nx-1) = cord(1,2:nx,1) - cord(1,1:nx-1,1)
     ! height of extrusion = volume of extrusion / grid spacing in x
-    extrusion(1:nx-1) = andesitic_melt_vol(1:nx-1) / extrusion(1:nx-1)
+    extrusion(1:nx-1) = 0 !andesitic_melt_vol(1:nx-1) / extrusion(1:nx-1)
     extr_acc(1:nx-1) = extr_acc(1:nx-1) + extrusion(1:nx-1)
 
     cord(1,1:nx-1,2) = cord(1,1:nx-1,2) + extrusion(1:nx-1)

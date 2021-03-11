@@ -270,6 +270,17 @@ if( io_src.eq.1 ) then
 endif
 
 
+
+! Melt fraction in the mantle wedge
+if( io_src.eq.1 ) then
+    De(1:nz-1,1:nx-1) = real(fmelt(1:nz-1,1:nx-1))
+    open (1,file='fmelt.0',access='direct',recl=nwords*kindr)
+    write (1,rec=nrec) De
+    close (1)
+endif
+
+
+
 ! Energy dissipation
 if( io_diss.eq.1 ) then
     do i = 1, nx-1

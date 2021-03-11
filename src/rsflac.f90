@@ -194,7 +194,7 @@ shrheat = 0
 sshrheat = 0
 dtopo = 0
 extrusion = 0
-andesitic_melt_vol = 0
+fmelt = 0
 se2sr = 1d-16
 e2sr = 1d-16
 
