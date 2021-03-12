@@ -12,7 +12,7 @@ subroutine itest_mesh(need_remeshing)
   implicit none
   integer, intent(out) :: need_remeshing
   integer :: iv(4), jv(4), i, ii, imint, j, jmint, k
-  double precision :: angle(3), testcr, shortening, dx_accr, &
+  double precision :: angle(3), testcr, shortening, topochanges, dx_accr, &
                       pi, raddeg, degrad, xa, xb, xxal, xxbl, ya, yb, &
                       anglemin1, anglemint
 
@@ -23,7 +23,7 @@ subroutine itest_mesh(need_remeshing)
   ! remesh at pre-given shortening
   ! dx_rem*dx - critical distance of shortnening
   if( mode_rem .eq. 11.or.mode_rem.eq.3 ) then
-      !$ACC serial async(1)
+      !$ACC serial copyout(shortening) copy(need_remeshing) async(1)
       testcr = dx_rem * rxbo / (nx-1)
       shortening = abs(cord(1,nx,1) - cord(1,1,1) - rxbo)
       if ( shortening .gt. testcr ) then
@@ -38,6 +38,7 @@ subroutine itest_mesh(need_remeshing)
           else
               call SysMsg('TEST_MESH: Remeshing due to shortening required')
           endif
+          return
       endif
   end if
 
@@ -49,8 +50,8 @@ subroutine itest_mesh(need_remeshing)
   jmint = 0
 
   if (need_remeshing == 0) then
-    !$OMP parallel do collapse(3) private(iv,jv,angle)
-    !$ACC parallel loop collapse(3) private(iv,jv,angle) async(1)
+    !$OMP parallel do collapse(3) reduction(min:anglemint) private(iv,jv,angle)
+    !$ACC parallel loop collapse(3) reduction(min:anglemint) private(iv,jv,angle) async(1)
     do i = 1, nx-1
         do j = 1,nz-1
             ! loop for each 4 sub-triangles
