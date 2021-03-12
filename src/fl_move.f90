@@ -215,28 +215,37 @@ if( topo_kappa .gt. 0.d0 ) then
     do i = 1, nx
         cord(1,i,2) = cord(1,i,2) + dtopo(i)
     enddo
+endif
 
-    ! adjust markers
+! magma extrusion
+if (rate_inject > 0) then
+    !$ACC parallel loop async(1)
+    do i = 1, nx-1
+        totalmelt = 0
+        do j = 1, nz-1
+            quad_area = 0.5d0/area(j,i,1) + 0.5d0/area(j,i,2)
+            ! volume of the melt in this column
+            totalmelt = totalmelt + quad_area * fmelt(j,i)
+        enddo
+        ! height of extrusion in this column
+        extrusion(i) = rate_inject * dt * totalmelt / (cord(1,i+1,1) - cord(1,i,1))
+        !print *, i, extrusion(i), totalmelt
+        extr_acc(i) = extr_acc(i) + extrusion(i)
+        cord(1,i,2) = cord(1,i,2) + extrusion(i)
+        ! XXX: this line mixs element-index with node-index
+        ! XXX: no extrusion added to the right-most node cord(1,nx,2). This is fine,
+        ! since the melt is in the middle of the domain.
+    enddo
+endif
+
+! adjust markers
+if (topo_kappa > 0 .or. rate_inject > 0) then
     if(mod(nloop, ifreq_avgsr) .eq. 0) then
 !!$        print *, 'max sed/erosion rate (m/yr):' &
 !!$             , maxval(dtopo(1:nx)) * 3.16d7 / dt &
 !!$             , minval(dtopo(1:nx)) * 3.16d7 / dt
         call resurface
     end if
-endif
-
-! magma extrusion
-if ( .false. ) then
-    !$ACC kernels async(1)
-    ! grid spacing in x
-    !extrusion(1:nx-1) = cord(1,2:nx,1) - cord(1,1:nx-1,1)
-    ! height of extrusion = volume of extrusion / grid spacing in x
-    extrusion(1:nx-1) = 0 !andesitic_melt_vol(1:nx-1) / extrusion(1:nx-1)
-    extr_acc(1:nx-1) = extr_acc(1:nx-1) + extrusion(1:nx-1)
-
-    cord(1,1:nx-1,2) = cord(1,1:nx-1,2) + extrusion(1:nx-1)
-    cord(1,2:nx  ,2) = cord(1,2:nx  ,2) + extrusion(1:nx-1)
-    !$ACC end kernels
 endif
 
 return
