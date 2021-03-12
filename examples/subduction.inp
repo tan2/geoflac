@@ -109,10 +109,10 @@ proftemp.dat   temperature profile dat.file
 5              - nzone_age (number of zones of different age max 20)
 ;Thermal age (Myr.), layer1 depth (km), layer2 depth, layer3 depth (also Moho depth), layer4 depth, layer1 phase, layer2 phase, layer3 phase, layer4 phase, layer5 phase, x nodes 1 and 2
  60., 1.5, 7.5, 7.5,17.5, 11,  3,  3, 16,  4,  1, 58
- 50.,15.0,  15,  15,  15, 14,  4,  4,  4,  4, 59, 75
- 50.,20.0,  20,  20,  20, 14,  4,  4,  4,  4, 76, 83
- 50.,25.0,  25,  25,  25, 14,  4,  4,  4,  4, 84, 90
- 60.,35.0,  35,  35,  35, 14,  4,  4,  4,  4, 91,186
+ 50.,10.0,  15,  15,  15,  2, 14,  4,  4,  4, 59, 75
+ 50.,15.0,  20,  20,  20,  2, 14,  4,  4,  4, 76, 83
+ 50.,15.0,  25,  25,  25,  2, 14,  4,  4,  4, 84, 90
+ 60.,20.0,  35,  35,  35,  2, 14,  4,  4,  4, 91,186
 ;
 ;===================================================================
 ;                     R h e o l o g y
@@ -214,7 +214,7 @@ phasedat.inp   ; file with distribution of phase on the 2D grid (phasedat)
 ;Magma Injection: 
 ; ny_inject (0,-no,1-left,2-center), nelem_inject, rate_inject(m/s)
 ; Tan2: reuse nelem_inject for thickness of serpentinite layer above subducted oceanic crust
-0,         2,     0.
+0,         2,     2e-13
 ;
 ;=================================================================
 ;                       R e m e s h i n g
