@@ -42,6 +42,30 @@ subroutine itest_mesh(need_remeshing)
       endif
   end if
 
+  ! remesh if the surface topo changes too much
+  if (topo_kappa > 0 .or. rate_inject > 0) then
+      !$ACC parallel loop copyout(topochanges) copy(need_remeshing) async(1)
+      do i = 1, nx-1
+          ! XXX: 1/3 thickness of the top-left element
+          testcr = (cord(1,1,2) - cord(2,1,2)) * 0.3333d0
+          topochanges = abs(dhacc(i)) + extr_acc(i)
+          if (topochanges > testcr) then
+              !$ACC atomic write
+              need_remeshing = 3
+          endif
+      enddo
+      !$ACC wait(1)
+      if( need_remeshing .eq. 3 ) then
+          if( dtout_screen .ne. 0 ) then
+              print *, 'Remeshing due to surface topo changes required: ', topochanges
+              write(333,*) 'Remeshing due to surface topo changes required: ', topochanges
+          else
+              call SysMsg('TEST_MESH: Remeshing due to surface topo changes required')
+          endif
+          return
+      endif
+  endif
+
   pi = 3.14159265358979323846d0
   degrad = pi/180.d0
   raddeg = 180.d0/pi
