@@ -54,6 +54,7 @@ do 51 i = 1,nx-1
 open(1,file='pisos.rs')
 write(1,*) pisos
 close (1)
+!$ACC update device(pisos) async(1)
 
 return
 end

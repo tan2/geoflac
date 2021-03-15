@@ -187,6 +187,8 @@ subroutine init_bc
   ! Maximum node with applied stress
   !
   nopbmax = nnop
+  !$ACC update device(incoming_left,incoming_right,nopbmax) async(1)
+
   !
   ! Maximum applied velocity and/or
   ! Convert constant strain INTERNAL B.C.
@@ -379,6 +381,7 @@ subroutine vbcal
   open(13,file = 'vbc.s')
   write(13,*) vbc
   close(13)
+  !$ACC update device(vbc) async(1)
 
   return
 end subroutine vbcal
