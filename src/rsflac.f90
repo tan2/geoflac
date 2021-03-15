@@ -28,6 +28,7 @@ read (1,rec=nrec) rtime, rdt
 close (1)
 time = rtime
 dt = rdt
+!$ACC update device(nloop,time) async(1)
 
 dvol = 0
 
@@ -180,6 +181,7 @@ if( nyhydro .eq. 2 ) then
     read(1,*) pisos
     close (1)
 endif
+!$ACC update device(pisos) async(1)
 
 ! Calculate AREAS (Important: iphase is needed to calculate area!)
 call init_areas
