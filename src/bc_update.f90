@@ -87,7 +87,7 @@ subroutine bc_update
   !----------------------------------
   ! APPLY  STATIC STRESSES:
   !----------------------------------
-  !$ACC kernels loop async(1)
+  !$ACC parallel loop async(1)
   do i=1,nopbmax
 
       ii1 = nopbou(i,1)
