@@ -27,10 +27,12 @@ double precision :: D(3,3)  ! diffusion operator
 !  | /         / |
 !  2         2---3
 
-!$ACC kernels async(1)
 ! saving old temperature
-if (istress_therm.gt.0) temp0(:,:) = temp(:,:)
-!$ACC end kernels
+if (istress_therm.gt.0) then
+    !$ACC kernels async(1)
+    temp0(:,:) = temp(:,:)
+    !$ACC end kernels
+endif
 
 !$OMP Parallel private(i,j,iph,cp_eff,cond_eff,dissip,diff,quad_area, &
 !$OMP                  x1,x2,x3,x4,y1,y2,y3,y4,t1,t2,t3,t4,tmpr, &

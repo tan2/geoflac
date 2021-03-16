@@ -173,7 +173,6 @@ if( topo_kappa .gt. 0.d0 ) then
     do i = 1, nx
         topomean = topomean + cord(1,i,2) / nx
     enddo
-    !x$ACC end kernels
 
     !$ACC wait(2)
 
@@ -193,10 +192,10 @@ if( topo_kappa .gt. 0.d0 ) then
         dtopo(i) = dt * snder
     end do
 
-    !$ACC kernels async(1)
+    !$ACC serial async(1)
     dtopo(1) = dtopo(2)
     dtopo(nx) = dtopo(nx-1)
-    !$ACC end kernels
+    !$ACC end serial
 
     !$ACC parallel loop async(1)
     do i = 1, nx
