@@ -93,7 +93,7 @@ contains
     ! tmp arrays used in subroutines
     allocate(dummyn(nz, nx))
     allocate(dummye(nz-1, nx-1))
-    allocate(stmpn(nx))
+    allocate(stmpn(max(nx,nz)))
     allocate(itmp(nz, nx))
 
   end subroutine allocate_arrays

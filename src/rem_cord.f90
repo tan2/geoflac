@@ -57,8 +57,6 @@ do i = 1, nx
     if( mode_rem .eq. 3.or.mode_rem.eq.1 ) cord(nz,i,2) = z0 + rzbo
 
     ! Creating Mesh inside of the boundaries
-    !FIXME: stmpn is of size nx, not nz.
-    if (nz > nx) stop 7
     call mesh1 (cord(1,i,2),cord(nz,i,2),stmpn,nz,nzony,nelz_y,sizez_y)
     do j = 1, nz
         cord(j,i,2) = stmpn(j)
