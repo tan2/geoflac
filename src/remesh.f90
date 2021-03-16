@@ -5,7 +5,7 @@ use marker_data
 implicit none
 
 integer :: nzt,nxt
-integer :: i, idist, ii, j, jj, k, l, iph
+integer :: i, idist, ii, j, k, l, iph, ju, jl
 double precision :: xl, xr, densT, dh, dh1, dh2, dp, dpt, &
                     press, rogh, tmpr
 
@@ -121,59 +121,69 @@ end do
 ! same layered structure as the 4th element away from the boundary
 
 idist = 2
+ju = 1
+jl = nz-1
+!$ACC data copyin(idist,ju,jl)
 if(incoming_left==1) then
     !$ACC kernels async(1)
     aps(1:nz-1, 1:1+idist) = 0.0d0
     !$ACC end kernels
 
-    !$ACC serial copyout(jj) async(1)
-    do jj = 1, nz-1
-        if((cord(1,1,2) - 0.5d0*(cord(jj,1,2)+cord(jj+1,1,2))) > hc1(1)*1d3) exit
+    !$ACC serial async(1)
+    do j = 1, nz-1
+        if((cord(1,1,2) - 0.5d0*(cord(j,1,2)+cord(j+1,1,2))) > hc1(1)*1d3) then
+            jl = j
+            exit
+        endif
     enddo
     !$ACC end serial
 
-    !$ACC kernels async(1)
-    call newphase2marker(1, jj-1, 1, 1+idist, iph_col1(1))
-    !$ACC end kernels
+    !$ACC parallel async(1)
+    call newphase2marker(ju, jl-1, 1, 1+idist, iph_col1(1))
+    !$ACC end parallel
 
-    !$ACC wait(1)
-    j = jj
-    !$ACC serial copyout(jj) async(1)
-    do jj = j, nz-1
-        if((cord(1,1,2) - 0.5d0*(cord(jj,1,2)+cord(jj+1,1,2))) > hc2(1)*1d3) exit
+    !$ACC serial async(1)
+    ju = jl
+    do j = jl, nz-1
+        if((cord(1,1,2) - 0.5d0*(cord(j,1,2)+cord(j+1,1,2))) > hc2(1)*1d3) then
+            jl = j
+            exit
+        endif
     enddo
     !$ACC end serial
 
-    !$ACC kernels async(1)
-    call newphase2marker(j, jj-1, 1, 1+idist, iph_col2(1))
-    !$ACC end kernels
+    !$ACC parallel async(1)
+    call newphase2marker(ju, jl-1, 1, 1+idist, iph_col2(1))
+    !$ACC end parallel
 
-    !$ACC wait(1)
-    j = jj
-    !$ACC serial copyout(jj) async(1)
-    do jj = j, nz-1
-        if((cord(1,1,2) - 0.5d0*(cord(jj,1,2)+cord(jj+1,1,2))) > hc3(1)*1d3) exit
+    !$ACC serial async(1)
+    ju = jl
+    do j = jl, nz-1
+        if((cord(1,1,2) - 0.5d0*(cord(j,1,2)+cord(j+1,1,2))) > hc3(1)*1d3) then
+            jl = j
+            exit
+        endif
     enddo
     !$ACC end serial
 
-    !$ACC kernels async(1)
-    call newphase2marker(j, jj-1, 1, 1+idist, iph_col3(1))
-    !$ACC end kernels
+    !$ACC parallel async(1)
+    call newphase2marker(ju, jl-1, 1, 1+idist, iph_col3(1))
+    !$ACC end parallel
 
-    !$ACC wait(1)
-    j = jj
-    !$ACC serial copyout(jj) async(1)
-    do jj = j, nz-1
-        if((cord(1,1,2) - 0.5d0*(cord(jj,1,2)+cord(jj+1,1,2))) > hc4(1)*1d3) exit
+    !$ACC serial async(1)
+    ju = jl
+    do j = j, nz-1
+        if((cord(1,1,2) - 0.5d0*(cord(j,1,2)+cord(j+1,1,2))) > hc4(1)*1d3) then
+            jl = j
+            exit
+        endif
     enddo
     !$ACC end serial
 
-    !$ACC kernels async(1)
-    call newphase2marker(j, jj-1, 1, 1+idist, iph_col4(1))
-    !$ACC end kernels
-    !$ACC kernels async(1)
-    call newphase2marker(jj, nz-1, 1, 1+idist, iph_col5(1))
-    !$ACC end kernels
+    !$ACC parallel async(1)
+    call newphase2marker(ju, jl-1, 1, 1+idist, iph_col4(1))
+    call newphase2marker(jl, nz-1, 1, 1+idist, iph_col5(1))
+    !$ACC end parallel
 endif
 
 if(incoming_right==1) then
@@ -181,55 +191,63 @@ if(incoming_right==1) then
     aps(1:nz-1, nx-1-idist:nx-1) = 0.0d0
     !$ACC end kernels
 
-    !$ACC serial copyout(jj) async(1)
-    do jj = 1, nz-1
-        if((cord(1,nx,2) - 0.5d0*(cord(jj,nx,2)+cord(jj+1,nx,2))) > hc1(nzone_age)*1d3) exit
+    !$ACC serial async(1)
+    do j = 1, nz-1
+        if((cord(1,nx,2) - 0.5d0*(cord(j,nx,2)+cord(j+1,nx,2))) > hc1(nzone_age)*1d3) then
+            jl = j
+            exit
+        endif
     enddo
     !$ACC end serial
 
-    !$ACC kernels async(1)
-    call newphase2marker(1, jj-1, nx-1-idist, nx-1, iph_col1(nzone_age))
-    !$ACC end kernels
+    !$ACC parallel async(1)
+    call newphase2marker(ju, jl-1, nx-1-idist, nx-1, iph_col1(nzone_age))
+    !$ACC end parallel
 
-    !$ACC wait(1)
-    j = jj
-    !$ACC serial copyout(jj) async(1)
-    do jj = j, nz-1
-        if((cord(1,nx,2) - 0.5d0*(cord(jj,nx,2)+cord(jj+1,nx,2))) > hc2(nzone_age)*1d3) exit
+    !$ACC serial async(1)
+    ju = jl
+    do j = jl, nz-1
+        if((cord(1,nx,2) - 0.5d0*(cord(j,nx,2)+cord(j+1,nx,2))) > hc2(nzone_age)*1d3) then
+            jl = j
+            exit
+        endif
     enddo
     !$ACC end serial
 
-    !$ACC kernels async(1)
-    call newphase2marker(j, jj-1, nx-1-idist, nx-1, iph_col2(nzone_age))
-    !$ACC end kernels
+    !$ACC parallel async(1)
+    call newphase2marker(ju, jl-1, nx-1-idist, nx-1, iph_col2(nzone_age))
+    !$ACC end parallel
 
-    !$ACC wait(1)
-    j = jj
-    !$ACC serial copyout(jj) async(1)
-    do jj = j, nz-1
-        if((cord(1,nx,2) - 0.5d0*(cord(jj,nx,2)+cord(jj+1,nx,2))) > hc3(nzone_age)*1d3) exit
+    !$ACC serial async(1)
+    ju = jl
+    do j = jl, nz-1
+        if((cord(1,nx,2) - 0.5d0*(cord(j,nx,2)+cord(j+1,nx,2))) > hc3(nzone_age)*1d3) then
+            jl = j
+            exit
+        endif
     enddo
     !$ACC end serial
 
-    !$ACC kernels async(1)
-    call newphase2marker(j, jj-1, nx-1-idist, nx-1, iph_col3(nzone_age))
-    !$ACC end kernels
+    !$ACC parallel async(1)
+    call newphase2marker(ju, jl-1, nx-1-idist, nx-1, iph_col3(nzone_age))
+    !$ACC end parallel
 
-    !$ACC wait(1)
-    j = jj
-    !$ACC serial copyout(jj) async(1)
-    do jj = j, nz-1
-        if((cord(1,nx,2) - 0.5d0*(cord(jj,nx,2)+cord(jj+1,nx,2))) > hc4(nzone_age)*1d3) exit
+    !$ACC serial async(1)
+    ju = jl
+    do j = jl, nz-1
+        if((cord(1,nx,2) - 0.5d0*(cord(j,nx,2)+cord(j+1,nx,2))) > hc4(nzone_age)*1d3) then
+            jl = j
+            exit
+        endif
     enddo
     !$ACC end serial
 
-    !$ACC kernels async(1)
-    call newphase2marker(j, jj-1, nx-1-idist, nx-1, iph_col4(nzone_age))
-    !$ACC end kernels
-    !$ACC kernels async(1)
-    call newphase2marker(jj, nz-1, nx-1-idist, nx-1, iph_col5(nzone_age))
-    !$ACC end kernels
+    !$ACC parallel async(1)
+    call newphase2marker(ju, jl-1, nx-1-idist, nx-1, iph_col4(nzone_age))
+    call newphase2marker(jl, nz-1, nx-1-idist, nx-1, iph_col5(nzone_age))
+    !$ACC end parallel
 endif
+!$ACC end data
 
 !!$! XXX: the bottom elements must be mantle material, otherwise
 !!$! too much deformation can occur(?)
