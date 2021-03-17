@@ -4,6 +4,7 @@ subroutine marker2elem
   use marker_data
   use arrays
   use params
+  use phases
   implicit none
 
   integer :: kph(1), i, j, k, kinc, inc, iseed, icount
@@ -57,6 +58,22 @@ subroutine marker2elem
           call count_phase_ratio(j,i)
 
       enddo
+  enddo
+  !$OMP end parallel do
+
+  ! Find the Moho
+
+  !$OMP parallel do
+  !$ACC loop auto
+  do i = 1, nx-1
+      jmoho(i) = nz-1
+      do j = 1, nz-1
+          if (sum(phase_ratio(mantle_phases,j,i)) > 0.5d0) then
+              jmoho(i) = j
+              exit
+          endif
+      enddo
+      !print *, i, jmoho(i)
   enddo
   !$OMP end parallel do
 

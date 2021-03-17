@@ -11,7 +11,7 @@ module arrays
        area(:,:,:), dvol(:,:,:), strain(:,:,:), bc(:,:,:)
 
   integer, allocatable :: ncod(:,:,:), iphase(:,:), &
-      nopbou(:,:), ncodbou(:,:), idtracer(:)
+      nopbou(:,:), ncodbou(:,:), idtracer(:), jmoho(:)
 
   double precision, allocatable :: phase_ratio(:,:,:), &
       dtopo(:), dhacc(:), extrusion(:), &
@@ -64,6 +64,7 @@ contains
     allocate(nopbou(((nz-1)+(nx-1))*2, 4))
     allocate(ncodbou(((nz-1)+(nx-1))*2, 3))
     allocate(idtracer((nz-1)*(nx-1)*2))
+    allocate(jmoho(nx-1))
 
     allocate(phase_ratio(nphase, nz-1, nx-1))
     allocate(dtopo(nx))
