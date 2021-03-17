@@ -66,6 +66,9 @@ end do
 177 continue
 call AdvanceToNextInputLine( 4 )
 read(4,*) iint_marker, iint_tracer
+if (iint_marker .ne. 1) then
+    stop 'iint_marker must be 1'
+endif
 call AdvanceToNextInputLine( 4 )
 read(4,*) nzone_marker
 call AdvanceToNextInputLine( 4 )
