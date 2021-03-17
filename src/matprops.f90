@@ -23,37 +23,26 @@ function Eff_dens( j, i)
   enddo
   press = press / 12
 
-  if (iint_marker.ne.1) then
-      iph = iphase(j,i)
-      dens = den(iph) * ( 1 - alfa(iph)*tmpr + beta(iph)*press )
+  Eff_dens = 0.d0
+  do k = 1, nphase
+    ratio = phase_ratio(k,j,i)
+    ! when ratio is small, it won't affect the density
+    if(ratio .lt. 0.01d0) cycle
 
-!!$      ! Effect of melt
-!!$      fmelt = Eff_melt(iph, tmpr)
-!!$      dens = dens * ( 1.d0-0.1d0*fmelt )
-!!$      Eff_dens = dens
-  else
-      Eff_dens = 0.d0
-      do k = 1, nphase
-          ratio = phase_ratio(k,j,i)
-          ! when ratio is small, it won't affect the density
-          if(ratio .lt. 0.01d0) cycle
+    dens = den(k) * ( 1 - alfa(k)*tmpr + beta(k)*press )
 
-          dens = den(k) * ( 1 - alfa(k)*tmpr + beta(k)*press )
+    !press = 0
+    !press = stressI(j,i)
+    press = dens*g*zcord
 
-          !press = 0
-          !press = stressI(j,i)
-          press = dens*g*zcord
+    dens = den(k) * ( 1 - alfa(k)*tmpr + beta(k)*press )
 
-          dens = den(k) * ( 1 - alfa(k)*tmpr + beta(k)*press )
+    ! Effect of melt
+    !fmelt = Eff_melt(k, tmpr)
+    !dens = dens * ( 1.d0-0.1d0*fmelt )
 
-          ! Effect of melt
-          !fmelt = Eff_melt(k, tmpr)
-          !dens = dens * ( 1.d0-0.1d0*fmelt )
-
-          Eff_dens = Eff_dens + ratio*dens
-
-      enddo
-  endif
+    Eff_dens = Eff_dens + ratio*dens
+  enddo
   return
 end function Eff_dens
 
@@ -132,57 +121,24 @@ endif
 srat = e2sr(j,i)
 if( srat .eq. 0 ) srat = vbc/rxbo
 
-if (iint_marker.ne.1) then
-    iph = iphase(j,i)
+do k = 1, nphase
+    if(phase_ratio(k,j,i) .lt. 0.01d0) cycle
+    pow  =  1.d0/pln(k) - 1.d0
+    pow1 = -1.d0/pln(k)
 
-    pow  =  1.d0/pln(iph) - 1.d0
-    pow1 = -1.d0/pln(iph)
-
-    vis = 0.25d0 * srat**pow*(0.75d0*acoef(iph))**pow1* &
-         exp(eactiv(iph)/(pln(iph)*r*(tmpr+273.d0)))*1.d+6
-
-
-    ! limiting from above (quasi-Peierls)
-    !sIImax = 5.d+8
-    !vis_peierls = sIImax / srat / 2
-    !if( vis .gt. vis_peierls ) vis = vis_peierls
-
+    vis = 0.25d0 * srat**pow*(0.75d0*acoef(k))**pow1* &
+          exp(eactiv(k)/(pln(k)*r*(tmpr+273.d0)))*1.d+6
 
     ! Final cut-off
     if (vis .lt. v_min) vis = v_min
     if (vis .gt. v_max) vis = v_max
 
-    Eff_visc = vis
+    ! harmonic mean
+    Eff_visc = Eff_visc + phase_ratio(k,j,i) / vis
+    !write(*,*) i,j, Eff_visc, vis, tmpr,phase_ratio(k,j,i)
+enddo
 
-else
-
-    do k = 1, nphase
-        if(phase_ratio(k,j,i) .lt. 0.01d0) cycle
-
-        pow  =  1.d0/pln(k) - 1.d0
-        pow1 = -1.d0/pln(k)
-
-        vis = 0.25d0 * srat**pow*(0.75d0*acoef(k))**pow1* &
-             exp(eactiv(k)/(pln(k)*r*(tmpr+273.d0)))*1.d+6
-
-        ! limiting from above (quasi-Peierls)
-        !sIImax = 5.d+8
-        !vis_peierls = sIImax / srat / 2
-        !if( vis .gt. vis_peierls ) vis = vis_peierls
-
-        !write(*,*) vis,srat,pln(k),eactiv(k)
-
-        ! Final cut-off
-        if (vis .lt. v_min) vis = v_min
-        if (vis .gt. v_max) vis = v_max
-
-        ! harmonic mean
-        Eff_visc = Eff_visc + phase_ratio(k,j,i) / vis
-        !write(*,*) i,j, Eff_visc, vis, tmpr,phase_ratio(k,j,i)
-    enddo
-
-    Eff_visc = 1 / Eff_visc
-endif
+Eff_visc = 1 / Eff_visc
 
 return
 end function Eff_visc
