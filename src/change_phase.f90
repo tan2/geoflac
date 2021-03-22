@@ -12,7 +12,7 @@ integer :: jj, j, i, iph, nelem_serp, &
            jbelow, k, kinc, kk, n
 double precision :: yy, dep2, depth, press, quad_area, &
                     tmpr, trtmpr, trpres, trpres2, &
-                    mantlesolidus, pmelt, vol_frac_melt
+                    solidus, pmelt
 
 ! max. depth (m) of eclogite phase transition
 real*8, parameter :: max_basalt_depth = 150.d3
@@ -33,8 +33,6 @@ real*8, parameter :: new_crust_thickness = 7.d3
 !$ACC kernels async(2)
 ! nelem_inject was used for magma injection, reused here for serpentization
 nelem_serp = nelem_inject
-! rate_inject was used for magma injection, reused here for dehydration melting
-vol_frac_melt = rate_inject
 
 itmp = 0  ! indicates which element has phase-changed markers
 !$ACC end kernels
@@ -226,12 +224,38 @@ do i = 1, nx-1
 enddo
 !$OMP end parallel do
 
+!$OMP parallel do private(tmpr, yy, depth, solidus, pmelt)
+!$ACC parallel loop collapse(2) async(1)
+do i = 1, nx-1
+    do j = 1, nz-1
+        fmelt(j,i) = 0
 
-!$OMP parallel do private(tmpr, yy, depth, jj, mantlesolidus, pmelt)
+        ! sedimentary rock melting
+        ! solidus from Nichols, 1994 Nature
+        if (phase_ratio(ksed1,j,i) > 0.1d0) then
+            tmpr = 0.25d0 * (temp(j,i)+temp(j,i+1)+temp(j+1,i)+temp(j+1,i+1))
+
+            ! depth below the surface in m
+            yy = 0.25d0 * (cord(j,i,2)+cord(j,i+1,2)+cord(j+1,i,2)+cord(j+1,i+1,2))
+            depth = 0.5d0*(cord(1,i,2)+cord(1,i+1,2)) - yy
+
+            solidus = max(680+0.6d-3*(depth-140d3), 930-313*(1-exp(-depth/7d3)))
+            if (tmpr > solidus) then
+                ! fraction of partial melting
+                ! XXX: assuming 10% of melting at solidus + 50 C
+                pmelt = min((tmpr - solidus) / 50 * 0.1d0, 0.1d0)
+                fmelt(j,i) = pmelt * phase_ratio(ksed1, j, i)
+                !print *, j, i, tmpr, pmelt
+            endif
+        endif
+    enddo
+enddo
+!$OMP end parallel do
+
+!$OMP parallel do private(tmpr, yy, depth, jj, solidus, pmelt)
 !$ACC parallel loop async(1)
 do i = 1, nx-1
     do j = nz-1, 1, -1
-        fmelt(j,i) = 0
         ! flux melting in the mantel wedge occurs above serpertine or chlorite
         if (phase_ratio(kserp,j,i) > 0.8d0 .or. &
             phase_ratio(khydmant,j,i) > 0.8d0) then
@@ -246,20 +270,18 @@ do i = 1, nx-1
 
                 ! Water-saturated solidus from Grove et al., Nature, 2009
                 if (depth > 80.d3) then
-                    mantlesolidus = 800
+                    solidus = 800
                 else
-                    mantlesolidus = 800 + 6.2e-8 * (depth - 80.d3)**2
+                    solidus = 800 + 6.2e-8 * (depth - 80.d3)**2
                 endif
-                if (tmpr > mantlesolidus) then
+                if (tmpr > solidus) then
                     ! fraction of partial melting
                     ! XXX: assuming 10% of melting at 1300 C = solidus + 500 C
-                    pmelt = min((tmpr - mantlesolidus) / 500 * 0.1d0, 0.1d0)
-                    !$ACC atomic write
-                    !$OMP atomic write
-                    fmelt(jj,i) =  pmelt * (phase_ratio(kmant1, jj, i) + phase_ratio(kmant2, jj, i))
+                    pmelt = min((tmpr - solidus) / 500 * 0.1d0, 0.1d0)
+                    !$ACC atomic update
+                    !$OMP atomic update
+                    fmelt(jj,i) = fmelt(jj,i) + pmelt * (phase_ratio(kmant1, jj, i) + phase_ratio(kmant2, jj, i))
                     !print *, jj, i, tmpr, pmelt
-                else
-                    fmelt(jj,i) = 0
                 endif
             enddo
             ! no need to look up further
