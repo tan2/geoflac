@@ -210,6 +210,16 @@ class Flac(object):
         return fmelt
 
 
+    def read_chamber(self, frame):
+        columns = 1
+        f = open('chamber.0')
+        offset = (frame-1) * columns * self.nelements * sizeoffloat
+        f.seek(offset)
+        chamber = self._read_data(f, columns, count=self.nelements)
+        self._reshape_elemental_fields(chamber)
+        return chamber
+
+
     def read_diss(self, frame):
         columns = 1
         f = open('diss.0')

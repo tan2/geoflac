@@ -99,6 +99,9 @@ def main(path, start=1, end=-1):
         a = fl.read_fmelt(i)
         vts_dataarray(fvts, a.swapaxes(0,1), 'Melt fraction')
 
+        a = fl.read_chamber(i)
+        vts_dataarray(fvts, a.swapaxes(0,1), 'Magma fraction')
+
         a = fl.read_diss(i)
         vts_dataarray(fvts, a.swapaxes(0,1), 'Dissipation')
 

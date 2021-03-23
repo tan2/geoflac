@@ -102,6 +102,9 @@ end do
 ! plastic strain
 call rem_interpolate( nzt, nxt, dummye, aps )
 
+! Magma fraction
+call rem_interpolate( nzt, nxt, dummye, chamber )
+
 
 !$OMP parallel do
 !$ACC parallel loop collapse(2) async(1)

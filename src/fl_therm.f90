@@ -10,6 +10,7 @@ include 'precision.inc'
 
 double precision, parameter :: heat_latent_magma = 4.2d5  ! J/kg, latent heat of freezing magma
 double precision :: D(3,3)  ! diffusion operator
+integer, parameter :: ihalfwidth = 10 ! TODO
 
 ! real_area = 0.5* (1./area(n,t))
 ! Calculate Fluxes in every triangle
@@ -40,17 +41,50 @@ endif
 !$OMP do
 !$ACC parallel loop async(1)
 do i = 1,nx-1
-    j = 1  ! top
-    !iph = iphase(j,i)
-    cp_eff = Eff_cp( j,i )
+    ! XXX: Assume melting cannot happen above the moho. (j > jmoho(i)) is always true
+    do j = jmoho(i)+1,nz-1
+        if (fmelt(j,i) > 0) then
+            ! Within crust, melts migrate by diking, propagate upward vertically
+            do ii = max(1,i-ihalfwidth), min(nx-1,i+ihalfwidth)
+                do jj = 1, jmoho(ii)
+                    !$ACC atomic update
+                    chamber(jj,ii) = chamber(jj,ii) + fmelt(j,i) * 2.d-6 ! TODO
+                enddo
+                ! Within mantle, melts migrate by percolation, propagate upward slantly
+                do jj = jmoho(ii)+1, j
+                    ihw = ihalfwidth * (j - jj + 1) / (j - jmoho(ii) + 1)
+                    if (abs(ii-i) <= ihw) then
+                        !$ACC atomic update
+                        chamber(jj,ii) = chamber(jj,ii) + fmelt(j,i) * 2.d-6 ! TODO
+                    endif
+                enddo
+            enddo
+        endif
+        !chamber(j,i) = min(chamber(j,i), 0.99d0)
+    enddo
+enddo
 
-    ! area(j,i) is INVERSE of "real" DOUBLE area (=1./det)
-    quad_area = 0.5d0/area(j,i,1) + 0.5d0/area(j,i,2)
-    !x$ACC atomic update
-    !temp(j,i  ) = temp(j,i  ) + andesitic_melt_vol(i) * heat_latent_magma / quad_area / cp_eff
-    !x$ACC atomic update
-    !temp(j,i+1) = temp(j,i+1) + andesitic_melt_vol(i) * heat_latent_magma / quad_area / cp_eff
-end do
+!$OMP do
+!$ACC parallel loop collapse(2) async(1)
+do i = 1,nx-1
+    do j = 1,nz-1
+        !iph = iphase(j,i)
+        cp_eff = Eff_cp( j,i )
+
+        chamber_old = chamber(j,i)
+        chamber(j,i) = chamber(j,i) * (1 - dt*1d-12)  ! TODO
+        delta_chamber = max(chamber(j,i) - chamber_old, 0d0)
+
+        !$ACC atomic update
+        temp(j  ,i  ) = temp(j  ,i  ) + delta_chamber * heat_latent_magma / cp_eff / 4
+        !$ACC atomic update
+        temp(j  ,i+1) = temp(j  ,i+1) + delta_chamber * heat_latent_magma / cp_eff / 4
+        !$ACC atomic update
+        temp(j+1,i  ) = temp(j+1,i  ) + delta_chamber * heat_latent_magma / cp_eff / 4
+        !$ACC atomic update
+        temp(j+1,i+1) = temp(j+1,i+1) + delta_chamber * heat_latent_magma / cp_eff / 4
+    end do
+enddo
 !$OMP end do
 
 !$ACC parallel loop collapse(2) async(1)

@@ -277,6 +277,11 @@ if( io_src.eq.1 ) then
     open (1,file='fmelt.0',access='direct',recl=nwords*kindr)
     write (1,rec=nrec) De
     close (1)
+
+    De(1:nz-1,1:nx-1) = real(chamber(1:nz-1,1:nx-1))
+    open (1,file='chamber.0',access='direct',recl=nwords*kindr)
+    write (1,rec=nrec) De
+    close (1)
 endif
 
 
