@@ -10,7 +10,7 @@ include 'precision.inc'
 
 double precision, parameter :: heat_latent_magma = 4.2d5  ! J/kg, latent heat of freezing magma
 double precision :: D(3,3)  ! diffusion operator
-integer, parameter :: ihalfwidth = 10 ! TODO
+integer, parameter :: ihalfwidth = 6 ! TODO
 
 ! real_area = 0.5* (1./area(n,t))
 ! Calculate Fluxes in every triangle
@@ -39,28 +39,28 @@ endif
 !$OMP                  x1,x2,x3,x4,y1,y2,y3,y4,t1,t2,t3,t4,tmpr, &
 !$OMP                  qs,real_area13,area_n,rhs)
 !$OMP do
-!$ACC parallel loop async(1)
+!$ACC parallel loop collapse(2) async(1)
 do i = 1,nx-1
     ! XXX: Assume melting cannot happen above the moho. (j > jmoho(i)) is always true
-    do j = jmoho(i)+1,nz-1
-        if (fmelt(j,i) > 0) then
+    do j = 1,nz-1
+        if (j>jmoho(i)+1 .and. fmelt(j,i) > 0) then
             ! Within crust, melts migrate by diking, propagate upward vertically
+            do jj = 1, jmoho(i)
+                !$ACC atomic update
+                chamber(jj,i) = chamber(jj,i) + fmelt(j,i) * 5.d-6 ! TODO
+            enddo
+            ! Within mantle, melts migrate by percolation, propagate upward slantly
             do ii = max(1,i-ihalfwidth), min(nx-1,i+ihalfwidth)
-                do jj = 1, jmoho(ii)
-                    !$ACC atomic update
-                    chamber(jj,ii) = chamber(jj,ii) + fmelt(j,i) * 2.d-6 ! TODO
-                enddo
-                ! Within mantle, melts migrate by percolation, propagate upward slantly
                 do jj = jmoho(ii)+1, j
                     ihw = ihalfwidth * (j - jj + 1) / (j - jmoho(ii) + 1)
                     if (abs(ii-i) <= ihw) then
                         !$ACC atomic update
-                        chamber(jj,ii) = chamber(jj,ii) + fmelt(j,i) * 2.d-6 ! TODO
+                        chamber(jj,ii) = chamber(jj,ii) + fmelt(j,i) * 5.d-6 ! TODO
                     endif
                 enddo
             enddo
         endif
-        !chamber(j,i) = min(chamber(j,i), 0.99d0)
+        chamber(j,i) = min(chamber(j,i), 0.25d0)
     enddo
 enddo
 
@@ -72,7 +72,7 @@ do i = 1,nx-1
         cp_eff = Eff_cp( j,i )
 
         chamber_old = chamber(j,i)
-        chamber(j,i) = chamber(j,i) * (1 - dt*1d-12)  ! TODO
+        chamber(j,i) = chamber(j,i) * (1 - dt*2d-13)  ! TODO
         delta_chamber = max(chamber(j,i) - chamber_old, 0d0)
 
         !$ACC atomic update
