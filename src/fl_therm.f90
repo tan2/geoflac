@@ -72,8 +72,8 @@ do i = 1,nx-1
         cp_eff = Eff_cp( j,i )
 
         chamber_old = chamber(j,i)
-        chamber(j,i) = chamber(j,i) * (1 - dt*2d-13)  ! TODO
-        delta_chamber = max(chamber(j,i) - chamber_old, 0d0)
+        chamber(j,i) = max(chamber(j,i) * (1 - dt*1d-13), 0d0)  ! TODO
+        delta_chamber = chamber_old - chamber(j,i)
 
         !$ACC atomic update
         temp(j  ,i  ) = temp(j  ,i  ) + delta_chamber * heat_latent_magma / cp_eff / 4
