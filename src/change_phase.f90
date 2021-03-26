@@ -52,9 +52,9 @@ do i = 1, nx-1
   iph = iphase(j,i)
   if (iph==kmant1 .or. iph==kmant2) then
     tmpr = 0.25d0*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
-    if (tmpr > partial_melt_temp) then
-      call newphase2marker(1,j-1,i,i,kocean1)
-    end if
+    !if (tmpr > partial_melt_temp) then
+    !  call newphase2marker(1,j-1,i,i,kocean1)
+    !end if
   end if
 end do
 
