@@ -232,7 +232,7 @@ do i = 1, nx-1
 
         ! sedimentary rock melting
         ! solidus from Nichols, 1994 Nature
-        if (phase_ratio(ksed1,j,i) > 0.1d0) then
+        if (phase_ratio(ksed1,j,i) > 0.1d0 .and. cord(j,i,2) > -200.d3) then
             tmpr = 0.25d0 * (temp(j,i)+temp(j,i+1)+temp(j+1,i)+temp(j+1,i+1))
 
             ! depth below the surface in m
@@ -257,8 +257,8 @@ enddo
 do i = 1, nx-1
     do j = nz-1, 1, -1
         ! flux melting in the mantel wedge occurs above serpertine or chlorite
-        if (phase_ratio(kserp,j,i) > 0.8d0 .or. &
-            phase_ratio(khydmant,j,i) > 0.8d0) then
+        if (phase_ratio(kserp,j,i) + phase_ratio(khydmant,j,i) > 0.8d0 .and. &
+            cord(j,i,2) > -200.d3) then
 
             ! search the mantle above for regions above solidus
             do jj = j, 1, -1
@@ -280,7 +280,9 @@ do i = 1, nx-1
                     pmelt = min((tmpr - solidus) / 500 * 0.1d0, 0.1d0)
                     !$ACC atomic update
                     !$OMP atomic update
-                    fmelt(jj,i) = fmelt(jj,i) + pmelt * (phase_ratio(kmant1, jj, i) + phase_ratio(kmant2, jj, i))
+                    fmelt(jj,i) = fmelt(jj,i) + pmelt * (phase_ratio(kmant1, jj, i)  &
+                                                         + phase_ratio(kmant2, jj, i) &
+                                                         + phase_ratio(kserp, jj, i))
                     !print *, jj, i, tmpr, pmelt
                 endif
             enddo

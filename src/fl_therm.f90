@@ -47,7 +47,7 @@ do i = 1,nx-1
             ! Within crust, melts migrate by diking, propagate upward vertically
             do jj = 1, jmoho(i)
                 !$ACC atomic update
-                chamber(jj,i) = chamber(jj,i) + fmelt(j,i) * 5.d-6 ! TODO
+                chamber(jj,i) = chamber(jj,i) + fmelt(j,i) * 4.d-7 ! TODO
             enddo
             ! Within mantle, melts migrate by percolation, propagate upward slantly
             do ii = max(1,i-ihalfwidth), min(nx-1,i+ihalfwidth)
@@ -55,7 +55,7 @@ do i = 1,nx-1
                     ihw = ihalfwidth * (j - jj + 1) / (j - jmoho(ii) + 1)
                     if (abs(ii-i) <= ihw) then
                         !$ACC atomic update
-                        chamber(jj,ii) = chamber(jj,ii) + fmelt(j,i) * 5.d-6 ! TODO
+                        chamber(jj,ii) = chamber(jj,ii) + fmelt(j,i) * 4.d-7 ! TODO
                     endif
                 enddo
             enddo
@@ -72,8 +72,8 @@ do i = 1,nx-1
         cp_eff = Eff_cp( j,i )
 
         chamber_old = chamber(j,i)
-        chamber(j,i) = max(chamber(j,i) * (1 - dt*1d-13), 0d0)  ! TODO
-        delta_chamber = chamber_old - chamber(j,i)
+        delta_chamber = chamber(j,i) * dt * 1d-13
+        chamber(j,i) = max(chamber(j,i) - delta_chamber, 0d0)  ! TODO
 
         !$ACC atomic update
         temp(j  ,i  ) = temp(j  ,i  ) + delta_chamber * heat_latent_magma / cp_eff / 4

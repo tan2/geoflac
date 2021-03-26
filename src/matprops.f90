@@ -129,7 +129,6 @@ do k = 1, nphase
     vis = 0.25d0 * srat**pow*(0.75d0*acoef(k))**pow1* &
           exp(eactiv(k)/(pln(k)*r*(tmpr+273.d0)))*1.d+6
 
-    ! Final cut-off
     if (vis .lt. v_min) vis = v_min
     if (vis .gt. v_max) vis = v_max
 
@@ -139,6 +138,10 @@ do k = 1, nphase
 enddo
 
 Eff_visc = 1 / Eff_visc
+if (chamber(j,i) > 0) Eff_visc = Eff_visc * exp(-69 * chamber(j,i))
+
+! Final cut-off
+Eff_visc = min(v_max, max(v_min, Eff_visc))
 
 return
 end function Eff_visc
