@@ -242,7 +242,7 @@ read(4,*) v_min, v_max, ivis_shape,efoldc
 call AdvanceToNextInputLine( 4 )
 read(4,*)igeotherm,g_x0,g_y0c, g_amplitude,g_width 
 call AdvanceToNextInputLine( 4 )
-read(4,*) ny_inject, nelem_inject, rate_inject 
+read(4,*) itype_melting, nelem_serp, arc_extrusion_rate
 
 ! REMESHING
 call AdvanceToNextInputLine( 4 )

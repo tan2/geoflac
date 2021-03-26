@@ -212,8 +212,7 @@ phasedat.inp   ; file with distribution of phase on the 2D grid (phasedat)
 0,         75.e+3,  -11.e+3,  2.e+3,       10.e+3
 ;
 ;Magma Injection: 
-; ny_inject (0,-no,1-left,2-center), nelem_inject, rate_inject(m/s)
-; Tan2: reuse nelem_inject for thickness of serpentinite layer above subducted oceanic crust
+; itype_melting, nelem_serp, arc_extrusion_rate
 0,         2,     2e-13
 ;
 ;=================================================================

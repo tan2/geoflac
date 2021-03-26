@@ -8,7 +8,7 @@ use phases
 
 implicit none
 
-integer :: jj, j, i, iph, nelem_serp, &
+integer :: jj, j, i, iph, &
            jbelow, k, kinc, kk, n
 double precision :: yy, dep2, depth, press, quad_area, &
                     tmpr, trtmpr, trpres, trpres2, &
@@ -31,9 +31,6 @@ real*8, parameter :: partial_melt_temp = 600.d0
 real*8, parameter :: new_crust_thickness = 7.d3
 
 !$ACC kernels async(2)
-! nelem_inject was used for magma injection, reused here for serpentization
-nelem_serp = nelem_inject
-
 itmp = 0  ! indicates which element has phase-changed markers
 !$ACC end kernels
 

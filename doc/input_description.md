@@ -283,13 +283,12 @@ Phase changes are activated and will take place among certain of the defined pha
 
 | Parameters  | Types |  Description  |
 |:------------|:-----:|:--------------|
-|**ny-inject, nelem-inject, rate-inject**|2 int, dbl| See below.|
+|**ny-inject, nelem-serp, arc-extrusion-rate**|2 int, dbl| See below.|
 
 
-* These parameters were used for magma injection study. Some parameters are re-used for other purpose.
 * **ny-inject**: not used.
-* **nelem-inject**: the thickness (# elements) of serpentinization zone above subducted oceanic crust.
-* **rate-inject**: the volume fraction of arc partial melting
+* **nelem-serp**: the thickness (# elements) of serpentinization zone above subducted oceanic crust.
+* **arc-extrusion-rate**: the rate of arc magma extrusion
 
 
 ## REMESHING

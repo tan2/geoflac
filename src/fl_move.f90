@@ -217,7 +217,7 @@ if( topo_kappa .gt. 0.d0 ) then
 endif
 
 ! magma extrusion
-if (rate_inject > 0) then
+if (arc_extrusion_rate > 0) then
     !$ACC parallel loop async(1)
     do i = 1, nx-1
         totalmelt = 0
@@ -227,7 +227,7 @@ if (rate_inject > 0) then
             totalmelt = totalmelt + quad_area * fmelt(j,i)
         enddo
         ! height of extrusion in this column
-        extrusion(i) = rate_inject * dt * totalmelt / (cord(1,i+1,1) - cord(1,i,1))
+        extrusion(i) = arc_extrusion_rate * dt * totalmelt / (cord(1,i+1,1) - cord(1,i,1))
         !print *, i, extrusion(i), totalmelt
         extr_acc(i) = extr_acc(i) + extrusion(i)
         cord(1,i,2) = cord(1,i,2) + extrusion(i)
@@ -238,7 +238,7 @@ if (rate_inject > 0) then
 endif
 
 ! adjust markers
-if (topo_kappa > 0 .or. rate_inject > 0) then
+if (topo_kappa > 0 .or. arc_extrusion_rate > 0) then
     if(mod(nloop, ifreq_avgsr) .eq. 0) then
 !!$        print *, 'max sed/erosion rate (m/yr):' &
 !!$             , maxval(dtopo(1:nx)) * 3.16d7 / dt &

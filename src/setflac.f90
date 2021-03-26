@@ -57,7 +57,7 @@ se2sr = 1d-16
 
 !$ACC update device(nx,nz,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
 !$ACC     ny_rem,mode_rem,ntest_rem,ivis_shape,igeotherm, &
-!$ACC     ny_inject,nelem_inject,nmass_update,nopbmax,nydrsides,nystressbc, &
+!$ACC     itype_melting,nelem_serp,nmass_update,nopbmax,nydrsides,nystressbc, &
 !$ACC     nofbc,nofside(maxbc),nbc1(maxbc),nbc2(maxbc),nbc(maxbc), &
 !$ACC     mix_strain,mix_stress,lastsave,lastout, &
 !$ACC     io_vel,io_srII,io_eII,io_aps,io_sII,io_sxx,io_szz, &
@@ -87,7 +87,7 @@ se2sr = 1d-16
 !$ACC     dx_rem,angle_rem,topo_kappa,fac_kappa, &
 !$ACC     v_min,v_max,efoldc, &
 !$ACC     g_x0,g_y0c,g_amplitude,g_width, &
-!$ACC     rate_inject, &
+!$ACC     arc_extrusion_rate, &
 !$ACC     bca(maxbc),bcb(maxbc),bcc(maxbc),xReyn, &
 !$ACC     bcd(maxbc),bce(maxbc),bcf(maxbc),bcg(maxbc),bch(maxbc),bci(maxbc), &
 !$ACC     dt_scale,strain_inert,vbc,amul,ratl,ratu,frac, &
