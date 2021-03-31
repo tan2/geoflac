@@ -138,7 +138,7 @@ do k = 1, nphase
 enddo
 
 Eff_visc = 1 / Eff_visc
-if (chamber(j,i) > 0) Eff_visc = Eff_visc * exp(-69 * chamber(j,i))
+if (chamber(j,i) > 0) Eff_visc = Eff_visc * exp(weaken_ratio_viscous * chamber(j,i) / 0.25d0) ! TODO
 
 ! Final cut-off
 Eff_visc = min(v_max, max(v_min, Eff_visc))

@@ -243,6 +243,11 @@ call AdvanceToNextInputLine( 4 )
 read(4,*)igeotherm,g_x0,g_y0c, g_amplitude,g_width 
 call AdvanceToNextInputLine( 4 )
 read(4,*) itype_melting, nelem_serp, arc_extrusion_rate
+call AdvanceToNextInputLine( 4 )
+read(4,*) width_mzone
+call AdvanceToNextInputLine( 4 )
+read(4,*) weaken_ratio_plastic, weaken_ratio_viscous
+weaken_ratio_viscous = log(weaken_ratio_viscous)
 
 ! REMESHING
 call AdvanceToNextInputLine( 4 )

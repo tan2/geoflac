@@ -75,8 +75,8 @@ se2sr = 1d-16
 !$ACC     ixtb1(maxzone_age),ixtb2(maxzone_age),nzone_age,i_prestress, &
 !$ACC     iph_col1(maxzone_age),iph_col2(maxzone_age),iph_col3(maxzone_age), &
 !$ACC     iph_col4(maxzone_age),iph_col5(maxzone_age),iph_col_trans(maxzone_age), &
-!$ACC     if_hydro, &
-!$ACC     nyhydro,iphsub, &
+!$ACC     if_hydro,nyhydro,iphsub, &
+!$ACC     width_mzone, &
 !$ACC     movegrid,ndim,ifreq_visc,nmtracers,i_rey, &
 !$ACC     incoming_left,incoming_right, &
 !$ACC     iynts, iax1,iay1,ibx1,iby1,icx1,icy1,idx1,idy1, &
@@ -105,6 +105,9 @@ se2sr = 1d-16
 !$ACC     t_top,t_bot,hs,hr,temp_per,bot_bc, &
 !$ACC     hc1(maxzone_age),hc2(maxzone_age),hc3(maxzone_age),hc4(maxzone_age), &
 !$ACC     age_1(maxzone_age),g,pisos,drosub,damp_vis, &
+!$ACC     width_mzone, ratio_crust_mzone, ratio_mantle_mzone, &
+!$ACC     lambda_freeze, lambda_freeze_tdep, &
+!$ACC     weaken_ratio_plastic, weaken_ratio_viscous, &
 !$ACC     dtavg, tbos, &
 !$ACC     time,dt,time_max) async(1)
 
