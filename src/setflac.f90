@@ -76,7 +76,7 @@ se2sr = 1d-16
 !$ACC     iph_col1(maxzone_age),iph_col2(maxzone_age),iph_col3(maxzone_age), &
 !$ACC     iph_col4(maxzone_age),iph_col5(maxzone_age),iph_col_trans(maxzone_age), &
 !$ACC     if_hydro,nyhydro,iphsub, &
-!$ACC     width_mzone, &
+!$ACC     ihalfwidth_mzone, &
 !$ACC     movegrid,ndim,ifreq_visc,nmtracers,i_rey, &
 !$ACC     incoming_left,incoming_right, &
 !$ACC     iynts, iax1,iay1,ibx1,iby1,icx1,icy1,idx1,idy1, &

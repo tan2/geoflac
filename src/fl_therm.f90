@@ -10,7 +10,6 @@ include 'precision.inc'
 
 double precision, parameter :: heat_latent_magma = 4.2d5  ! J/kg, latent heat of freezing magma
 double precision :: D(3,3)  ! diffusion operator
-integer, parameter :: ihalfwidth = 6 ! TODO
 
 ! real_area = 0.5* (1./area(n,t))
 ! Calculate Fluxes in every triangle
@@ -50,9 +49,9 @@ do i = 1,nx-1
                 chamber(jj,i) = chamber(jj,i) + fmelt(j,i) * 4.d-7 ! TODO
             enddo
             ! Within mantle, melts migrate by percolation, propagate upward slantly
-            do ii = max(1,i-ihalfwidth), min(nx-1,i+ihalfwidth)
+            do ii = max(1,i-ihalfwidth_mzone), min(nx-1,i+ihalfwidth_mzone)
                 do jj = jmoho(ii)+1, j
-                    ihw = ihalfwidth * (j - jj + 1) / (j - jmoho(ii) + 1)
+                    ihw = ihalfwidth_mzone * (j - jj + 1) / (j - jmoho(ii) + 1)
                     if (abs(ii-i) <= ihw) then
                         !$ACC atomic update
                         chamber(jj,ii) = chamber(jj,ii) + fmelt(j,i) * 4.d-7 ! TODO
