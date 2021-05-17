@@ -240,8 +240,6 @@ read(4,*) tau_heal
 call AdvanceToNextInputLine( 4 )
 read(4,*) v_min, v_max, ivis_shape,efoldc
 call AdvanceToNextInputLine( 4 )
-read(4,*)igeotherm,g_x0,g_y0c, g_amplitude,g_width 
-call AdvanceToNextInputLine( 4 )
 read(4,*) itype_melting, nelem_serp, arc_extrusion_rate
 call AdvanceToNextInputLine( 4 )
 read(4,*) width_mzone
@@ -287,13 +285,8 @@ if (mod(ntest_rem, ifreq_rmasses) + mod(ntest_rem, ifreq_imasses) &
         stop
 endif
 
-! acceleration parameters
-call AdvanceToNextInputLine( 4 )
-read(4,*) amul, ratl, ratu
 call AdvanceToNextInputLine( 4 )
 read(4,*) frac, fracm
-call AdvanceToNextInputLine( 4 )
-read(4,*) n_boff_cutoff
 call AdvanceToNextInputLine( 4 )
 read(4,*) movegrid,ndim
 call AdvanceToNextInputLine( 4 )

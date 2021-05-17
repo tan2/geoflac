@@ -56,7 +56,7 @@ e2sr = 1d-16
 se2sr = 1d-16
 
 !$ACC update device(nx,nz,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
-!$ACC     ny_rem,mode_rem,ntest_rem,ivis_shape,igeotherm, &
+!$ACC     ny_rem,mode_rem,ntest_rem,ivis_shape, &
 !$ACC     itype_melting,nelem_serp,nmass_update,nopbmax,nydrsides,nystressbc, &
 !$ACC     nofbc,nofside(maxbc),nbc1(maxbc),nbc2(maxbc),nbc(maxbc), &
 !$ACC     mix_strain,mix_stress,lastsave,lastout, &
@@ -80,17 +80,16 @@ se2sr = 1d-16
 !$ACC     movegrid,ndim,ifreq_visc,nmtracers,i_rey, &
 !$ACC     incoming_left,incoming_right, &
 !$ACC     iynts, iax1,iay1,ibx1,iby1,icx1,icy1,idx1,idy1, &
-!$ACC     ivis_present,n_boff_cutoff,idt_scale,ifreq_imasses,ifreq_rmasses, &
+!$ACC     ivis_present,idt_scale,ifreq_imasses,ifreq_rmasses, &
 !$ACC     nloop,ifreq_avgsr,nsrate) async(1)
 
 !$ACC update device(x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
 !$ACC     dx_rem,angle_rem,topo_kappa,fac_kappa, &
 !$ACC     v_min,v_max,efoldc, &
-!$ACC     g_x0,g_y0c,g_amplitude,g_width, &
 !$ACC     arc_extrusion_rate, &
 !$ACC     bca(maxbc),bcb(maxbc),bcc(maxbc),xReyn, &
 !$ACC     bcd(maxbc),bce(maxbc),bcf(maxbc),bcg(maxbc),bch(maxbc),bci(maxbc), &
-!$ACC     dt_scale,strain_inert,vbc,amul,ratl,ratu,frac, &
+!$ACC     dt_scale,strain_inert,vbc,frac, &
 !$ACC     dt_maxwell,fracm, &
 !$ACC     dt_elastic,demf, &
 !$ACC     dtout_screen,dtout_file,dtsave_file, &

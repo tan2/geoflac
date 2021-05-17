@@ -208,9 +208,6 @@ phasedat.inp   ; file with distribution of phase on the 2D grid (phasedat)
 ;vis_min (MINIMUM VISCOSITY) vis_max     ivis_shape,   efoldc
 1.0e+20,                     3.e+27,         2,         500.
 ;
-;igeotherm  g_x0,    g_y0c   g_amplitude  g_width
-0,         75.e+3,  -11.e+3,  2.e+3,       10.e+3
-;
 ;Magma Injection: 
 ; itype_melting, nelem_serp, arc_extrusion_rate
 0,         2,     2e-13
@@ -240,10 +237,7 @@ phasedat.inp   ; file with distribution of phase on the 2D grid (phasedat)
 10       Freq. re-evaluation Non-Newtonian VISC (rheol.eq.12)
 10       Freq. averaging strain rate and dissipation
 ;
-; Acceleration Parameters (Cundall, 1982)
-1.00,5.e-2,1.e-1    amul,ratl,ratu
 0.45,0.5        frac_elastic,frac_maxwell
-0                   n_boff_cutoff
 1,2                 movegrid (0-no,1-yes,2-move under strain_rate), ndim (num.dim.)
 0.8,1,1             damping, Mixing Procedures:mix1, mix2 (0,1),(strain,stress)
 ;
