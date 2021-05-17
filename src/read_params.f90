@@ -242,7 +242,7 @@ read(4,*) v_min, v_max, ivis_shape,efoldc
 call AdvanceToNextInputLine( 4 )
 read(4,*) itype_melting, nelem_serp, arc_extrusion_rate
 call AdvanceToNextInputLine( 4 )
-read(4,*) width_mzone
+read(4,*) width_mzone, ratio_crust_mzone, ratio_mantle_mzone
 call AdvanceToNextInputLine( 4 )
 read(4,*) weaken_ratio_plastic, weaken_ratio_viscous
 weaken_ratio_viscous = log(weaken_ratio_viscous)

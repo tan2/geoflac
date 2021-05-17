@@ -46,7 +46,7 @@ do i = 1,nx-1
             ! Within crust, melts migrate by diking, propagate upward vertically
             do jj = 1, jmoho(i)
                 !$ACC atomic update
-                chamber(jj,i) = chamber(jj,i) + fmelt(j,i) * 4.d-7 ! TODO
+                chamber(jj,i) = chamber(jj,i) + fmelt(j,i) * ratio_crust_mzone
             enddo
             ! Within mantle, melts migrate by percolation, propagate upward slantly
             do ii = max(1,i-ihalfwidth_mzone), min(nx-1,i+ihalfwidth_mzone)
@@ -54,7 +54,7 @@ do i = 1,nx-1
                     ihw = ihalfwidth_mzone * (j - jj + 1) / (j - jmoho(ii) + 1)
                     if (abs(ii-i) <= ihw) then
                         !$ACC atomic update
-                        chamber(jj,ii) = chamber(jj,ii) + fmelt(j,i) * 4.d-7 ! TODO
+                        chamber(jj,ii) = chamber(jj,ii) + fmelt(j,i) * ratio_mantle_mzone
                     endif
                 enddo
             enddo
