@@ -69,11 +69,17 @@ do i = 1,nx-1
     do j = 1,nz-1
         !iph = iphase(j,i)
         cp_eff = Eff_cp( j,i )
+        tmpr = 0.25d0*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
 
         chamber_old = chamber(j,i)
-        delta_chamber = chamber(j,i) * dt * 1d-13
-        chamber(j,i) = max(chamber(j,i) - delta_chamber, 0d0)  ! TODO
+        ! magma freezing,
+        ! Parametrized as a slow exponential decay
+        ! M(dt) = M(0) * exp(-dt * lambda) ~= M(0) * (1 - dt * lambda)
+        ! where lambda is temperature dependent: low T has faster decay
+        delta_chamber = chamber(j,i) * dt * lambda_freeze * exp(-lambda_freeze_tdep * (tmpr-t_top))
+        chamber(j,i) = max(chamber(j,i) - delta_chamber, 0d0)
 
+        ! latent heat released by freezing magma
         !$ACC atomic update
         temp(j  ,i  ) = temp(j  ,i  ) + delta_chamber * heat_latent_magma / cp_eff / 4
         !$ACC atomic update
