@@ -242,7 +242,7 @@ read(4,*) v_min, v_max, ivis_shape,efoldc
 call AdvanceToNextInputLine( 4 )
 read(4,*) itype_melting, nelem_serp, arc_extrusion_rate
 call AdvanceToNextInputLine( 4 )
-read(4,*) width_mzone, ratio_crust_mzone, ratio_mantle_mzone
+read(4,*) width_mzone, chamber_max, ratio_crust_mzone, ratio_mantle_mzone
 call AdvanceToNextInputLine( 4 )
 read(4,*) lambda_freeze, lambda_freeze_tdep
 call AdvanceToNextInputLine( 4 )

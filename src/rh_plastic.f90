@@ -294,8 +294,8 @@ phi = 1 / phi
 coh = 1 / coh
 
 if (chamber(j,i) > 0) then
-    phi = phi * (1 - weaken_ratio_plastic*(1 - chamber(j,i))) / 0.25d0  ! TODO
-    coh = coh * (1 - weaken_ratio_plastic*(1 - chamber(j,i))) / 0.25d0  ! TODO
+    phi = phi * (1 - weaken_ratio_plastic*(1 - chamber(j,i))) / chamber_max
+    coh = coh * (1 - weaken_ratio_plastic*(1 - chamber(j,i))) / chamber_max
 endif
 
 return

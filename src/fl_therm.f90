@@ -59,7 +59,7 @@ do i = 1,nx-1
                 enddo
             enddo
         endif
-        chamber(j,i) = min(chamber(j,i), 0.25d0)
+        chamber(j,i) = min(chamber(j,i), chamber_max)
     enddo
 enddo
 
