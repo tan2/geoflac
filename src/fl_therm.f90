@@ -39,60 +39,60 @@ endif
 !$OMP                  ihw,delta_chamber,qs,real_area13,area_n,rhs)
 
 if (itype_melting == 1) then
-!$OMP do
-!$ACC parallel loop collapse(2) async(1)
-do i = 1,nx-1
-    ! XXX: Assume melting cannot happen above the moho. (j > jmoho(i)) is always true
-    do j = 1,nz-1
-        if (j>jmoho(i)+1 .and. fmelt(j,i) > 0) then
-            ! Within crust, melts migrate by diking, propagate upward vertically
-            do jj = 1, jmoho(i)
-                !$ACC atomic update
-                chamber(jj,i) = chamber(jj,i) + fmelt(j,i) * ratio_crust_mzone
-            enddo
-            ! Within mantle, melts migrate by percolation, propagate upward slantly
-            do ii = max(1,i-ihalfwidth_mzone), min(nx-1,i+ihalfwidth_mzone)
-                do jj = jmoho(ii)+1, j
-                    ihw = ihalfwidth_mzone * (j - jj + 1) / (j - jmoho(ii) + 1)
-                    if (abs(ii-i) <= ihw) then
-                        !$ACC atomic update
-                        chamber(jj,ii) = chamber(jj,ii) + fmelt(j,i) * ratio_mantle_mzone
-                    endif
+    !$OMP do
+    !$ACC parallel loop collapse(2) async(1)
+    do i = 1,nx-1
+        ! XXX: Assume melting cannot happen above the moho. (j > jmoho(i)) is always true
+        do j = 1,nz-1
+            if (j>jmoho(i)+1 .and. fmelt(j,i) > 0) then
+                ! Within crust, melts migrate by diking, propagate upward vertically
+                do jj = 1, jmoho(i)
+                    !$ACC atomic update
+                    chamber(jj,i) = chamber(jj,i) + fmelt(j,i) * ratio_crust_mzone
                 enddo
-            enddo
-        endif
-        chamber(j,i) = min(chamber(j,i), chamber_max)
+                ! Within mantle, melts migrate by percolation, propagate upward slantly
+                do ii = max(1,i-ihalfwidth_mzone), min(nx-1,i+ihalfwidth_mzone)
+                    do jj = jmoho(ii)+1, j
+                        ihw = ihalfwidth_mzone * (j - jj + 1) / (j - jmoho(ii) + 1)
+                        if (abs(ii-i) <= ihw) then
+                            !$ACC atomic update
+                            chamber(jj,ii) = chamber(jj,ii) + fmelt(j,i) * ratio_mantle_mzone
+                        endif
+                    enddo
+                enddo
+            endif
+            chamber(j,i) = min(chamber(j,i), chamber_max)
+        enddo
     enddo
-enddo
 
-!$OMP do
-!$ACC parallel loop collapse(2) async(1)
-do i = 1,nx-1
-    do j = 1,nz-1
-        !iph = iphase(j,i)
-        cp_eff = Eff_cp( j,i )
-        tmpr = 0.25d0*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
+    !$OMP do
+    !$ACC parallel loop collapse(2) async(1)
+    do i = 1,nx-1
+        do j = 1,nz-1
+            !iph = iphase(j,i)
+            cp_eff = Eff_cp( j,i )
+            tmpr = 0.25d0*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
 
-        chamber_old = chamber(j,i)
-        ! magma freezing,
-        ! Parametrized as a slow exponential decay
-        ! M(dt) = M(0) * exp(-dt * lambda) ~= M(0) * (1 - dt * lambda)
-        ! where lambda is temperature dependent: low T has faster decay
-        delta_chamber = chamber(j,i) * dt * lambda_freeze * exp(-lambda_freeze_tdep * (tmpr-t_top))
-        chamber(j,i) = max(chamber(j,i) - delta_chamber, 0d0)
+            chamber_old = chamber(j,i)
+            ! magma freezing,
+            ! Parametrized as a slow exponential decay
+            ! M(dt) = M(0) * exp(-dt * lambda) ~= M(0) * (1 - dt * lambda)
+            ! where lambda is temperature dependent: low T has faster decay
+            delta_chamber = chamber(j,i) * dt * lambda_freeze * exp(-lambda_freeze_tdep * (tmpr-t_top))
+            chamber(j,i) = max(chamber(j,i) - delta_chamber, 0d0)
 
-        ! latent heat released by freezing magma
-        !$ACC atomic update
-        temp(j  ,i  ) = temp(j  ,i  ) + delta_chamber * heat_latent_magma / cp_eff / 4
-        !$ACC atomic update
-        temp(j  ,i+1) = temp(j  ,i+1) + delta_chamber * heat_latent_magma / cp_eff / 4
-        !$ACC atomic update
-        temp(j+1,i  ) = temp(j+1,i  ) + delta_chamber * heat_latent_magma / cp_eff / 4
-        !$ACC atomic update
-        temp(j+1,i+1) = temp(j+1,i+1) + delta_chamber * heat_latent_magma / cp_eff / 4
-    end do
-enddo
-!$OMP end do
+            ! latent heat released by freezing magma
+            !$ACC atomic update
+            temp(j  ,i  ) = temp(j  ,i  ) + delta_chamber * heat_latent_magma / cp_eff / 4
+            !$ACC atomic update
+            temp(j  ,i+1) = temp(j  ,i+1) + delta_chamber * heat_latent_magma / cp_eff / 4
+            !$ACC atomic update
+            temp(j+1,i  ) = temp(j+1,i  ) + delta_chamber * heat_latent_magma / cp_eff / 4
+            !$ACC atomic update
+            temp(j+1,i+1) = temp(j+1,i+1) + delta_chamber * heat_latent_magma / cp_eff / 4
+        end do
+    enddo
+    !$OMP end do
 endif
 
 !$ACC parallel loop collapse(2) async(1)

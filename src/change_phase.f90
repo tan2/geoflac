@@ -250,46 +250,46 @@ enddo
 !$OMP end parallel do
 
 if (itype_melting == 1) then
-!$OMP parallel do private(tmpr, yy, depth, jj, solidus, pmelt)
-!$ACC parallel loop async(1)
-do i = 1, nx-1
-    do j = nz-1, 1, -1
-        ! flux melting in the mantel wedge occurs above serpertine or chlorite
-        if (phase_ratio(kserp,j,i) + phase_ratio(khydmant,j,i) > 0.8d0 .and. &
-            cord(j,i,2) > -200.d3) then
+    !$OMP parallel do private(tmpr, yy, depth, jj, solidus, pmelt)
+    !$ACC parallel loop async(1)
+    do i = 1, nx-1
+        do j = nz-1, 1, -1
+            ! flux melting in the mantel wedge occurs above serpertine or chlorite
+            if (phase_ratio(kserp,j,i) + phase_ratio(khydmant,j,i) > 0.8d0 .and. &
+                cord(j,i,2) > -200.d3) then
 
-            ! search the mantle above for regions above solidus
-            do jj = j, 1, -1
-                tmpr = 0.25d0 * (temp(jj,i)+temp(jj,i+1)+temp(jj+1,i)+temp(jj+1,i+1))
+                ! search the mantle above for regions above solidus
+                do jj = j, 1, -1
+                    tmpr = 0.25d0 * (temp(jj,i)+temp(jj,i+1)+temp(jj+1,i)+temp(jj+1,i+1))
 
-                ! depth below the surface in m
-                yy = 0.25d0 * (cord(jj,i,2)+cord(jj,i+1,2)+cord(jj+1,i,2)+cord(jj+1,i+1,2))
-                depth = 0.5d0*(cord(1,i,2)+cord(1,i+1,2)) - yy
+                    ! depth below the surface in m
+                    yy = 0.25d0 * (cord(jj,i,2)+cord(jj,i+1,2)+cord(jj+1,i,2)+cord(jj+1,i+1,2))
+                    depth = 0.5d0*(cord(1,i,2)+cord(1,i+1,2)) - yy
 
-                ! Water-saturated solidus from Grove et al., Nature, 2009
-                if (depth > 80.d3) then
-                    solidus = 800
-                else
-                    solidus = 800 + 6.2e-8 * (depth - 80.d3)**2
-                endif
-                if (tmpr > solidus) then
-                    ! fraction of partial melting
-                    ! XXX: assuming 10% of melting at 1300 C = solidus + 500 C
-                    pmelt = min((tmpr - solidus) / 500 * 0.1d0, 0.1d0)
-                    !$ACC atomic update
-                    !$OMP atomic update
-                    fmelt(jj,i) = fmelt(jj,i) + pmelt * (phase_ratio(kmant1, jj, i)  &
-                                                         + phase_ratio(kmant2, jj, i) &
-                                                         + phase_ratio(kserp, jj, i))
-                    !print *, jj, i, tmpr, pmelt
-                endif
-            enddo
-            ! no need to look up further
-            exit
-        endif
+                    ! Water-saturated solidus from Grove et al., Nature, 2009
+                    if (depth > 80.d3) then
+                        solidus = 800
+                    else
+                        solidus = 800 + 6.2e-8 * (depth - 80.d3)**2
+                    endif
+                    if (tmpr > solidus) then
+                        ! fraction of partial melting
+                        ! XXX: assuming 10% of melting at 1300 C = solidus + 500 C
+                        pmelt = min((tmpr - solidus) / 500 * 0.1d0, 0.1d0)
+                        !$ACC atomic update
+                        !$OMP atomic update
+                        fmelt(jj,i) = fmelt(jj,i) + pmelt * (phase_ratio(kmant1, jj, i)  &
+                                                             + phase_ratio(kmant2, jj, i) &
+                                                             + phase_ratio(kserp, jj, i))
+                        !print *, jj, i, tmpr, pmelt
+                    endif
+                enddo
+                ! no need to look up further
+                exit
+            endif
+        enddo
     enddo
-enddo
-!$OMP end parallel do
+    !$OMP end parallel do
 endif
 
 return
