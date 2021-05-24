@@ -276,13 +276,19 @@ Phase changes are activated and will take place among certain of the defined pha
 
 | Parameters  | Types |  Description  |
 |:------------|:-----:|:--------------|
-|**ny-inject, nelem-serp, arc-extrusion-rate**|2 int, dbl| See below.|
+|**itype-melting, nelem-serp, arc-extrusion-rate**|2 int, dbl| See below.|
+|**width-mzone, chamber-max, ratio-crust-mzone, ratio-mantle-mzone**|4 dbl| See below.|
+|**lambda-freeze, lambda-freeze-tdep**|2 dbl| See below.|
+|**weaken-ratio-plastic, weaken-ratio-viscous**|2 dbl| See below.|
 
-
-* **ny-inject**: not used.
+* **itype-melting**: 0 for no melting. 1 for arc-type melting.
 * **nelem-serp**: the thickness (# elements) of serpentinization zone above subducted oceanic crust.
-* **arc-extrusion-rate**: the rate of arc magma extrusion
-
+* **arc-extrusion-rate**: the rate of arc magma extrusion (how fast arc crust is generated)
+* **width-mzone**: width (in meter) of the magma zone at Moho
+* **chamber-max**: max volume ratio of magma
+* **ratio-crust-mzone, ratio-mantle-mzone**: ratios of melt migrating to the crust and mantle
+* **lambda-freeze, lambda-freeze-tdep**: temperature-dependent decaying constant of magma (ie. freezing) M(dt)=M(0)*(1-lambda*dt), where lambda = **lambda-freeze** x exp(-**lambda-freeze-tdep** x (T - **t_top**))
+* **weaken-ratio-plastic, weaken-ratio-viscous**: Magma induced weakening for yield stress (plastic) and viscosity. Saturated at **chamber-max**.
 
 ## REMESHING
 
