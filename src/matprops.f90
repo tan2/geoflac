@@ -138,7 +138,7 @@ do k = 1, nphase
 enddo
 
 Eff_visc = 1 / Eff_visc
-if (chamber(j,i) > 0) Eff_visc = Eff_visc * exp(weaken_ratio_viscous * chamber(j,i) / chamber_max)
+if (itype_melting == 1) Eff_visc = Eff_visc * exp(weaken_ratio_viscous * chamber(j,i) / chamber_max)
 
 ! Final cut-off
 Eff_visc = min(v_max, max(v_min, Eff_visc))

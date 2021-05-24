@@ -103,7 +103,9 @@ end do
 call rem_interpolate( nzt, nxt, dummye, aps )
 
 ! Magma fraction
-call rem_interpolate( nzt, nxt, dummye, chamber )
+if (itype_melting == 1) then
+    call rem_interpolate( nzt, nxt, dummye, chamber )
+endif
 
 
 !$OMP parallel do

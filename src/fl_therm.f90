@@ -37,6 +37,8 @@ endif
 !$OMP Parallel private(i,j,iph,cp_eff,cond_eff,dissip,diff,quad_area, &
 !$OMP                  x1,x2,x3,x4,y1,y2,y3,y4,t1,t2,t3,t4,tmpr, &
 !$OMP                  ihw,delta_chamber,qs,real_area13,area_n,rhs)
+
+if (itype_melting == 1) then
 !$OMP do
 !$ACC parallel loop collapse(2) async(1)
 do i = 1,nx-1
@@ -91,6 +93,7 @@ do i = 1,nx-1
     end do
 enddo
 !$OMP end do
+endif
 
 !$ACC parallel loop collapse(2) async(1)
 !$OMP do

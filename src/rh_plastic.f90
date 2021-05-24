@@ -293,7 +293,7 @@ enddo
 phi = 1 / phi
 coh = 1 / coh
 
-if (chamber(j,i) > 0) then
+if (itype_melting == 1) then
     phi = phi * (1 - weaken_ratio_plastic*(1 - chamber(j,i))) / chamber_max
     coh = coh * (1 - weaken_ratio_plastic*(1 - chamber(j,i))) / chamber_max
 endif
