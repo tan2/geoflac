@@ -221,6 +221,7 @@ do i = 1, nx-1
 enddo
 !$OMP end parallel do
 
+if (itype_melting == 1) then
 !$OMP parallel do private(tmpr, yy, depth, solidus, pmelt)
 !$ACC parallel loop collapse(2) async(1)
 do i = 1, nx-1
@@ -249,7 +250,6 @@ do i = 1, nx-1
 enddo
 !$OMP end parallel do
 
-if (itype_melting == 1) then
     !$OMP parallel do private(tmpr, yy, depth, jj, solidus, pmelt)
     !$ACC parallel loop async(1)
     do i = 1, nx-1
