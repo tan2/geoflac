@@ -51,7 +51,7 @@ sshrheat = 0
 dtopo = 0
 extrusion = 0
 fmelt = 0
-chamber = 0  ! TODO: init in rsflac
+chamber = 0
 e2sr = 1d-16
 se2sr = 1d-16
 

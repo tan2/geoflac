@@ -99,6 +99,11 @@ open (1,file='aps.rs',access='direct',recl=nwords*kindr)
 read (1,rec=nrec) aps
 close (1)
 
+! Magma
+open (1,file='chamber.rs',access='direct',recl=nwords*kindr) 
+read (1,rec=nrec) chamber
+close (1)
+
 ! Heat sources
 open (1,file='source.rs',access='direct',recl=nwords*kindr) 
 read (1,rec=nrec) source
