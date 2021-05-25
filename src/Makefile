@@ -228,7 +228,7 @@ take-snapshot:
 	@echo '  ' F90=$(F90) debug=$(debug) openmp=$(omp) acc=$(acc) >> snapshot.diff
 	@echo '  ' CFLAGS=$(CFLAGS) >> snapshot.diff
 	@echo '  ' LDFLAGS=$(LDFLAGS) >> snapshot.diff
-	@echo '  ' PATH=$(PATH) >> snapshot.diff
+	@echo '  ' PATH= "$(PATH)" >> snapshot.diff
 	@echo '  ' LD_LIBRARY_PATH=$(LD_LIBRARY_PATH) >> snapshot.diff
 	@echo '  ' PWD=$(PWD) >> snapshot.diff
 	@echo >> snapshot.diff
