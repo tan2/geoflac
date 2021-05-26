@@ -33,11 +33,11 @@ integer :: nx,nz,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
      ixtb1(maxzone_age),ixtb2(maxzone_age),nzone_age,i_prestress, &
      iph_col1(maxzone_age),iph_col2(maxzone_age),iph_col3(maxzone_age), &
      iph_col4(maxzone_age),iph_col5(maxzone_age),iph_col_trans(maxzone_age), &
-     if_hydro, nyhydro,iphsub, &
+     if_hydro,nyhydro,iphsub, &
      ihalfwidth_mzone, &
      movegrid,ndim,ifreq_visc,nmtracers,i_rey, &
      incoming_left,incoming_right, &
-     iynts, iax1,iay1,ibx1,iby1,icx1,icy1,idx1,idy1, &
+     iynts,iax1,iay1,ibx1,iby1,icx1,icy1,idx1,idy1, &
      ivis_present,idt_scale,ifreq_imasses,ifreq_rmasses, &
      nloop,ifreq_avgsr,nsrate
 
@@ -65,7 +65,7 @@ integer :: nx,nz,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
 !$ACC     ihalfwidth_mzone, &
 !$ACC     movegrid,ndim,ifreq_visc,nmtracers,i_rey, &
 !$ACC     incoming_left,incoming_right, &
-!$ACC     iynts, iax1,iay1,ibx1,iby1,icx1,icy1,idx1,idy1, &
+!$ACC     iynts,iax1,iay1,ibx1,iby1,icx1,icy1,idx1,idy1, &
 !$ACC     ivis_present,idt_scale,ifreq_imasses,ifreq_rmasses, &
 !$ACC     nloop,ifreq_avgsr,nsrate)
 
@@ -90,10 +90,10 @@ real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
      t_top,t_bot,hs,hr,temp_per,bot_bc, &
      hc1(maxzone_age),hc2(maxzone_age),hc3(maxzone_age),hc4(maxzone_age), &
      age_1(maxzone_age),g,pisos,drosub,damp_vis, &
-     width_mzone, chamber_max, ratio_crust_mzone, ratio_mantle_mzone, &
-     lambda_freeze, lambda_freeze_tdep, &
-     weaken_ratio_plastic, weaken_ratio_viscous, &
-     dtavg, tbos, &
+     width_mzone,chamber_max,ratio_crust_mzone,ratio_mantle_mzone, &
+     lambda_freeze,lambda_freeze_tdep, &
+     weaken_ratio_plastic,weaken_ratio_viscous, &
+     dtavg,tbos, &
      time,dt,time_max
 
 !$ACC declare create(x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
@@ -117,10 +117,10 @@ real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
 !$ACC     t_top,t_bot,hs,hr,temp_per,bot_bc, &
 !$ACC     hc1(maxzone_age),hc2(maxzone_age),hc3(maxzone_age),hc4(maxzone_age), &
 !$ACC     age_1(maxzone_age),g,pisos,drosub,damp_vis, &
-!$ACC     width_mzone, chamber_max, ratio_crust_mzone, ratio_mantle_mzone, &
-!$ACC     lambda_freeze, lambda_freeze_tdep, &
-!$ACC     weaken_ratio_plastic, weaken_ratio_viscous, &
-!$ACC     dtavg, tbos, &
+!$ACC     width_mzone,chamber_max,ratio_crust_mzone,ratio_mantle_mzone, &
+!$ACC     lambda_freeze,lambda_freeze_tdep, &
+!$ACC     weaken_ratio_plastic,weaken_ratio_viscous, &
+!$ACC     dtavg,tbos, &
 !$ACC     time,dt,time_max)
 
 character phasefile*20,tempfile*20,coordfile*20
