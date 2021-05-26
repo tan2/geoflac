@@ -37,10 +37,6 @@ function Eff_dens( j, i)
 
     dens = den(k) * ( 1 - alfa(k)*tmpr + beta(k)*press )
 
-    ! Effect of melt
-    !fmelt = Eff_melt(k, tmpr)
-    !dens = dens * ( 1.d0-0.1d0*fmelt )
-
     Eff_dens = Eff_dens + ratio*dens
   enddo
   return
