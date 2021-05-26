@@ -221,6 +221,7 @@ if (arc_extrusion_rate > 0) then
     !$ACC parallel loop async(1)
     do i = 1, nx-1
         totalmelt = 0
+        !$ACC loop reduction(+:totalmelt)
         do j = 1, nz-1
             quad_area = 0.5d0/area(j,i,1) + 0.5d0/area(j,i,2)
             ! volume of the melt in this column
