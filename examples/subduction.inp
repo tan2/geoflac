@@ -210,7 +210,7 @@ phasedat.inp   ; file with distribution of phase on the 2D grid (phasedat)
 ;
 ;Magma: 
 ; itype_melting, nelem_serp, arc_extrusion_rate
-0,         2,     4e-13
+1,         2,     4e-13
 ; width_mzone, chamber_max, ratio_crust_mzone, ratio_mantle_mzone
 50e3,          0.1,         4e-7,              4e-7
 ; lambda_freeze, lambda_freeze_tdep
