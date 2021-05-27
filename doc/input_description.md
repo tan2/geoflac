@@ -286,8 +286,8 @@ Phase changes are activated and will take place among certain of the defined pha
 * **arc-extrusion-rate**: the rate of arc magma extrusion (how fast arc crust is generated)
 * **width-mzone**: width (in meter) of the magma zone at Moho
 * **chamber-max**: max volume ratio of magma
-* **ratio-crust-mzone, ratio-mantle-mzone**: ratios of melt migrating to the crust and mantle
-* **lambda-freeze, lambda-freeze-tdep**: temperature-dependent decaying constant of magma (ie. freezing) M(dt)=M(0)*(1-lambda*dt), where lambda = **lambda-freeze** x exp(-**lambda-freeze-tdep** x (T - **t_top**))
+* **ratio-crust-mzone, ratio-mantle-mzone**: ratios of melt migrating to the crust and mantle. These will affect how much magma resides in the arc volcanic zone and in the mantle wedge, respectively.
+* **lambda-freeze, lambda-freeze-tdep**: temperature-dependent decaying constant of magma (ie. freezing) M(dt)=M(0)*(1-lambda*dt), where lambda = **lambda-freeze** x exp(-**lambda-freeze-tdep** x (T - **t_top**)). These will affect how long magma can remain in the mantle wedge. Additionally, more freezing will release more latent heat and increase the temperature in the mantle wedge.
 * **weaken-ratio-plastic, weaken-ratio-viscous**: Magma induced weakening for yield stress (plastic) and viscosity. Saturated at **chamber-max**.
 
 ## REMESHING
