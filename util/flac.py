@@ -696,6 +696,15 @@ class FlacFromVTK(object):
 
 
 
+def marker_ntriag2elem(ntriag, nz):
+    '''Convert markers' ntriag to element number (i,j) and triangle number (k)
+    nz is the # of nodes in z direction.'''
+    k = ((ntriag - 1) % 2) + 1
+    j = ((ntriag - k) // 2) % (nz - 1)
+    i = (ntriag - k) // 2 // (nz - 1)
+    return i, j, (k-1)
+
+
 def elem_coord(x, z):
     '''Turning nodal coordinates to element coordinates'''
     cx = (x[:-1, :-1] + x[:-1, 1:] + x[1:, :-1] + x[1:, 1:]) / 4
