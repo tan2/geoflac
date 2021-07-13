@@ -57,6 +57,18 @@ do i = 1,nmarkers
     D1d(i)= real(mark_age(i) / sec_year / 1.d6)
 enddo
 write (1,rec=3) D1d
+
+! Barycentric coordinates
+do i = 1,nmarkers
+    D1d(i)= real(mark_a1(i))
+enddo
+write (1,rec=4) D1d
+
+do i = 1,nmarkers
+    D1d(i)= real(mark_a2(i))
+enddo
+write (1,rec=5) D1d
+
 close (1)
 
 
