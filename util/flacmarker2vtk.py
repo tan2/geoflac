@@ -18,7 +18,7 @@ zmin = -50
 zmax = 100
 
 
-def filter_marker(x, z, age, phase, ID):
+def filter_marker(x, z, age, phase, ID, ntriag):
     # bool * bool is element-wise logical AND
     ind = (xmin <= x) * (x <= xmax) * (zmin <= z) * (z <= zmax)
     x = x[ind]
@@ -26,7 +26,8 @@ def filter_marker(x, z, age, phase, ID):
     age = age[ind]
     phase = phase[ind]
     ID = ID[ind]
-    return x, z, age, phase, ID
+    ntriag = ntriag[ind]
+    return x, z, age, phase, ID, ntriag
 
 
 def main(path, start=1, end=-1):
@@ -44,9 +45,9 @@ def main(path, start=1, end=-1):
         start = lastframe + 1
 
     for i in range(start, end+1):
-        x, z, age, phase, ID = fl.read_markers(i)
+        x, z, age, phase, ID, ntriag = fl.read_markers(i)
         if filtering:
-            x, z, age, phase, ID = filter_marker(x, z, age, phase, ID)
+            x, z, age, phase, ID, ntriag = filter_marker(x, z, age, phase, ID, ntriag)
         nmarkers = len(x)
 
         print('Writing record #%d, model time=%.3e, %d markers' % (i, fl.time[i-1], nmarkers), end='\r')

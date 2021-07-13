@@ -72,6 +72,12 @@ do l = 1,nmarkers
     D1i(l)= mark_phase(l)
 enddo
 write (1,rec=2) D1i
+
+do l = 1,nmarkers
+    D1i(l)= mark_ntriag(l)
+enddo
+write (1,rec=3) D1i
+
 close (1)
 
 return

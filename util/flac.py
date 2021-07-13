@@ -261,6 +261,8 @@ class Flac(object):
         dead = self._read_data(f2, count=n, dtype=np.int32)
         tmp = self._read_data(f2, count=n, dtype=np.int32)
         phase = self._remove_dead_markers(tmp, dead)
+        tmp = self._read_data(f2, count=n, dtype=np.int32)
+        ntriag = self._remove_dead_markers(tmp, dead)
         f2.close()
 
         f1 = open('marker1' + suffix)
@@ -276,7 +278,7 @@ class Flac(object):
         tmp = np.arange(1, n+1)
         ID = self._remove_dead_markers(tmp, dead)
         f1.close()
-        return x, z, age, phase, ID
+        return x, z, age, phase, ID, ntriag
 
 
     def read_tracers(self):
