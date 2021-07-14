@@ -711,6 +711,53 @@ def marker_ntriag2elem(ntriag, nz):
     return i, j, (k-1)
 
 
+def marker_interpolate_elem(ntriag, nz, efield):
+    '''Interpolation elemental field (e.g. stress) onto markers
+    '''
+    if efield.shape[1] != nz-1:
+        raise ValueError('The array length in 2nd dimension is %d, excepting %d' % (nfield.shape[1], nz-1))
+
+    i, j, k = marker_ntriag2elem(ntriag, nz)
+    f = np.zeros(ntriag.shape, dtype=efield.dtype)
+    f = efield[i[:], j[:]]
+    return f
+
+
+def marker_interpolate_node(ntriag, a1, a2, nz, nfield):
+    '''Interpolation nodal field (e.g. temperature) onto markers
+    '''
+    if nfield.shape[1] != nz:
+        raise ValueError('The array length in 2nd dimension is %d, excepting %d' % (nfield.shape[1], nz))
+
+    f = np.zeros_like(a1)
+    a3 = 1.0 - a1 - a2
+
+    # Upper triangle:
+    # 1 --- 3
+    # |   /
+    # |  /
+    # | /
+    # 2
+    #
+    # Lower triangle:
+    #       1
+    #     / |
+    #    /  |
+    #   /   |
+    # 2 --- 3
+    i, j, k = marker_ntriag2elem(ntriag, nz)
+    u = (k == 0)  # uppper triangles
+    l = (k == 1)  # lower triangles
+
+    f[u] = (nfield[i[u]  , j[u]  ] * a1[u] +
+            nfield[i[u]  , j[u]+1] * a2[u] +
+            nfield[i[u]+1, j[u]  ] * a3[u])
+    f[l] = (nfield[i[l]+1, j[l]  ] * a1[l] +
+            nfield[i[l]  , j[l]+1] * a2[l] +
+            nfield[i[l]+1, j[l]+1] * a3[l])
+    return f
+
+
 def elem_coord(x, z):
     '''Turning nodal coordinates to element coordinates'''
     cx = (x[:-1, :-1] + x[:-1, 1:] + x[1:, :-1] + x[1:, 1:]) / 4
