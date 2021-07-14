@@ -9,7 +9,7 @@ use marker_data
 character*200 inputfile
 real*4 secnds,time0
 integer :: narg, iargc, j, irestart
-double precision :: dtacc_file, dtacc_save, dtacc_screen, dtacc_tracer
+double precision :: dtacc_file, dtacc_save, dtacc_screen
 
 narg = iargc()
 if(narg /= 1) then
@@ -63,7 +63,6 @@ end if
 dtacc_screen = 0
 dtacc_file = 0
 dtacc_save = 0
-dtacc_tracer = 0
 
 do while( time .le. time_max )
   if( dtout_screen .ne. 0 ) then
@@ -86,7 +85,6 @@ do while( time .le. time_max )
     dtacc_screen = dtacc_screen + dt
     dtacc_file   = dtacc_file   + dt
     dtacc_save   = dtacc_save   + dt
-    dtacc_tracer = dtacc_tracer + dt
   end do
 
   ! Remeshing
@@ -116,12 +114,6 @@ do while( time .le. time_max )
       call outflac
       if (iint_marker.eq.1) call outmarker
       dtacc_file = 0
-    endif
-  endif
-  if ( iint_tracer.eq.1) then
-    if (dtacc_tracer.gt.dt_outtracer) then
-      call outtracer
-      dtacc_tracer = 0
     endif
   endif
   ! SAVING the restart information

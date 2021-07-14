@@ -12,11 +12,6 @@ integer :: nrec, nwords, i, j, k, iph, n
 real*8 rtime, rdt, time_my
 character*200 msg
 
-! TODO: include tracer information for restart
-if (iint_tracer.eq.1) then
-    stop 'Must disable tracers in restart'
-endif
-
 open( 1, file='_contents.rs', status='old' )
 read( 1, * ) nrec, nloop, time_my, nmarkers, nmtracers
 close(1)
@@ -168,14 +163,6 @@ do n = 1, nmarkers
 enddo
 
 call marker2elem
-
-if (iint_tracer.eq.1) then
-    ! Tracers
-    nwords = nmtracers
-    open (1,file='tracer.rs',access='direct',recl=nwords*kindi)
-    read (1,rec=1) idtracer(1:nmtracers)
-    close (1)
-endif
 
 endif
 

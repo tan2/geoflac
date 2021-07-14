@@ -164,14 +164,12 @@ SRCS =	\
 	init_phase.f90 \
 	init_stress.f90 \
 	init_temp.f90 \
-	init_tracer.f90 \
 	init_visc.f90 \
 	lpeuler2bar.f90 \
 	marker2elem.f90 \
 	matprops.f90 \
 	outflac.f90 \
 	outmarker.f90 \
-	outtracer.f90 \
 	par.f90 \
 	read_params.f90 \
 	rem_cord.f90 \

@@ -125,14 +125,6 @@ if(iint_marker.eq.1) then
      write (1,rec=nrec) mark_ID(1:nmarkers)
      nrec = nrec + 1
      close (1)
-
-     if (iint_tracer.eq.1) then
-          ! Tracers
-          nwords = nmtracers
-          open (1,file='tracer.rs',access='direct',recl=nwords*kindi)
-          write (1,rec=1) idtracer(1:nmtracers)
-          close (1)
-     endif
 endif
 return 
 end
