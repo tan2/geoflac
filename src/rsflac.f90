@@ -28,7 +28,6 @@ read (1,rec=nrec) rtime, rdt
 close (1)
 time = rtime
 dt = rdt
-!$ACC update device(nloop,time) async(1)
 
 dvol = 0
 
@@ -202,6 +201,8 @@ extrusion = 0
 fmelt = 0
 se2sr = 1d-16
 e2sr = 1d-16
+
+call update_acc
 
 ! Distribution of REAL masses to nodes
 call rmasses

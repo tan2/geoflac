@@ -55,6 +55,30 @@ chamber = 0
 e2sr = 1d-16
 se2sr = 1d-16
 
+call update_acc
+
+! Distribution of REAL masses to nodes
+call rmasses
+
+! Initialization of viscosity
+if( ivis_present.eq.1 ) call init_visc
+
+! Inertial masses and time steps (elastic and maxwell)
+call dt_mass
+
+! Initiate parameters for stress averaging
+dtavg=0
+nsrate=-1
+
+return
+end
+
+
+subroutine update_acc
+use arrays
+use params
+include 'precision.inc'
+
 !$ACC update device(nx,nz,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
 !$ACC     ny_rem,mode_rem,ntest_rem,ivis_shape, &
 !$ACC     itype_melting,nelem_serp,nmass_update,nopbmax,nydrsides,nystressbc, &
@@ -109,19 +133,4 @@ se2sr = 1d-16
 !$ACC     weaken_ratio_plastic,weaken_ratio_viscous, &
 !$ACC     dtavg,tbos, &
 !$ACC     time,dt,time_max) async(1)
-
-! Distribution of REAL masses to nodes
-call rmasses
-
-! Initialization of viscosity
-if( ivis_present.eq.1 ) call init_visc
-
-! Inertial masses and time steps (elastic and maxwell)
-call dt_mass
-
-! Initiate parameters for stress averaging
-dtavg=0
-nsrate=-1
-
-return
 end
