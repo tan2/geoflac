@@ -65,7 +65,7 @@ do i = 1,nzony
 end do
 177 continue
 call AdvanceToNextInputLine( 4 )
-read(4,*) iint_marker, iint_tracer
+read(4,*) iint_marker, i_junk
 if (iint_marker .ne. 1) then
     stop 'iint_marker must be 1'
 endif
@@ -76,12 +76,8 @@ call AdvanceToNextInputLine( 4 )
         read(iu,*) imx1(i),imy1(i),imx2(i),imy2(i)
 253 continue 
 call AdvanceToNextInputLine( 4 )
-read(4,*) nzone_tracer, dt_outtracer
-dt_outtracer = dt_outtracer * 1000 * sec_year
+read(4,*) n_junk, d_junk
 call AdvanceToNextInputLine( 4 )
-  do 233 i = 1, nzone_tracer
-        read(iu,*) itx1(i),ity1(i),itx2(i),ity2(i)
-233 continue 
 
 ! MECHANICAL CONDITIONS
 call AdvanceToNextInputLine( 4 )

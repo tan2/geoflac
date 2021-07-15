@@ -11,7 +11,7 @@ module arrays
        area(:,:,:), dvol(:,:,:), strain(:,:,:), bc(:,:,:)
 
   integer, allocatable :: ncod(:,:,:), iphase(:,:), &
-      nopbou(:,:), ncodbou(:,:), idtracer(:), jmoho(:)
+      nopbou(:,:), ncodbou(:,:), jmoho(:)
 
   double precision, allocatable :: phase_ratio(:,:,:), &
       dtopo(:), dhacc(:), extrusion(:), &
@@ -28,12 +28,6 @@ module arrays
             cold(:,:,:), cnew(:,:,:), &
             cordo(:,:,:), dhnew(:), extnew(:)
   integer, allocatable :: numtr(:,:)
-
-  ! tracer arrays
-  real, allocatable ::tracerx(:), tracerz(:), tracervx(:), tracervz(:), &
-      tracert(:), tracerp(:), tracere(:), traceredot(:), &
-      tracersxx(:), tracerszz(:), tracersxz(:)
-  integer, allocatable :: tracerph(:)
 
   ! temporary array
   double precision, allocatable :: dummyn(:,:), dummye(:,:), stmpn(:)
@@ -63,7 +57,6 @@ contains
     allocate(iphase(nz-1, nx-1))
     allocate(nopbou(((nz-1)+(nx-1))*2, 4))
     allocate(ncodbou(((nz-1)+(nx-1))*2, 3))
-    allocate(idtracer((nz-1)*(nx-1)*2))
     allocate(jmoho(nx-1))
 
     allocate(phase_ratio(nphase, nz-1, nx-1))
@@ -100,23 +93,4 @@ contains
 
   end subroutine allocate_arrays
 
-
-  subroutine allocate_tracer_arrays(nmtracers)
-    implicit none
-
-    integer, intent(in) :: nmtracers
-
-    allocate(tracerx(nmtracers))
-    allocate(tracerz(nmtracers))
-    allocate(tracervx(nmtracers))
-    allocate(tracervz(nmtracers))
-    allocate(tracert(nmtracers))
-    allocate(tracerp(nmtracers))
-    allocate(tracere(nmtracers))
-    allocate(traceredot(nmtracers))
-    allocate(tracersxx(nmtracers))
-    allocate(tracerszz(nmtracers))
-    allocate(tracersxz(nmtracers))
-    allocate(tracerph(nmtracers))
-  end subroutine allocate_tracer_arrays
 end module arrays

@@ -90,7 +90,7 @@ include 'precision.inc'
 !$ACC     ltop(maxphasel),lbottom(maxphasel),lphase(maxphasel), &
 !$ACC     imx1(maxtrzone),imx2(maxtrzone),imy1(maxtrzone),imy2(maxtrzone), &
 !$ACC     itx1(maxtrzone),itx2(maxtrzone),ity1(maxtrzone),ity2(maxtrzone), &
-!$ACC     nphasl,nzone_marker,nmarkers, iint_marker,iint_tracer,nzone_tracer, &
+!$ACC     nphasl,nzone_marker,nmarkers, iint_marker, &
 !$ACC     ix1(maxinh),ix2(maxinh),iy1(maxinh),iy2(maxinh),inphase(maxinh), &
 !$ACC     igeom(maxinh),inhom, &
 !$ACC     itherm,istress_therm,itemp_bc,ix1t,ix2t,iy1t,iy2t,ishearh, &
@@ -99,7 +99,7 @@ include 'precision.inc'
 !$ACC     iph_col4(maxzone_age),iph_col5(maxzone_age),iph_col_trans(maxzone_age), &
 !$ACC     if_hydro,nyhydro,iphsub, &
 !$ACC     ihalfwidth_mzone, &
-!$ACC     movegrid,ndim,ifreq_visc,nmtracers,i_rey, &
+!$ACC     movegrid,ndim,ifreq_visc,i_rey, &
 !$ACC     incoming_left,incoming_right, &
 !$ACC     iynts,iax1,iay1,ibx1,iby1,icx1,icy1,idx1,idy1, &
 !$ACC     ivis_present,idt_scale,ifreq_imasses,ifreq_rmasses, &
@@ -122,7 +122,7 @@ include 'precision.inc'
 !$ACC     dilat1(maxph),dilat2(maxph), &
 !$ACC     conduct(maxph),cp(maxph), &
 !$ACC     ts(maxph),tl(maxph),tk(maxph),fk(maxph), &
-!$ACC     ten_off,tau_heal,dt_outtracer,xinitaps(maxinh), &
+!$ACC     ten_off,tau_heal,xinitaps(maxinh), &
 !$ACC     t_top,t_bot,hs,hr,temp_per,bot_bc, &
 !$ACC     hc1(maxzone_age),hc2(maxzone_age),hc3(maxzone_age),hc4(maxzone_age), &
 !$ACC     age_1(maxzone_age),g,pisos,drosub,damp_vis, &

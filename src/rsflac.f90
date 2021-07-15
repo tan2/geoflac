@@ -13,7 +13,7 @@ real*8 rtime, rdt, time_my
 character*200 msg
 
 open( 1, file='_contents.rs', status='old' )
-read( 1, * ) nrec, nloop, time_my, nmarkers, nmtracers
+read( 1, * ) nrec, nloop, time_my, nmarkers, i
 close(1)
 
 

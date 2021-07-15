@@ -3,7 +3,7 @@ module params
 implicit none
 
 integer, parameter :: maxzone = 10   ! max nzonx and nzony
-integer, parameter :: maxtrzone = 20   ! max nzone_marker and nzone_tracer
+integer, parameter :: maxtrzone = 20   ! max nzone_marker
 integer, parameter :: maxphasel = 20   ! max nphasl
 integer, parameter :: maxbc = 20   ! max # of bcs
 integer, parameter :: maxzone_age = 32   ! max # of nzone_age
@@ -26,7 +26,7 @@ integer :: nx,nz,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
      ltop(maxphasel),lbottom(maxphasel),lphase(maxphasel), &
      imx1(maxtrzone),imx2(maxtrzone),imy1(maxtrzone),imy2(maxtrzone), &
      itx1(maxtrzone),itx2(maxtrzone),ity1(maxtrzone),ity2(maxtrzone), &
-     nphasl,nzone_marker,nmarkers, iint_marker,iint_tracer,nzone_tracer, &
+     nphasl,nzone_marker,nmarkers, iint_marker, &
      ix1(maxinh),ix2(maxinh),iy1(maxinh),iy2(maxinh),inphase(maxinh), &
      igeom(maxinh),inhom, &
      itherm,istress_therm,itemp_bc,ix1t,ix2t,iy1t,iy2t,ishearh, &
@@ -35,7 +35,7 @@ integer :: nx,nz,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
      iph_col4(maxzone_age),iph_col5(maxzone_age),iph_col_trans(maxzone_age), &
      if_hydro,nyhydro,iphsub, &
      ihalfwidth_mzone, &
-     movegrid,ndim,ifreq_visc,nmtracers,i_rey, &
+     movegrid,ndim,ifreq_visc,i_rey, &
      incoming_left,incoming_right, &
      iynts,iax1,iay1,ibx1,iby1,icx1,icy1,idx1,idy1, &
      ivis_present,idt_scale,ifreq_imasses,ifreq_rmasses, &
@@ -54,7 +54,7 @@ integer :: nx,nz,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
 !$ACC     ltop(maxphasel),lbottom(maxphasel),lphase(maxphasel), &
 !$ACC     imx1(maxtrzone),imx2(maxtrzone),imy1(maxtrzone),imy2(maxtrzone), &
 !$ACC     itx1(maxtrzone),itx2(maxtrzone),ity1(maxtrzone),ity2(maxtrzone), &
-!$ACC     nphasl,nzone_marker,nmarkers, iint_marker,iint_tracer,nzone_tracer, &
+!$ACC     nphasl,nzone_marker,nmarkers, iint_marker, &
 !$ACC     ix1(maxinh),ix2(maxinh),iy1(maxinh),iy2(maxinh),inphase(maxinh), &
 !$ACC     igeom(maxinh),inhom, &
 !$ACC     itherm,istress_therm,itemp_bc,ix1t,ix2t,iy1t,iy2t,ishearh, &
@@ -63,7 +63,7 @@ integer :: nx,nz,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
 !$ACC     iph_col4(maxzone_age),iph_col5(maxzone_age),iph_col_trans(maxzone_age), &
 !$ACC     if_hydro,nyhydro,iphsub, &
 !$ACC     ihalfwidth_mzone, &
-!$ACC     movegrid,ndim,ifreq_visc,nmtracers,i_rey, &
+!$ACC     movegrid,ndim,ifreq_visc,i_rey, &
 !$ACC     incoming_left,incoming_right, &
 !$ACC     iynts,iax1,iay1,ibx1,iby1,icx1,icy1,idx1,idy1, &
 !$ACC     ivis_present,idt_scale,ifreq_imasses,ifreq_rmasses, &
@@ -86,7 +86,7 @@ real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
      dilat1(maxph),dilat2(maxph), &
      conduct(maxph),cp(maxph), &
      ts(maxph),tl(maxph),tk(maxph),fk(maxph), &
-     ten_off,tau_heal,dt_outtracer,xinitaps(maxinh), &
+     ten_off,tau_heal,xinitaps(maxinh), &
      t_top,t_bot,hs,hr,temp_per,bot_bc, &
      hc1(maxzone_age),hc2(maxzone_age),hc3(maxzone_age),hc4(maxzone_age), &
      age_1(maxzone_age),g,pisos,drosub,damp_vis, &
@@ -113,7 +113,7 @@ real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
 !$ACC     dilat1(maxph),dilat2(maxph), &
 !$ACC     conduct(maxph),cp(maxph), &
 !$ACC     ts(maxph),tl(maxph),tk(maxph),fk(maxph), &
-!$ACC     ten_off,tau_heal,dt_outtracer,xinitaps(maxinh), &
+!$ACC     ten_off,tau_heal,xinitaps(maxinh), &
 !$ACC     t_top,t_bot,hs,hr,temp_per,bot_bc, &
 !$ACC     hc1(maxzone_age),hc2(maxzone_age),hc3(maxzone_age),hc4(maxzone_age), &
 !$ACC     age_1(maxzone_age),g,pisos,drosub,damp_vis, &
