@@ -68,8 +68,9 @@
 |**nofbc** | int | # of boundary conditions (i.e., how many segments, max 20).|
 |**_nofside(i),nbc1(i),nbc2(i),nbc(i),bca(i),bcb(i),bcc(i),bcd(i),bce(i),bcf(i),bcg(i),bch(i),bci(i)_**|  4 int, 9 dbl | See the following text. |
 
-* There are four sides (**nofside**) for a rectangular domain. 1-left, 2-bottom, 3-right, 4-top.
+* There are four sides (**nofside**) for a rectangular domain. 1-left, 2-bottom, 3-right, 4-top. Additional special situation: 5 for push at mid-plate.
 * Each side is composed of one or more segments.  Each segment with its own BC behavior.  The starting and ending nodes of each segment are **nbc1** and **nbc2**.
+* When **nofside**=5, the plate between i=[**nbc1**,**nbc2**] and j=[1,moho_grid * 2] is pushed at a constant velocity Vx. (**nbc** must be 10 in this case.)
 * These are the following types of boundary conditions (**nbc**):
     +  1 - velz
     +  2 - shear stress (x,z) plane

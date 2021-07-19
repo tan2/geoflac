@@ -50,7 +50,7 @@
 ; nofbc: Number of boundary conditions
 2
 ;----------------------------------------------------------------
-;nofside       1-left,2-bottom,3-right,4-top
+;nofside       1-left,2-bottom,3-right,4-top,5-mid-plate
 ;nbc1,nbc2     range of application of boundary condition
 ;nbc           type of boundary condition
 ;  there are the following forms of boundary conditions:
