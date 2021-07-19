@@ -186,6 +186,9 @@ phasedat.inp   ; file with distribution of phase on the 2D grid (phasedat)
 ; 21- trapzoidal, surface nodes linearly increase ix1-ix2, flat ix2-iy1,
 ;     decrease iy1-iy2, max. elevated by amp
 ;
+; Fixed low viscosity zone
+; 100- rectangular, viscosity=vis_min, for mid-ocean-ridge at sides
+;
 8  - inhom(number of inhomogenities)
 ; ix1   ix2   iy1   iy2   phase   geometry    init.pl.strain (amp)
    51    63    6    18    16       4          1.

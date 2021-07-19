@@ -256,7 +256,8 @@ Phase changes are activated and will take place among certain of the defined pha
 * Add topography (see init_cord.f90), **xinitaps** as the amplitude of topography, **inphase** not used.
     - 20 square, surface nodes ix1-ix2 elevated by **xinitaps**
     - 21 trapzoidal, surface nodes linearly increase **ix1-ix2**, flat **ix2-iy1**, decrease **iy1-iy2**, max. elevated by **xinitaps**
-
+* Cause a low viscosity zone, where the visocsity is always **v-min**.
+    - 100 rectangular zone
 
 ## MISC. PARAMETERS
 

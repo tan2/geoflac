@@ -97,6 +97,18 @@ use arrays
 use params
 include 'precision.inc'
 
+
+do k = 1, inhom
+    !Fixed weak zone
+    if (igeom(k).eq.100) then
+        if (i >= ix1(k) .and. i <= ix2(k) .and. &
+            j >= iy1(k) .and. j <= iy2(k)) then
+            Eff_visc = v_min
+            return
+        endif
+    endif
+enddo
+
 Eff_visc = 0.d0
 r=8.31448d0
 tmpr = 0.25d0*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
