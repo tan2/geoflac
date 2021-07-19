@@ -149,6 +149,15 @@ if( io_density.eq.1 ) then
     open (1,file='density.0',access='direct',recl=nwords*kindr)
     write (1,rec=nrec) De
     close (1)
+
+   do i = 1, nx-1
+   do j = 1, nz-1
+          De(j,i) = real(0.5d0/area(j,i,1) + 0.5d0/area(j,i,2))
+   enddo
+   enddo
+    open (1,file='area.0',access='direct',recl=nwords*kindr)
+    write (1,rec=nrec) De
+    close (1)
 endif
 
 

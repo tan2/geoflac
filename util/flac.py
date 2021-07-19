@@ -108,6 +108,16 @@ class Flac(object):
         return density
 
 
+    def read_area(self, frame):
+        columns = 1
+        f = open('area.0')
+        offset = (frame-1) * columns * self.nelements * sizeoffloat
+        f.seek(offset)
+        area = self._read_data(f, columns, count=self.nelements)
+        self._reshape_elemental_fields(area)
+        return area
+
+
     def read_strain(self, frame):
         columns = 1
         f = open('exx.0')
