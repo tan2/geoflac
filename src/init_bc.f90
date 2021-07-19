@@ -83,7 +83,7 @@ subroutine init_bc
               numbp = n + nbc1(i) - 1
               x  = (cord (numbp,1,2)  - x1)/(x2-x1)
               if (nbc(i).eq.1.or.nbc(i).eq.10.or.nbc(i).eq.30)  &
-                   call velbc (i,numbp,x)
+                   call velbc (i,numbp,x,0)
 
               if (nbc(i).eq.2.or.nbc(i).eq.20.or.nbc(i).eq.40) then
                   nnop = nnop + 1
@@ -112,7 +112,7 @@ subroutine init_bc
               x = (cord (nz,numbp,1) - x1)/(x2-x1)
 
               if (nbc(i).eq.1.or.nbc(i).eq.10.or.nbc(i).eq.30)  &
-                   call velbc (i,numbp,x)
+                   call velbc (i,numbp,x,0)
               if (nbc(i).eq.2.or.nbc(i).eq.20.or.nbc(i).eq.40) then
                   nnop = nnop + 1
                   numbp1 = n + 1
@@ -138,7 +138,7 @@ subroutine init_bc
               x  = (cord (numbp,nx,2) - x1)/(x2-x1)
 
               if (nbc(i).eq.1.or.nbc(i).eq.10.or.nbc(i).eq.30)  &
-                   call velbc (i,numbp,x)
+                   call velbc (i,numbp,x,0)
 
               if (nbc(i).eq.2.or.nbc(i).eq. 20.or.nbc(i).eq.40) then
                   nnop = nnop + 1
@@ -166,7 +166,7 @@ subroutine init_bc
               x = (cord (1,numbp,1) - x1)/(x2-x1)
 
               if (nbc(i).eq.1.or.nbc(i).eq.10.or.nbc(i).eq.30)   &
-                   call velbc (i,numbp,x)
+                   call velbc (i,numbp,x,0)
 
               if (nbc(i).eq.2.or.nbc(i).eq.20.or.nbc(i).eq.40) then
                   nnop = nnop + 1
@@ -185,31 +185,21 @@ subroutine init_bc
 
       if ( nofside(i) .eq. 5 ) then
 
-          do mid_nx = nxbc1, nxbc2  ! where velocity set on
-            x1 = cord ( nbc1(i),mid_nx, 2)
-            x2 = cord ( nbc2(i),mid_nx, 2)
+        if (nbc(i).ne.10) stop 55
+        do n = 1,ndbc
 
-             do n = 1,ndbc
-                 numbp = n + nbc1(i) - 1
-                 x  = (cord (numbp,nx,2) - x1)/(x2-x1)
+            numbp = n + nbc1(i) - 1
+            do mid_j = 1, min(jmoho(i)*2,nx) ! from surface to 2x element thickness of crust
+                x1 = cord ( 1,numbp, 2)
+                x2 = cord ( min(jmoho(i)*2,nx),numbp, 2)
 
-                 if (nbc(i).eq.1.or.nbc(i).eq.10.or.nbc(i).eq.30)  &
-                      call velbc_mid (i,numbp,x,mid_nx)
+                x  = (cord (mid_j,numbp,2) - x1)/(x2-x1)
 
-                 if (nbc(i).eq.2.or.nbc(i).eq. 20.or.nbc(i).eq.40) then
-                     nnop = nnop + 1
-                     numbp1 = numbp + 1
-                     xn = (cord (numbp1,nx,2) - x1)/(x2-x1)
-                     xa = 0.5 * (x+xn)
-                     call stressbc (i,nnop,numbp,numbp1,xa)
-                 endif
-             enddo
+                call velbc (i,numbp,x,mid_j)
+            enddo
 
-         enddo
+        enddo
       endif
-
-      ! viscosity-dependent velocity profile
-      if (nbc(i).eq.50) call velbc_visc(i)
 
   enddo
   !
@@ -288,12 +278,12 @@ subroutine stressbc (i,n,numbp,numbp1,x)
 end subroutine stressbc
 
 !----------------------------------------------------------------
-subroutine velbc (i,numbp,x)  
+subroutine velbc (i,numbp,x,mid_j) 
 
   use arrays
   use params
   implicit none
-  integer :: i, numbp
+  integer :: i, numbp, mid_j
   double precision :: x
   double precision, parameter :: pi2 = 2.d0 * 3.14159d0
   double precision :: fun
@@ -318,6 +308,10 @@ subroutine velbc (i,numbp,x)
   if (nofside(i).eq.4) then
       ii1 = numbp 
       jj1 = 1 
+  endif
+  if (nofside(i).eq.5) then
+      ii1= numbp
+      jj1= mid_j
   endif
   ! - x component 
   if (nbc(i) .eq. 10 ) then  
@@ -345,67 +339,6 @@ subroutine velbc (i,numbp,x)
 
   return
 end subroutine velbc
-
-
-subroutine velbc_mid (i,numbp,x,mid_nx)
-
-  use arrays
-  use params
-  include 'precision.inc'
-
-  pi2 = 2. * 3.14159
-
-  fun =  bca(i) + bcb(i)*x + bcc(i)*x*x   &
-       + (bcd(i)*cos (pi2*bce(i)*x) + bcf(i)*sin (pi2*bcg(i)*x))    &
-       *exp(-((x-bci(i))*bch(i))**2)
-
-  if (nofside(i).eq.1) then
-      ii1 = 1
-      jj1 = numbp
-  endif
-  if (nofside(i).eq.2) then
-      ii1 = numbp
-      jj1 = nz
-  endif
-  if (nofside(i).eq.3) then
-      ii1 = nx
-      jj1 = numbp
-  endif
-  if (nofside(i).eq.4) then
-      ii1 = numbp
-      jj1 = 1
-  endif
-  if (nofside(i).eq.5) then
-      ii1= mid_nx
-      jj1= numbp
-  endif
-  ! - x component
-  if (nbc(i) .eq. 10 ) then
-      ncod(jj1,ii1,1) = 1
-      if (abs(bc(jj1,ii1,1)).gt.0.) then
-          fun = bc(jj1,ii1,1)
-      endif
-      bc(jj1,ii1,1) = fun
-  endif
-
-  ! - z component
-  if (nbc(i) .eq. 1 ) then
-      ncod(jj1,ii1,2) = 1
-      bc  (jj1,ii1,2) = fun
-      !       write(*,*) ncod(jj1,ii1,2),bc(jj1,ii1,2)
-  endif
-
-  ! - y component
-
-  !            if (nbc(i) .eq. 30 ) then
-  !       ncod(numbp,3) = 1
-  !       bc  (numbp,3) = fun
-  !        write(*,*) numbp,ncod(numbp,3),bc(numbp,3)
-  !             endif
-
-  return
-end subroutine velbc_mid
-
 
 subroutine velbc_visc(i)
 
