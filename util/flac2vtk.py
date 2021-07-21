@@ -73,6 +73,9 @@ def main(path, start=1, end=-1):
         a = fl.read_density(i)
         vts_dataarray(fvts, a.swapaxes(0,1), 'Density')
 
+        a = fl.read_area(i)
+        vts_dataarray(fvts, a.swapaxes(0,1), 'Area')
+
         a = fl.read_aps(i)
         vts_dataarray(fvts, a.swapaxes(0,1), 'Plastic strain')
 
