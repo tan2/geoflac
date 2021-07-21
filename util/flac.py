@@ -414,6 +414,7 @@ class FlacFromVTK(object):
         self.frames = list(range(1, self.nrec+1))
         self.steps = np.zeros(self.nrec)
         self.time = np.zeros(self.nrec)
+	self._read_vtk(1) # get grid size
         return
 
 
