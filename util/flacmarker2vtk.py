@@ -62,6 +62,9 @@ def main(path, start=1, end=-1):
         vts_dataarray(fvtp, age, 'age', 1)
         vts_dataarray(fvtp, phase.astype(np.int32), 'phase', 1)
         vts_dataarray(fvtp, ID.astype(np.int32), 'ID', 1)
+        vts_dataarray(fvtp, a1, 'a1', 1)
+        vts_dataarray(fvtp, a2, 'a2', 1)
+        vts_dataarray(fvtp, ntriag.astype(np.int32), 'ntriag', 1)
         fvtp.write('  </PointData>\n')
 
         # point coordinates

@@ -645,6 +645,15 @@ class FlacFromVTK(object):
         a = self._locate_line(data, "ID", dtype="Int32")
         ID = np.frombuffer(a, dtype=np.int32)
 
+        a = self._locate_line(data, "a1")
+        a1 = np.frombuffer(a, dtype=np.float32)
+
+        a = self._locate_line(data, "a2")
+        a2 = np.frombuffer(a, dtype=np.float32)
+
+        a = self._locate_line(data, "ntriag", dtype="Int32")
+        ntriag = np.frombuffer(a, dtype=np.int32)
+
         # read point coordinate
         s = '<Points>'
         for n, line in enumerate(data):
@@ -663,7 +672,7 @@ class FlacFromVTK(object):
         x, z = a[:,0], a[:,1]
 
         # True if not using thermochron
-        if (True): return x, z, age, phase, ID
+        if (True): return x, z, age, phase, ID, a1, a2, ntriag
 
         # Thermochronology from Chase Shyu's work
         '''
