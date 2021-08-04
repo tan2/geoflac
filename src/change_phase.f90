@@ -240,8 +240,8 @@ if (itype_melting == 1) then
                 solidus = max(680+0.6d-3*(depth-140d3), 930-313*(1-exp(-depth/7d3)))
                 if (tmpr > solidus) then
                     ! fraction of partial melting
-                    ! XXX: assuming 10% of melting at solidus + 50 C
-                    pmelt = min((tmpr - solidus) / 50 * 0.1d0, 0.1d0)
+                    ! XXX: assuming 10% of melting at solidus + 20 C
+                    pmelt = min((tmpr - solidus) / 20 * 0.1d0, 0.1d0)
                     fmelt(j,i) = pmelt * phase_ratio(ksed1, j, i)
                     !print *, j, i, tmpr, pmelt
                 endif
