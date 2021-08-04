@@ -182,7 +182,7 @@ do kk = 1 , nmarkers
         mark_phase(kk) = kmetased
     case (khydmant)
         ! dehydration of chlorite
-        ! Phase diagram from Groove et al. Nature, 2009
+        ! Phase diagram from Grove et al. Nature, 2009
         trtmpr = 880 - 35d-9 * (depth - 62d3)**2
         if (tmpr < trtmpr) cycle
         !$ACC atomic write
