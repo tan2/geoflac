@@ -39,7 +39,7 @@
 ;
 1, 1.   number of rectangular zones with tracers (stores x,z,T,P,etc), frequency of storage in 1000yrs.
 ; upper left and lower right corners of the elements
-1 1 70 15           i1,j1,i2,j2 
+;1 1 70 15           i1,j1,i2,j2
 ;
 ;===================================================================
 ;        C o n d i t i o n s:  M e c h a n i c a l
