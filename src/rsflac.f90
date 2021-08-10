@@ -94,8 +94,8 @@ read (1,rec=nrec) aps
 close (1)
 
 ! Magma
-open (1,file='chamber.rs',access='direct',recl=nwords*kindr) 
-read (1,rec=nrec) chamber
+open (1,file='fmagma.rs',access='direct',recl=nwords*kindr)
+read (1,rec=nrec) fmagma
 close (1)
 
 ! Heat sources

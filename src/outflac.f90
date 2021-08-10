@@ -287,8 +287,8 @@ if( io_src.eq.1 ) then
     write (1,rec=nrec) De
     close (1)
 
-    De(1:nz-1,1:nx-1) = real(chamber(1:nz-1,1:nx-1))
-    open (1,file='chamber.0',access='direct',recl=nwords*kindr)
+    De(1:nz-1,1:nx-1) = real(fmagma(1:nz-1,1:nx-1))
+    open (1,file='fmagma.0',access='direct',recl=nwords*kindr)
     write (1,rec=nrec) De
     close (1)
 endif

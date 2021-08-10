@@ -294,8 +294,8 @@ phi = 1 / phi
 coh = 1 / coh
 
 if (itype_melting == 1) then
-    phi = phi * (1 - (1 - weaken_ratio_plastic) * chamber(j,i) / chamber_max)
-    coh = coh * (1 - (1 - weaken_ratio_plastic) * chamber(j,i) / chamber_max)
+    phi = phi * (1 - (1 - weaken_ratio_plastic) * fmagma(j,i) / fmagma_max)
+    coh = coh * (1 - (1 - weaken_ratio_plastic) * fmagma(j,i) / fmagma_max)
 endif
 
 return

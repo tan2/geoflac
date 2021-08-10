@@ -230,14 +230,14 @@ class Flac(object):
         return fmelt
 
 
-    def read_chamber(self, frame):
+    def read_fmagma(self, frame):
         columns = 1
-        f = open('chamber.0')
+        f = open('fmagma.0')
         offset = (frame-1) * columns * self.nelements * sizeoffloat
         f.seek(offset)
-        chamber = self._read_data(f, columns, count=self.nelements)
-        self._reshape_elemental_fields(chamber)
-        return chamber
+        fmagma = self._read_data(f, columns, count=self.nelements)
+        self._reshape_elemental_fields(fmagma)
+        return fmagma
 
 
     def read_diss(self, frame):

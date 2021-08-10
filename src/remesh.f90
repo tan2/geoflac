@@ -104,7 +104,7 @@ call rem_interpolate( nzt, nxt, dummye, aps )
 
 ! Magma fraction
 if (itype_melting == 1) then
-    call rem_interpolate( nzt, nxt, dummye, chamber )
+    call rem_interpolate( nzt, nxt, dummye, fmagma )
 endif
 
 

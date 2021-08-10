@@ -15,7 +15,7 @@ module arrays
 
   double precision, allocatable :: phase_ratio(:,:,:), &
       dtopo(:), dhacc(:), extrusion(:), &
-      fmelt(:,:), chamber(:,:), extr_acc(:), &
+      fmelt(:,:), fmagma(:,:), extr_acc(:), &
       strainr(:,:,:,:), flux(:,:,:,:), &
       aps(:,:),visn(:,:),e2sr(:,:), &
       temp0(:,:),source(:,:),shrheat(:,:), &
@@ -64,7 +64,7 @@ contains
     allocate(dhacc(nx-1))
     allocate(extrusion(nx-1))
     allocate(fmelt(nz-1, nx-1))
-    allocate(chamber(nz-1, nx-1))
+    allocate(fmagma(nz-1, nx-1))
     allocate(extr_acc(nx-1))
     allocate(strainr(3, ntri, nz-1, nx-1))
     allocate(flux(2, 2, nz-1, nx-1))
