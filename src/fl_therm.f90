@@ -39,6 +39,15 @@ endif
 !$OMP                  ihw,delta_chamber,qs,real_area13,area_n,rhs)
 
 if (itype_melting == 1) then
+    ! M: chamber, ie. magma fraction in the element
+    ! dM/dt = P - M lambda
+    !   where P is the production rate and the second term is the freezing rate
+    !
+    ! Magma production rate:
+    ! M(t+dt) = M(t) + P dt
+    !   where P is the magma production rate.
+    ! P = fmelt * prod * R_zone *  A_zone / A_melt
+    !
     !$OMP do
     !$ACC parallel loop collapse(2) async(1)
     do i = 1,nx-1
@@ -65,6 +74,12 @@ if (itype_melting == 1) then
         enddo
     enddo
 
+    ! Magma freezing rate:
+    ! [M(t+dt) - M(t)] / dt  = - M(t) lambda
+    ! M(t+dt) = M(t) (1 - dt * lambda)
+    !   where lambda is temperature dependent: low T has faster decay
+    !   lambda = lambda_freeze * exp(-lambda_freeze_tdep * (T - Tsolidus))
+    !
     !$OMP do
     !$ACC parallel loop collapse(2) async(1)
     do i = 1,nx-1
@@ -74,10 +89,6 @@ if (itype_melting == 1) then
             tmpr = 0.25d0*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
 
             chamber_old = chamber(j,i)
-            ! magma freezing,
-            ! Parametrized as a slow exponential decay
-            ! M(dt) = M(0) * exp(-dt * lambda) ~= M(0) * (1 - dt * lambda)
-            ! where lambda is temperature dependent: low T has faster decay
             delta_chamber = chamber(j,i) * dt * lambda_freeze * exp(-lambda_freeze_tdep * (tmpr-t_top))
             chamber(j,i) = max(chamber(j,i) - delta_chamber, 0d0)
 
