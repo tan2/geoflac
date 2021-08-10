@@ -217,9 +217,10 @@ if( topo_kappa .gt. 0.d0 ) then
 endif
 
 ! magma extrusion
+arc_extrusion_rate = 1.d0 - ratio_crust_mzone - ratio_mantle_mzone
 if (arc_extrusion_rate > 0) then
     !$ACC parallel loop async(1)
-    do i = 1, nx-1
+    do i = 2, nx-2  ! avoid edge elements, which should not contain arc magma
         totalmelt = 0
         !$ACC loop reduction(+:totalmelt)
         do j = 1, nz-1
@@ -228,13 +229,14 @@ if (arc_extrusion_rate > 0) then
             totalmelt = totalmelt + quad_area * fmelt(j,i)
         enddo
         ! height of extrusion in this column
-        extrusion(i) = arc_extrusion_rate * dt * totalmelt / (cord(1,i+1,1) - cord(1,i,1))
+        extrusion(i) = arc_extrusion_rate * dt * totalmelt * prod_magma &
+            / (cord(1,i+1,1) - cord(1,i,1) + 0.5d0 * (cord(1,i,1) - cord(1,i-1,1) + cord(1,i+2,1) - cord(1,i+1,1)))
         !print *, i, extrusion(i), totalmelt
         extr_acc(i) = extr_acc(i) + extrusion(i)
+        !$ACC atomic update
         cord(1,i,2) = cord(1,i,2) + extrusion(i)
-        ! XXX: this line mixs element-index with node-index
-        ! XXX: no extrusion added to the right-most node cord(1,nx,2). This is fine,
-        ! since the melt is in the middle of the domain.
+        !$ACC atomic update
+        cord(1,i+1,2) = cord(1,i+1,2) + extrusion(i)
     enddo
 endif
 
