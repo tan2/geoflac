@@ -46,26 +46,35 @@ if (itype_melting == 1) then
     ! Magma production rate:
     ! M(t+dt) = M(t) + P dt
     !   where P is the magma production rate.
-    ! P = fmelt * prod * R_zone *  A_zone / A_melt
+    ! P = fmelt * prod_magma * R_zone *  A_zone / A_melt
     !
     !$OMP do
     !$ACC parallel loop collapse(2) async(1)
     do i = 1,nx-1
         ! XXX: Assume melting cannot happen above the moho. (j > jmoho(i)) is always true
         do j = 1,nz-1
-            if (j>jmoho(i)+1 .and. fmelt(j,i) > 0) then
+            jm = jmoho(i)
+            quad_area = 0.5d0/area(j,i,1) + 0.5d0/area(j,i,2) ! area of melting element
+            if (j>jm+1 .and. fmelt(j,i) > 0) then
                 ! Within crust, melts migrate by diking, propagate upward vertically
-                do jj = 1, jmoho(i)
+                ! area_ratio: the area of the crust column / the area of the melting element
+                !     ~ the thickness of the crust column / the thickness of the melting element
+                area_ratio = (cord(1,i,2)+cord(1,i+1,2)-cord(jm+1,i,2)-cord(jm+1,i+1,2)) / &
+                    (cord(j,i,2)+cord(j,i+1,2)-cord(j+1,i,2)-cord(j+1,i+1,2))
+                do jj = 1, jm
                     !$ACC atomic update
-                    fmagma(jj,i) = fmagma(jj,i) + fmelt(j,i) * ratio_crust_mzone
+                    fmagma(jj,i) = fmagma(jj,i) + fmelt(j,i) * ratio_crust_mzone * area_ratio * prod_magma * dt
                 enddo
                 ! Within mantle, melts migrate by percolation, propagate upward slantly
+                depth_moho = 0.5d0 * (cord(jm+1,i,2) + cord(jm+1,i+1,2))
+                ! area_ratio: the area of the mantle triangle / the area of the melting element
+                area_ratio = 0.5d0 * (depth_moho - 0.5d0 *(cord(j,i,2)+cord(j,i+1,2))) * width_mzone / quad_area
                 do ii = max(1,i-ihalfwidth_mzone), min(nx-1,i+ihalfwidth_mzone)
                     do jj = jmoho(ii)+1, j
                         ihw = ihalfwidth_mzone * (j - jj + 1) / (j - jmoho(ii) + 1)
                         if (abs(ii-i) <= ihw) then
                             !$ACC atomic update
-                            fmagma(jj,ii) = fmagma(jj,ii) + fmelt(j,i) * ratio_mantle_mzone
+                            fmagma(jj,i) = fmagma(jj,i) + fmelt(j,i) * ratio_mantle_mzone * area_ratio * prod_magma * dt
                         endif
                     enddo
                 enddo
