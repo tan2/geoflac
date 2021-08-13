@@ -73,7 +73,7 @@ MODULE marker_data
     !$ACC end atomic
     !$OMP end atomic
 
-    if(nm == max_markers_per_elem .or. kk >= max_markers-1) then
+    if(nm > max_markers_per_elem .or. kk > max_markers) then
         !write(msg*) 'Too many markers at element:', i, j, nm
         !call SysMsg(msg)
         !call SysMsg('Marker skipped, not added!')
