@@ -74,7 +74,7 @@ if (itype_melting == 1) then
                         ihw = ihalfwidth_mzone * (j - jj + 1) / (j - jmoho(ii) + 1)
                         if (abs(ii-i) <= ihw) then
                             !$ACC atomic update
-                            fmagma(jj,i) = fmagma(jj,i) + fmelt(j,i) * ratio_mantle_mzone * area_ratio * prod_magma * dt
+                            fmagma(jj,ii) = fmagma(jj,ii) + fmelt(j,i) * ratio_mantle_mzone * area_ratio * prod_magma * dt
                         endif
                     enddo
                 enddo
