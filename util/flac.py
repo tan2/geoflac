@@ -618,6 +618,22 @@ class FlacFromVTK(object):
         return NotImplemented
 
 
+    def read_fmelt(self, frame):
+        data = self._get_vtk_data(frame)
+        a = self._locate_line(data, "Melt fraction")
+        fmelt = np.frombuffer(a, dtype=np.float32)
+        fmelt.shape = (self.nx-1, self.nz-1)
+        return fmelt
+
+
+    def read_fmagma(self, frame):
+        data = self._get_vtk_data(frame)
+        a = self._locate_line(data, "Magma fraction")
+        fmagma = np.frombuffer(a, dtype=np.float32)
+        fmagma.shape = (self.nx-1, self.nz-1)
+        return fmagma
+
+
     def read_diss(self, frame):
         return NotImplemented
 
@@ -730,7 +746,7 @@ class FlacFromVTK(object):
         '''
 
 ################################################################
-### Replace Flac by Flac2 if only vts files are available
+### Replace Flac by FlacFromVTK if only vts files are available
 ################################################################
 #
 #if (not os.path.exists('_contents.0')) and os.path.exists('flac.000001.vts'):
