@@ -24,11 +24,9 @@ real*8, parameter :: mantle_density = 3000.d0
 ! temperature (C) of serpentine phase transition
 real*8, parameter :: serpentine_temp = 550.d0
 
-!$ACC kernels async(2)
+!$ACC kernels async(1)
 itmp = 0  ! indicates which element has phase-changed markers
 !$ACC end kernels
-
-!$ACC wait(2)
 
 !$OMP parallel private(kk,i,j,k,n,tmpr,depth,iph,press,jbelow,trpres,trpres2,kinc,quad_area,yy)
 !$OMP do schedule(guided)
