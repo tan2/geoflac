@@ -14,7 +14,7 @@ double precision :: yy, dep2, depth, press, quad_area, &
                     tmpr, trtmpr, trpres, trpres2, &
                     solidus, pmelt
 
-! max. depth (m) of eclogite phase transition
+! max. depth (m) of eclogite phase transition, no serpentinization below it
 real*8, parameter :: max_basalt_depth = 150.d3
 ! min. temperature (C) of eclogite phase transition
 real*8, parameter :: min_eclogite_temp = 500.d0
@@ -40,6 +40,7 @@ do kk = 1 , nmarkers
     j = mod((n - k) / 2, nz-1) + 1
     i = (n - k) / 2 / (nz - 1) + 1
 
+    ! interpolate y-coordinate and temperature on markers
     if (k .eq. 1) then
        yy = cord(j,i,2)*mark_a1(kk) + cord(j+1,i,2)*mark_a2(kk) + cord(j,i+1,2)*(1-mark_a1(kk)-mark_a2(kk))
        tmpr = temp(j,i)*mark_a1(kk) + temp(j+1,i)*mark_a2(kk) + temp(j,i+1)*(1-mark_a1(kk)-mark_a2(kk))
@@ -53,9 +54,6 @@ do kk = 1 , nmarkers
 
     ! # of markers inside quad
     kinc = nmark_elem(j,i)
-
-    !XXX: Some quick checks to skip markers that won't change phase. Might
-    !     not be accurate!
 
     ! If location of this element is too deep, this marker is already
     ! too deep in the mantle, where there is no significant phase change.
@@ -90,7 +88,6 @@ do kk = 1 , nmarkers
         !    !itmp(j,i) = 1
         !    mark_phase(kk) = kweakmc
         !endif
-
     case (kmant1, kmant2)
         ! subuducted oceanic crust below mantle, mantle is serpentinized
         if(depth > max_basalt_depth) cycle
