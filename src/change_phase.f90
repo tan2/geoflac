@@ -24,36 +24,9 @@ real*8, parameter :: mantle_density = 3000.d0
 ! temperature (C) of serpentine phase transition
 real*8, parameter :: serpentine_temp = 550.d0
 
-! temperature (C) and depth (m) of 10% partial melting of upper mantle.
-real*8, parameter :: partial_melt_temp = 600.d0
-!real*8, parameter :: partial_melt_depth = -70.d3
-! thickness of new crust
-real*8, parameter :: new_crust_thickness = 7.d3
-
 !$ACC kernels async(2)
 itmp = 0  ! indicates which element has phase-changed markers
 !$ACC end kernels
-
-!$ACC serial async(1)
-! search the element for melting
-do jj = 1, nz-1
-   ! search for crustal depth
-   dep2 = 0.25d0*(cord(jj,1,2)+cord(jj+1,1,2)+cord(jj,2,2)+cord(jj+1,2,2))
-   if (cord(1,1,2) - dep2 >= new_crust_thickness) exit
-end do
-j = min(max(2, jj), nz-1)
-!$ACC end serial
-
-!$ACC parallel loop async(1)
-do i = 1, nx-1
-  iph = iphase(j,i)
-  if (iph==kmant1 .or. iph==kmant2) then
-    tmpr = 0.25d0*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
-    !if (tmpr > partial_melt_temp) then
-    !  call newphase2marker(1,j-1,i,i,kocean1)
-    !end if
-  end if
-end do
 
 !$ACC wait(2)
 
