@@ -517,7 +517,7 @@ class FlacFromVTK(object):
         x, z = a[:,0], a[:,1]
         x.shape = (self.nx, self.nz)
         z.shape = (self.nx, self.nz)
-        return x, z
+        return x.transpose(), z.transpose()
 
 
     def read_vel(self, frame):
@@ -527,7 +527,7 @@ class FlacFromVTK(object):
         vx, vz = a[:,0], a[:,1]
         vx.shape = (self.nx, self.nz)
         vz.shape = (self.nx, self.nz)
-        return vx, vz
+        return vx.transpose(), vz.transpose()
 
 
     def read_temperature(self, frame):
@@ -535,7 +535,7 @@ class FlacFromVTK(object):
         a = self._locate_line(data, "Temperature")
         T = np.frombuffer(a, dtype=np.float32)
         T.shape = (self.nx-1, self.nz-1)
-        return T
+        return T.transpose()
 
 
     def read_aps(self, frame):
@@ -543,7 +543,7 @@ class FlacFromVTK(object):
         a = self._locate_line(data, "Plastic strain")
         aps = np.frombuffer(a, dtype=np.float32)
         aps.shape = (self.nx-1, self.nz-1)
-        return aps
+        return aps.transpose()
 
 
     def read_density(self, frame):
@@ -551,7 +551,7 @@ class FlacFromVTK(object):
         a = self._locate_line(data, "Density")
         density = np.frombuffer(a, dtype=np.float32)
         density.shape = (self.nx-1, self.nz-1)
-        return density
+        return density.transpose()
 
 
     def read_area(self, frame):
@@ -559,7 +559,7 @@ class FlacFromVTK(object):
         a = self._locate_line(data, "Area")
         area = np.frombuffer(a, dtype=np.float32)
         area.shape = (self.nx-1, self.nz-1)
-        return area
+        return area.transpose()
 
 
     def read_strain(self, frame):
@@ -571,7 +571,7 @@ class FlacFromVTK(object):
         a = self._locate_line(data, "eII")
         eII = np.frombuffer(a, dtype=np.float32)
         eII.shape = (self.nx-1, self.nz-1)
-        return eII
+        return eII.transpose()
 
 
     def read_sII(self, frame):
@@ -579,7 +579,7 @@ class FlacFromVTK(object):
         a = self._locate_line(data, "sII")
         sII = np.frombuffer(a, dtype=np.float32)
         sII.shape = (self.nx-1, self.nz-1)
-        return sII
+        return sII.transpose()
 
 
     def read_sxx(self, frame):
@@ -587,7 +587,7 @@ class FlacFromVTK(object):
         a = self._locate_line(data, "Sxx")
         sxx = np.frombuffer(a, dtype=np.float32)
         sxx.shape = (self.nx-1, self.nz-1)
-        return sxx
+        return sxx.transpose()
 
 
     def read_sxz(self, frame):
@@ -595,7 +595,7 @@ class FlacFromVTK(object):
         a = self._locate_line(data, "Sxz")
         sxz = np.frombuffer(a, dtype=np.float32)
         sxz.shape = (self.nx-1, self.nz-1)
-        return sxz
+        return sxz.transpose()
 
 
     def read_szz(self, frame):
@@ -603,7 +603,7 @@ class FlacFromVTK(object):
         a = self._locate_line(data, "Szz")
         szz = np.frombuffer(a, dtype=np.float32)
         szz.shape = (self.nx-1, self.nz-1)
-        return szz
+        return szz.transpose()
 
 
     def read_srII(self, frame):
@@ -611,7 +611,7 @@ class FlacFromVTK(object):
         a = self._locate_line(data, "Strain rate")
         srII = np.frombuffer(a, dtype=np.float32)
         srII.shape = (self.nx-1, self.nz-1)
-        return srII
+        return srII.transpose()
 
 
     def read_pres(self, frame):
@@ -643,7 +643,7 @@ class FlacFromVTK(object):
         a = self._locate_line(data, "Viscosity")
         visc = np.frombuffer(a, dtype=np.float32)
         visc.shape = (self.nx-1, self.nz-1)
-        return visc
+        return visc.transpose()
 
 
     def read_phase(self, frame):
@@ -651,7 +651,7 @@ class FlacFromVTK(object):
         a = self._locate_line(data, "Phase", "Int32")
         phase = np.frombuffer(a, dtype=np.int32)
         phase.shape = (self.nx-1, self.nz-1)
-        return phase
+        return phase.transpose()
 
 
     def read_markers(self, frame):
