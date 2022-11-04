@@ -88,6 +88,7 @@ do kk = 1 , nmarkers
         !    !itmp(j,i) = 1
         !    mark_phase(kk) = kweakmc
         !endif
+        cycle
     case (kmant1, kmant2)
         ! subuducted oceanic crust below mantle, mantle is serpentinized
         if(depth > max_basalt_depth) cycle
