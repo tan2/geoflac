@@ -189,7 +189,7 @@ OBJS = $(SRCS:.f90=.o)
 
 EXE = flac
 
-## Is this a mercurial repository?
+## Is this a git repository?
 HAS_GIT := $(shell git log -r -1 >/dev/null)
 
 ########################################################################
@@ -220,6 +220,7 @@ ifneq (HAS_GIT),)
 	@echo >> snapshot.diff
 	@echo '==== Summary of the code ====' >> snapshot.diff
 	@git show -s >> snapshot.diff
+	@git status >> snapshot.diff
 	@echo >> snapshot.diff
 	@echo >> snapshot.diff
 	@echo '== Code modification (not checked-in) ==' >> snapshot.diff
@@ -227,7 +228,7 @@ ifneq (HAS_GIT),)
 	@echo >> snapshot.diff
 	@echo >> snapshot.diff
 	@echo '== Code modification (checked-in but not public) ==' >> snapshot.diff
-	@git log  --stat -1 >> snapshot.diff
+	@git log origin..HEAD >> snapshot.diff
 else
 	@echo \'git\' is not in path, cannot take code snapshot. >> snapshot.diff
 endif
