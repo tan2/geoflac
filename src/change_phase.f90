@@ -136,19 +136,26 @@ do kk = 1 , nmarkers
         mark_phase(kk) = kmant1
     case (ksed2)
         ! compaction, uncosolidated sediment -> sedimentary rock
-        if (tmpr > 250d0 .and. depth < 7d3) cycle
+        if (tmpr > 80d0 .or. depth < 2d3) cycle
         !$ACC atomic write
         !$OMP atomic write
         itmp(j,i) = 1
         mark_phase(kk) = ksed1
     case (ksed1)
+        ! sedimentary rock -> metamorphic sedimentary rock
+        if (tmpr > 250d0 .and. depth < 7d3) cycle
+        !$ACC atomic write
+        !$OMP atomic write
+        itmp(j,i) = 1
+        mark_phase(kk) = kmetased
+    case (kmetased)
         ! dehydration, sedimentary rock -> schist
         ! from sediment solidus in Nichols et al., Nature, 1994
         if (tmpr < 650d0 .or. depth < 20d3) cycle
         !$ACC atomic write
         !$OMP atomic write
         itmp(j,i) = 1
-        mark_phase(kk) = kmetased
+        mark_phase(kk) = kschist
     case (khydmant)
         ! dehydration of chlorite
         ! Phase diagram from Grove et al. Nature, 2009
