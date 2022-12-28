@@ -35,8 +35,8 @@ integer :: i, j, k, iph, irh, &
 !$OMP                  quad_area,s0a,s0b,s0)
 !$OMP do schedule(guided)
 !$ACC parallel loop gang vector collapse(2) private(depl,s11p,s22p,s12p,s33p,s11v,s22v,s12v,s33v) async(1)
-do 3 i = 1,nx-1
-    do 3 j = 1,nz-1
+do i = 1,nx-1
+    do j = 1,nz-1
         ! iphase (j,i) is number of a phase NOT a rheology
         iph = iphase(j,i)
         irh = irheol(iph)
@@ -186,7 +186,8 @@ do 3 i = 1,nx-1
         strain(j,i,2) = strain(j,i,2) + 0.25d0*dt*(strainr(2,1,j,i)+strainr(2,2,j,i)+strainr(2,3,j,i)+strainr(2,4,j,i))
         strain(j,i,3) = strain(j,i,3) + 0.25d0*dt*(strainr(3,1,j,i)+strainr(3,2,j,i)+strainr(3,3,j,i)+strainr(3,4,j,i))
 
-3 continue
+    enddo
+enddo
 !$OMP end do
 !$OMP end parallel
 

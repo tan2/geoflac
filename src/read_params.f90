@@ -72,9 +72,9 @@ endif
 call AdvanceToNextInputLine( 4 )
 read(4,*) nzone_marker
 call AdvanceToNextInputLine( 4 )
-  do 253 i = 1, nzone_marker
+  do i = 1, nzone_marker
         read(iu,*) imx1(i),imy1(i),imx2(i),imy2(i)
-253 continue 
+  enddo
 call AdvanceToNextInputLine( 4 )
 read(4,*) n_junk, d_junk
 call AdvanceToNextInputLine( 4 )
@@ -85,11 +85,11 @@ read(4,*) nystressbc,nydrsides
 call AdvanceToNextInputLine( 4 )
 read(4,*) nofbc
 call AdvanceToNextInputLine( 4 )
-        do 21 i = 1,nofbc
+        do i = 1,nofbc
         read(iu,*) nofside(i),nbc1(i),nbc2(i),nbc(i),  &
         bca(i),bcb(i),bcc(i),  &
         bcd(i),bce(i),bcf(i),bcg(i),bch(i),bci(i)
- 21     continue
+        enddo
 call AdvanceToNextInputLine( 4 )
 ! hydrostatic pressure applied at the bottom
 call AdvanceToNextInputLine( 4 )
@@ -302,9 +302,9 @@ read(4,*) dtout_file
 dtout_file = dtout_file * 1000 * sec_year
 call AdvanceToNextInputLine( 4 )
 !read(4,*) nprofil
-!do 135 i=1,nprofil
+!do i=1,nprofil
 !read(4,*) hv_out(i:i), iprof_out(i) 
-!135 continue
+!enddo
 !call AdvanceToNextInputLine( 4 )
 read(4,*) io_vel,io_srII,io_eII,io_aps,io_sII,io_sxx,io_szz,io_sxz,io_pres, &
     io_temp,io_phase,io_visc,io_unused,io_density,io_src,io_diss,io_forc,io_hfl,io_topo

@@ -11,8 +11,8 @@ use params
 include 'precision.inc'
 
 !$OMP parallel do
-do 13 i = 1,nx-1
-    do 13 j = 1,nz-1
+do i = 1,nx-1
+    do j = 1,nz-1
 
         ! Coordinates
         x1 = cord (j  ,i  ,1)
@@ -47,7 +47,8 @@ do 13 i = 1,nx-1
             call SysMsg('INIT_AREAS: Negative area!')
             stop 41
         endif
-13 continue
+    enddo
+enddo
 !$OMP end parallel do
 return
 end
