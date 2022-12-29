@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 '''Interpolate flac fields to a high resolution regular grid suitable for plotting
 
 Usage: flac_interpolate.py frame field
@@ -92,7 +92,7 @@ def interpolate(frame, field):
 if __name__ == '__main__':
 
     if len(sys.argv) < 3:
-        print __doc__
+        print(__doc__)
         exit(1)
 
     frame = int(sys.argv[1])

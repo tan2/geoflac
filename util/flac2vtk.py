@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 
 '''Convert the binary output of flac to VTK (vts) files.
 '''

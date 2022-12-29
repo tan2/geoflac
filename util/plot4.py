@@ -135,12 +135,12 @@ cint = 200
 
 if not os.path.exists(strrgrd):
     cmd = 'tail -n +2 %(strain_ratefile)s | xyz2grd -G%(strrgrd)s -I%(dx)f/%(dz)f -R%(xmin)f/%(xmax)f/%(zmin)f/%(zmax)f' % locals()
-    #print cmd
+    #print(cmd)
     os.system(cmd)
 
 if not os.path.exists(tgrd):
     cmd = 'tail -n +2 %(tfile)s | surface -G%(tgrd)s -Ll0 -I%(dx)f/%(dz)f -R%(xmin)f/%(xmax)f/%(zmin)f/%(zmax)f' % locals()
-    #print cmd
+    #print(cmd)
     os.system(cmd)
 
 cmd = '''
@@ -181,5 +181,5 @@ pstext -D0/1 -N -J -R -P -O >> %(psfile)s
 
 convert -density 150 %(psfile)s %(pngfile)s
 ''' % locals()
-#print cmd
+#print(cmd)
 os.system(cmd)

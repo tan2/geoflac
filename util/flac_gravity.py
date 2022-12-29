@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 '''
 Read flac density and coordinate data and return gravity and topography at regular spacing.
 '''
