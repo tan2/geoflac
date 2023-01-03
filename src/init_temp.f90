@@ -5,6 +5,8 @@ use arrays
 use params
 include 'precision.inc'
 
+double precision, parameter :: pi = 3.14159265358979323846d0
+
 !  Read distribution of temperatures from the dat file
 if (irtemp .gt. 0) then
     open( 1, file=tempfile, status='old', err=101 )
@@ -29,20 +31,13 @@ case (1)
     stop 1
 case (2)
     !!  geotherm of a given age accross the box with variable age
-    cond_c = 2.2d0
-    cond_m = 3.3d0
-    dens_c = 2700.d0
-    dens_m = 3300.d0
-    pi = 3.14159d0
-    diffusivity = 1.d-6
+    !!  the top 3 layers are considered crustal layers
     do n = 1, nzone_age
         if (n /= 1) then
             if (iph_col_trans(n-1) == 1) cycle
         endif
 
-!!$        if(iph_col1(n)==kocean1 .or. iph_col1(n)==kocean2   &
-!!$            .or. iph_col2(n)==kocean1 .or. iph_col2(n)==kocean2  &
-!!$            .or. iph_col3(n)==kocean1 .or. iph_col3(n)==kocean2) then
+        if (ictherm(n)==1) then
             !! Oceanic geotherm (half space cooling model)
             do i = ixtb1(n), ixtb2(n)
                 age = age_1(n)
@@ -52,50 +47,111 @@ case (2)
                     age = age_1(n) + (age_1(n+1) - age_1(n)) * (cord(1,i,1) - cord(1,i1,1)) / (cord(1,i2,1) - cord(1,i1,1))
                 endif
                 do j = 1,nz
-                    ! depth in km
                     y = (cord(1,i,2)-cord(j,i,2)) / sqrt(4 * diffusivity * age * 1.d6 * sec_year)
                     temp(j,i) = t_top + (t_bot - t_top) * erf(y)
                     !print *, j, age, -cord(j,i,2), temp(j,i)
                 enddo
             enddo
-!!$        else
-!!$            !! Continental geotherm
-!!$            tr= dens_c*hs*hr*hr*1.d+6/cond_c*exp(1.d0-exp(-hc3(n)/hr))
-!!$            q_m = (t_bot-t_top-tr)/((hc3(n)*1000.d0)/cond_c+((200.d3-(hc3(n))*1000.d0))/cond_m)
-!!$            tm  = t_top + (q_m/cond_c)*hc3(n)*1000.d0 + tr
-!!$            !   write(*,*) rzbo, tr, hs, hr, hc3(n), q_m, tm
-!!$            diff_m = cond_m/1000.d0/dens_m
-!!$            tau_d = 200.d3*200.d3/(pi*pi*diff_m)
-!!$            do i = ixtb1(n), ixtb2(n)
-!!$                age = age_1(n)
-!!$                if (iph_col_trans(n) == 1) then
-!!$                    i1 = ixtb1(n)
-!!$                    i2 = ixtb2(n)
-!!$                    age = age_1(n) + (age_1(n+1) - age_1(n)) * (cord(1,i,1) - cord(1,i1,1)) / (cord(1,i2,1) - cord(1,i1,1))
-!!$                endif
-!!$                age_init = age*3.14d0*1.d+7*1.d+6
-!!$                do j = 1,nz
-!!$                    ! depth in km
-!!$                    y = (cord(1,i,2)-cord(j,i,2))*1.d-3
-!!$                    !  steady state part
-!!$                    if (y.le.hc3(n)) tss = t_top+(q_m/cond_c)*y*1000.d0+(dens_c*hs*hr*hr*1.d+6/cond_c)*exp(1.d0-exp(-y/hr))
-!!$                    if (y.gt.hc3(n)) tss = tm + (q_m/cond_m)*1000.d0*(y-hc3(n))
-!!$
-!!$                    ! time-dependent part
-!!$                    tt = 0.d0
-!!$                    pp =-1.d0
-!!$                    do k = 1,100
-!!$                        an = 1.d0*k
-!!$                        pp = -pp
-!!$                        tt = tt +pp/(an)*exp(-an*an*age_init/tau_d)*dsin(pi*k*(200.d3-y*1000.d0)/(200.d3))
-!!$                    enddo
-!!$                    temp(j,i) = tss +2.d0/pi*(t_bot-t_top)*tt
-!!$                    if(temp(j,i).gt.1330.or.y.gt.200.d0) temp(j,i)= 1330.d0
-!!$                    if (j.eq.1) temp(j,i) = t_top
-!!$                    !       write(*,*) tss,tm,q_m,cond_m,hc3(n),y,tt
-!!$                enddo
-!!$            enddo
-!!$        endif
+        elseif (ictherm(n)==2) then
+            !! Continental geotherm (plate cooling model with radiogenic heating)
+            yL0 = cond1(n)  ! plate thickness
+            q_m = cond2(n)  ! heatflux from mantle
+            cond_c = 2.2d0
+            cond_m = 3.3d0
+            dens_c = 2700.d0
+            dens_m = 3300.d0
+            diffusivity = 1.d-6
+                    ymoho = hc3(n) * 1d3
+            tr = dens_c*hs*hr*hr*1.d6/cond_c*exp(1.d0-exp(-hc3(n)/hr))
+            tm  = t_top + tr + q_m/cond_c*(yL0 - ymoho) ! temperature at bottom of the plate
+            !   write(*,*) rzbo, tr, hs, hr, hc3(n), q_m, tm
+            diff_m = cond_m/1000.d0/dens_m
+            tau_d = yL0*yL0/(pi*pi*diff_m)
+            do i = ixtb1(n), ixtb2(n)
+                age = age_1(n)
+                if (iph_col_trans(n) == 1) then
+                    i1 = ixtb1(n)
+                    i2 = ixtb2(n)
+                    age = age_1(n) + (age_1(n+1) - age_1(n)) * (cord(1,i,1) - cord(1,i1,1)) / (cord(1,i2,1) - cord(1,i1,1))
+                endif
+                age_init = age*sec_year*1.d+6
+                do j = 1,nz
+                    ! depth in m
+                    y = cord(1,i,2) - cord(j,i,2)
+
+                    ! steady state part with radiogenic heat
+                    ! see T&S 3rd ed. Eq(4.30) and (4.31)
+                    if (y <= ymoho) then
+                        tss = t_top + q_m/cond_c*y + (dens_c*hs*hr*hr*1.d+6/cond_c)*exp(1.d0-exp(-y/hr))
+                    else if (y >= yL0) then
+                        tss = t_bot
+                    else ! below moho, inside lithosphere
+                        tss = tm + q_m/cond_m*(y-ymoho)
+
+                    ! time-dependent part
+                    ! see T&S 3rd ed. Eq(4.130)
+                    tt = 0.d0
+                    do k = 1,100
+                        tt = tt + 1.d0/an * exp(-k*k*age_init/tau_d) * &
+                            dsin(pi*k*y/yL0)
+                    enddo
+                    temp(j,i) = tss + 2.d0/pi*(t_bot-t_top)*tt
+                    if(temp(j,i)>t_bot .or. y>yL0) temp(j,i)= t_bot
+                    !       write(*,*) tss,tm,q_m,cond_m,hc3(n),y,tt
+                enddo
+                temp(1,i) = t_top
+            enddo
+        elseif (ictherm(n)==3) then
+            !! Continental geotherm gradient
+            do i = ixtb1(n), ixtb2(n)
+                if ((iph_col_trans(n) == 1) .and. (ictherm(n+1) == 4))then
+                    i1 = ixtb1(n)
+                    i2 = ixtb2(n)
+                    do j = 1,nz
+                        y = (cord(1,i,2)-cord(j,i,2))*1.d-3
+                        if (y.gt.age_1(n)) then
+                            temp(j,i1) = age_1(n) * cond1(n) + (y - age_1(n)) * cond2(n)
+                        else
+                            temp(j,i1) = y * cond1(n)
+                        endif
+                        temp(j,i2) = y * (t_bot-t_top) / age_1(n)
+                        if(temp(j,i1).gt.t_bot) temp(j,i1)= t_bot
+                        if(temp(j,i2).gt.t_bot) temp(j,i2)= t_bot
+                        temp(j,i) =  temp(j,i1) + (temp(j,i2)-temp(j,i1)) * &
+&                            (cord(j,i,1) - cord(j,i1,1)) / (cord(j,i2,1) - cord(j,i1,1))
+                        if(temp(j,i).gt.t_bot) temp(j,i)= t_bot
+                    enddo
+                else
+                    do j = 1,nz
+                        y = (cord(1,i,2)-cord(j,i,2))*1.d-3
+                        if (y.gt.age_1(n)) then
+                            temp(j,i) = age_1(n) * cond1(n) + (y - age_1(n)) * cond2(n)
+                        else
+                            temp(j,i) = y * cond1(n)
+                        endif
+                        if(temp(j,i).gt.t_bot) temp(j,i)= t_bot
+                    enddo
+                endif
+            enddo
+        elseif (ictherm(n)==4) then
+            !! Continental geotherm gradient
+            do i = ixtb1(n), ixtb2(n)
+                bot_dep = age_1(n)
+                if (iph_col_trans(n) == 1) then
+                    i1 = ixtb1(n)
+                    i2 = ixtb2(n)
+                    bot_dep = age_1(n) + (age_1(n+1) - age_1(n)) * (cord(1,i,1) - cord(1,i1,1)) / (cord(1,i2,1) - cord(1,i1,1))
+                endif
+                do j = 1,nz
+                    y = (cord(1,i,2)-cord(j,i,2))*1.d-3
+                    temp(j,i) = y * (t_bot-t_top) / bot_dep
+                    if(temp(j,i).gt.t_bot) temp(j,i)= t_bot
+                enddo
+            enddo
+        else
+            call sysmsg('init_temp: ictherm not supported!')
+            stop 1
+        endif
     enddo
 
 case default
