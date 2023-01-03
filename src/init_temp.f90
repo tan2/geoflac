@@ -87,7 +87,7 @@ case (2)
                         tss = t_bot
                     else ! below moho, inside lithosphere
                         tss = tm + q_m/cond_m*(y-ymoho)
-
+                    endif
                     ! time-dependent part
                     ! see T&S 3rd ed. Eq(4.130)
                     tt = 0.d0
@@ -96,7 +96,7 @@ case (2)
                             dsin(pi*k*y/yL0)
                     enddo
                     temp(j,i) = tss + 2.d0/pi*(t_bot-t_top)*tt
-                    if(temp(j,i)>t_bot .or. y>yL0) temp(j,i)= t_bot
+                    if(temp(j,i)>t_bot .or. y>yL0) temp(j,i) = t_bot
                     !       write(*,*) tss,tm,q_m,cond_m,hc3(n),y,tt
                 enddo
                 temp(1,i) = t_top
