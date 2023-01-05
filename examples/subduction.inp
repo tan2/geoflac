@@ -97,7 +97,7 @@
 proftemp.dat   temperature profile dat.file
 ;
 1.e+0          - time_scale (not used)
-; Initial varying thermal age crust and mantle accross the box
+; Initial varying thermal age crust and mantle accross the box (see doc/input_description.md for the meaning of parameters)
 5              - nzone_age (number of zones of different age max 20)
 ;ictherm, age (Myr.), tp1, tp2, layer1 depth (km), layer2 depth, layer3 depth, layer4 depth, layer1 phase, layer2 phase, layer3 phase, layer4 phase, layer5 phase, x nodes 1 and 2
  1,100.,  0,  0,  1.5, 7.5, 7.5,17.5, 11, 3, 3,16, 4,  1, 58
