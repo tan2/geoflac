@@ -28,11 +28,13 @@ integer :: nx,nz,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
      itx1(maxtrzone),itx2(maxtrzone),ity1(maxtrzone),ity2(maxtrzone), &
      nphasl,nzone_marker,nmarkers, iint_marker, &
      ix1(maxinh),ix2(maxinh),iy1(maxinh),iy2(maxinh),inphase(maxinh), &
-     igeom(maxinh),inhom, &
+     igeom(maxinh),inhom,i_prestress, &
      itherm,istress_therm,itemp_bc,ix1t,ix2t,iy1t,iy2t,ishearh, &
-     ixtb1(maxzone_age),ixtb2(maxzone_age),nzone_age,i_prestress, &
+     nzone_age,ixtb1(maxzone_age),ixtb2(maxzone_age), &
+     ictherm(maxzone_age), &
      iph_col1(maxzone_age),iph_col2(maxzone_age),iph_col3(maxzone_age), &
-     iph_col4(maxzone_age),iph_col5(maxzone_age),iph_col_trans(maxzone_age), &
+     iph_col4(maxzone_age),iph_col5(maxzone_age), &
+     iph_col_trans(maxzone_age), &
      if_hydro,nyhydro,iphsub, &
      ihalfwidth_mzone, &
      movegrid,ndim,ifreq_visc,i_rey, &
@@ -56,11 +58,13 @@ integer :: nx,nz,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
 !$ACC     itx1(maxtrzone),itx2(maxtrzone),ity1(maxtrzone),ity2(maxtrzone), &
 !$ACC     nphasl,nzone_marker,nmarkers, iint_marker, &
 !$ACC     ix1(maxinh),ix2(maxinh),iy1(maxinh),iy2(maxinh),inphase(maxinh), &
-!$ACC     igeom(maxinh),inhom, &
+!$ACC     igeom(maxinh),inhom,i_prestress, &
 !$ACC     itherm,istress_therm,itemp_bc,ix1t,ix2t,iy1t,iy2t,ishearh, &
-!$ACC     ixtb1(maxzone_age),ixtb2(maxzone_age),nzone_age,i_prestress, &
+!$ACC     nzone_age,ixtb1(maxzone_age),ixtb2(maxzone_age), &
+!$ACC     ictherm(maxzone_age), &
 !$ACC     iph_col1(maxzone_age),iph_col2(maxzone_age),iph_col3(maxzone_age), &
-!$ACC     iph_col4(maxzone_age),iph_col5(maxzone_age),iph_col_trans(maxzone_age), &
+!$ACC     iph_col4(maxzone_age),iph_col5(maxzone_age), &
+!$ACC     iph_col_trans(maxzone_age), &
 !$ACC     if_hydro,nyhydro,iphsub, &
 !$ACC     ihalfwidth_mzone, &
 !$ACC     movegrid,ndim,ifreq_visc,i_rey, &
@@ -89,7 +93,8 @@ real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
      ten_off,tau_heal,xinitaps(maxinh), &
      t_top,t_bot,hs,hr,temp_per,bot_bc, &
      hc1(maxzone_age),hc2(maxzone_age),hc3(maxzone_age),hc4(maxzone_age), &
-     age_1(maxzone_age),g,pisos,drosub,damp_vis, &
+     age_1(maxzone_age),tp1(maxzone_age),tp2(maxzone_age), &
+     g,pisos,drosub,damp_vis, &
      width_mzone,fmagma_max,ratio_crust_mzone,ratio_mantle_mzone, &
      lambda_freeze,lambda_freeze_tdep, &
      weaken_ratio_plastic,weaken_ratio_viscous, &
@@ -116,7 +121,8 @@ real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
 !$ACC     ten_off,tau_heal,xinitaps(maxinh), &
 !$ACC     t_top,t_bot,hs,hr,temp_per,bot_bc, &
 !$ACC     hc1(maxzone_age),hc2(maxzone_age),hc3(maxzone_age),hc4(maxzone_age), &
-!$ACC     age_1(maxzone_age),g,pisos,drosub,damp_vis, &
+!$ACC     age_1(maxzone_age),tp1(maxzone_age),tp2(maxzone_age), &
+!$ACC     g,pisos,drosub,damp_vis, &
 !$ACC     width_mzone,fmagma_max,ratio_crust_mzone,ratio_mantle_mzone, &
 !$ACC     lambda_freeze,lambda_freeze_tdep, &
 !$ACC     weaken_ratio_plastic,weaken_ratio_viscous, &

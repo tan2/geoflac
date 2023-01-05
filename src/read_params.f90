@@ -144,8 +144,10 @@ call AdvanceToNextInputLine( 4 )
 read (4,*) nzone_age 
 call AdvanceToNextInputLine( 4 )
 do i = 1, nzone_age
-      read (4,*) age_1(i),hc1(i),hc2(i),hc3(i),hc4(i),iph_col1(i),iph_col2(i), &
-           iph_col3(i),iph_col4(i),iph_col5(i),ixtb1(i),ixtb2(i)
+      read (4,*) ictherm(i),age_1(i),tp1(i),tp2(i), &
+        hc1(i),hc2(i),hc3(i),hc4(i), &
+        iph_col1(i),iph_col2(i),iph_col3(i),iph_col4(i),iph_col5(i), &
+        ixtb1(i),ixtb2(i)
 enddo
 ! check smooth nzone_age
 do i = 1, nzone_age-1
@@ -154,6 +156,10 @@ do i = 1, nzone_age-1
         if (ixtb1(i+1) /= -1) then
             print *, 'Error: ixtb1 is not -1 at', i+1, 'column!'
         endif
+        if (ictherm(i) /= ictherm(i+1)) then
+            print *, 'Error: ictherm at', i, i+1, 'columns are not equal!'
+        endif
+
         if (iph_col1(i) /= iph_col1(i+1)) then
             print *, 'Error: iph_col1 at', i, i+1, 'columns are not equal!'
         endif

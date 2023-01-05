@@ -31,121 +31,144 @@ case (1)
     stop 1
 case (2)
     !!  geotherm of a given age accross the box with variable age
-    !!  the top 3 layers are considered crustal layers
     do n = 1, nzone_age
         if (n /= 1) then
             if (iph_col_trans(n-1) == 1) cycle
         endif
 
         if (ictherm(n)==1) then
-            !! Oceanic geotherm (half space cooling model)
+            !! Oceanic geotherm (half space cooling model, T&S 3rd ed. Eq(4.113))
+            diffusivity = 1.d-6
             do i = ixtb1(n), ixtb2(n)
                 age = age_1(n)
                 if (iph_col_trans(n) == 1) then
                     i1 = ixtb1(n)
                     i2 = ixtb2(n)
-                    age = age_1(n) + (age_1(n+1) - age_1(n)) * (cord(1,i,1) - cord(1,i1,1)) / (cord(1,i2,1) - cord(1,i1,1))
+                    ratio = (cord(1,i,1) - cord(1,i1,1)) / (cord(1,i2,1) - cord(1,i1,1))
+                    age = age_1(n) + (age_1(n+1) - age_1(n)) * ratio
                 endif
                 do j = 1,nz
-                    y = (cord(1,i,2)-cord(j,i,2)) / sqrt(4 * diffusivity * age * 1.d6 * sec_year)
-                    temp(j,i) = t_top + (t_bot - t_top) * erf(y)
+                    f = (cord(1,i,2)-cord(j,i,2)) / sqrt(4 * diffusivity * age * 1.d6 * sec_year)
+                    temp(j,i) = t_top + (t_bot - t_top) * erf(f)
                     !print *, j, age, -cord(j,i,2), temp(j,i)
                 enddo
             enddo
         elseif (ictherm(n)==2) then
-            !! Continental geotherm (plate cooling model with radiogenic heating)
-            yL0 = cond1(n)  ! plate thickness
-            q_m = cond2(n)  ! heatflux from mantle
-            cond_c = 2.2d0
-            cond_m = 3.3d0
-            dens_c = 2700.d0
-            dens_m = 3300.d0
+            !! Oceanic geotherm (plate cooling cooling model, T&S 3rd ed. Eq(4.130))
             diffusivity = 1.d-6
-                    ymoho = hc3(n) * 1d3
-            tr = dens_c*hs*hr*hr*1.d6/cond_c*exp(1.d0-exp(-hc3(n)/hr))
-            tm  = t_top + tr + q_m/cond_c*(yL0 - ymoho) ! temperature at bottom of the plate
-            !   write(*,*) rzbo, tr, hs, hr, hc3(n), q_m, tm
-            diff_m = cond_m/1000.d0/dens_m
-            tau_d = yL0*yL0/(pi*pi*diff_m)
             do i = ixtb1(n), ixtb2(n)
                 age = age_1(n)
+                yL0 = tp1(n)    ! plate thickness in km
                 if (iph_col_trans(n) == 1) then
                     i1 = ixtb1(n)
                     i2 = ixtb2(n)
-                    age = age_1(n) + (age_1(n+1) - age_1(n)) * (cord(1,i,1) - cord(1,i1,1)) / (cord(1,i2,1) - cord(1,i1,1))
+                    ratio = (cord(1,i,1) - cord(1,i1,1)) / (cord(1,i2,1) - cord(1,i1,1))
+                    age = age_1(n) + (age_1(n+1) - age_1(n)) * ratio
+                    yL0 = tp1(n) + (tp1(n+1) - tp1(n)) * ratio
                 endif
-                age_init = age*sec_year*1.d+6
+                age_init = age*sec_year*1d6
+                tau_d = yL0*yL0*1d6 / (pi*pi*diffusivity)
                 do j = 1,nz
-                    ! depth in m
-                    y = cord(1,i,2) - cord(j,i,2)
+                    ! depth in km
+                    y = (cord(1,i,2) - cord(j,i,2)) * 1d-3
+                    tss = t_top + (t_bot - t_top) * y / yL0
+                    tt = 0.d0
+                    do k = 1,100
+                        tt = tt + 1.d0/k * exp(-k*k*age_init/tau_d) * sin(pi*k*y/yL0)
+                    enddo
+                    temp(j,i) = tss + 2.d0/pi*(t_bot-t_top)*tt
+                    if(temp(j,i)>t_bot .or. y>yL0) temp(j,i) = t_bot
+                enddo
+            enddo
+        elseif (ictherm(n)==12) then
+            !! Continental geotherm (plate cooling model with radiogenic heating)
+            !
+            ! Starting from the steady state (ss) solution as in T&S 3rd ed. Eq(4.30)
+            ! Let the ss moho temperature be tm and ss heatflux be qm.
+            ! qm = cond * (t_bot - tm) / (yL0 - ymoho)
+            ! Substitute qm to 4.30 to solve for tm
+            age = age_1(n)
+            yL0 = tp1(n)    ! plate thickness in km
+            ymoho = tp2(n)  ! crust thickness in km
+            cond = 3.3d0
+            dens_c = 2700.d0
+            diffusivity = 1.d-6
+            !   write(*,*) rzbo, hs, hr
+            do i = ixtb1(n), ixtb2(n)
+                if (iph_col_trans(n) == 1) then
+                    i1 = ixtb1(n)
+                    i2 = ixtb2(n)
+                    ratio = (cord(1,i,1) - cord(1,i1,1)) / (cord(1,i2,1) - cord(1,i1,1))
+                    age = age_1(n) + (age_1(n+1) - age_1(n)) * ratio
+                    yL0 = tp1(n) + (tp1(n+1) - tp1(n)) * ratio
+                    ymoho = tp2(n) + (tp2(n+1) - tp2(n)) * ratio
+                endif
+                age_init = age*sec_year*1d6
+                tau_d = yL0*yL0*1d6 / (pi*pi*diffusivity)
+                rr = ymoho / (yL0 - ymoho)
+                tm = (t_top + rr*t_bot + dens_c*hs*hr*hr*1d6/cond*(1d0-exp(-ymoho/hr))) / (1 + rr)
+                qm = cond * (t_bot - tm) / (yL0 - ymoho)
+                do j = 1,nz
+                    ! depth in km
+                    y = (cord(1,i,2) - cord(j,i,2)) * 1d-3
 
-                    ! steady state part with radiogenic heat
-                    ! see T&S 3rd ed. Eq(4.30) and (4.31)
+                    ! ss part with radiogenic heat
                     if (y <= ymoho) then
-                        tss = t_top + q_m/cond_c*y + (dens_c*hs*hr*hr*1.d+6/cond_c)*exp(1.d0-exp(-y/hr))
-                    else if (y >= yL0) then
+                        tss = t_top + qm/cond*y + (dens_c*hs*hr*hr*1.d+6/cond)*(1d0-exp(-exp(-y/hr)))
+                    elseif (y <= yL0) then ! below moho, inside lithosphere
+                        tss = tm + qm/cond*(y-ymoho)
+                    else
                         tss = t_bot
-                    else ! below moho, inside lithosphere
-                        tss = tm + q_m/cond_m*(y-ymoho)
                     endif
                     ! time-dependent part
                     ! see T&S 3rd ed. Eq(4.130)
                     tt = 0.d0
                     do k = 1,100
-                        tt = tt + 1.d0/an * exp(-k*k*age_init/tau_d) * &
-                            dsin(pi*k*y/yL0)
+                        tt = tt + 1.d0/k * exp(-k*k*age_init/tau_d) * sin(pi*k*y/yL0)
                     enddo
                     temp(j,i) = tss + 2.d0/pi*(t_bot-t_top)*tt
                     if(temp(j,i)>t_bot .or. y>yL0) temp(j,i) = t_bot
-                    !       write(*,*) tss,tm,q_m,cond_m,hc3(n),y,tt
+                    !       write(*,*) j,y,tss,yL0,tt
                 enddo
-                temp(1,i) = t_top
             enddo
-        elseif (ictherm(n)==3) then
-            !! Continental geotherm gradient
+        elseif (ictherm(n)==21) then
+            !! Constant geotherm gradient at top layer, then T=t_bot all the way to the bottom
+            bot_dep = age_1(n)   ! bottom of the top layer
             do i = ixtb1(n), ixtb2(n)
-                if ((iph_col_trans(n) == 1) .and. (ictherm(n+1) == 4))then
-                    i1 = ixtb1(n)
-                    i2 = ixtb2(n)
-                    do j = 1,nz
-                        y = (cord(1,i,2)-cord(j,i,2))*1.d-3
-                        if (y.gt.age_1(n)) then
-                            temp(j,i1) = age_1(n) * cond1(n) + (y - age_1(n)) * cond2(n)
-                        else
-                            temp(j,i1) = y * cond1(n)
-                        endif
-                        temp(j,i2) = y * (t_bot-t_top) / age_1(n)
-                        if(temp(j,i1).gt.t_bot) temp(j,i1)= t_bot
-                        if(temp(j,i2).gt.t_bot) temp(j,i2)= t_bot
-                        temp(j,i) =  temp(j,i1) + (temp(j,i2)-temp(j,i1)) * &
-&                            (cord(j,i,1) - cord(j,i1,1)) / (cord(j,i2,1) - cord(j,i1,1))
-                        if(temp(j,i).gt.t_bot) temp(j,i)= t_bot
-                    enddo
-                else
-                    do j = 1,nz
-                        y = (cord(1,i,2)-cord(j,i,2))*1.d-3
-                        if (y.gt.age_1(n)) then
-                            temp(j,i) = age_1(n) * cond1(n) + (y - age_1(n)) * cond2(n)
-                        else
-                            temp(j,i) = y * cond1(n)
-                        endif
-                        if(temp(j,i).gt.t_bot) temp(j,i)= t_bot
-                    enddo
-                endif
-            enddo
-        elseif (ictherm(n)==4) then
-            !! Continental geotherm gradient
-            do i = ixtb1(n), ixtb2(n)
-                bot_dep = age_1(n)
                 if (iph_col_trans(n) == 1) then
                     i1 = ixtb1(n)
                     i2 = ixtb2(n)
-                    bot_dep = age_1(n) + (age_1(n+1) - age_1(n)) * (cord(1,i,1) - cord(1,i1,1)) / (cord(1,i2,1) - cord(1,i1,1))
+                    ratio = (cord(1,i,1) - cord(1,i1,1)) / (cord(1,i2,1) - cord(1,i1,1))
+                    bot_dep = age_1(n) + (age_1(n+1) - age_1(n)) * ratio
                 endif
                 do j = 1,nz
                     y = (cord(1,i,2)-cord(j,i,2))*1.d-3
                     temp(j,i) = y * (t_bot-t_top) / bot_dep
-                    if(temp(j,i).gt.t_bot) temp(j,i)= t_bot
+                    if(temp(j,i).gt.t_bot) temp(j,i) = t_bot
+                enddo
+            enddo
+        elseif (ictherm(n)==22) then
+            !! Constant geotherm gradient at top two layers, then T=t_bot all the way to the bottom
+            temp1 = age_1(n)
+            ylayer1 = tp1(n)  ! depth in km
+            ylayer2 = tp2(n)  ! depth in km
+            do i = ixtb1(n), ixtb2(n)
+                if ((iph_col_trans(n) == 1))then
+                    i1 = ixtb1(n)
+                    i2 = ixtb2(n)
+                    ratio = (cord(1,i,1) - cord(1,i1,1)) / (cord(1,i2,1) - cord(1,i1,1))
+                    temp1 = age_1(n) + (age_1(n+1) - age_1(n)) * ratio
+                    ylayer1 = tp1(n) + (tp1(n+1) - tp1(n)) * ratio
+                    ylayer2 = tp2(n) + (tp2(n+1) - tp2(n)) * ratio
+                endif
+                do j = 1,nz
+                    y = (cord(1,i,2)-cord(j,i,2))*1.d-3
+                    if (y <= ylayer1) then
+                        temp(j,i) = t_top + (temp1 - t_top) * y / ylayer1
+                    else
+                        temp(j,i) = temp1 + (t_bot - temp1) * (y - ylayer1) / (ylayer2 - ylayer1)
+                    endif
+                    if(temp(j,i).gt.t_bot) temp(j,i) = t_bot
                 enddo
             enddo
         else
