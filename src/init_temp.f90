@@ -25,11 +25,6 @@ if (irtemp .gt. 0) then
     stop 21
 endif
 
-select case(iynts)
-case (1)
-    call sysmsg('init_temp: iynts=1 is not supported anymore!')
-    stop 1
-case (2)
     !!  geotherm of a given age accross the box with variable age
     do n = 1, nzone_age
         if (n /= 1) then
@@ -177,13 +172,6 @@ case (2)
         endif
     enddo
 
-case default
-    ! estimate initial temperature as linear (for first approx. of conductivities)
-    do j = 1,nz
-        temp(j,1:nx) = (t_bot-t_top)/abs(rzbo)*abs(cord(j,1,2)-z0) + t_top
-    end do
-end select
-
 10 continue
 
 ! DISTRIBUTE SOURCES in elements
@@ -191,11 +179,6 @@ do j = 1,nz-1
     y = -( cord(j+1,1,2)+cord(j,1,2) )/2 / 1000
     source(j,1:nx-1) = hs*exp(-y/hr)
 end do
-
-! Initial rectangular temperature perturbation
-if( temp_per.ne.0.d0 ) then
-    temp(iy1t:iy2t,ix1t:ix2t) = temp(iy1t:iy2t,ix1t:ix2t) + temp_per
-endif              
 
 do i = 1, inhom
     ! Initial gaussian temperature perturbation

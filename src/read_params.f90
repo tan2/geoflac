@@ -119,9 +119,6 @@ read (4,*) hs, hr
 call AdvanceToNextInputLine( 4 )
 read (4,*) itemp_bc, bot_bc
 if( itemp_bc.eq.2 ) bot_bc = bot_bc/1000  ! convert in W/m3
-! temperature pertrubation (rectangular)
-call AdvanceToNextInputLine( 4 )
-read (4,*) temp_per, ix1t, ix2t, iy1t, iy2t
 ! Predefined distributions
 call AdvanceToNextInputLine( 4 )
 read(4,*) irtemp
@@ -137,11 +134,7 @@ call AdvanceToNextInputLine( 4 )
 read (4,*) time_scale
 ! temp structure
 call AdvanceToNextInputLine( 4 )
-read (4,*) iynts,tbos
-call AdvanceToNextInputLine( 4 )
-read (4,*) iax1,iay1,ibx1,iby1,icx1,icy1,idx1,idy1 
-call AdvanceToNextInputLine( 4 )
-read (4,*) nzone_age 
+read (4,*) nzone_age
 call AdvanceToNextInputLine( 4 )
 do i = 1, nzone_age
       read (4,*) ictherm(i),age_1(i),tp1(i),tp2(i), &

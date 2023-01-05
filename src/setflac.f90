@@ -93,7 +93,7 @@ include 'precision.inc'
 !$ACC     nphasl,nzone_marker,nmarkers, iint_marker, &
 !$ACC     ix1(maxinh),ix2(maxinh),iy1(maxinh),iy2(maxinh),inphase(maxinh), &
 !$ACC     igeom(maxinh),inhom,i_prestress, &
-!$ACC     itherm,istress_therm,itemp_bc,ix1t,ix2t,iy1t,iy2t,ishearh, &
+!$ACC     itherm,istress_therm,itemp_bc,ishearh, &
 !$ACC     nzone_age,ixtb1(maxzone_age),ixtb2(maxzone_age), &
 !$ACC     ictherm(maxzone_age) &
 !$ACC     iph_col1(maxzone_age),iph_col2(maxzone_age),iph_col3(maxzone_age), &
@@ -103,7 +103,6 @@ include 'precision.inc'
 !$ACC     ihalfwidth_mzone, &
 !$ACC     movegrid,ndim,ifreq_visc,i_rey, &
 !$ACC     incoming_left,incoming_right, &
-!$ACC     iynts,iax1,iay1,ibx1,iby1,icx1,icy1,idx1,idy1, &
 !$ACC     ivis_present,idt_scale,ifreq_imasses,ifreq_rmasses, &
 !$ACC     nloop,ifreq_avgsr,nsrate) async(1)
 
@@ -125,13 +124,13 @@ include 'precision.inc'
 !$ACC     conduct(maxph),cp(maxph), &
 !$ACC     ts(maxph),tl(maxph),tk(maxph),fk(maxph), &
 !$ACC     ten_off,tau_heal,xinitaps(maxinh), &
-!$ACC     t_top,t_bot,hs,hr,temp_per,bot_bc, &
+!$ACC     t_top,t_bot,hs,hr,bot_bc, &
 !$ACC     hc1(maxzone_age),hc2(maxzone_age),hc3(maxzone_age),hc4(maxzone_age), &
 !$ACC     age_1(maxzone_age),tp1(maxzone_age),tp2(maxzone_age), &
 !$ACC     g,pisos,drosub,damp_vis, &
 !$ACC     width_mzone,fmagma_max,ratio_crust_mzone,ratio_mantle_mzone, &
 !$ACC     lambda_freeze,lambda_freeze_tdep, &
 !$ACC     weaken_ratio_plastic,weaken_ratio_viscous, &
-!$ACC     dtavg,tbos, &
+!$ACC     dtavg, &
 !$ACC     time,dt,time_max) async(1)
 end
