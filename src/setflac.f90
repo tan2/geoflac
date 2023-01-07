@@ -96,8 +96,7 @@ include 'precision.inc'
 !$ACC     itherm,istress_therm,itemp_bc,ishearh, &
 !$ACC     nzone_age,ixtb1(maxzone_age),ixtb2(maxzone_age), &
 !$ACC     ictherm(maxzone_age), &
-!$ACC     iph_col1(maxzone_age),iph_col2(maxzone_age),iph_col3(maxzone_age), &
-!$ACC     iph_col4(maxzone_age),iph_col5(maxzone_age), &
+!$ACC     nph_layer(maxzone_age),iph_col1(maxzone_age, maxzone_layer), &
 !$ACC     iph_col_trans(maxzone_age), &
 !$ACC     if_hydro,nyhydro,iphsub, &
 !$ACC     ihalfwidth_mzone, &
@@ -125,7 +124,7 @@ include 'precision.inc'
 !$ACC     ts(maxph),tl(maxph),tk(maxph),fk(maxph), &
 !$ACC     ten_off,tau_heal,xinitaps(maxinh), &
 !$ACC     t_top,t_bot,hs,hr,bot_bc, &
-!$ACC     hc1(maxzone_age),hc2(maxzone_age),hc3(maxzone_age),hc4(maxzone_age), &
+!$ACC     hc(maxzone_age,maxzone_layer), &
 !$ACC     age_1(maxzone_age),tp1(maxzone_age),tp2(maxzone_age), &
 !$ACC     g,pisos,drosub,damp_vis, &
 !$ACC     width_mzone,fmagma_max,ratio_crust_mzone,ratio_mantle_mzone, &

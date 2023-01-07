@@ -7,6 +7,7 @@ integer, parameter :: maxtrzone = 20   ! max nzone_marker
 integer, parameter :: maxphasel = 20   ! max nphasl
 integer, parameter :: maxbc = 20   ! max # of bcs
 integer, parameter :: maxzone_age = 32   ! max # of nzone_age
+integer, parameter :: maxzone_layer = 10   ! max # of layers in a nzone_age column
 integer, parameter :: maxph = 20   ! max # of phases
 integer, parameter :: maxinh = 50   ! max # of inhomogeneities
 
@@ -32,8 +33,7 @@ integer :: nx,nz,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
      itherm,istress_therm,itemp_bc,ishearh, &
      nzone_age,ixtb1(maxzone_age),ixtb2(maxzone_age), &
      ictherm(maxzone_age), &
-     iph_col1(maxzone_age),iph_col2(maxzone_age),iph_col3(maxzone_age), &
-     iph_col4(maxzone_age),iph_col5(maxzone_age), &
+     nph_layer(maxzone_age),iph_col(maxzone_age, maxzone_layer), &
      iph_col_trans(maxzone_age), &
      if_hydro,nyhydro,iphsub, &
      ihalfwidth_mzone, &
@@ -61,8 +61,7 @@ integer :: nx,nz,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
 !$ACC     itherm,istress_therm,itemp_bc,ishearh, &
 !$ACC     nzone_age,ixtb1(maxzone_age),ixtb2(maxzone_age), &
 !$ACC     ictherm(maxzone_age), &
-!$ACC     iph_col1(maxzone_age),iph_col2(maxzone_age),iph_col3(maxzone_age), &
-!$ACC     iph_col4(maxzone_age),iph_col5(maxzone_age), &
+!$ACC     nph_layer(maxzone_age),iph_col1(maxzone_age, maxzone_layer), &
 !$ACC     iph_col_trans(maxzone_age), &
 !$ACC     if_hydro,nyhydro,iphsub, &
 !$ACC     ihalfwidth_mzone, &
@@ -90,7 +89,7 @@ real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
      ts(maxph),tl(maxph),tk(maxph),fk(maxph), &
      ten_off,tau_heal,xinitaps(maxinh), &
      t_top,t_bot,hs,hr,bot_bc, &
-     hc1(maxzone_age),hc2(maxzone_age),hc3(maxzone_age),hc4(maxzone_age), &
+     hc(maxzone_age,maxzone_layer), &
      age_1(maxzone_age),tp1(maxzone_age),tp2(maxzone_age), &
      g,pisos,drosub,damp_vis, &
      width_mzone,fmagma_max,ratio_crust_mzone,ratio_mantle_mzone, &
@@ -118,7 +117,7 @@ real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
 !$ACC     ts(maxph),tl(maxph),tk(maxph),fk(maxph), &
 !$ACC     ten_off,tau_heal,xinitaps(maxinh), &
 !$ACC     t_top,t_bot,hs,hr,bot_bc, &
-!$ACC     hc1(maxzone_age),hc2(maxzone_age),hc3(maxzone_age),hc4(maxzone_age), &
+!$ACC     hc(maxzone_age,maxzone_layer), &
 !$ACC     age_1(maxzone_age),tp1(maxzone_age),tp2(maxzone_age), &
 !$ACC     g,pisos,drosub,damp_vis, &
 !$ACC     width_mzone,fmagma_max,ratio_crust_mzone,ratio_mantle_mzone, &

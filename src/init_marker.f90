@@ -9,9 +9,9 @@ double precision :: a(3,2), b(3,2), points(9,2)
 double precision, parameter :: half = 0.5d0
 double precision, parameter :: onesixth = 0.1666666666666666666666d0
 double precision, parameter :: fivesixth = 0.8333333333333333333333d0
-integer :: i, j, i1, i2, iamp, inc, itop, iwidth, ixc, k, k1, k2, kph, n, l, iseed
+integer :: i, j, i1, i2, iamp, inc, itop, iwidth, ixc, k, k1, k2, kph, m, n, l, iseed
 double precision :: ddx, ddy, dx, dy, r, rx, ry, xx, ycol1, ycol2, ycol3, ycol4, &
-                    yy, yyy
+                    yy, yyy, hhc(maxzone_layer)
 mark_id_elem = 0
 nmark_elem = 0
 
@@ -96,36 +96,26 @@ do i = 1 , nx-1
                 if (n /= 1) then
                     if (iph_col_trans(n-1) == 1) cycle
                 endif
-                ycol1 = hc1(n)
-                ycol2 = hc2(n)
-                ycol3 = hc3(n)
-                ycol4 = hc4(n)
+                hhc(1:nph_layer(n)-1) = hc(n,1:nph_layer(n)-1)
                 if (iph_col_trans(n) == 1) then
                     i1 = ixtb1(n)
                     i2 = ixtb2(n)
                     r = (cord(1,i,1) - cord(1,i1,1)) / (cord(1,i2,1) - cord(1,i1,1))
-                    ycol1 = hc1(n) + (hc1(n+1) - hc1(n)) * r
-                    ycol2 = hc2(n) + (hc2(n+1) - hc2(n)) * r
-                    ycol3 = hc3(n) + (hc3(n+1) - hc3(n)) * r
-                    ycol4 = hc4(n) + (hc4(n+1) - hc4(n)) * r
+                    do m = 1, nph_layer(n)-1
+                        hhc(m) = hc(n,m) + (hc(n+1,m) - hc(n,m)) * r
+                    enddo
                 endif
 
                 ! layer
-                yyy = yy * (-1d-3)
-                if (yyy.lt.ycol1) then
-                    kph = iph_col1(n)
-                else if (yyy.lt.ycol2) then
-                    kph = iph_col2(n)
-                else if (yyy.lt.ycol3) then
-                    kph = iph_col3(n)
-                else if (yyy.lt.ycol4) then
-                    kph = iph_col4(n)
-                else
-                    kph = iph_col5(n)
-                end if
-                exit
-            end do
-
+                yyy = yy * (-1d-3)  ! depth in km
+                kph = iph_col(n, nph_layer(n))
+                do m = 1, nph_layer(n)-1
+                    if (yyy <= hhc(m)) then
+                        kph = iph_col(n,m)
+                    end if
+                    exit
+                end do
+            enddo
             call add_marker(xx, yy, kph, 0.d0, j, i, inc)
             !call add_marker(xx, yy, iphase(j,i), 0.d0, j, i, inc)
             if(inc.le.0) cycle

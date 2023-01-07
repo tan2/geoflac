@@ -137,10 +137,12 @@ call AdvanceToNextInputLine( 4 )
 read (4,*) nzone_age
 call AdvanceToNextInputLine( 4 )
 do i = 1, nzone_age
-      read (4,*) ictherm(i),age_1(i),tp1(i),tp2(i), &
-        hc1(i),hc2(i),hc3(i),hc4(i), &
-        iph_col1(i),iph_col2(i),iph_col3(i),iph_col4(i),iph_col5(i), &
-        ixtb1(i),ixtb2(i)
+    read (4,*) ictherm(i),age_1(i),tp1(i),tp2(i),nph_layer(i),ixtb1(i),ixtb2(i)
+    call AdvanceToNextInputLine( 4 )
+    read(4,*) (hc(i,j), j=1,nph_layer(i)-1)
+    !print *, (hc(i,j), j=1,nph_layer(i)-1)
+    read(4,*) (iph_col(i,j), j=1,nph_layer(i))
+    !print *, (iph_col(i,j), j=1,nph_layer(i))
 enddo
 ! check smooth nzone_age
 do i = 1, nzone_age-1
@@ -152,25 +154,18 @@ do i = 1, nzone_age-1
         if (ictherm(i) /= ictherm(i+1)) then
             print *, 'Error: ictherm at', i, i+1, 'columns are not equal!'
         endif
-
-        if (iph_col1(i) /= iph_col1(i+1)) then
-            print *, 'Error: iph_col1 at', i, i+1, 'columns are not equal!'
+        if (nph_layer(i) /= nph_layer(i+1)) then
+            print *, 'Error: nph_layer at', i, i+1, 'columns are not equal!'
         endif
-        if (iph_col2(i) /= iph_col2(i+1)) then
-            print *, 'Error: iph_col2 at', i, i+1, 'columns are not equal!'
-        endif
-        if (iph_col3(i) /= iph_col3(i+1)) then
-            print *, 'Error: iph_col3 at', i, i+1, 'columns are not equal!'
-        endif
-        if (iph_col4(i) /= iph_col4(i+1)) then
-            print *, 'Error: iph_col4 at', i, i+1, 'columns are not equal!'
-        endif
-        if (iph_col5(i) /= iph_col5(i+1)) then
-            print *, 'Error: iph_col5 at', i, i+1, 'columns are not equal!'
-        endif
-        ! flag indicates smotth transition
+        do j = 1, nph_layer(i)
+            ! the phases in the columns must match
+            if (iph_col(i,j) /= iph_col(i+1,j)) then
+                print *, 'Error: iph_col at', i, i+1, 'columns are not equal!'
+            endif
+        enddo
+        ! flag indicates smooth transition
         iph_col_trans(i) = 1
-        ! remove '-1' for
+        ! remove '-1'
         ixtb2(i) = ixtb2(i+1)
         ixtb1(i+1) = ixtb1(i)
     endif
