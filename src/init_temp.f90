@@ -42,7 +42,7 @@ do n = 1, nzone_age
             tp1n = tp1(n)
             tp2n = tp2(n)
         endif
-        call init_geotherm(n, i, age_1n, tp1n, tp2n)
+        call init_geotherm_profile(n, i, age_1n, tp1n, tp2n)
     enddo
 enddo
 
@@ -121,7 +121,7 @@ return
 end subroutine init_temp
 
 
-subroutine init_geotherm(n, i, age_1n, tp1n, tp2n)
+subroutine init_geotherm_profile(n, i, age_1n, tp1n, tp2n)
     !$ACC routine vector
     use arrays
     use params
@@ -228,7 +228,7 @@ subroutine init_geotherm(n, i, age_1n, tp1n, tp2n)
         !call sysmsg('init_temp: ictherm not supported!')
         stop 1
     endif
-end subroutine init_geotherm
+end subroutine init_geotherm_profile
 
 
 subroutine sidewalltemp(i1, i2)
@@ -256,7 +256,7 @@ subroutine sidewalltemp(i1, i2)
 
   !$ACC parallel loop async(1)
   do i = i1, i2
-    call init_geotherm(n, i, age_1n, tp1n, tp2n)
+    call init_geotherm_profile(n, i, age_1n, tp1n, tp2n)
   enddo
 
   if(i1 == 1) then
