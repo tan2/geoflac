@@ -9,8 +9,8 @@ double precision :: a(3,2), b(3,2), points(9,2)
 double precision, parameter :: half = 0.5d0
 double precision, parameter :: onesixth = 0.1666666666666666666666d0
 double precision, parameter :: fivesixth = 0.8333333333333333333333d0
-integer :: i, j, i1, i2, iamp, inc, itop, iwidth, ixc, k, k1, k2, kph, m, n, l, iseed
-double precision :: ddx, ddy, dx, dy, r, rx, ry, xx, ycol1, ycol2, ycol3, ycol4, &
+integer :: i, j, i1, i2, inc, k, k1, k2, kph, m, n, l, iseed
+double precision :: ddx, ddy, dx, dy, r, rx, ry, xx, &
                     yy, yyy, hhc(maxzone_layer)
 mark_id_elem = 0
 nmark_elem = 0
@@ -27,8 +27,8 @@ iseed = 0
 !call random_seed
 !write(333,*) 'Call to random_seed(), result may be stochastic'
 
-!$OMP parallel do private(a,b,points,dx,dy,l,kph,rx,ry,ddx,ddy,xx,yy,n, &
-!$OMP                     ycol1,ycol2,ycol3,ycol4,i1,i2,r,yyy,inc) firstprivate(iseed)
+!$OMP parallel do private(a,b,points,dx,dy,l,kph,rx,ry,ddx,ddy,xx,yy,m,n, &
+!$OMP                     i1,i2,r,yyy,hhc,inc) firstprivate(iseed)
 do i = 1 , nx-1
     do j = 1 , nz-1
         ! Alog the edge of an element; a and b are the nodes
@@ -110,11 +110,11 @@ do i = 1 , nx-1
                 yyy = yy * (-1d-3)  ! depth in km
                 kph = iph_col(n, nph_layer(n))
                 do m = 1, nph_layer(n)-1
-                    if (yyy <= hhc(m)) then
-                        kph = iph_col(n,m)
-                    end if
-                    exit
+                    if (yyy < hhc(m)) then
+                        exit
+                    endif
                 end do
+                kph = iph_col(n,m)
             enddo
             call add_marker(xx, yy, kph, 0.d0, j, i, inc)
             !call add_marker(xx, yy, iphase(j,i), 0.d0, j, i, inc)
