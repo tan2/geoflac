@@ -117,7 +117,9 @@
 | Parameters  | Types |  Description  |
 |:------------|:-----:|:--------------|
 |**nzone-age**| int | # zones of different age (max 32). |
-|**_ictherm(i),age-1(i),tp1(i),tp2(i),hc1(i),hc2(i),hc3(i),hc4(i),iph-col1(i),iph-col2(i),iph-col3(i),iph-col4(i),iph-col5(i),ixtb1(i),ixtb2(i)_**| 2 dbl, 4 int | See below. |
+|**_ictherm(i),age-1(i),tp1(i),tp2(i),nph_layer(i),ixtb1(i),ixtb2(i)_**| int, 3 dbl, 3 int | See below. |
+|**_hc(1, 2, ..., N-1)_**| N-1 dbl | depths of layer interfaces (km) |
+|**_iph-col(1, 2, ..., N-1, N)_**| N int | phase of each layer |
 * When **nzone-age** is greater than 0, the initial model will bi divided into several columns. Each column has 5 layers of materials and its own thermal parameters.
 * **ictherm**: type of initial thermal condition:
     + 1: oceanic geotherm (half-space cooling model). **age-1** is the  thermal age (Myrs) of the plate.
@@ -125,8 +127,9 @@
     + 12: continental geotherm (plate cooling model with radiogenic heating in the crust). **age-1** is the  thermal age (Myrs) of the plate. **tp1** is the plate thickness (km). **tp2** is the Moho depth (km). Radiogenic parameters **hs** and **hr** from above.
     + 21: constant geothermal gradient for the top layer, then constant t_bot to the bottom. **age-1** is the layer thickness (km).
     + 22: constant geothermal gradient for the top two layers, then constant t_bot to the bottom. **age-1** is the top layer thickness (km). **tp1** is the combined top 2 layers thickness (km).
-* **hc1, hc2, hc3, hc4**: Depths of layer interfaces (km).
-* **iph-col1, iph-col2, iph-col3, iph-col4, iph-col5**: phase of each layer.
+* **nph_layer**: # (N) of layers in this zone (max 10)
+    + **hc(1, 2, ..., N-1)**: depths of layer interfaces (km).
+    + **iph-col(1, 2, ..., N-1, N)**: phase of each layer.
 * **ixtb1, ixtb2**: left and right side of zone in nodes.
 * If two consequent zones have the same phases and **ixtb2**=-1 for the former zone and **ixtb1**=-1 for the later zone, the depths of layer interfaces and thermal ages will gradualy change within the two zones.
 
