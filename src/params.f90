@@ -4,7 +4,6 @@ implicit none
 
 integer, parameter :: maxzone = 10   ! max nzonx and nzony
 integer, parameter :: maxtrzone = 20   ! max nzone_marker
-integer, parameter :: maxphasel = 20   ! max nphasl
 integer, parameter :: maxbc = 20   ! max # of bcs
 integer, parameter :: maxzone_age = 32   ! max # of nzone_age
 integer, parameter :: maxzone_layer = 10   ! max # of layers in a nzone_age column
@@ -23,11 +22,10 @@ integer :: nx,nz,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
      io_sxz,io_pres,io_temp,io_phase,io_visc,io_unused,io_density, &
      io_src,io_diss,io_forc,io_hfl,io_topo, &
      irphase,irtemp,ircoord, &
-     nphase,mphase,irheol(maxph), &
-     ltop(maxphasel),lbottom(maxphasel),lphase(maxphasel), &
+     nphase,irheol(maxph), &
      imx1(maxtrzone),imx2(maxtrzone),imy1(maxtrzone),imy2(maxtrzone), &
      itx1(maxtrzone),itx2(maxtrzone),ity1(maxtrzone),ity2(maxtrzone), &
-     nphasl,nzone_marker,nmarkers, iint_marker, &
+     nzone_marker,nmarkers, iint_marker, &
      ix1(maxinh),ix2(maxinh),iy1(maxinh),iy2(maxinh),inphase(maxinh), &
      igeom(maxinh),inhom,i_prestress, &
      itherm,istress_therm,itemp_bc,ishearh, &
@@ -51,11 +49,10 @@ integer :: nx,nz,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
 !$ACC     io_sxz,io_pres,io_temp,io_phase,io_visc,io_unused,io_density, &
 !$ACC     io_src,io_diss,io_forc,io_hfl,io_topo, &
 !$ACC     irphase,irtemp,ircoord, &
-!$ACC     nphase,mphase,irheol(maxph), &
-!$ACC     ltop(maxphasel),lbottom(maxphasel),lphase(maxphasel), &
+!$ACC     nphase,irheol(maxph), &
 !$ACC     imx1(maxtrzone),imx2(maxtrzone),imy1(maxtrzone),imy2(maxtrzone), &
 !$ACC     itx1(maxtrzone),itx2(maxtrzone),ity1(maxtrzone),ity2(maxtrzone), &
-!$ACC     nphasl,nzone_marker,nmarkers, iint_marker, &
+!$ACC     nzone_marker,nmarkers, iint_marker, &
 !$ACC     ix1(maxinh),ix2(maxinh),iy1(maxinh),iy2(maxinh),inphase(maxinh), &
 !$ACC     igeom(maxinh),inhom,i_prestress, &
 !$ACC     itherm,istress_therm,itemp_bc,ishearh, &

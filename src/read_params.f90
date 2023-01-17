@@ -194,21 +194,7 @@ else
     call AdvanceToNextInputLine( 4 )
     read(4,*)
 endif
-! main phase
-call AdvanceToNextInputLine( 4 )
-read(4,*) mphase
-! number of horizontal layers
-call AdvanceToNextInputLine( 4 )
-read(4,*) nphasl
-if( nphasl .gt. maxphasel ) then
-    call SysMsg('Read_params: Increase arrays for phase layers')
-    stop 26
-endif
-! layers
-do i = 1, nphasl
-    call AdvanceToNextInputLine( 4 )
-    read(4,*) ltop(i), lbottom(i), lphase(i)
-end do
+
 ! inclusions
 call AdvanceToNextInputLine( 4 )
 read(4,*) inhom

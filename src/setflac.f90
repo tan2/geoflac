@@ -86,11 +86,10 @@ include 'precision.inc'
 !$ACC     io_sxz,io_pres,io_temp,io_phase,io_visc,io_unused,io_density, &
 !$ACC     io_src,io_diss,io_forc,io_hfl,io_topo, &
 !$ACC     irphase,irtemp,ircoord, &
-!$ACC     nphase,mphase,irheol(maxph), &
-!$ACC     ltop(maxphasel),lbottom(maxphasel),lphase(maxphasel), &
+!$ACC     nphase,irheol(maxph), &
 !$ACC     imx1(maxtrzone),imx2(maxtrzone),imy1(maxtrzone),imy2(maxtrzone), &
 !$ACC     itx1(maxtrzone),itx2(maxtrzone),ity1(maxtrzone),ity2(maxtrzone), &
-!$ACC     nphasl,nzone_marker,nmarkers, iint_marker, &
+!$ACC     nzone_marker,nmarkers, iint_marker, &
 !$ACC     ix1(maxinh),ix2(maxinh),iy1(maxinh),iy2(maxinh),inphase(maxinh), &
 !$ACC     igeom(maxinh),inhom,i_prestress, &
 !$ACC     itherm,istress_therm,itemp_bc,ishearh, &
