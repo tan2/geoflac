@@ -95,36 +95,34 @@ write (1,rec=nrec) source
 close (1)
 
 ! Markers
-if(iint_marker.eq.1) then
-     call bar2euler
-     !$ACC wait
+call bar2euler
+!$ACC wait
 
-     nwords = nmarkers
-     nrec = 1
-     open (1,file='marker1.rs',access='direct',recl=nwords*kindr)
-     write (1,rec=nrec) mark_a1(1:nmarkers)
-     nrec = nrec + 1
-     write (1,rec=nrec) mark_a2(1:nmarkers)
-     nrec = nrec + 1
-     write (1,rec=nrec) mark_x(1:nmarkers)
-     nrec = nrec + 1
-     write (1,rec=nrec) mark_y(1:nmarkers)
-     nrec = nrec + 1
-     write (1,rec=nrec) mark_age(1:nmarkers)
-     nrec = nrec + 1
-     close (1)
+nwords = nmarkers
+nrec = 1
+open (1,file='marker1.rs',access='direct',recl=nwords*kindr)
+write (1,rec=nrec) mark_a1(1:nmarkers)
+nrec = nrec + 1
+write (1,rec=nrec) mark_a2(1:nmarkers)
+nrec = nrec + 1
+write (1,rec=nrec) mark_x(1:nmarkers)
+nrec = nrec + 1
+write (1,rec=nrec) mark_y(1:nmarkers)
+nrec = nrec + 1
+write (1,rec=nrec) mark_age(1:nmarkers)
+nrec = nrec + 1
+close (1)
 
-     nrec = 1
-     open (1,file='marker2.rs',access='direct',recl=nwords*kindi)
-     write (1,rec=nrec) mark_dead(1:nmarkers)
-     nrec = nrec + 1
-     write (1,rec=nrec) mark_ntriag(1:nmarkers)
-     nrec = nrec + 1
-     write (1,rec=nrec) mark_phase(1:nmarkers)
-     nrec = nrec + 1
-     write (1,rec=nrec) mark_ID(1:nmarkers)
-     nrec = nrec + 1
-     close (1)
-endif
-return 
+nrec = 1
+open (1,file='marker2.rs',access='direct',recl=nwords*kindi)
+write (1,rec=nrec) mark_dead(1:nmarkers)
+nrec = nrec + 1
+write (1,rec=nrec) mark_ntriag(1:nmarkers)
+nrec = nrec + 1
+write (1,rec=nrec) mark_phase(1:nmarkers)
+nrec = nrec + 1
+write (1,rec=nrec) mark_ID(1:nmarkers)
+nrec = nrec + 1
+close (1)
+return
 end

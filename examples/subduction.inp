@@ -31,16 +31,6 @@
 30  0.4
 20  0.5
 ; 
-;;  iint_marker, iint_tracer
-1, 0            marker(1-yes,0-no),tracer(1-yes,0-no)
-1     number of rectangular zones with 9 markers (other areas with 1 marker only).
-; upper left and lower right corners of the elements
-1 1 50 10          i1,j1,i2,j2 
-;
-1, 1.   number of rectangular zones with tracers (stores x,z,T,P,etc), frequency of storage in 1000yrs.
-; upper left and lower right corners of the elements
-;1 1 70 15           i1,j1,i2,j2
-;
 ;===================================================================
 ;        C o n d i t i o n s:  M e c h a n i c a l
 ;===================================================================
@@ -96,7 +86,6 @@
 0              irtemp (0,1) (read temperature file or not)
 proftemp.dat   temperature profile dat.file
 ;
-1.e+0          - time_scale (not used)
 ; Initial varying thermal age crust and mantle accross the box (see doc/input_description.md for the meaning of parameters)
 5              - nzone_age (number of zones of different age max 20)
 ;ictherm, age (Myr.), tp1, tp2, nph_layer (N), x nodes 1 and 2

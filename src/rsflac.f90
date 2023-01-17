@@ -103,7 +103,6 @@ open (1,file='source.rs',access='direct',recl=nwords*kindr)
 read (1,rec=nrec) source
 close (1)
 
-if (iint_marker.eq.1) then
 ! Markers
 nwords = nmarkers
 nrec = 1
@@ -163,8 +162,6 @@ do n = 1, nmarkers
 enddo
 
 call marker2elem
-
-endif
 
 ! Pressure at the bottom: pisos 
 if( nyhydro .eq. 2 ) then

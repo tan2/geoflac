@@ -55,7 +55,7 @@ else ! file does not exist - new start
     call setflac
     ! Output of initial configuration
     call outflac
-    if (iint_marker.eq.1) call outmarker
+    call outmarker
 end if
 
 
@@ -92,18 +92,14 @@ do while( time .le. time_max )
     call itest_mesh(need_remeshing)
     if( need_remeshing .ne. 0 ) then
       ! If there are markers recalculate their x,y global coordinate and assign them aps, eII, press, temp
-      if(iint_marker.eq.1) then
-        call bar2euler
-      endif
+      call bar2euler
       call remesh
       ! If markers are present recalculate a1,a2 local coordinates and assign elements with phase ratio vector
-      if (iint_marker.eq.1) then
-        call lpeuler2bar
-        !$ACC parallel async(1)
-        call marker2elem
-        !$ACC end parallel
-        !$ACC update self(nmarkers) async(1)
-      endif
+      call lpeuler2bar
+      !$ACC parallel async(1)
+      call marker2elem
+      !$ACC end parallel
+      !$ACC update self(nmarkers) async(1)
     endif
   endif
 
@@ -112,7 +108,7 @@ do while( time .le. time_max )
   if( dtout_file .ne. 0 ) then 
     if( dtacc_file .gt. dtout_file ) then
       call outflac
-      if (iint_marker.eq.1) call outmarker
+      call outmarker
       dtacc_file = 0
     endif
   endif

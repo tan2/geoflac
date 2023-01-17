@@ -64,20 +64,6 @@ do i = 1,nzony
     read(4,*) nelz_y(i), sizez_y(i)
 end do
 177 continue
-call AdvanceToNextInputLine( 4 )
-read(4,*) iint_marker, i_junk
-if (iint_marker .ne. 1) then
-    stop 'iint_marker must be 1'
-endif
-call AdvanceToNextInputLine( 4 )
-read(4,*) nzone_marker
-call AdvanceToNextInputLine( 4 )
-  do i = 1, nzone_marker
-        read(iu,*) imx1(i),imy1(i),imx2(i),imy2(i)
-  enddo
-call AdvanceToNextInputLine( 4 )
-read(4,*) n_junk, d_junk
-call AdvanceToNextInputLine( 4 )
 
 ! MECHANICAL CONDITIONS
 call AdvanceToNextInputLine( 4 )
@@ -129,9 +115,6 @@ else
     call AdvanceToNextInputLine( 4 )
     read(4,*)
 endif
-! time scale
-call AdvanceToNextInputLine( 4 )
-read (4,*) time_scale
 ! temp structure
 call AdvanceToNextInputLine( 4 )
 read (4,*) nzone_age
@@ -281,11 +264,6 @@ call AdvanceToNextInputLine( 4 )
 read(4,*) dtout_file
 dtout_file = dtout_file * 1000 * sec_year
 call AdvanceToNextInputLine( 4 )
-!read(4,*) nprofil
-!do i=1,nprofil
-!read(4,*) hv_out(i:i), iprof_out(i) 
-!enddo
-!call AdvanceToNextInputLine( 4 )
 read(4,*) io_vel,io_srII,io_eII,io_aps,io_sII,io_sxx,io_szz,io_sxz,io_pres, &
     io_temp,io_phase,io_visc,io_unused,io_density,io_src,io_diss,io_forc,io_hfl,io_topo
 call AdvanceToNextInputLine( 4 )

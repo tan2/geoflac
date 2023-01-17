@@ -48,18 +48,6 @@
 * These parameters define non-uniform structured mesh grid.
 
 
-| Parameters  | Types |  Description  |
-|:------------|:-----:|:--------------|
-|**iint-marker, iint-tracer** | int, int | Flags denoting use of markers, tracers: 0-No, 1-Yes. For the current version, **iint-marker** MUST be 1.|
-|**nzone-marker** (>=0) | int | #Rectangular zones with 9 markers.|
-|**_imx1(i),imy1(i),imx2(i),imy2(i)_** | 4 int | Not used. |
-|**nzone-tracer** (>=0), **dt-outtracer** | int, dbl | #Rectangular zones with traces (stores x,z,T,P,etc.), frequency of storage in kyrs.|
-|**_itx1(i),ity1(i),itx2(i),ity2(i)_** | 4 int | UL, LR corners of elements for zone tracers.|
-
-* Markers are langanagian particles that trace material phase in the grid. The code will maintain a proper number of markers (between 4 to 20, currently) per element.
-* Tracers are special markers that output their (x, z, P, T) condition more frequently (every **dt-outtracer** kyrs.
-
-
 ## MECHANICAL CONDITIONS
 
 | Parameters  | Types |  Description  |

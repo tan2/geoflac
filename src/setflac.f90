@@ -27,9 +27,7 @@ strain = 0
 call init_phase
 
 ! Setup markers
-if (iint_marker.eq.1) then
-    call init_marker
-endif
+call init_marker
 
 ! Inverse Areas of triangles
 call init_areas
@@ -87,9 +85,7 @@ include 'precision.inc'
 !$ACC     io_src,io_diss,io_forc,io_hfl,io_topo, &
 !$ACC     irphase,irtemp,ircoord, &
 !$ACC     nphase,irheol(maxph), &
-!$ACC     imx1(maxtrzone),imx2(maxtrzone),imy1(maxtrzone),imy2(maxtrzone), &
-!$ACC     itx1(maxtrzone),itx2(maxtrzone),ity1(maxtrzone),ity2(maxtrzone), &
-!$ACC     nzone_marker,nmarkers, iint_marker, &
+!$ACC     nmarkers, &
 !$ACC     ix1(maxinh),ix2(maxinh),iy1(maxinh),iy2(maxinh),inphase(maxinh), &
 !$ACC     igeom(maxinh),inhom,i_prestress, &
 !$ACC     itherm,istress_therm,itemp_bc,ishearh, &
