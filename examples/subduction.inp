@@ -168,13 +168,6 @@ proftemp.dat   temperature profile dat.file
 ; INITIAL PHASE DISTRIBUTION
 0              ; irphase (0,1) read a distribution of phases
 phasedat.inp   ; file with distribution of phase on the 2D grid (phasedat)
-; Main phase
-4    -mphase
-; Number of horizontal layers with other phases
-2   - nphasl
-; top element   bottom    Phase
-     1             5        3 
-     6            64        4
 ;
 ; Initial heterogeneities
 ;

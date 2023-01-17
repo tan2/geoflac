@@ -220,19 +220,6 @@ Phase changes are activated and will take place among certain of the defined pha
 * **phasefile** format: One column of phase id by element (not by node). Vertical fast, horz slow. dimensions.
 
 
-| Parameters  | Types |  Description  |
-|:------------|:-----:|:--------------|
-|**mphase**   | int   | Main phase. The default phase. |
-|**nphasl**   | int   | Number of horizontal layers for phases. |
-| **_ltop(i), lbottom(i), lphase(i)_**| 3 int | See below. |
-
-* Note: when **nzone-age**>0, the phase structure is determined by **iph-col1, iph-col2** etc. there.
-* **ltop**  vertical element# of top of this layer.
-* **lbottom** vertical element# of bottom of this layer.
-* **lphase** phase ID of this layer (between 1 ~ nphase)
-
-
-
 ## INITIAL INHOMOGENEITIES
 | Parameters  | Types |  Description  |
 |:------------|:-----:|:--------------|
