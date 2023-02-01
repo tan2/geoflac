@@ -120,9 +120,9 @@ call AdvanceToNextInputLine( 4 )
 read (4,*) nzone_age
 call AdvanceToNextInputLine( 4 )
 do i = 1, nzone_age
-    read (4,*) ictherm(i),age_1(i),tp1(i),tp2(i),nph_layer(i),ixtb1(i),ixtb2(i)
+    read (4,*) ictherm(i),age_1(i),tp1(i),tp2(i),ixtb1(i),ixtb2(i)
     call AdvanceToNextInputLine( 4 )
-    read(4,*) (hc(i,j), j=1,nph_layer(i)-1)
+    read(4,*) nph_layer(i), (hc(i,j), j=1,nph_layer(i)-1)
     !print *, (hc(i,j), j=1,nph_layer(i)-1)
     read(4,*) (iph_col(i,j), j=1,nph_layer(i))
     !print *, (iph_col(i,j), j=1,nph_layer(i))

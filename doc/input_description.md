@@ -93,7 +93,7 @@
 |**ishearh**| int | Add shear heating.|
 |**t-top**| dbl | Surface temperature in Celsius. Boundary AND initial condition.|
 |**t-bot**| dbl | Bottom temperature in Celsius. ONLY initial condition. (The bottom TBC is given by **bot-bc** below.)|
-|**hs, hr**| 2 dbl | Radiogenic heating of crust: W/kg (~1.e-9). Radiogenic folding depth: km.|
+|**hs, hr**| 2 dbl | Radiogenic heating of crust: W/kg (~1.e-9). Radiogenic e-folding depth: km.|
 |**itemp-bc, bot-bc**| int, dbl | Thermal boundary conditions at the bottom (1-T, 2-Flux). If **itemp-bc**=1, **bot-bc** is the temperature in Celsius. If itemp-bc=2, bot-bc is the heat flux in mW/m2.|
 |**irtemp**| int | Initial thermal distributions from a file? 0-no, 1-yes.|
 |**tempfile**| string | Filename containing temperature distribution. When **irtemp**=0, this file is read.  File format is one column of temperatures written in blocks of nz, looping over nx.  E.g., `do ix=1,nx; do iz=1,nz; read T(iz,ix); enddo; enddo;`|
@@ -104,18 +104,18 @@
 
 | Parameters  | Types |  Description  |
 |:------------|:-----:|:--------------|
-|**nzone-age**| int | # zones of different age (max 32). |
-|**_ictherm(i),age-1(i),tp1(i),tp2(i),nph_layer(i),ixtb1(i),ixtb2(i)_**| int, 3 dbl, 3 int | See below. |
-|**_hc(1, 2, ..., N-1)_**| N-1 dbl | depths of layer interfaces (km) |
+|**nzone-age**| int | # zones of different thermal and phase structures (max 32). |
+|**_ictherm(i),age-1(i),tp1(i),tp2(i),ixtb1(i),ixtb2(i)_**| int, 3 dbl, 2 int | See below. |
+|**_nph-layer(i), hc(1, 2, ..., N-1)_**| int (N), N-1 dbl | depths of layer interfaces (km) |
 |**_iph-col(1, 2, ..., N-1, N)_**| N int | phase of each layer |
-* When **nzone-age** is greater than 0, the initial model will bi divided into several columns. Each column has 5 layers of materials and its own thermal parameters.
+* When **nzone-age** is greater than 0, the initial model will be divided into several columns. Each column has **nph-layer** layers of materials and its own thermal parameters.
 * **ictherm**: type of initial thermal condition:
     + 1: oceanic geotherm (half-space cooling model). **age-1** is the  thermal age (Myrs) of the plate.
     + 2: oceanic geotherm (plate cooling model). **age-1** is the  thermal age (Myrs) of the plate. **tp1** is the plate thickness (km).
     + 12: continental geotherm (plate cooling model with radiogenic heating in the crust). **age-1** is the  thermal age (Myrs) of the plate. **tp1** is the plate thickness (km). **tp2** is the Moho depth (km). Radiogenic parameters **hs** and **hr** from above.
-    + 21: constant geothermal gradient for the top layer, then constant t_bot to the bottom. **age-1** is the layer thickness (km).
-    + 22: constant geothermal gradient for the top two layers, then constant t_bot to the bottom. **age-1** is the top layer thickness (km). **tp1** is the combined top 2 layers thickness (km).
-* **nph_layer**: # (N) of layers in this zone (max 10)
+    + 21: constant geothermal gradient for the top layer, then constant **t-bot** to the bottom. **age-1** is the layer thickness (km).
+    + 22: constant geothermal gradient for the top two layers, then constant **t-bot** to the bottom. **age-1** is the temperature at the layer interface, **tp1** is top layer thickness (km). **tp2** is the combined top 2 layers thickness (km).
+* **nph-layer**: # (N) of layers in this zone (max 10)
     + **hc(1, 2, ..., N-1)**: depths of layer interfaces (km).
     + **iph-col(1, 2, ..., N-1, N)**: phase of each layer.
 * **ixtb1, ixtb2**: left and right side of zone in nodes.
