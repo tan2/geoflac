@@ -65,7 +65,7 @@ integer :: nx,nz,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
 real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
      dx_rem,angle_rem,topo_kappa,fac_kappa, &
      v_min,v_max,efoldc, &
-     prod_magma,heat_latent_magma, &
+     prod_magma,rho_magma, &
      bca(maxbc),bcb(maxbc),bcc(maxbc),xReyn, &
      bcd(maxbc),bce(maxbc),bcf(maxbc),bcg(maxbc),bch(maxbc),bci(maxbc), &
      dt_scale,strain_inert,vbc,frac, &
@@ -85,7 +85,7 @@ real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
      age_1(maxzone_age),tp1(maxzone_age),tp2(maxzone_age), &
      g,pisos,drosub,damp_vis, &
      width_mzone,fmagma_max,ratio_crust_mzone,ratio_mantle_mzone, &
-     lambda_freeze,lambda_freeze_tdep, &
+     latent_heat_magma,lambda_freeze,lambda_freeze_tdep, &
      weaken_ratio_plastic,weaken_ratio_viscous, &
      dtavg, &
      time,dt,time_max
@@ -93,7 +93,7 @@ real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
 !$ACC declare create(x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
 !$ACC     dx_rem,angle_rem,topo_kappa,fac_kappa, &
 !$ACC     v_min,v_max,efoldc, &
-!$ACC     prod_magma,heat_latent_magma, &
+!$ACC     prod_magma,rho_magma, &
 !$ACC     bca(maxbc),bcb(maxbc),bcc(maxbc),xReyn, &
 !$ACC     bcd(maxbc),bce(maxbc),bcf(maxbc),bcg(maxbc),bch(maxbc),bci(maxbc), &
 !$ACC     dt_scale,strain_inert,vbc,frac, &
@@ -113,7 +113,7 @@ real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
 !$ACC     age_1(maxzone_age),tp1(maxzone_age),tp2(maxzone_age), &
 !$ACC     g,pisos,drosub,damp_vis, &
 !$ACC     width_mzone,fmagma_max,ratio_crust_mzone,ratio_mantle_mzone, &
-!$ACC     lambda_freeze,lambda_freeze_tdep, &
+!$ACC     latent_heat_magma,lambda_freeze,lambda_freeze_tdep, &
 !$ACC     weaken_ratio_plastic,weaken_ratio_viscous, &
 !$ACC     dtavg, &
 !$ACC     time,dt,time_max)

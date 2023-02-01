@@ -71,7 +71,7 @@ if (itype_melting == 1) then
             fmagma(j,i) = fmagma(j,i) - delta_fmagma
 
             ! latent heat released by freezing magma
-            deltaT = delta_fmagma * heat_latent_magma / cp_eff / 4
+            deltaT = delta_fmagma * latent_heat_magma / cp_eff / 4
             !$OMP atomic update
             !$ACC atomic update
             temp(j  ,i  ) = temp(j  ,i  ) + deltaT
