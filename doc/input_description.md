@@ -253,7 +253,7 @@ Phase changes are activated and will take place among certain of the defined pha
 
 | Parameters  | Types |  Description  |
 |:------------|:-----:|:--------------|
-|**itype-melting, nelem-serp, arc-extrusion-rate**|2 int, dbl| See below.|
+|**itype-melting, nelem-serp, arc-extrusion-rate,heat-latent-magma**|2 int, 2 dbl| See below.|
 |**width-mzone, chamber-max, ratio-crust-mzone, ratio-mantle-mzone**|4 dbl| See below.|
 |**lambda-freeze, lambda-freeze-tdep**|2 dbl| See below.|
 |**weaken-ratio-plastic, weaken-ratio-viscous**|2 dbl| See below.|
@@ -261,6 +261,7 @@ Phase changes are activated and will take place among certain of the defined pha
 * **itype-melting**: 0 for no melting. 1 for arc-type melting.
 * **nelem-serp**: the thickness (# elements) of serpentinization zone above subducted oceanic crust.
 * **arc-extrusion-rate**: the rate of arc magma extrusion (how fast arc crust is generated)
+* **heat-latent-magma**: the latent heat of magma freezing (J/kg)
 * **width-mzone**: width (in meter) of the magma zone at Moho
 * **chamber-max**: max volume ratio of magma
 * **ratio-crust-mzone, ratio-mantle-mzone**: ratios of melt migrating to the crust and mantle. These will affect how much magma resides in the arc volcanic zone and in the mantle wedge, respectively.
