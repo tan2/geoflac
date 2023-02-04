@@ -217,7 +217,7 @@ if( topo_kappa .gt. 0.d0 ) then
 endif
 
 ! magma extrusion
-arc_extrusion_rate = 1.d0 - ratio_crust_mzone - ratio_mantle_mzone
+arc_extrusion_rate = 1.d0 - ratio_mantle_mzone
 if (arc_extrusion_rate > 0) then
     !$ACC parallel loop async(1)
     do i = 2, nx-2  ! avoid edge elements, which should not contain arc magma

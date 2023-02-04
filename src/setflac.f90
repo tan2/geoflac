@@ -122,7 +122,7 @@ include 'precision.inc'
 !$ACC     hc(maxzone_age,maxzone_layer), &
 !$ACC     age_1(maxzone_age),tp1(maxzone_age),tp2(maxzone_age), &
 !$ACC     g,pisos,drosub,damp_vis, &
-!$ACC     angle_mzone,fmagma_max,ratio_crust_mzone,ratio_mantle_mzone, &
+!$ACC     angle_mzone,fmagma_max,ratio_mantle_mzone, &
 !$ACC     latent_heat_magma,lambda_freeze,lambda_freeze_tdep, &
 !$ACC     weaken_ratio_plastic,weaken_ratio_viscous, &
 !$ACC     dtavg, &

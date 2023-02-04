@@ -43,7 +43,7 @@ subroutine itest_mesh(need_remeshing)
   end if
 
   ! remesh if the surface topo changes too much
-  arc_extrusion_rate = 1.d0 - ratio_crust_mzone - ratio_mantle_mzone
+  arc_extrusion_rate = 1.d0 - ratio_mantle_mzone
   if (topo_kappa > 0 .or. arc_extrusion_rate > 0) then
       !$ACC parallel loop copyout(topochanges) copy(need_remeshing) async(1)
       do i = 1, nx-1
