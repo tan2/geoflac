@@ -10,6 +10,10 @@ include 'precision.inc'
 
 double precision :: D(3,3)  ! diffusion operator
 
+tan_mzone = tand(0.5d0 * angle_mzone)
+! max. width of the magma zone @ moho (as if melting occurs at 200 km)
+ihalfwidth_mzone = ceiling(tan_mzone * 200e3 / dxmin)
+
 ! real_area = 0.5* (1./area(n,t))
 ! Calculate Fluxes in every triangle
 !      flux (num_triangle, direction(x,y), j, i)
@@ -35,7 +39,8 @@ endif
 
 !$OMP Parallel private(i,j,iph,cp_eff,cond_eff,dissip,diff,quad_area, &
 !$OMP                  x1,x2,x3,x4,y1,y2,y3,y4,t1,t2,t3,t4,tmpr,fr_lambda, &
-!$OMP                  ihw,delta_fmagma,deltaT,qs,real_area13,area_n,rhs)
+!$OMP                  delta_fmagma,deltaT,qs,real_area13,area_n,rhs, &
+!$OMP                  jm,area_ratio,z_moho,z_melt,x_melt,h,x,z)
 
 if (itype_melting == 1) then
     ! M: fmegma, magma fraction in the element
@@ -63,7 +68,6 @@ if (itype_melting == 1) then
     !$ACC parallel loop collapse(2) async(1)
     do i = 1,nx-1
         do j = 1,nz-1
-            !iph = iphase(j,i)
             cp_eff = Eff_cp( j,i )
             tmpr = 0.25d0*(temp0(j,i)+temp0(j+1,i)+temp0(j,i+1)+temp0(j+1,i+1))
             fr_lambda = lambda_freeze * exp(-lambda_freeze_tdep * (tmpr-t_top))
@@ -112,13 +116,18 @@ if (itype_melting == 1) then
                 enddo
 
                 ! Within mantle, melts migrate by percolation, propagate upward slantly
-                depth_moho = 0.5d0 * (cord(jm,i,2) + cord(jm,i+1,2))
+                z_moho = 0.5d0 * (cord(jm,i,2) + cord(jm,i+1,2))
+                z_melt = 0.5d0 * (cord(j+1,i,2) + cord(j+1,i+1,2))
+                x_melt = 0.5d0 * (cord(j+1,i,1) + cord(j+1,i+1,1))
+                h = z_moho - z_melt
                 ! area_ratio: the area of the mantle triangle / the area of the melting element
-                area_ratio = 0.5d0 * (depth_moho - 0.5d0 *(cord(j,i,2)+cord(j,i+1,2))) * width_mzone / quad_area
+                area_ratio = h * h * tan_mzone / quad_area
+                ! ii: the potential region of magma distribution zone at moho
                 do ii = max(1,i-ihalfwidth_mzone), min(nx-1,i+ihalfwidth_mzone)
                     do jj = jmoho(ii)+1, j
-                        ihw = ihalfwidth_mzone * (j - jj + 1) / (j - jmoho(ii) + 1)
-                        if (abs(ii-i) <= ihw) then
+                        x = 0.5d0 * (cord(jj,ii,1) + cord(jj,ii+1,1))
+                        z = 0.5d0 * (cord(jj,ii,2) + cord(jj,ii+1,2))
+                        if (abs(x - x_melt) <= tan_mzone * (z - z_melt)) then
                             !$OMP atomic update
                             !$ACC atomic update
                             fmagma(jj,ii) = fmagma(jj,ii) + fmelt(j,i) * ratio_mantle_mzone * area_ratio * prod_magma * dt

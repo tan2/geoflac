@@ -33,6 +33,10 @@ open (1,file='cord.rs',access='direct',recl=nwords*kindr)
 read (1,rec=nrec) cord
 close (1)
 
+! min element width and thickness
+dxmin = minval(cord(1,2:nx,1) - cord(1,1:nx-1,1))
+dzmin = minval(cord(2,1,1:nz-1) - cord(2,1,2:nz))
+
 open (1,file='dhacc.rs',access='direct',recl=(nx-1)*kindr)
 read (1,rec=nrec) dhacc(1:nx-1)
 close (1)

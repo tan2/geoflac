@@ -31,7 +31,6 @@ integer :: nx,nz,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
      nph_layer(maxzone_age),iph_col(maxzone_age, maxzone_layer), &
      iph_col_trans(maxzone_age), &
      if_hydro,nyhydro,iphsub, &
-     ihalfwidth_mzone, &
      movegrid,ndim,ifreq_visc,i_rey, &
      incoming_left,incoming_right, &
      ivis_present,idt_scale,ifreq_imasses,ifreq_rmasses, &
@@ -56,7 +55,6 @@ integer :: nx,nz,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
 !$ACC     nph_layer(maxzone_age),iph_col1(maxzone_age, maxzone_layer), &
 !$ACC     iph_col_trans(maxzone_age), &
 !$ACC     if_hydro,nyhydro,iphsub, &
-!$ACC     ihalfwidth_mzone, &
 !$ACC     movegrid,ndim,ifreq_visc,i_rey, &
 !$ACC     incoming_left,incoming_right, &
 !$ACC     ivis_present,idt_scale,ifreq_imasses,ifreq_rmasses, &
@@ -65,6 +63,7 @@ integer :: nx,nz,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
 real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
      dx_rem,angle_rem,topo_kappa,fac_kappa, &
      v_min,v_max,efoldc, &
+     dxmin,dzmin, &
      prod_magma,rho_magma, &
      bca(maxbc),bcb(maxbc),bcc(maxbc),xReyn, &
      bcd(maxbc),bce(maxbc),bcf(maxbc),bcg(maxbc),bch(maxbc),bci(maxbc), &
@@ -84,7 +83,7 @@ real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
      hc(maxzone_age,maxzone_layer), &
      age_1(maxzone_age),tp1(maxzone_age),tp2(maxzone_age), &
      g,pisos,drosub,damp_vis, &
-     width_mzone,fmagma_max,ratio_crust_mzone,ratio_mantle_mzone, &
+     angle_mzone,fmagma_max,ratio_crust_mzone,ratio_mantle_mzone, &
      latent_heat_magma,lambda_freeze,lambda_freeze_tdep, &
      weaken_ratio_plastic,weaken_ratio_viscous, &
      dtavg, &
@@ -93,6 +92,7 @@ real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
 !$ACC declare create(x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
 !$ACC     dx_rem,angle_rem,topo_kappa,fac_kappa, &
 !$ACC     v_min,v_max,efoldc, &
+!$ACC     dxmin,dzmin, &
 !$ACC     prod_magma,rho_magma, &
 !$ACC     bca(maxbc),bcb(maxbc),bcc(maxbc),xReyn, &
 !$ACC     bcd(maxbc),bce(maxbc),bcf(maxbc),bcg(maxbc),bch(maxbc),bci(maxbc), &
@@ -112,7 +112,7 @@ real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
 !$ACC     hc(maxzone_age,maxzone_layer), &
 !$ACC     age_1(maxzone_age),tp1(maxzone_age),tp2(maxzone_age), &
 !$ACC     g,pisos,drosub,damp_vis, &
-!$ACC     width_mzone,fmagma_max,ratio_crust_mzone,ratio_mantle_mzone, &
+!$ACC     angle_mzone,fmagma_max,ratio_crust_mzone,ratio_mantle_mzone, &
 !$ACC     latent_heat_magma,lambda_freeze,lambda_freeze_tdep, &
 !$ACC     weaken_ratio_plastic,weaken_ratio_viscous, &
 !$ACC     dtavg, &

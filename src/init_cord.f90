@@ -67,11 +67,9 @@ enddo
 
 200 continue
 
-! mid element width
+! min element width and thickness
 dxmin = minval(cord(1,2:nx,1) - cord(1,1:nx-1,1))
-
-ihalfwidth_mzone = int(width_mzone / 2 / dxmin)
-
+dzmin = minval(cord(1:nz-1,1,2) - cord(2:nz,1,2))
 
 dhacc(:) = 0.d0
 extr_acc(1:nx-1) = 0.d0

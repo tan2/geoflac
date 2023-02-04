@@ -201,7 +201,7 @@ read(4,*) v_min, v_max, ivis_shape,efoldc
 call AdvanceToNextInputLine( 4 )
 read(4,*) itype_melting, nelem_serp, prod_magma, rho_magma
 call AdvanceToNextInputLine( 4 )
-read(4,*) width_mzone, fmagma_max, ratio_crust_mzone, ratio_mantle_mzone
+read(4,*) angle_mzone, fmagma_max, ratio_crust_mzone, ratio_mantle_mzone
 call AdvanceToNextInputLine( 4 )
 read(4,*) latent_heat_magma, lambda_freeze, lambda_freeze_tdep
 call AdvanceToNextInputLine( 4 )

@@ -94,7 +94,6 @@ include 'precision.inc'
 !$ACC     nph_layer(maxzone_age),iph_col1(maxzone_age, maxzone_layer), &
 !$ACC     iph_col_trans(maxzone_age), &
 !$ACC     if_hydro,nyhydro,iphsub, &
-!$ACC     ihalfwidth_mzone, &
 !$ACC     movegrid,ndim,ifreq_visc,i_rey, &
 !$ACC     incoming_left,incoming_right, &
 !$ACC     ivis_present,idt_scale,ifreq_imasses,ifreq_rmasses, &
@@ -103,6 +102,7 @@ include 'precision.inc'
 !$ACC update device(x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
 !$ACC     dx_rem,angle_rem,topo_kappa,fac_kappa, &
 !$ACC     v_min,v_max,efoldc, &
+!$ACC     dxmin,dzmin, &
 !$ACC     prod_magma,rho_magma, &
 !$ACC     bca(maxbc),bcb(maxbc),bcc(maxbc),xReyn, &
 !$ACC     bcd(maxbc),bce(maxbc),bcf(maxbc),bcg(maxbc),bch(maxbc),bci(maxbc), &
@@ -122,7 +122,7 @@ include 'precision.inc'
 !$ACC     hc(maxzone_age,maxzone_layer), &
 !$ACC     age_1(maxzone_age),tp1(maxzone_age),tp2(maxzone_age), &
 !$ACC     g,pisos,drosub,damp_vis, &
-!$ACC     width_mzone,fmagma_max,ratio_crust_mzone,ratio_mantle_mzone, &
+!$ACC     angle_mzone,fmagma_max,ratio_crust_mzone,ratio_mantle_mzone, &
 !$ACC     latent_heat_magma,lambda_freeze,lambda_freeze_tdep, &
 !$ACC     weaken_ratio_plastic,weaken_ratio_viscous, &
 !$ACC     dtavg, &
