@@ -253,21 +253,21 @@ Phase changes are activated and will take place among certain of the defined pha
 
 | Parameters  | Types |  Description  |
 |:------------|:-----:|:--------------|
-|**itype-melting, nelem-serp, arc-extrusion-rate,rho-magma**|2 int, 2 dbl| See below.|
-|**width-mzone, chamber-max, ratio-crust-mzone, ratio-mantle-mzone**|4 dbl| See below.|
+|**itype-melting, nelem-serp, prod-magma, rho-magma**|2 int, 2 dbl| See below.|
+|**angle-mzone, fmagma-max, ratio-mantle-mzone**|4 dbl| See below.|
 |**latent-heat-magma, lambda-freeze, lambda-freeze-tdep**|3 dbl| See below.|
 |**weaken-ratio-plastic, weaken-ratio-viscous**|2 dbl| See below.|
 
 * **itype-melting**: 0 for no melting. 1 for arc-type melting.
 * **nelem-serp**: the thickness (# elements) of serpentinization zone above subducted oceanic crust.
-* **arc-extrusion-rate**: the rate of arc magma extrusion (how fast arc crust is generated)
+* **prod-magma**: the production rate of magma migrating away from the active melting (m^3 of magma/m^3 of melt/second)
 * **rho-magma**: the density of magma (kg/m^3)
-* **width-mzone**: width (in meter) of the magma zone at Moho
-* **chamber-max**: max volume ratio of magma
-* **ratio-crust-mzone, ratio-mantle-mzone**: ratios of melt migrating to the crust and mantle. These will affect how much magma resides in the arc volcanic zone and in the mantle wedge, respectively.
+* **angle-mzone**: angle (in degree) of the magma zone in the mantle
+* **fmagma-max**: max volume ratio of magma
+* **ratio-mantle-mzone**: ratio of magma staying in the mantle. It will affect how much magma resides in the mantle wedge, respectively.
 * **latent-heat-magma**: the latent heat of magma freezing (J/kg)
 * **lambda-freeze, lambda-freeze-tdep**: temperature-dependent decaying constant of magma (ie. freezing) M(dt)=M(0)*(1-lambda*dt), where lambda = **lambda-freeze** x exp(-**lambda-freeze-tdep** x (T - **t_top**)). These will affect how long magma can remain in the mantle wedge. Additionally, more freezing will release more latent heat and increase the temperature in the mantle wedge.
-* **weaken-ratio-plastic, weaken-ratio-viscous**: Magma induced weakening for yield stress (plastic) and viscosity. Saturated at **chamber-max**.
+* **weaken-ratio-plastic, weaken-ratio-viscous**: Magma induced weakening for yield stress (plastic) and viscosity. Saturated at **fmagma-max**.
 
 ## REMESHING
 
