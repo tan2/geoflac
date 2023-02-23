@@ -135,11 +135,12 @@ if(incoming_left==1) then
     !$ACC end kernels
 
     n = 1
+    i = 1
     do m = 1, nph_layer(n)-1
         !$ACC serial async(1)
         ju = jl
         do j = jl, nz-1
-            if((cord(1,1,2) - 0.5d0*(cord(j,1,2)+cord(j+1,1,2))) > hc(n,m)*1d3) then
+            if((cord(1,i,2) - 0.5d0*(cord(j,i,2)+cord(j+1,i,2))) > hc(n,m)*1d3) then
                 jl = j
                 exit
             endif
@@ -147,12 +148,12 @@ if(incoming_left==1) then
         !$ACC end serial
 
         !$ACC parallel async(1)
-        call newphase2marker(ju, jl-1, 1, 1+idist, iph_col(n,m))
+        call newphase2marker(ju, jl-1, i, i+idist, iph_col(n,m))
         !$ACC end parallel
     enddo
 
     !$ACC parallel async(1)
-    call newphase2marker(jl, nz-1, 1, 1+idist, iph_col(n,nph_layer(n)))
+    call newphase2marker(jl, nz-1, i, i+idist, iph_col(n,nph_layer(n)))
     !$ACC end parallel
 endif
 
@@ -162,11 +163,12 @@ if(incoming_right==1) then
     !$ACC end kernels
 
     n = nzone_age
+    i = nx - 1
     do m = 1, nph_layer(n)-1
         !$ACC serial async(1)
         ju = jl
         do j = jl, nz-1
-            if((cord(1,1,2) - 0.5d0*(cord(j,1,2)+cord(j+1,1,2))) > hc(n,m)*1d3) then
+            if((cord(1,i+1,2) - 0.5d0*(cord(j,i+1,2)+cord(j+1,i+1,2))) > hc(n,m)*1d3) then
                 jl = j
                 exit
             endif
@@ -174,12 +176,12 @@ if(incoming_right==1) then
         !$ACC end serial
 
         !$ACC parallel async(1)
-        call newphase2marker(ju, jl-1, 1, 1+idist, iph_col(n,m))
+        call newphase2marker(ju, jl-1, i-idist, i, iph_col(n,m))
         !$ACC end parallel
     enddo
 
     !$ACC parallel async(1)
-    call newphase2marker(jl, nz-1, 1, 1+idist, iph_col(n,nph_layer(n)))
+    call newphase2marker(jl, nz-1, i-idist, i, iph_col(n,nph_layer(n)))
     !$ACC end parallel
 endif
 !$ACC end data
