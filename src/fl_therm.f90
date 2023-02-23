@@ -10,7 +10,7 @@ include 'precision.inc'
 
 double precision :: D(3,3)  ! diffusion operator
 
-tan_mzone = tand(0.5d0 * angle_mzone)
+tan_mzone = tan(0.5d0 * angle_mzone * 3.14159265358979323846d0 / 180.d0)
 ! max. width of the magma zone @ moho (as if melting occurs at 200 km)
 ihalfwidth_mzone = ceiling(tan_mzone * 200e3 / dxmin)
 
