@@ -232,7 +232,7 @@ end subroutine init_geotherm_profile
 
 
 subroutine sidewalltemp(i1, i2)
-  !$ACC routine(init_geotherm) vector
+  !$ACC routine(init_geotherm_profile) vector
 
   use arrays, only : temp, cord, source
   use params

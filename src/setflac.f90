@@ -91,7 +91,7 @@ include 'precision.inc'
 !$ACC     itherm,istress_therm,itemp_bc,ishearh, &
 !$ACC     nzone_age,ixtb1(maxzone_age),ixtb2(maxzone_age), &
 !$ACC     ictherm(maxzone_age), &
-!$ACC     nph_layer(maxzone_age),iph_col1(maxzone_age, maxzone_layer), &
+!$ACC     nph_layer(maxzone_age),iph_col(maxzone_age, maxzone_layer), &
 !$ACC     iph_col_trans(maxzone_age), &
 !$ACC     if_hydro,nyhydro,iphsub, &
 !$ACC     movegrid,ndim,ifreq_visc,i_rey, &
