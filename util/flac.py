@@ -623,7 +623,7 @@ class FlacFromVTK(object):
         a = self._locate_line(data, "Melt fraction")
         fmelt = np.frombuffer(a, dtype=np.float32)
         fmelt.shape = (self.nx-1, self.nz-1)
-        return fmelt
+        return fmelt.transpose()
 
 
     def read_fmagma(self, frame):
@@ -631,7 +631,7 @@ class FlacFromVTK(object):
         a = self._locate_line(data, "Magma fraction")
         fmagma = np.frombuffer(a, dtype=np.float32)
         fmagma.shape = (self.nx-1, self.nz-1)
-        return fmagma
+        return fmagma.transpose()
 
 
     def read_diss(self, frame):
