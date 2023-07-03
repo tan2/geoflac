@@ -71,7 +71,7 @@ if (itype_melting == 1) then
             cp_eff = Eff_cp( j,i )
             tmpr = 0.25d0*(temp0(j,i)+temp0(j+1,i)+temp0(j,i+1)+temp0(j+1,i+1))
             fr_lambda = lambda_freeze * exp(-lambda_freeze_tdep * (tmpr-t_top))
-            delta_fmagma = max(fmagma(j,i), fmagma(j,i) * dt * fr_lambda)  !
+            delta_fmagma = min(fmagma(j,i), fmagma(j,i) * dt * fr_lambda)
             fmagma(j,i) = fmagma(j,i) - delta_fmagma
 
             ! latent heat released by freezing magma
