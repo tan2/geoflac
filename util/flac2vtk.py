@@ -67,7 +67,7 @@ def main(path, start=1, end=-1):
         vts_dataarray(fvts, a.swapaxes(0,1), 'eII')
 
         exx, ezz, exz = fl.read_strain(i)
-        e1 = compute_p_axis(exx, ezz, exz)
+        e1 = compute_s1(exx, ezz, exz)
         vts_dataarray(fvts, e1.swapaxes(0,1), 'Strain 1-axis', 3)
 
         a = fl.read_density(i)
@@ -96,8 +96,8 @@ def main(path, start=1, end=-1):
         vts_dataarray(fvts, pressure.swapaxes(0,1), 'Pressure')
 
         # compression axis of stress
-        a = compute_p_axis(sxx, szz, sxz)
-        vts_dataarray(fvts, a.swapaxes(0,1), 'P-axis', 3)
+        a = compute_s1(sxx, szz, sxz)
+        vts_dataarray(fvts, a.swapaxes(0,1), 's1', 3)
 
         a = fl.read_fmelt(i)
         vts_dataarray(fvts, a.swapaxes(0,1), 'Melt fraction')
@@ -140,20 +140,16 @@ def main(path, start=1, end=-1):
     return
 
 
-def compute_p_axis(sxx, szz, sxz):
+def compute_s1(sxx, szz, sxz):
     mag = np.sqrt(0.25*(sxx - szz)**2 + sxz**2)
+    theta = 0.5 * np.arctan2(2*sxz,  sxx-szz)
 
-    xl = sxz
-    zl = mag - 0.5*(sxx - szz)
-    tiny = 1e-40  # small number to prevent overflow upon division
-    tangentl = np.hypot(xl, zl) + tiny
-    
     # VTK requires vector field (velocity, coordinate) has 3 components.
     # Allocating a 3-vector tmp array for VTK data output.
     nx, nz = sxx.shape
     tmp = np.zeros((nx, nz, 3), dtype=sxx.dtype)
-    tmp[:,:,0] = mag * xl / tangentl
-    tmp[:,:,1] = mag * zl / tangentl
+    tmp[:,:,0] = mag * np.sin(theta)
+    tmp[:,:,1] = mag * np.cos(theta)
     return tmp
 
 
