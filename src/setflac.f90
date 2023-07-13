@@ -29,6 +29,9 @@ call init_phase
 ! Setup markers
 call init_marker
 
+! Check if viscous rheology present
+call check_visc_rheol
+
 ! Inverse Areas of triangles
 call init_areas
 

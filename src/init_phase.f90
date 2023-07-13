@@ -50,6 +50,14 @@ do i = 1,inhom
     endif
 end do
 
+return
+end
+
+
+subroutine check_visc_rheol
+use arrays
+use params
+
 ! Check if viscous rheology present
 ivis_present = 0
 do i = 1,nx-1
@@ -58,7 +66,6 @@ do i = 1,nx-1
         if( irheol(iph).eq.3 .or. irheol(iph).ge.11 ) ivis_present = 1
     end do
 end do
-    
 
 return
 end
