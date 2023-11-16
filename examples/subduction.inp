@@ -89,7 +89,7 @@ proftemp.dat   temperature profile dat.file
 ; Initial varying thermal age crust and mantle accross the box (see doc/input_description.md for the meaning of parameters)
 5              - nzone_age (number of zones of different age max 20)
 ;ictherm, age (Myr.), tp1, tp2, nph_layer (N), x nodes 1 and 2
-;    layer depth #1 (km), #2, ..., #N-1
+;    nph_layer (N), layer depth #1 (km), #2, ..., #N-1
 ;    layer phase #1, #2, ..., #N
  1,100.,  0,  0,  1, 58
     4,  1.5, 7.5, 17.5
@@ -162,7 +162,6 @@ phasedat.inp   ; file with distribution of phase on the 2D grid (phasedat)
 ;
 ; Weak zone geometries:
 ; 0- rectangular,
-; 1,2- Gauss shape
 ; 3- diagonal line
 ; 4- diagonal line plus init.plastic strain
 ;
