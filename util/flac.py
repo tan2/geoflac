@@ -190,6 +190,16 @@ class Flac(object):
         return sxz
 
 
+    def read_syy(self, frame):
+        columns = 1
+        f = open('syy.0')
+        offset = (frame-1) * columns * self.nelements * sizeoffloat
+        f.seek(offset)
+        syy = self._read_data(f, columns, count=self.nelements)
+        self._reshape_elemental_fields(syy)
+        return syy
+
+
     def read_szz(self, frame):
         columns = 1
         f = open('szz.0')

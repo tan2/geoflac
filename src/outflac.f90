@@ -211,7 +211,7 @@ if( io_szz.eq.1 ) then
 endif
 
 
-! Sxz in [kb]
+! Sxz and Syy in [kb]
 if( io_sxz.eq.1 ) then
     do i = 1, nx-1
         do j = 1, nz-1
@@ -220,6 +220,16 @@ if( io_sxz.eq.1 ) then
         end do
     end do
     open (1,file='sxz.0',access='direct',recl=nwords*kindr) 
+    write (1,rec=nrec) De
+    close (1)
+
+    do i = 1, nx-1
+        do j = 1, nz-1
+            syy = 0.25d0 * (stress0(j,i,4,1)+stress0(j,i,4,2)+stress0(j,i,4,3)+stress0(j,i,4,4))
+            De(j,i) = real(syy * 1.d-8)
+        end do
+    end do
+    open (1,file='syy.0',access='direct',recl=nwords*kindr)
     write (1,rec=nrec) De
     close (1)
 endif
