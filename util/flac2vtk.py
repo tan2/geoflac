@@ -86,6 +86,9 @@ def main(path, start=1, end=-1):
         sxx = fl.read_sxx(i)
         vts_dataarray(fvts, sxx.swapaxes(0,1), 'Sxx')
 
+        syy = fl.read_szz(i)
+        vts_dataarray(fvts, syy.swapaxes(0,1), 'Syy')
+
         szz = fl.read_szz(i)
         vts_dataarray(fvts, szz.swapaxes(0,1), 'Szz')
 
