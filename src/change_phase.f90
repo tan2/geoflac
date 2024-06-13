@@ -12,7 +12,7 @@ integer :: jj, j, i, iph, &
            jbelow, k, kinc, kk, n
 double precision :: yy, dep2, depth, press, quad_area, &
                     tmpr, trtmpr, trpres, trpres2, &
-                    solidus, pmelt
+                    solidus, pmelt, total_sed_ratio
 
 ! max. depth (m) of eclogite phase transition, no serpentinization below it
 real*8, parameter :: max_basalt_depth = 150.d3
@@ -202,7 +202,7 @@ enddo
 !$OMP end parallel do
 
 if (itype_melting == 1) then
-    !$OMP parallel do private(tmpr, yy, depth, solidus, pmelt)
+    !$OMP parallel do private(tmpr, yy, depth, solidus, pmelt, total_sed_ratio)
     !$ACC parallel loop collapse(2) async(1)
     do i = 1, nx-1
         do j = 1, nz-1
@@ -210,7 +210,9 @@ if (itype_melting == 1) then
 
             ! sedimentary rock melting
             ! solidus from Nichols, 1994 Nature
-            if (phase_ratio(ksed1,j,i) > 0.1d0 .and. cord(j,i,2) > -200.d3) then
+            total_sed_ratio = phase_ratio(ksed1,j,i) + phase_ratio(ksed2,j,i) + &
+                              phase_ratio(kmetased,j,i) + phase_ratio(kschist,j,i)
+            if (total_sed_ratio > 0.1d0 .and. cord(j,i,2) > -200.d3) then
                 tmpr = 0.25d0 * (temp(j,i)+temp(j,i+1)+temp(j+1,i)+temp(j+1,i+1))
 
                 ! depth below the surface in m
@@ -223,7 +225,7 @@ if (itype_melting == 1) then
                     ! 10% of melting at solidus + 50 C
                     ! Hirschmann, 2000 G3.
                     pmelt = min((tmpr - solidus) / 50 * 0.1d0, 0.1d0)
-                    fmelt(j,i) = pmelt * phase_ratio(ksed1, j, i)
+                    fmelt(j,i) = pmelt * total_sed_ratio
                     !print *, j, i, tmpr, pmelt
                 endif
             endif
