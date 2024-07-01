@@ -17,7 +17,7 @@ double precision :: yy, dep2, depth, press, quad_area, &
 ! max. depth (m) of eclogite phase transition, no serpentinization below it
 real*8, parameter :: max_basalt_depth = 150.d3
 ! min. temperature (C) of eclogite phase transition
-real*8, parameter :: min_eclogite_temp = 500.d0
+real*8, parameter :: min_eclogite_temp = 400.d0
 real*8, parameter :: min_eclogite_depth = 20d3
 real*8, parameter :: mantle_density = 3000.d0
 
@@ -93,11 +93,11 @@ do kk = 1 , nmarkers
         ! subuducted oceanic crust below mantle, mantle is serpentinized
         if(depth > max_basalt_depth) cycle
 
-        ! Phase diagram taken from Ulmer and Trommsdorff, Nature, 1995
+        ! Phase diagram taken from Ulmer and Trommsdorff, Science, 1995
         ! Fixed points (730 C, 2.1 GPa) (500 C, 7.5 GPa)
         trpres = 2.1d9 + (7.5d9 - 2.1d9) * (tmpr - 730.d0) / (500.d0 - 730.d0)
-        ! Fixed points (730 C, 2.1 GPa) (650 C, 0.2 GPa)
-        trpres2 = 2.1d9 + (0.2d9 - 2.1d9) * (tmpr - 730.d0) / (650.d0 - 730.d0)
+        ! Fixed points (730 C, 2.1 GPa) (670 C, 0.6 GPa)
+        trpres2 = 2.1d9 + (0.6d9 - 2.1d9) * (tmpr - 730.d0) / (670.d0 - 730.d0)
         press = mantle_density * g * depth
         if (.not. (press < trpres .and. press > trpres2)) cycle
         do jbelow = min(j+1,nz-1), min(j+nelem_serp,nz-1)
@@ -114,16 +114,19 @@ do kk = 1 , nmarkers
     case (kocean0, kocean1, kocean2)
         ! basalt -> eclogite
         ! phase change pressure
+        ! Phase Diagram taken from Hacker, JGR, 2003 (Figure 8 or Figure 1)
+        ! Fixed points (400 C, 5.1 GPa) (536 C, 0 GPa)
         trpres = -0.3d9 + 2.2d6*tmpr
+        trpres2 = 20.1d9 - 0.0375d9*tmpr
         press = mantle_density * g * depth
-        if (tmpr < min_eclogite_temp .or. depth < min_eclogite_depth .or. press < trpres) cycle
+        if (tmpr < min_eclogite_temp .or. depth < min_eclogite_depth .or. press < trpres .or. press < trpres2) cycle
         !$ACC atomic write
         !$OMP atomic write
         itmp(j,i) = 1
         mark_phase(kk) = keclg
     case (kserp)
         ! dehydration, serpentinite -> hydrated mantle
-        ! Phase diagram taken from Ulmer and Trommsdorff, Nature, 1995
+        ! Phase diagram taken from Ulmer and Trommsdorff, Science, 1995
         ! Fixed points (730 C, 2.1 GPa) (500 C, 7.5 GPa)
         trpres = 2.1d9 + (7.5d9 - 2.1d9) * (tmpr - 730.d0) / (500.d0 - 730.d0)
         ! Fixed points (730 C, 2.1 GPa) (650 C, 0.2 GPa)
