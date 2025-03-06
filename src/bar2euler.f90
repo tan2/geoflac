@@ -2,13 +2,14 @@ subroutine bar2euler
 use arrays
 use params
 USE marker_data
+implicit none
 
-include 'precision.inc'
-double precision :: shp2(2,3,2)
+double precision :: ba1, ba2, ba3, x, y
+integer :: i, ii, i1, i2, i3, jj, j1, j2, j3, k, n
 
 ! calculate the new paramters for the triangles
-!$ACC parallel loop private(shp2) async(1)
-!$OMP parallel do private(shp2)
+!$ACC parallel loop async(1)
+!$OMP parallel do private(ba1, ba2, ba3, x, y, i, ii, i1, i2, i3, jj, j1, j2, j3, k, n)
 do i = 1 , nmarkers
   if (mark_dead(i).eq.0) cycle
   n = mark_ntriag(i)
