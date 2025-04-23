@@ -288,8 +288,8 @@ class Flac(object):
 
         suffix = '.%06d.0' % frame
         f2 = open('marker2' + suffix)
-        dead = self._read_data(f2, count=n, dtype=np.uint8)
-        tmp = self._read_data(f2, count=n, dtype=np.uint8)
+        dead = self._read_data(f2, count=n, dtype=np.int32).astype(np.uint8)
+        tmp = self._read_data(f2, count=n, dtype=np.int32).astype(np.uint8)
         phase = self._remove_dead_markers(tmp, dead)
         tmp = self._read_data(f2, count=n, dtype=np.int32)
         ntriag = self._remove_dead_markers(tmp, dead)
