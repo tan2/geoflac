@@ -70,6 +70,13 @@ open (1,file='temp.rs',access='direct',recl=nwords*kindr)
 write (1,rec=nrec) temp
 close (1)
 
+! Original location
+open (1,file='xoriginal.rs',access='direct',recl=nwords*kindr)
+write (1,rec=nrec) xoriginal
+close (1)
+open (1,file='zoriginal.rs',access='direct',recl=nwords*kindr)
+write (1,rec=nrec) zoriginal
+close (1)
 
 ! 2-D (nx-1)*(nz-1) arrays - elements defined
 nwords = (nz-1)*(nx-1)

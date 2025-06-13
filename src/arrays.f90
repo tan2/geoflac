@@ -8,7 +8,8 @@ module arrays
   ! fortran array allocatable
   double precision, allocatable:: cord(:,:,:), temp(:,:), vel(:,:,:), stress0(:,:,:,:), &
        force(:,:,:), amass(:,:), rmass(:,:), &
-       area(:,:,:), dvol(:,:,:), strain(:,:,:), bc(:,:,:)
+       area(:,:,:), dvol(:,:,:), strain(:,:,:), bc(:,:,:), &
+       xoriginal(:,:), zoriginal(:,:)
 
   integer, allocatable :: ncod(:,:,:), iphase(:,:), &
       nopbou(:,:), ncodbou(:,:), jmoho(:)
@@ -52,6 +53,8 @@ contains
     allocate(dvol(nz-1, nx-1, ntri))
     allocate(strain(nz-1, nx-1, 3))
     allocate(bc(nz, nx, 2))
+    allocate(xoriginal(nz, nx))
+    allocate(zoriginal(nz, nx))
 
     allocate(ncod(nz, nx, 2))
     allocate(iphase(nz-1, nx-1))

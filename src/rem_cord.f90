@@ -16,6 +16,9 @@ do j = 1, nz
     elseif( mode_rem.eq.11 .OR. mode_rem.eq.3 ) then
         xl = x0
         xr = x0 + rxbo
+    elseif( mode_rem.eq.4 ) then
+        xl = cord(1,1 ,1)
+        xr = cord(1,nx,1)
     endif
 
     call mesh1( xl,xr,stmpn,nx,nzonx,nelz_x,sizez_x )

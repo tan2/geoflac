@@ -52,6 +52,10 @@ def main(path, start=1, end=-1):
         a = fl.read_temperature(i)
         vts_dataarray(fvts, a.swapaxes(0,1), 'Temperature')
 
+        x0, z0 = fl.read_original_mesh(i)
+        vts_dataarray(fvts, x0.swapaxes(0,1), 'x0')
+        vts_dataarray(fvts, z0.swapaxes(0,1), 'z0')
+
         fvts.write('  </PointData>\n')
 
         # element-based field

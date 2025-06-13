@@ -88,6 +88,21 @@ class Flac(object):
         return T
 
 
+    def read_original_mesh(self, frame):
+        columns = 1
+        f = open('xoriginal.0')
+        offset = (frame-1) * columns * self.nnodes * sizeoffloat
+        f.seek(offset)
+        x0 = self._read_data(f, columns)
+        self._reshape_nodal_fields(x0)
+        f = open('zoriginal.0')
+        offset = (frame-1) * columns * self.nnodes * sizeoffloat
+        f.seek(offset)
+        z0 = self._read_data(f, columns)
+        self._reshape_nodal_fields(z0)
+        return x0, z0
+
+
     def read_aps(self, frame):
         columns = 1
         f = open('aps.0')

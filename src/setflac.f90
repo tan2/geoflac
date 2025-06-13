@@ -45,6 +45,8 @@ call init_stress
 call init_bc
 
 temp0 = temp
+xoriginal = cord(:,:,1)
+zoriginal = cord(:,:,2)
 shrheat = 0
 sshrheat = 0
 dtopo = 0

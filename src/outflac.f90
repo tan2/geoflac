@@ -64,6 +64,16 @@ if( io_temp.eq.1 ) then
     close (1)
 endif
 
+nwords = nz*nx
+Dn2(1:nz,1:nx,1) = real(xoriginal(1:nz,1:nx))
+open (1,file='xoriginal.0',access='direct',recl=nwords*kindr)
+write (1,rec=nrec) Dn2(1:nz,1:nx,1)
+close (1)
+Dn2(1:nz,1:nx,1) = real(zoriginal(1:nz,1:nx))
+open (1,file='zoriginal.0',access='direct',recl=nwords*kindr)
+write (1,rec=nrec) Dn2(1:nz,1:nx,1)
+close (1)
+
 
 deallocate( Dn2 )
 

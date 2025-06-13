@@ -257,10 +257,6 @@ weaken_ratio_viscous = log(weaken_ratio_viscous)
 call AdvanceToNextInputLine(4, line)
 read(4,*,err=1000)  ny_rem, mode_rem, ntest_rem, angle_rem
 line = line + 1
-if ( mode_rem.ne.1 .and. mode_rem.ne.11 .and. mode_rem.ne.3 ) then
-    call SysMsg('Illegal remeshing mode! Allowable - 1, 3 or 11')
-    stop
-endif
 ! dx_rem - remeshing criteria for mode_rem=11
 call AdvanceToNextInputLine(4, line)
 read(4,*,err=1000)  dx_rem

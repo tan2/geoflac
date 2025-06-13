@@ -232,6 +232,9 @@ call rem_interpolate( nzt, nxt, dummyn, temp )
 if(incoming_left==1) call sidewalltemp(1,1+idist)
 if(incoming_right==1) call sidewalltemp(nx-idist,nx)
 
+call rem_interpolate( nzt, nxt, dummyn, xoriginal )
+call rem_interpolate( nzt, nxt, dummyn, zoriginal )
+
 ! AFTER INTERPOLATIONS - RECALCULATE SOME DEPENDENT VARIABLES
 if( ivis_present.eq.1 ) call init_visc
 
