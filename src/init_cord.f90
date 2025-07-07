@@ -88,15 +88,13 @@ include 'precision.inc'
 
 
 !- X direction
-sizesum=0.d0
 nelsum =0
 do i = 1,nzonx
-    sizesum = sizesum + sizez_x(i)
     nelsum =  nelsum  + nelz_x(i)
 end do
 
-if ( abs ((sizesum-1.0d0)) .gt. 1.d-4 ) then
-    call SysMsg('INIT_CORD: Sum of zones sizes is not correct.(X-direction)')
+if ( nzonx.ne.0 .and. mod(nzonx,2) .eq. 0 ) then
+    call SysMsg('INIT_CORD: Number of zones is not odd.(X-direction)')
     stop 16
 endif
 
@@ -107,18 +105,16 @@ endif
 
 
 !- Y direction
-sizesum=0.d0
 nelsum =0
-do i = 1,nzony 
-    sizesum = sizesum + sizez_y(i)
+do i = 1,nzony
     nelsum =  nelsum  + nelz_y(i)
 end do
 
-if ( abs (sizesum-1.d0) .gt. 1.d-4 ) then
-    call SysMsg('INIT_CORD: Sum of zones sizes is not correct.(Y-direction)')
+if ( nzony.ne.0 .and. mod(nzony,2) .eq. 0 ) then
+    call SysMsg('INIT_CORD: Number of zones is not odd.(Y-direction)')
     stop 18
 endif
- 
+
 if (nelsum .ne. (nz-1)) then
     call SysMsg('INIT_CORD: Nelem in zones is not correct.(Y-direction)')
     stop 19
@@ -136,21 +132,34 @@ subroutine mesh1 (x1,x2,xmesh,n,nzon,nelz,sizez)
 implicit none
 double precision :: x1, x2, xmesh(n), sizez(nzon)
 integer :: n, nzon, nelz(nzon), k, i, nel
-double precision :: xbeg, xend, elemsize
-
+double precision :: xbeg, xend, elemsize, all_ratio, magnification, ratio
+all_ratio = 0.d0
 nel = 1
-xmesh(nel) = x1
+xmesh(nel) = 0.d0
 
-do k = 1,nzon
-    xbeg = xmesh(nel)
-    xend = xbeg + sizez(k)*(x2-x1)
-    if( k.eq.nzon ) xend = x2
-    elemsize = (xend-xbeg)/nelz(k)
+do k = 1,nzon-1,2
+    all_ratio = all_ratio + nelz(k) * sizez(k)
     do i = 1,nelz(k)
         nel = nel + 1
-        xmesh(nel) = xbeg + i*elemsize
+        xmesh(nel) = xmesh(nel-1) + sizez(k)
     end do
-    continue
+    ratio = (sizez(k+2)/sizez(k))**(1.0d0/dble(nelz(k+1)+1))
+    do i = 1,nelz(k+1)
+        nel = nel + 1
+        xmesh(nel) = xmesh(nel-1) + sizez(k) * (ratio**i)
+        all_ratio = all_ratio + sizez(k) * (ratio**i)
+    end do
+end do
+
+do k = 1,nelz(nzon)
+    nel = nel + 1
+    xmesh(nel) = xmesh(nel-1) + sizez(nzon)
+end do
+all_ratio = all_ratio + nelz(nzon) * sizez(nzon)
+magnification = (x2 - x1)/all_ratio
+
+do nel = 1,n
+    xmesh(nel) = x1 + xmesh(nel) * magnification
 end do
 
 return

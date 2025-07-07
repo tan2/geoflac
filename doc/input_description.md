@@ -40,10 +40,10 @@
 
 | Parameters  | Types |  Description  |
 |:------------|:-----:|:--------------|
-|**nzonx** (>=0) | int | #Zones in X-direction (0-uniform grid, max 10).|
-|**_nelz-x(i), sizez-x(i)_** | int,dbl | #Elems in this zone, size of zone (non-dimensional; percentage of **rxbo**). Sum of all **nelz-x(i)** must == **nex**; sum of all **sizez-x(i)**= 1.0).|
+|**nzonx** (>=0) | int | #Zones in X-direction (0 for uniform grid; odd number for variable grid (more info below); max 10). When **nzonx** is an odd number, the odd i-th rows indicate there are **nelz-x(i)** elements, each has a relative size **sizez-x(i)**. The even i-th rows indicate there are **nelz-x(i)** elements of gradual varying size (**sizez-x(i)** in this row unused). The absolute size of the elements are calculated based on the size of the box.|
+|**_nelz-x(i), sizez-x(i)_** | int,dbl | #Elems in this zone, relative size of e elements. Sum of all **nelz-x(i)** must == **nex**.|
 |**nzony** (>=0) | int | #Zones in Z-direction (0-uniform grid, max 10).|
-|**_nelz-y(i), sizez-y(i)_** | int,dbl | #Elems in this zone, size of zone (non-dimensional; percentage of **rzbo**). Sum of all **nelz-y(i)** must = **nez**; sum of all **sizez-y(i)** = 1.0).|
+|**_nelz-y(i), sizez-y(i)_** | int,dbl | #Elems in this zone, relative size of elements). Sum of all **nelz-y(i)** must = **nez**.|
 
 * These parameters define non-uniform structured mesh grid.
 

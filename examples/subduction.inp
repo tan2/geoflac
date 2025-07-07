@@ -17,19 +17,22 @@
 0, points.xy    ircoord, coordfile: read init. coordinates from the file
 ;
 ; X direction
-3     Number zones X-direction (0 - regular grid)
-; nelem per zone    size(non-dimen, must sum to 1.0)
- 45  0.375
-120  0.5
- 20  0.125
+5     Number zones X-direction (0 for regular grid, or odd#)
+; nelem_per_zone    size (relative)
+ 25  6
+ 10  0
+120  1
+ 10  0
+ 20  6
 ;
 ; Z direction
-4                Number zones Z-direction (0 - regular grid)
-; nelem per zone    size(non-dimen, must sum to 1.0)
- 5  0.025
- 9  0.075
-30  0.4
-20  0.5
+5                Number zones Z-direction (0 for regular grid, or odd#)
+; nelem_per_zone    size (relative)
+ 5   1
+ 5   0
+30   3
+ 9   0
+15   6
 ; 
 ;===================================================================
 ;        C o n d i t i o n s:  M e c h a n i c a l
