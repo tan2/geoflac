@@ -211,7 +211,7 @@ phasedat.inp   ; file with distribution of phase on the 2D grid (phasedat)
 ;=================================================================
 ;                       R e m e s h i n g
 ;=================================================================
-;ny_rem (0,1), mode_rem(1, 3 or 11),  ntest_rem,  angle_rem(degrees,when magmainj le 10)
+;ny_rem (0,1), mode_rem(1, 3, 4 or 11),  ntest_rem,  angle_rem(degrees,when magmainj le 10)
 1            3               500         5.
 ;
 ; dx_rem (if mode_rem=11 defines critical shortening for remeshing in dx-units)
