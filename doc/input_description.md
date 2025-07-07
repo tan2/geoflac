@@ -281,7 +281,8 @@ Phase changes are activated and will take place among certain of the defined pha
 * **mode-rem**  Mode
     - 1: keep 4 sides as is. 
     - 3: L,R,B restored to initial sides, top as is.
-    - 11" L,R restored to initial sides, top,bottom as is.
+    - 4: L,R restored to vertical walls straight from the top corners, top as is.
+    - 11: L,R restored to initial sides, top,bottom as is.
 * **ntest-rem**  #time steps to test if remeshing needed.
 * **angle-rem**  critical angle (in degree) to trigger remeshing.
 * **dx-rem** critical distance of shortening for **mode-rem**=3 or 11. Normalized size = **rxb0/nex**. 
