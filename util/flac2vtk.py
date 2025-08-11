@@ -66,6 +66,14 @@ def main(path, start=1, end=-1):
         srat = a
         vts_dataarray(fvts, a.swapaxes(0,1), 'Strain rate')
 
+        srxx, srzz, srxz = fl.read_strain_rate(i)
+        vts_dataarray(fvts, srxx.swapaxes(0,1), 'Sr xx')
+        vts_dataarray(fvts, srzz.swapaxes(0,1), 'Sr zz')
+        vts_dataarray(fvts, srxz.swapaxes(0,1), 'Sr xz')
+
+        sr1 = compute_s1(srxx, srzz, srxz)
+        vts_dataarray(fvts, sr1.swapaxes(0,1), 'Strain rate 1-axis', 3)
+
         a = fl.read_eII(i)
         eii = a
         vts_dataarray(fvts, a.swapaxes(0,1), 'eII')

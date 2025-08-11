@@ -97,6 +97,33 @@ if( io_srII.eq.1 ) then
     open (1,file='srII.0',access='direct',recl=nwords*kindr) 
     write (1,rec=nrec) De
     close (1)
+
+    do i = 1, nx-1
+        do j = 1, nz-1
+            De(j,i) = real(se2sr(j,i,1)/dtavg)
+        end do
+    end do
+    open (1,file='srxx.0',access='direct',recl=nwords*kindr)
+    write (1,rec=nrec) De
+    close (1)
+
+    do i = 1, nx-1
+        do j = 1, nz-1
+            De(j,i) = real(se2sr(j,i,2)/dtavg)
+        end do
+    end do
+    open (1,file='srzz.0',access='direct',recl=nwords*kindr)
+    write (1,rec=nrec) De
+    close (1)
+
+    do i = 1, nx-1
+        do j = 1, nz-1
+            De(j,i) = real(se2sr(j,i,3)/dtavg)
+        end do
+    end do
+    open (1,file='srxz.0',access='direct',recl=nwords*kindr)
+    write (1,rec=nrec) De
+    close (1)
 endif
 
 

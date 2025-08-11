@@ -234,6 +234,27 @@ class Flac(object):
         self._reshape_elemental_fields(srII)
         return srII
 
+    def read_strain_rate(self, frame):
+        columns = 1
+        f = open('srxx.0')
+        offset = (frame-1) * columns * self.nelements * sizeoffloat
+        f.seek(offset)
+        srxx = self._read_data(f, columns, count=self.nelements)
+        self._reshape_elemental_fields(srxx)
+
+        f = open('srzz.0')
+        offset = (frame-1) * columns * self.nelements * sizeoffloat
+        f.seek(offset)
+        srzz = self._read_data(f, columns, count=self.nelements)
+        self._reshape_elemental_fields(srzz)
+
+        f = open('srxz.0')
+        offset = (frame-1) * columns * self.nelements * sizeoffloat
+        f.seek(offset)
+        srxz = self._read_data(f, columns, count=self.nelements)
+        self._reshape_elemental_fields(srxz)
+        return srxx, srzz, srxz
+
 
     def read_pres(self, frame):
         columns = 1

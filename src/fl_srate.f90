@@ -100,7 +100,9 @@ do i = 1,nx-1
         srII = 0.5d0 * sqrt((s11-s22)**2 + 4*s12*s12)
         srI = (s11+s22)/2
         srs2 = (s11-srI)*(s11-srI) + (s22-srI)*(s22-srI) + 2*s12*s12
-        se2sr(j,i) = se2sr(j,i) + srII*dt
+        se2sr(j,i,1) = se2sr(j,i,1) + s11*dt
+        se2sr(j,i,2) = se2sr(j,i,2) + s22*dt
+        se2sr(j,i,3) = se2sr(j,i,3) + s12*dt
 
         s11 = 0.25d0 * (stress0(j,i,1,1)+stress0(j,i,1,2)+stress0(j,i,1,3)+stress0(j,i,1,4))
         s22 = 0.25d0 * (stress0(j,i,2,1)+stress0(j,i,2,2)+stress0(j,i,2,3)+stress0(j,i,2,4))
@@ -119,9 +121,9 @@ if( nsrate .eq. ifreq_avgsr ) then
     !$ACC parallel loop collapse(2) async(1)
     do i = 1,nx-1
         do j = 1, nz-1
-            e2sr(j,i) = se2sr(j,i) / dtavg
+            e2sr(j,i) = (0.5d0 * sqrt((se2sr(j,i,1)-se2sr(j,i,2))**2 + 4*se2sr(j,i,3)*se2sr(j,i,3))) / dtavg
             shrheat(j,i) = sshrheat(j,i) / dtavg
-            se2sr(j,i) = 0.d0
+            se2sr(j,i,:) = 0.d0
             sshrheat(j,i) = 0.d0
         end do
     end do
@@ -133,7 +135,7 @@ elseif( nsrate .eq. -1 ) then
     !$ACC parallel loop collapse(2) async(1)
     do i = 1,nx-1
         do j = 1, nz-1
-            e2sr(j,i) = se2sr(j,i) / dtavg
+            e2sr(j,i) = (0.5d0 * sqrt((se2sr(j,i,1)-se2sr(j,i,2))**2 + 4*se2sr(j,i,3)*se2sr(j,i,3))) / dtavg
             shrheat(j,i) = sshrheat(j,i) / dtavg
         end do
     end do
