@@ -8,7 +8,7 @@ parameter( kindr=4, kindi=4 )
 real(kindr) D1d(nmarkers)
 integer(kindi) D1i(nmarkers)
 
-character*100 fn
+character*100 fn, msg
 
 call bar2euler
 !$ACC wait
@@ -69,6 +69,39 @@ do i = 1,nmarkers
 enddo
 write (1,rec=5) D1d
 
+if (ithermochron > 0) then
+    do j = 1, nchron
+        do i = 1,nmarkers
+            
+            D1d(i)= real((time - mark_chron_time(j, i)) / sec_year / 1.d6)
+        enddo
+        write (1,rec=5+j) D1d
+    end do
+    
+    do j = 1, nchron
+        do i = 1,nmarkers
+            D1d(i)= real(mark_chron_temp(j, i))
+        enddo
+        write (1,rec=5+nchron+j) D1d
+    end do
+
+    do i = 1,nmarkers
+        D1d(i)= real(mark_temp(i))
+    enddo
+    write (1,rec=5+2*nchron+1) D1d
+
+    do i = 1,nmarkers
+        D1d(i)= real(mark_tempmax(i))
+    enddo
+    write (1,rec=5+2*nchron+2) D1d
+
+    do i = 1,nmarkers
+        D1d(i)= real(mark_cooling_rate(i))
+    enddo
+    write (1,rec=5+2*nchron+3) D1d
+
+end if
+
 close (1)
 
 
@@ -89,6 +122,15 @@ do l = 1,nmarkers
     D1i(l)= mark_ntriag(l)
 enddo
 write (1,rec=3) D1i
+
+if (ithermochron > 0) then
+    do j = 1, nchron
+        do i = 1,nmarkers
+            D1i(i)= int(mark_chron_if(j, i), kindi)
+        enddo
+        write (1,rec=3+j) D1i
+    end do
+end if
 
 close (1)
 
