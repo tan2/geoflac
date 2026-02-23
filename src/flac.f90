@@ -12,6 +12,9 @@ include 'precision.inc'
 ! Skip the therm calculations if itherm = 3
 call fl_therm
 
+! Skip the thermchron calculations if ithermchron = 0
+if(ithermochron .gt. 0) call fl_thermchron
+
 if (itherm .eq.2) goto 500  ! Thermal calculation only
 
 ! Calculation of strain rates from velocity

@@ -122,6 +122,28 @@ read (1,rec=nrec) mark_y(1:nmarkers)
 nrec = nrec + 1
 read (1,rec=nrec) mark_age(1:nmarkers)
 nrec = nrec + 1
+
+if (ithermochron > 0) then
+    read (1,rec=nrec) mark_temp(1:nmarkers)
+    nrec = nrec + 1
+    read (1,rec=nrec) mark_tempmax(1:nmarkers)
+    nrec = nrec + 1
+    read (1,rec=nrec) mark_cooling_rate(1:nmarkers)
+    nrec = nrec + 1
+    read (1,rec=nrec) mark_update_time(1:nmarkers)
+    nrec = nrec + 1
+    
+    do j = 1, nchron
+        read (1,rec=nrec) mark_chron_time(j, 1:nmarkers)
+        nrec = nrec + 1
+    end do
+    
+    do j = 1, nchron
+        read (1,rec=nrec) mark_chron_temp(j, 1:nmarkers)
+        nrec = nrec + 1
+    end do
+end if
+
 close (1)
 
 nrec = 1
@@ -134,6 +156,14 @@ read (1,rec=nrec) mark_phase(1:nmarkers)
 nrec = nrec + 1
 read (1,rec=nrec) mark_ID(1:nmarkers)
 nrec = nrec + 1
+
+if (ithermochron > 0) then
+    do j = 1, nchron
+        read (1,rec=nrec) mark_chron_if(j, 1:nmarkers)
+        nrec = nrec + 1
+    end do
+end if
+
 close (1)
 
 ! recount marker phase

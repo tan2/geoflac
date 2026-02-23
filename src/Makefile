@@ -181,7 +181,10 @@ SRCS =	\
 	rmasses.f90 \
 	rsflac.f90 \
 	saveflac.f90 \
-	setflac.f90
+	setflac.f90 \
+	fl_thermochron.f90 \
+	init_thermochron.f90 \
+	temp2marker.f90
 
 SRCS2 = check_nan.f90
 
