@@ -481,3 +481,99 @@ end do
 return
 
 end
+
+
+! ======================================================
+! Transfer thermochronology data from markers to elements
+! ======================================================
+subroutine marker2chron
+use arrays
+use params
+use marker_data
+implicit none
+
+integer :: i, j, k, n, kk, count
+double precision :: sum_val
+
+if (ithermochron .eq. 0) return
+
+do i = 1, nx-1
+    do j = 1, nz-1
+
+        ! max_temp (node-based average - use element corner average)
+        max_temp(j,i) = 0.d0
+        sum_val = 0.d0
+        count = 0
+        do n = 1, nmark_elem(j,i)
+            kk = mark_id_elem(n,j,i)
+            sum_val = sum_val + mark_tempmax(kk)
+            count = count + 1
+        enddo
+        if (count .gt. 0) max_temp(j,i) = sum_val / count
+
+        ! chron_time and chron_temp (per chronometer)
+        do k = 1, nchron
+            sum_val = 0.d0
+            count = 0
+            do n = 1, nmark_elem(j,i)
+                kk = mark_id_elem(n,j,i)
+                sum_val = sum_val + mark_chron_time(k, kk)
+                count = count + 1
+            enddo
+            if (count .gt. 0) then
+                chron_time(k,j,i) = sum_val / count
+            else
+                chron_time(k,j,i) = unreset_time
+            endif
+
+            sum_val = 0.d0
+            count = 0
+            do n = 1, nmark_elem(j,i)
+                kk = mark_id_elem(n,j,i)
+                sum_val = sum_val + mark_chron_temp(k, kk)
+                count = count + 1
+            enddo
+            if (count .gt. 0) then
+                chron_temp(k,j,i) = sum_val / count
+            else
+                chron_temp(k,j,i) = 0.d0
+            endif
+        enddo
+
+    enddo
+enddo
+
+return
+end subroutine marker2chron
+
+
+! ======================================================
+! Transfer thermochronology data from elements back to markers
+! ======================================================
+subroutine chron2marker
+use arrays
+use params
+use marker_data
+implicit none
+
+integer :: i, j, k, n, kk
+
+if (ithermochron .eq. 0) return
+
+do i = 1, nx-1
+    do j = 1, nz-1
+        do n = 1, nmark_elem(j,i)
+            kk = mark_id_elem(n,j,i)
+            do k = 1, nchron
+                mark_chron_time(k, kk) = chron_time(k, j, i)
+                mark_chron_temp(k, kk) = chron_temp(k, j, i)
+            enddo
+            mark_tempmax(kk) = max_temp(j,i)
+        enddo
+    enddo
+enddo
+
+return
+end subroutine chron2marker
+
+

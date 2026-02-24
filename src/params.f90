@@ -120,4 +120,9 @@ real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
 
 character phasefile*20,tempfile*20,coordfile*20
 
+! Thermochronology
+character chron_file*20, chron_name(10)*20
+real*8 :: unreset_time, chron_ref(10,50,2)
+integer :: ithermochron, iwait, nchron_fpair(10), nchron
+
 end module params

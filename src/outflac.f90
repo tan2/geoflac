@@ -35,7 +35,7 @@ close(1)
 open (1,file='time.0',access='direct',recl=kindr)
 rtime = real(time)
 write (1,rec=nrec) rtime
-close (1) 
+close (1)
 
 
 ! Coordinates in [km]
@@ -43,7 +43,7 @@ allocate( Dn2(nz,nx,2) )
 
 nwords = nz*nx*2
 Dn2(1:nz,1:nx,1:2) = real(cord(1:nz,1:nx,1:2) / 1000)
-open (1,file='mesh.0',access='direct',recl=nwords*kindr) 
+open (1,file='mesh.0',access='direct',recl=nwords*kindr)
 write (1,rec=nrec) Dn2
 close (1)
 
@@ -94,7 +94,7 @@ if( io_srII.eq.1 ) then
             endif
         enddo
     enddo
-    open (1,file='srII.0',access='direct',recl=nwords*kindr) 
+    open (1,file='srII.0',access='direct',recl=nwords*kindr)
     write (1,rec=nrec) De
     close (1)
 
@@ -134,7 +134,7 @@ if( io_eII.eq.1 ) then
             De(j,i) = real(strainII(j,i))
         end do
     end do
-    open (1,file='eII.0',access='direct',recl=nwords*kindr) 
+    open (1,file='eII.0',access='direct',recl=nwords*kindr)
     write (1,rec=nrec) De
     close (1)
 
@@ -143,7 +143,7 @@ if( io_eII.eq.1 ) then
             De(j,i) = real(strainI(j,i))
         end do
     end do
-    open (1,file='eI.0',access='direct',recl=nwords*kindr) 
+    open (1,file='eI.0',access='direct',recl=nwords*kindr)
     write (1,rec=nrec) De
     close (1)
 
@@ -152,7 +152,7 @@ if( io_eII.eq.1 ) then
             De(j,i) = real(strain(j,i,1))
         end do
     end do
-    open (1,file='exx.0',access='direct',recl=nwords*kindr) 
+    open (1,file='exx.0',access='direct',recl=nwords*kindr)
     write (1,rec=nrec) De
     close (1)
 
@@ -161,7 +161,7 @@ if( io_eII.eq.1 ) then
             De(j,i) = real(strain(j,i,2))
         end do
     end do
-    open (1,file='ezz.0',access='direct',recl=nwords*kindr) 
+    open (1,file='ezz.0',access='direct',recl=nwords*kindr)
     write (1,rec=nrec) De
     close (1)
 
@@ -170,7 +170,7 @@ if( io_eII.eq.1 ) then
             De(j,i) = real(strain(j,i,3))
         end do
     end do
-    open (1,file='exz.0',access='direct',recl=nwords*kindr) 
+    open (1,file='exz.0',access='direct',recl=nwords*kindr)
     write (1,rec=nrec) De
     close (1)
 
@@ -201,7 +201,7 @@ endif
 ! APS
 if( io_aps.eq.1 ) then
     De(1:nz-1,1:nx-1) = real(aps(1:nz-1,1:nx-1))
-    open (1,file='aps.0',access='direct',recl=nwords*kindr) 
+    open (1,file='aps.0',access='direct',recl=nwords*kindr)
     write (1,rec=nrec) De
     close (1)
 endif
@@ -214,7 +214,7 @@ if( io_sII.eq.1 ) then
             De(j,i) = real(stressII(j,i) * 1.d-8)
         end do
     end do
-    open (1,file='sII.0',access='direct',recl=nwords*kindr) 
+    open (1,file='sII.0',access='direct',recl=nwords*kindr)
     write (1,rec=nrec) De
     close (1)
 endif
@@ -228,7 +228,7 @@ if( io_sxx.eq.1 ) then
             De(j,i) = real(( sxx-stressI(j,i) ) * 1.d-8)
         end do
     end do
-    open (1,file='sxx.0',access='direct',recl=nwords*kindr) 
+    open (1,file='sxx.0',access='direct',recl=nwords*kindr)
     write (1,rec=nrec) De
     close (1)
 endif
@@ -242,7 +242,7 @@ if( io_szz.eq.1 ) then
             De(j,i) = real(( szz-stressI(j,i) ) * 1.d-8)
         end do
     end do
-    open (1,file='szz.0',access='direct',recl=nwords*kindr) 
+    open (1,file='szz.0',access='direct',recl=nwords*kindr)
     write (1,rec=nrec) De
     close (1)
 endif
@@ -256,7 +256,7 @@ if( io_sxz.eq.1 ) then
             De(j,i) = real(sxz * 1.d-8)
         end do
     end do
-    open (1,file='sxz.0',access='direct',recl=nwords*kindr) 
+    open (1,file='sxz.0',access='direct',recl=nwords*kindr)
     write (1,rec=nrec) De
     close (1)
 
@@ -279,7 +279,7 @@ if( io_pres.eq.1 ) then
             De(j,i) = real(stressI(j,i) * 1.d-8)
         end do
     end do
-    open (1,file='pres.0',access='direct',recl=nwords*kindr) 
+    open (1,file='pres.0',access='direct',recl=nwords*kindr)
     write (1,rec=nrec) De
     close (1)
 endif
@@ -310,7 +310,7 @@ endif
 ! Viscosities (log)
 if( io_visc.eq.1 ) then
     De(1:nz-1,1:nx-1) = real(dlog10( visn(1:nz-1,1:nx-1) ))
-    open (1,file='visc.0',access='direct',recl=nwords*kindr) 
+    open (1,file='visc.0',access='direct',recl=nwords*kindr)
     write (1,rec=nrec) De
     close (1)
 endif
@@ -320,7 +320,7 @@ endif
 ! Heat sources
 if( io_src.eq.1 ) then
     De(1:nz-1,1:nx-1) = real(source(1:nz-1,1:nx-1))
-    open (1,file='src.0',access='direct',recl=nwords*kindr) 
+    open (1,file='src.0',access='direct',recl=nwords*kindr)
     write (1,rec=nrec) De
     close (1)
 endif
@@ -354,7 +354,7 @@ if( io_diss.eq.1 ) then
             endif
         enddo
     enddo
-    open (1,file='diss.0',access='direct',recl=nwords*kindr) 
+    open (1,file='diss.0',access='direct',recl=nwords*kindr)
     write (1,rec=nrec) De
     close (1)
 endif
@@ -408,6 +408,138 @@ endif
 
 deallocate( D1d )
 
+    call out_thermochron_grid(nrec)
 
-return 
-end
+
+return
+end subroutine outflac
+
+
+subroutine out_thermochron_grid(nrec)
+    use arrays
+    use params
+    use marker_data
+    implicit none
+
+    integer, intent(in) :: nrec
+    integer, parameter :: kindr=4
+    real(kindr), allocatable :: De(:,:)
+    integer :: i, j, n, kk, count, k
+    double precision :: sum_val
+    character*100 fn
+    integer :: nwords
+
+    if (ithermochron .eq. 0) return
+
+    allocate( De(nz-1,nx-1) )
+    nwords = (nz-1)*(nx-1)
+    do i = 1, nx-1
+        do j = 1, nz-1
+            sum_val = 0.d0
+            count = 0
+            if (nmark_elem(j,i) > 0) then
+                do n = 1, nmark_elem(j,i)
+                    kk = mark_id_elem(n,j,i)
+                    sum_val = sum_val + mark_tempmax(kk)
+                    count = count + 1
+                enddo
+                De(j,i) = real(sum_val / count)
+            else
+                De(j,i) = 0.0
+            endif
+        enddo
+    enddo
+    open (12,file='tempmax.0',access='direct',recl=nwords*kindr)
+    write (12,rec=nrec) De
+    close (12)
+
+
+    do i = 1, nx-1
+        do j = 1, nz-1
+            sum_val = 0.d0
+            count = 0
+            if (nmark_elem(j,i) > 0) then
+                do n = 1, nmark_elem(j,i)
+                    kk = mark_id_elem(n,j,i)
+                    sum_val = sum_val + mark_cooling_rate(kk)
+                    count = count + 1
+                enddo
+                De(j,i) = real(sum_val / count)
+            else
+                De(j,i) = 0.0
+            endif
+        enddo
+    enddo
+    open (12,file='cooling_rate.0',access='direct',recl=nwords*kindr)
+    write (12,rec=nrec) De
+    close (12)
+
+    do k = 1, nchron
+        do i = 1, nx-1
+            do j = 1, nz-1
+                sum_val = 0.d0
+                count = 0
+                if (nmark_elem(j,i) > 0) then
+                    do n = 1, nmark_elem(j,i)
+                        kk = mark_id_elem(n,j,i)
+                        sum_val = sum_val + (time - mark_chron_time(k, kk))
+                        count = count + 1
+                    enddo
+                    De(j,i) = real((sum_val / count) / sec_year / 1.d6)
+                else
+                    De(j,i) = 0.0
+                endif
+            enddo
+        enddo
+
+
+        write(fn,'(A,A,A)') 'chronage_', trim(chron_name(k)), '.0'
+        open (12,file=fn,access='direct',recl=nwords*kindr)
+        write (12,rec=nrec) De
+        close (12)
+
+
+        do i = 1, nx-1
+            do j = 1, nz-1
+                sum_val = 0.d0
+                count = 0
+                if (nmark_elem(j,i) > 0) then
+                    do n = 1, nmark_elem(j,i)
+                        kk = mark_id_elem(n,j,i)
+                        sum_val = sum_val + mark_chron_temp(k, kk)
+                        count = count + 1
+                    enddo
+                    De(j,i) = real(sum_val / count)
+                else
+                    De(j,i) = 0.0
+                endif
+            enddo
+        enddo
+        write(fn,'(A,A,A)') 'chrontemp_', trim(chron_name(k)), '.0'
+        open (12,file=fn,access='direct',recl=nwords*kindr)
+        write (12,rec=nrec) De
+        close (12)
+
+        ! Update element arrays for use by add_marker (new marker inheritance)
+        do i = 1, nx-1
+            do j = 1, nz-1
+                if (nmark_elem(j,i) > 0) then
+                    chron_temp(k, j, i) = dble(De(j,i))
+                    sum_val = 0.d0
+                    count = 0
+                    do n = 1, nmark_elem(j,i)
+                        kk = mark_id_elem(n,j,i)
+                        sum_val = sum_val + mark_chron_time(k, kk)
+                        count = count + mark_chron_if(k, kk)
+                    enddo
+                    chron_time(k, j, i) = sum_val / nmark_elem(j,i)
+                    ! majority vote: closed if >50% markers are closed (chron_if=1)
+                    chron_if(k, j, i) = count / nmark_elem(j,i)
+                endif
+            enddo
+        enddo
+    enddo
+
+    deallocate(De)
+
+end subroutine out_thermochron_grid

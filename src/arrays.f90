@@ -20,7 +20,9 @@ module arrays
       strainr(:,:,:,:), flux(:,:,:,:), &
       aps(:,:),visn(:,:),e2sr(:,:), &
       temp0(:,:),source(:,:),shrheat(:,:), &
-      bcstress(:,:)
+      bcstress(:,:), &
+      chron_temp(:,:,:), chron_time(:,:,:), max_temp(:,:)
+  integer, allocatable :: chron_if(:,:,:)
 
   double precision, allocatable :: se2sr(:,:,:), sshrheat(:,:)
 
@@ -36,10 +38,10 @@ module arrays
 
 contains
 
-  subroutine allocate_arrays(nz, nx, nphase)
+  subroutine allocate_arrays
+    use params
     implicit none
 
-    integer, intent(in) :: nz, nx, nphase
     integer, parameter :: ntri = 4    ! triangles per element
 
     allocate(cord(nz, nx, 2))
@@ -93,6 +95,14 @@ contains
     allocate(dummye(nz-1, nx-1))
     allocate(stmpn(max(nx,nz)))
     allocate(itmp(nz, nx))
+
+    if (ithermochron > 0) then
+        allocate(max_temp(nz, nx))
+        allocate(chron_temp(nchron, nz-1, nx-1))
+        allocate(chron_time(nchron, nz-1, nx-1))
+        allocate(chron_if(nchron, nz-1, nx-1))
+        chron_if = 1
+    endif
 
   end subroutine allocate_arrays
 

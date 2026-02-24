@@ -3,6 +3,7 @@
 from __future__ import print_function
 import sys, os, zlib, base64, glob
 
+
 try:
     import numpy as np
 except ImportError:
@@ -286,6 +287,45 @@ class Flac(object):
         return fmagma
 
 
+    def read_tempmax(self, frame):
+        columns = 1
+        f = open('tempmax.0', 'rb')
+        offset = (frame-1) * columns * self.nelements * sizeoffloat
+        f.seek(offset)
+        d = self._read_data(f, columns, count=self.nelements)
+        self._reshape_elemental_fields(d)
+        return d
+
+    def read_cooling_rate(self, frame):
+        columns = 1
+        f = open('cooling_rate.0', 'rb')
+        offset = (frame-1) * columns * self.nelements * sizeoffloat
+        f.seek(offset)
+        d = self._read_data(f, columns, count=self.nelements)
+        self._reshape_elemental_fields(d)
+        return d
+
+    def read_chron_age(self, frame, chron_name):
+        fname = 'chronage_%s.0' % chron_name.strip("'\"").strip()
+        columns = 1
+        f = open(fname, 'rb')
+        offset = (frame-1) * columns * self.nelements * sizeoffloat
+        f.seek(offset)
+        d = self._read_data(f, columns, count=self.nelements)
+        self._reshape_elemental_fields(d)
+        return d
+
+    def read_chron_temp(self, frame, chron_name):
+        fname = 'chrontemp_%s.0' % chron_name.strip("'\"").strip()
+        columns = 1
+        f = open(fname, 'rb')
+        offset = (frame-1) * columns * self.nelements * sizeoffloat
+        f.seek(offset)
+        d = self._read_data(f, columns, count=self.nelements)
+        self._reshape_elemental_fields(d)
+        return d
+
+
     def read_diss(self, frame):
         columns = 1
         f = open('diss.0')
@@ -316,41 +356,78 @@ class Flac(object):
         return phase
 
 
-    def read_markers(self, frame):
+    def read_markers(self, frame, read_thermochron=False):
         # read tracer size
+        def read_rec(f, rec, count, dtype=None):
+            '''Read record by 1-indexed record number (direct-access style)'''
+            if dtype is None:
+                dtype = default_dtype
+            itemsize = dtype().itemsize
+            f.seek((rec - 1) * count * itemsize)
+            return np.fromfile(f, dtype, count)
+
         tmp = np.fromfile('_markers.0', sep=' ')
         tmp.shape = (-1, 4)
         n = int(tmp[frame-1,2])
 
         suffix = '.%06d.0' % frame
         f2 = open('marker2' + suffix)
-        dead = self._read_data(f2, count=n, dtype=np.int32).astype(np.uint8)
-        tmp = self._read_data(f2, count=n, dtype=np.int32).astype(np.uint8)
+        dead = read_rec(f2, 1, n, dtype=np.int32).astype(np.uint8)
+        tmp = read_rec(f2, 2, n, dtype=np.int32).astype(np.uint8)
         phase = self._remove_dead_markers(tmp, dead)
-        tmp = self._read_data(f2, count=n, dtype=np.int32)
+        tmp = read_rec(f2, 3, n, dtype=np.int32)
         ntriag = self._remove_dead_markers(tmp, dead)
-        f2.close()
 
         f1 = open('marker1' + suffix)
-        tmp = self._read_data(f1, count=n)
-        x = self._remove_dead_markers(tmp, dead)
-
-        tmp = self._read_data(f1, count=n)
-        z = self._remove_dead_markers(tmp, dead)
-
-        tmp = self._read_data(f1, count=n)
-        age = self._remove_dead_markers(tmp, dead)
-
-        tmp = self._read_data(f1, count=n)
-        a1 = self._remove_dead_markers(tmp, dead)
-
-        tmp = self._read_data(f1, count=n)
-        a2 = self._remove_dead_markers(tmp, dead)
+        tmp = read_rec(f1, 1, n); x   = self._remove_dead_markers(tmp, dead)
+        tmp = read_rec(f1, 2, n); z   = self._remove_dead_markers(tmp, dead)
+        tmp = read_rec(f1, 3, n); age = self._remove_dead_markers(tmp, dead)
+        tmp = read_rec(f1, 4, n); a1  = self._remove_dead_markers(tmp, dead)
+        tmp = read_rec(f1, 5, n); a2  = self._remove_dead_markers(tmp, dead)
 
         tmp = np.arange(1, n+1)
         ID = self._remove_dead_markers(tmp, dead)
+
+        # Check for thermochronology
+        chron_names = []
+        if os.path.exists('chron.0'):
+            with open('chron.0', 'r') as f:
+                chron_names = [line.strip() for line in f if line.strip()]
+
+        nchron = len(chron_names)
+
+        if not read_thermochron or nchron == 0:
+            f1.close()
+            f2.close()
+            return x, z, age, phase, ID, a1, a2, ntriag
+
+        chron_ages = []
+        chron_temps = []
+        for j in range(1, nchron + 1):
+            tmp = read_rec(f1, 5 + j, n)
+            chron_ages.append(self._remove_dead_markers(tmp, dead))
+
+        for j in range(1, nchron + 1):
+            tmp = read_rec(f1, 5 + nchron + j, n)
+            chron_temps.append(self._remove_dead_markers(tmp, dead))
+
+        tmp = read_rec(f1, 5 + 2*nchron + 1, n)
+        temp = self._remove_dead_markers(tmp, dead)
+
+        tmp = read_rec(f1, 5 + 2*nchron + 2, n)
+        tempmax = self._remove_dead_markers(tmp, dead)
+
+        tmp = read_rec(f1, 5 + 2*nchron + 3, n)
+        cooling_rate = self._remove_dead_markers(tmp, dead)
+
+        # Read chron_if from marker2
+        chron_ifs = []
+        for j in range(1, nchron + 1):
+            tmp = read_rec(f2, 3 + j, n, dtype=np.int32)
+            chron_ifs.append(self._remove_dead_markers(tmp, dead))
+
         f1.close()
-        return x, z, age, phase, ID, a1, a2, ntriag
+        return x, z, age, phase, ID, a1, a2, ntriag, chron_names, chron_ages, chron_temps, chron_ifs, temp, tempmax, cooling_rate
 
 
     def read_tracers(self):
@@ -1001,4 +1078,5 @@ if __name__ == '__main__':
     printing(field)
 
     #print('# time =', fl.time[fl.nrec-1], 'Myrs')
+
 

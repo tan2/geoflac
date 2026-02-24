@@ -256,6 +256,27 @@ read(4,*,err=1000) weaken_ratio_plastic, weaken_ratio_viscous
 line = line + 1
 weaken_ratio_viscous = log(weaken_ratio_viscous)
 
+! THERMOCHRONOLOGY
+call AdvanceToNextInputLine(4, line)
+read(4,*,err=1000) ithermochron
+line = line + 1
+call AdvanceToNextInputLine(4, line)
+read(4,*,err=1000) chron_file
+line = line + 1
+call AdvanceToNextInputLine(4, line)
+read(4,*,err=1000) nchron
+line = line + 1
+do i = 1, nchron
+    call AdvanceToNextInputLine(4, line)
+    read(4,*,err=1000) chron_name(i), nchron_fpair(i)
+    line = line + 1
+end do
+open(11,file='chron.0')
+do i=1,nchron
+  write(11,*) chron_name(i)
+end do
+close(11)
+
 ! REMESHING
 call AdvanceToNextInputLine(4, line)
 read(4,*,err=1000)  ny_rem, mode_rem, ntest_rem, angle_rem

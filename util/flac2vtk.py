@@ -4,6 +4,7 @@
 '''
 from __future__ import print_function
 import sys, os
+
 import zlib, base64, glob
 import numpy as np
 import flac
@@ -55,12 +56,11 @@ def main(path, start=1, end=-1):
         x0, z0 = fl.read_original_mesh(i)
         vts_dataarray(fvts, x0.swapaxes(0,1), 'x0')
         vts_dataarray(fvts, z0.swapaxes(0,1), 'z0')
-
         fvts.write('  </PointData>\n')
 
         # element-based field
         fvts.write('  <CellData>\n')
-
+        
         # logrithm of strain rate 2nd invariant
         a = fl.read_srII(i)
         srat = a
@@ -70,7 +70,6 @@ def main(path, start=1, end=-1):
         vts_dataarray(fvts, srxx.swapaxes(0,1), 'Sr xx')
         vts_dataarray(fvts, srzz.swapaxes(0,1), 'Sr zz')
         vts_dataarray(fvts, srxz.swapaxes(0,1), 'Sr xz')
-
         sr1 = compute_s1(srxx, srzz, srxz)
         vts_dataarray(fvts, sr1.swapaxes(0,1), 'Strain rate 1-axis', 3)
 
@@ -98,7 +97,7 @@ def main(path, start=1, end=-1):
         sxx = fl.read_sxx(i)
         vts_dataarray(fvts, sxx.swapaxes(0,1), 'Sxx')
 
-        syy = fl.read_szz(i)
+        syy = fl.read_syy(i)
         vts_dataarray(fvts, syy.swapaxes(0,1), 'Syy')
 
         szz = fl.read_szz(i)
@@ -110,7 +109,6 @@ def main(path, start=1, end=-1):
         pressure = fl.read_pres(i)
         vts_dataarray(fvts, pressure.swapaxes(0,1), 'Pressure')
 
-        # compression axis of stress
         a = compute_s1(sxx, szz, sxz)
         vts_dataarray(fvts, a.swapaxes(0,1), 's1', 3)
 
@@ -137,10 +135,38 @@ def main(path, start=1, end=-1):
         a = sii * 1e8 * eii
         vts_dataarray(fvts, a.swapaxes(0,1), 'Work')
 
+        # Thermochronology outputs
+        try:
+            d = fl.read_tempmax(i)
+            if d is not None:
+                vts_dataarray(fvts, d.swapaxes(0,1), 'Max Temperature')
+
+            d = fl.read_cooling_rate(i)
+            if d is not None:
+                vts_dataarray(fvts, d.swapaxes(0,1), 'Cooling Rate')
+
+            chron_names = []
+            if os.path.exists('chron.0'):
+                with open('chron.0', 'r') as f:
+                    chron_names = [line.strip().strip("'\"") for line in f if line.strip()]
+
+            for name in chron_names:
+                d = fl.read_chron_age(i, name)
+                if d is not None:
+                    vts_dataarray(fvts, d.swapaxes(0,1), name + ' Age')
+
+            for name in chron_names:
+                d = fl.read_chron_temp(i, name)
+                if d is not None:
+                    vts_dataarray(fvts, d.swapaxes(0,1), name + ' Closure Temperature')
+        except Exception:
+            pass
+
         fvts.write('  </CellData>\n')
 
         # coordinate
         x, z = fl.read_mesh(i)
+            
         tmp[:,:,0] = x
         tmp[:,:,1] = z
         fvts.write('  <Points>\n')
@@ -236,6 +262,7 @@ def vts_footer(f):
     return
 
 
+
 if __name__ == '__main__':
 
     if len(sys.argv) < 2:
@@ -258,3 +285,5 @@ If both frame_min and frame_max are not given, processing all frames''')
             end = int(sys.argv[3])
 
     main(path, start, end)
+
+

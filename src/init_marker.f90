@@ -160,5 +160,7 @@ write(333,*) '# of markers', nmarkers
 
 call marker2elem
 
+if (ithermochron .gt. 0) call init_thermochron
+
 return
 end subroutine init_marker
