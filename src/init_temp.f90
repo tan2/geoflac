@@ -185,7 +185,7 @@ subroutine init_geotherm_profile(n, i, age_1n, tp1n, tp2n)
 
             ! ss part with radiogenic heat
             if (y <= ymoho) then
-                tss = t_top + qm/cond*y + (dens_c*hs*hr*hr*1.d+6/cond)*(1d0-exp(-y/hr)))
+                tss = t_top + qm/cond*y + (dens_c*hs*hr*hr*1.d+6/cond)*(1d0-exp(-y/hr))
             elseif (y <= yL0) then ! below moho, inside lithosphere
                 tss = tm + qm/cond*(y-ymoho)
             else
