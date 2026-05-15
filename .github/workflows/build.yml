@@ -1,0 +1,71 @@
+name: Build
+
+on:
+  push:
+    branches: [ "master" ]
+    tags: [ "v*" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-13, macos-14, windows-latest]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Fortran (Linux/macOS)
+        if: runner.os != 'Windows'
+        uses: fortran-lang/setup-fortran@v1
+        with:
+          compiler: gcc
+          version: 13
+
+      - name: Setup MSYS2 (Windows)
+        if: runner.os == 'Windows'
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          install: >-
+            make
+            mingw-w64-x86_64-gcc-fortran
+
+      - name: Build (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: |
+          make -C src
+
+      - name: Build (Windows)
+        if: runner.os == 'Windows'
+        shell: msys2 {0}
+        run: |
+          make -C src
+
+      - name: Prepare Artifacts
+        shell: bash
+        run: |
+          mkdir -p dist
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            # The executable might be named 'flac' or 'flac.exe' depending on the environment
+            if [ -f src/flac.exe ]; then
+              cp src/flac.exe dist/flac.exe
+            elif [ -f src/flac ]; then
+              cp src/flac dist/flac.exe
+            fi
+          else
+            cp src/flac dist/flac
+          fi
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: flac-${{ matrix.os }}
+          path: dist/
