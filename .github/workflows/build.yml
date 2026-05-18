@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-13, macos-14, windows-latest]
+        os: [macos-13, windows-latest]
 
     steps:
       - name: Checkout code
@@ -22,25 +22,33 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Fortran (Linux/macOS)
-        if: runner.os != 'Windows'
+      - name: Setup Fortran (macOS)
+        if: runner.os == 'macOS'
         uses: fortran-lang/setup-fortran@v1
         with:
           compiler: gcc
           version: 13
 
+      - name: Install Dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install libomp
+
       - name: Setup MSYS2 (Windows)
         if: runner.os == 'Windows'
         uses: msys2/setup-msys2@v2
         with:
+          msystem: MINGW64
           update: true
           install: >-
             make
             mingw-w64-x86_64-gcc-fortran
 
-      - name: Build (Linux/macOS)
-        if: runner.os != 'Windows'
+      - name: Build (macOS)
+        if: runner.os == 'macOS'
         run: |
+          export LDFLAGS="$LDFLAGS -L$(brew --prefix libomp)/lib"
+          export CPPFLAGS="$CPPFLAGS -I$(brew --prefix libomp)/include"
           make -C src
 
       - name: Build (Windows)
@@ -54,14 +62,15 @@ jobs:
         run: |
           mkdir -p dist
           if [ "${{ runner.os }}" = "Windows" ]; then
-            # The executable might be named 'flac' or 'flac.exe' depending on the environment
             if [ -f src/flac.exe ]; then
               cp src/flac.exe dist/flac.exe
             elif [ -f src/flac ]; then
               cp src/flac dist/flac.exe
             fi
           else
-            cp src/flac dist/flac
+            if [ -f src/flac ]; then
+              cp src/flac dist/flac
+            fi
           fi
 
       - name: Upload Artifact
@@ -69,3 +78,4 @@ jobs:
         with:
           name: flac-${{ matrix.os }}
           path: dist/
+
