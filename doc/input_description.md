@@ -98,7 +98,6 @@
 |**itemp-bc, bot-bc**| int, dbl | Thermal boundary conditions at the bottom (1-T, 2-Flux). If **itemp-bc**=1, **bot-bc** is the temperature in Celsius. If itemp-bc=2, bot-bc is the heat flux in mW/m2.|
 |**irtemp**| int | Initial thermal distributions from a file? 0-no, 1-yes.|
 |**tempfile**| string | Filename containing temperature distribution. When **irtemp**=0, this file is read.  File format is one column of temperatures written in blocks of nz, looping over nx.  E.g., `do ix=1,nx; do iz=1,nz; read T(iz,ix); enddo; enddo;`|
-|**time-scale** | dbl | not used.|
 
 
 ## INITIAL STRUCTURE
@@ -159,7 +158,7 @@ Phase changes are activated and will take place among certain of the defined pha
 | Parameters  | Types |  Description  |
 |:------------|:-----:|:--------------|
 |**nphase**| int | Number of different types of phases (materials), max. 20.|
-|**_irheol(i),visc(i), den(i), alfa(i),beta(i), pln(i),acoef(i),eactiv(i), rl(i),rm(i), plstrain1(i),plstrain2(i), fric1(i),fric2(i), cohesion1(i),cohesion2(i), dilat1(i),dilat2(i), conduct(i),cp(i), ts(i),tl(i),tk(i),fk(i)_**| int, 24 dbl | See below.|
+|**_irheol(i),visc(i), den(i), alfa(i),beta(i), pln(i),acoef(i),eactiv(i), vactiv(i), rl(i),rm(i), plstrain1(i),plstrain2(i), fric1(i),fric2(i), cohesion1(i),cohesion2(i), dilat1(i),dilat2(i), conduct(i),cp(i), ts(i),tl(i),tk(i),fk(i)_**| int, 24 dbl | See below.|
 
 
 +  **irheol**: Rheology for this phase (see below).
@@ -175,8 +174,8 @@ Phase changes are activated and will take place among certain of the defined pha
 +  **pln**:  n for viscosity power law
 +  **acoef**: A for viscosity power law
 +  **eactiv**: E - activation energy for viscosity
-+  **vactiv**: V - activation volume for viscosity
-+ The non-newtonian viscosity is calculated by this equation: visc = 0.25e6 (0.75 **acoef**)^(-1/**pln**) *strain-rate*^(1/**pln** - 1) exp[ **eactiv** / (**pln** *R* (*T* + 273))]. Where *strain-rate* is the second invariant of the deviatoric strain rate, *R* is the gas constant, *T* is the temperature.
++  **vactiv**: V - activation volume for viscosity, in m^3/mol (or Pa^-1 equivalent).
++ The non-newtonian viscosity is calculated by this equation: visc = 0.25e6 (0.75 **acoef**)^(-1/**pln**) *strain-rate*^(1/**pln** - 1) exp[ (**eactiv** + **vactiv** * *pressure*) / (**pln** *R* (*T* + 273))]. Where *strain-rate* is the second invariant of the deviatoric strain rate, *R* is the gas constant (8.314 J/(mol K)), *T* is the temperature in Celsius, and *pressure* is the pressure in Pascal.
 +  **rl**:  Lame parameter: lambda
 +  **rm**:  Shear modulus: mu
 + Under tectonic time scale, the elastic constants are different from that from seismic waves.
