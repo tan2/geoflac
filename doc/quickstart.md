@@ -1,0 +1,61 @@
+# GeoFLAC Quick-Start Guide
+
+This guide will walk you through compiling the solver, running the standard subduction case, and visualizing the numerical results.
+
+---
+
+## 1. Compilation
+
+1. Navigate to the source directory:
+   ```bash
+   cd src
+   ```
+2. Build the optimized parallel binary with your Fortran compiler (e.g., `gfortran`):
+   ```bash
+   make F90=gfortran
+   ```
+   This will generate a compiled binary named `flac` in the `src/` directory.
+
+---
+
+## 2. Running Your First Simulation
+
+We provide a standard **Ocean-Ocean Subduction** model under the `examples/` directory.
+
+1. Navigate to the examples folder:
+   ```bash
+   cd ../examples
+   ```
+2. Clear out any old output files:
+   ```bash
+   rm -f *.0 sys.msg output.asc _contents.rs
+   ```
+3. Set the number of threads for parallel execution (OpenMP):
+   ```bash
+   export OMP_NUM_THREADS=$(nproc)
+   ```
+4. Run the subduction simulation using the input file:
+   ```bash
+   ../src/flac subduction.inp
+   ```
+
+You will see progress messages indicating step count and elapsed execution time. Once the simulation completes, it will display `Congratulations !`.
+
+---
+
+## 3. Visualizing Results with ParaView
+
+GeoFLAC writes its outputs in custom format files. We provide a utility script to convert these outputs into standard VTK files.
+
+1. Convert the generated binary outputs to VTK files:
+   ```bash
+   ../util/flac2vtk.py .
+   ```
+   This will generate a series of `.vts` structured grid files (e.g., `flac.000001.vts`, `flac.000002.vts`, etc.).
+2. Launch **ParaView** (or VisIt).
+3. Open the `flac.vts` file series.
+4. Select the variables you want to display:
+   * **`phase`**: Visualizes different geological layers and material phases.
+   * **`temp`**: Visualizes the temperature field (isotherms).
+   * **`vel`**: Visualizes velocity vectors.
+5. To observe topography evolution and structural deformation, apply the **Warp By Vector** filter in ParaView using the velocity/displacement vectors.
