@@ -29,12 +29,14 @@ These errors occur during initialization inside the coordinate setup module (`sr
 * **Cause:** The sum of elements across all Z-direction zones does not match the total elements specified on the mesh parameters line (`nez`).
 * **Resolution:** Adjust the number of elements in each zone so that their sum exactly equals the second integer on the Mesh Parameters line (`nez = nz - 1`).
 
-### `STOP 41` — Negative Element Area during Initialization
+### `STOP 41` — Negative Element Area
 * **Error Message in `sys.msg`:** `INIT_AREAS: Negative area!`
-* **Cause:** The coordinates specified for the grid result in a negative or zero-area element at the very beginning of the simulation. This is typically caused by:
-  1. A bad custom coordinate input file where nodes overlap, intersect, or are defined in an inverted order.
-  2. Extremely warped zone size scaling that forces nodes to cross each other.
-* **Resolution:** Check your initial grid parameters or the custom coordinate input file. Ensure that nodes are defined in a clean, non-intersecting grid and that coordinate boundaries do not cross.
+* **Cause:** The coordinates specified for the grid result in a negative or zero-area element. This can occur in two scenarios:
+  1. **At Initialization:** A bad custom coordinate input file where nodes overlap, intersect, or are defined in an inverted order, or extremely warped initial zone spacing.
+  2. **During Mid-Simulation Remeshing:** The rate of deformation or erosion is too high, leading to a severely distorted mesh when the solver attempts to calculate new element areas.
+* **Resolution:** 
+  - If at initialization, check your initial grid parameters or the custom coordinate input file. Ensure nodes are defined in a clean, non-intersecting layout.
+  - If during execution, reduce the remeshing test interval `ntest-rem` (or `ntest_rem`) or increase the remeshing angle threshold `angle-rem` (or `angle_rem`) to trigger remeshing more frequently before deformation becomes excessive.
 
 ---
 
@@ -53,6 +55,8 @@ These errors are related to external file access, parsing errors, or model coord
 * **Error Message in stdout:** `Error reading file "<filename>" at line <line_number>`
 * **Cause:** The solver encountered a parsing error (e.g., incorrect format, wrong data type, missing parameter, or trailing garbage text) while parsing the `.inp` parameter file at the specified line.
 * **Resolution:** Open your `.inp` file, go to the reported line number, and check the format of the parameter value. Ensure it matches the expected type (integer, float, or string) and that no required entries on that line are missing.
+  > [!TIP]
+  > Because the solver parses lines sequentially, a parsing error reported at a specific line can sometimes be caused by a missing value or malformed formatting on the **preceding** line, which shifts subsequent values out of alignment. Check both the reported line and the lines immediately above it.
 
 ### `STOP` — Unexpected End of Input File (EOF)
 * **Error Message in stdout:** `AdvanceToNextInputLine: EOF reached!`
