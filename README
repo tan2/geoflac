@@ -1,57 +1,49 @@
-==========
-Compile
-==========
+# GeoFLAC
 
-$ cd src
-$ make F90=<f90 compiler>
+GeoFLAC is a numerical solver for geodynamic modeling, simulating long-term tectonic and lithospheric deformation using a fast Lagrangian analysis of continua (FLAC) method.
 
-This will generate a binary "flac".
+---
 
-Supported compilers:
-gfortran -- GNU (default), v4.2 or later, otherwise openmp is disabled
-ifort    -- Intel
-pgf90    -- PGI, the only compiler for openacc
-f90      -- Sun Studio (less tested)
+## 🚀 Quick-Start Guide
 
-The default is to build optimized binary with openmp. Several command line
-options can build other type of binaries.
+To get up and running quickly—including compiling the solver, running the standard subduction case, and visualizing the numerical results—please refer to the step-by-step guide:
 
-debug=1    -- debugging binary (detecting various coding errors at runtime)
-omp=0      -- disable openmp
-acc=1      -- enable openacc on nvidia gpu
-coverage=1 -- code coverage analysis (only for gfortran)
-gprof=1    -- profiling
+👉 **[Quick-Start Guide](doc/quickstart.md)**
 
-E.g. to make a debugging binary
-$ make debug=1
+---
 
+## 📖 Solver Documentation
 
-==========
-Run
-==========
+The `doc/` directory contains comprehensive manuals and reference materials for configuring and troubleshooting your simulations:
 
-To run the provided example input, execute following commands:
-$ cd geoflac/examples
-$ rm *.0 sys.msg                           # delete old output files
-$ export OMP_NUM_THREADS=<# of CPU cores>  # you can skip this step if using ALL
-                                           # available CPU cores
-$ ../src/flac subduction.inp
+* **[Quick-Start Guide](doc/quickstart.md)**: Steps to build and run your first model.
+* **[Input Parameter Reference](doc/input_description.md)**: Detailed descriptions of all parameters inside the `.inp` configuration file.
+* **[Troubleshooting Guide](doc/troubleshooting.md)**: A complete reference of numeric/textual `STOP` exit codes, common runtime errors, stability limits, and their resolutions.
 
-To restart a model from previous output, execute following commands:
-$ mv _contents.save _contents.rs
-$ ../src/flac subduction.inp
+---
 
-The description of input parameters can be found in doc/ directory.
+## 🛠️ Advanced Compilation Options
 
+While the Quick-Start Guide covers standard compilation, the GeoFLAC Makefile supports several advanced compilation flags when compiling in the `src/` directory:
 
-==========
-Plot
-==========
+```bash
+# General usage:
+make F90=<f90 compiler> [FLAGS]
+```
 
-$ ../util/flac2vtk.py .
+### Supported Compilers
+* `gfortran` — GNU compiler (default, v4.2 or later required for OpenMP support).
+* `ifort` — Intel compiler.
+* `pgf90` — PGI compiler (required for compiling GPU acceleration with OpenACC).
+* `f90` — Sun Studio compiler.
 
-This will generate a series of VTK files (*.vts), which can be visualized by
-several programs, e.g. ParaView, or LLNL's VisIt.
+### Build Flags
+* `debug=1` — Build a debugging binary (enables bounds-checking and detects runtime coding errors).
+* `omp=0` — Disable OpenMP (multi-threaded CPU parallelization).
+* `acc=1` — Enable OpenACC (GPU acceleration).
+* `coverage=1` — Perform code coverage analysis (only supported by `gfortran`).
+* `gprof=1` — Enable profiling with `gprof`.
 
-----
-by Eh Tan, Jun. 2020
+---
+
+*Original author: Eh Tan (June 2020)*
