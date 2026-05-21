@@ -12,6 +12,7 @@ This guide will walk you through compiling the solver, running the standard subd
    ```
 2. Build the optimized parallel binary with your Fortran compiler (e.g., `gfortran`):
    ```bash
+   make clean
    make F90=gfortran
    ```
    This will generate a compiled binary named `flac` in the `src/` directory.
@@ -43,7 +44,7 @@ You will see progress messages indicating step count and elapsed execution time.
 
 ---
 
-## 3. Visualizing Results with ParaView
+## 3. Visualizing Results with VisIt or ParaView
 
 GeoFLAC writes its outputs in custom format files. We provide a utility script to convert these outputs into standard VTK files.
 
@@ -52,10 +53,12 @@ GeoFLAC writes its outputs in custom format files. We provide a utility script t
    ../util/flac2vtk.py .
    ```
    This will generate a series of `.vts` structured grid files (e.g., `flac.000001.vts`, `flac.000002.vts`, etc.).
-2. Launch **ParaView** (or VisIt).
-3. Open the `flac.vts` file series.
+2. Launch **VisIt** or **ParaView**.
+3. Open the `flac*.vts` file series.
 4. Select the variables you want to display:
-   * **`phase`**: Visualizes different geological layers and material phases.
-   * **`temp`**: Visualizes the temperature field (isotherms).
-   * **`vel`**: Visualizes velocity vectors.
-5. To observe topography evolution and structural deformation, apply the **Warp By Vector** filter in ParaView using the velocity/displacement vectors.
+    * **`Phase`**: Visualizes different material phases.
+    * **`Strain rate`**: Visualizes the deformation. 
+    * **`Temperature`**: Visualizes the temperature field. It is usually plotted as contours (isotherms).
+    * **`Velocity`**: Visualizes velocity vectors.
+5. Remember to fix the min/max range of the colorbar and the magnitude scale of vectors.
+
