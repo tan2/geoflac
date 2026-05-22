@@ -21,14 +21,27 @@ This document describes the primary data arrays used in the `geoflac` Fortran en
 
 ---
 
-## `xoriginal` / `zoriginal`
+## `xoriginal`
 
-*   **Meaning:** Nodal coordinates at the beginning of the experiment (the initial reference state). They are used to calculate the cumulative horizontal and vertical displacement of each grid node since the start of the simulation (by taking `cord(:,:,1) - xoriginal` and `cord(:,:,2) - zoriginal`).
+*   **Meaning:** Nodal X-coordinates at the beginning of the experiment (the initial reference state). Used to calculate the cumulative horizontal displacement of each grid node since the start of the simulation (`cord(:,:,1) - xoriginal`) [m].
 *   **Shape:** `(nz, nx)`
 *   **Dimension 1 (`nz`):** Vertical index (node), from 1 (surface) to `nz` (bottom).
 *   **Dimension 2 (`nx`):** Horizontal index (node), from 1 (left) to `nx` (right).
 *   **Update Locations:**
-    *   **Initialization:** `src/setflac.f90` (stores the initial grid coordinates: `xoriginal = cord(:,:,1)` and `zoriginal = cord(:,:,2)`).
+    *   **Initialization:** `src/setflac.f90` (stores the initial grid coordinates: `xoriginal = cord(:,:,1)`).
+    *   **Remeshing:** `src/remesh.f90` (interpolates these reference coordinates onto the new grid so that displacement tracking is preserved across remeshing events).
+    *   **Restart/State:** Written in `src/saveflac.f90` and loaded in `src/rsflac.f90`.
+
+---
+
+## `zoriginal`
+
+*   **Meaning:** Nodal Z-coordinates at the beginning of the experiment (the initial reference state). Used to calculate the cumulative vertical displacement of each grid node since the start of the simulation (`cord(:,:,2) - zoriginal`) [m].
+*   **Shape:** `(nz, nx)`
+*   **Dimension 1 (`nz`):** Vertical index (node), from 1 (surface) to `nz` (bottom).
+*   **Dimension 2 (`nx`):** Horizontal index (node), from 1 (left) to `nx` (right).
+*   **Update Locations:**
+    *   **Initialization:** `src/setflac.f90` (stores the initial grid coordinates: `zoriginal = cord(:,:,2)`).
     *   **Remeshing:** `src/remesh.f90` (interpolates these reference coordinates onto the new grid so that displacement tracking is preserved across remeshing events).
     *   **Restart/State:** Written in `src/saveflac.f90` and loaded in `src/rsflac.f90`.
 
@@ -182,15 +195,25 @@ This document describes the primary data arrays used in the `geoflac` Fortran en
 
 ---
 
-## `amass` / `rmass`
+## `amass`
 
-*   **Meaning:** Nodal masses. `rmass` is the physical (real) mass, while `amass` is the inertial mass used for scaling the explicit time-stepping scheme.
+*   **Meaning:** Nodal inertial mass used for scaling the explicit time-stepping scheme (mass scaling) to ensure numerical stability for a given time step.
+*   **Shape:** `(nz, nx)`
+*   **Dimension 1 (`nz`):** Vertical index (node).
+*   **Dimension 2 (`nx`):** Horizontal index (node).
+*   **Update Locations:**
+    *   **Inertial Mass (`amass`):** `src/dt_mass.f90` (calculated to ensure stability for a given time step, often using "mass scaling" to speed up static simulations).
+
+---
+
+## `rmass`
+
+*   **Meaning:** Physical (real) nodal mass integrated from the densities of surrounding elements [kg].
 *   **Shape:** `(nz, nx)`
 *   **Dimension 1 (`nz`):** Vertical index (node).
 *   **Dimension 2 (`nx`):** Horizontal index (node).
 *   **Update Locations:**
     *   **Real Mass (`rmass`):** `src/rmasses.f90` (integrated from the densities of surrounding elements).
-    *   **Inertial Mass (`amass`):** `src/dt_mass.f90` (calculated to ensure stability for a given time step, often using "mass scaling" to speed up static simulations).
 
 ---
 
@@ -198,9 +221,9 @@ The following arrays are for the Lagrangian markers:
 
 ---
 
-## `mark_x` / `mark_y`
+## `mark_x`
 
-*   **Meaning:** Global Eulerian coordinates of Lagrangian markers. It is accurate only during the remeshing.
+*   **Meaning:** Global Eulerian X-coordinates of Lagrangian markers [m]. Accurate only during remeshing.
 *   **Shape:** `(max_markers)`
 *   **Dimension 1:** Total marker index.
 *   **Update Locations:**
@@ -210,9 +233,31 @@ The following arrays are for the Lagrangian markers:
 
 ---
 
-## `mark_a1` / `mark_a2`
+## `mark_y`
 
-*   **Meaning:** Local barycentric coordinates of markers within a specific element.
+*   **Meaning:** Global Eulerian Z-coordinates (depth/vertical) of Lagrangian markers [m]. Accurate only during remeshing. Note that in the codebase `mark_y` corresponds to the vertical coordinate.
+*   **Shape:** `(max_markers)`
+*   **Dimension 1:** Total marker index.
+*   **Update Locations:**
+    *   **Initialization:** `src/init_marker.f90`.
+    *   **Main Update:** `src/fl_move.f90` (advection using interpolated nodal velocities).
+    *   **Creation:** `src/marker2elem.f90` (fills element gaps).
+
+---
+
+## `mark_a1`
+
+*   **Meaning:** First local barycentric coordinate of markers within a specific element (relative distance to horizontal element boundaries).
+*   **Shape:** `(max_markers)`
+*   **Dimension 1:** Total marker index.
+*   **Update Locations:**
+    *   **Main Update:** `src/marker2elem.f90` (calculated whenever markers move or grid is reorganized).
+
+---
+
+## `mark_a2`
+
+*   **Meaning:** Second local barycentric coordinate of markers within a specific element (relative distance to vertical element boundaries).
 *   **Shape:** `(max_markers)`
 *   **Dimension 1:** Total marker index.
 *   **Update Locations:**
@@ -531,12 +576,25 @@ The following arrays are for the Lagrangian markers:
 
 ---
 
-## `nmark_elem` / `mark_id_elem`
+## `nmark_elem`
 
-*   **Meaning:** Mapping between grid elements and the Lagrangian markers they currently contain.
-*   **Shape:** `nmark_elem(nz-1, nx-1)` and `mark_id_elem(max_markers_per_elem, nz-1, nx-1)`
-*   **`nmark_elem`:** Stores the number of markers located within the element at vertical index `j` and horizontal index `i`.
-*   **`mark_id_elem`:** Stores the global indices (IDs) of the markers within element `(j, i)`. The first dimension (up to `max_markers_per_elem`) is the local list of markers for that element.
+*   **Meaning:** The count/number of active Lagrangian markers located within each grid element.
+*   **Shape:** `(nz-1, nx-1)`
+*   **Dimension 1 (`nz-1`):** Vertical element index.
+*   **Dimension 2 (`nx-1`):** Horizontal element index.
+*   **Update Locations:**
+    *   **Re-indexing:** `src/marker2elem.f90` (markers are re-binned into their containing elements after advection).
+    *   **Creation/Deletion:** `src/marker_data.f90` (updated via `add_marker` or when markers are removed).
+
+---
+
+## `mark_id_elem`
+
+*   **Meaning:** Global indices (IDs) of the Lagrangian markers located within each grid element.
+*   **Shape:** `(max_markers_per_elem, nz-1, nx-1)`
+*   **Dimension 1 (`max_markers_per_elem`):** Local list of markers inside the element (up to 32).
+*   **Dimension 2 (`nz-1`):** Vertical element index.
+*   **Dimension 3 (`nx-1`):** Horizontal element index.
 *   **Update Locations:**
     *   **Re-indexing:** `src/marker2elem.f90` (markers are re-binned into their containing elements after advection).
     *   **Creation/Deletion:** `src/marker_data.f90` (updated via `add_marker` or when markers are removed).
