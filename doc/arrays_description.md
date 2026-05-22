@@ -118,7 +118,7 @@ This document describes the primary data arrays used in the `geoflac` Fortran en
     *   `1`: Sxx (horizontal normal stress) [Pa]
     *   `2`: Szz (vertical normal stress) [Pa]
     *   `3`: Sxz (shear stress) [Pa]
-    *   `4`: Syy (out-of-plane stress) [Pa]
+    *   `4`: Syy (out-of-plane stress) [Pa] (if `ndim`=3 is used)
 *   **Dimension 4 (4):** Sub-triangle index (each quadrilateral element is divided into 4 triangles in the FLAC method).
 *   **Update Locations:**
     *   **Initialization:** `src/init_stress.f90` (typically lithostatic stress).
@@ -151,6 +151,7 @@ This document describes the primary data arrays used in the `geoflac` Fortran en
 *   **Update Locations:**
     *   **Main Update:** `src/marker_data.f90` (calculated in `count_phase_ratio` based on markers in the element).
     *   **Phase Changes:** `src/change_phase.f90` (directly modifies ratios for processes like serpentinization or eclogitization).
+    *   **Remeshing:** Re-evaluated in `src/marker2elem.f90` after markers are redistributed.
 
 ---
 
@@ -164,6 +165,7 @@ This document describes the primary data arrays used in the `geoflac` Fortran en
     *   **Initialization:** `src/init_phase.f90` (can set initial weak zones).
     *   **Main Update:** `src/fl_rheol.f90` (accumulates when the stress state exceeds the Mohr-Coulomb yield criterion).
     *   **Healing:** `src/fl_rheol.f90` also implements an exponential decay (healing) if `tau_heal > 0`.
+    *   **Remeshing:** the plastic strain of incoming material is reset to 0.
 
 ---
 
@@ -181,7 +183,7 @@ This document describes the primary data arrays used in the `geoflac` Fortran en
 
 ## `force`
 
-*   **Meaning:** Net nodal force [N].
+*   **Meaning:** Net nodal force [Nt].
 *   **Shape:** `(nz, nx, 2)`
 *   **Dimension 1 (`nz`):** Vertical index (node).
 *   **Dimension 2 (`nx`):** Horizontal index (node).
@@ -217,104 +219,6 @@ This document describes the primary data arrays used in the `geoflac` Fortran en
 
 ---
 
-The following arrays are for the Lagrangian markers:
-
----
-
-## `mark_x`
-
-*   **Meaning:** Global Eulerian X-coordinates of Lagrangian markers [m]. Accurate only during remeshing.
-*   **Shape:** `(max_markers)`
-*   **Dimension 1:** Total marker index.
-*   **Update Locations:**
-    *   **Initialization:** `src/init_marker.f90`.
-    *   **Main Update:** `src/fl_move.f90` (advection using interpolated nodal velocities).
-    *   **Creation:** `src/marker2elem.f90` (fills element gaps).
-
----
-
-## `mark_y`
-
-*   **Meaning:** Global Eulerian Z-coordinates (depth/vertical) of Lagrangian markers [m]. Accurate only during remeshing. Note that in the codebase `mark_y` corresponds to the vertical coordinate.
-*   **Shape:** `(max_markers)`
-*   **Dimension 1:** Total marker index.
-*   **Update Locations:**
-    *   **Initialization:** `src/init_marker.f90`.
-    *   **Main Update:** `src/fl_move.f90` (advection using interpolated nodal velocities).
-    *   **Creation:** `src/marker2elem.f90` (fills element gaps).
-
----
-
-## `mark_a1`
-
-*   **Meaning:** First local barycentric coordinate of markers within a specific element (relative distance to horizontal element boundaries).
-*   **Shape:** `(max_markers)`
-*   **Dimension 1:** Total marker index.
-*   **Update Locations:**
-    *   **Main Update:** `src/marker2elem.f90` (calculated whenever markers move or grid is reorganized).
-
----
-
-## `mark_a2`
-
-*   **Meaning:** Second local barycentric coordinate of markers within a specific element (relative distance to vertical element boundaries).
-*   **Shape:** `(max_markers)`
-*   **Dimension 1:** Total marker index.
-*   **Update Locations:**
-    *   **Main Update:** `src/marker2elem.f90` (calculated whenever markers move or grid is reorganized).
-
----
-
-## `mark_phase`
-
-*   **Meaning:** Material phase ID assigned to each marker.
-*   **Shape:** `(max_markers)`
-*   **Dimension 1:** Total marker index.
-*   **Update Locations:**
-    *   **Initialization:** `src/init_marker.f90`.
-    *   **Phase Changes:** `src/change_phase.f90` (based on P-T history and composition).
-
----
-
-## `mark_age`
-
-*   **Meaning:** Creation time or geological age of each marker [second].
-*   **Shape:** `(max_markers)`
-*   **Update Locations:**
-    *   **Creation:** `src/marker_data.f90` (assigned in `add_marker`).
-    *   **Initialization:** `src/init_marker.f90`.
-
----
-
-## `mark_dead`
-
-*   **Meaning:** Status flag for marker activity.
-*   **Value:** `1` for active, `0` for dead/inactive.
-*   **Shape:** `(max_markers)`
-*   **Update Locations:**
-    *   **Activation:** `src/marker_data.f90` (set to `1` in `add_marker`).
-    *   **Deactivation:** `src/fl_move.f90` (set to `0` if a marker moves outside the domain boundaries).
-
----
-
-## `mark_ntriag`
-
-*   **Meaning:** Index of the sub-triangle within an element where the marker is currently located.
-*   **Shape:** `(max_markers)`
-*   **Update Locations:**
-    *   **Main Update:** `src/marker2elem.f90` (re-calculated during the search process to find which element/triangle contains the marker).
-
----
-
-## `mark_ID`
-
-*   **Meaning:** Unique identification number for each marker.
-*   **Shape:** `(max_markers)`
-*   **Update Locations:**
-    *   **Assignment:** `src/marker_data.f90` (typically assigned once during creation in `add_marker`).
-
----
-
 ## `strain`
 
 *   **Meaning:** Accumulated strain components in the element.
@@ -346,7 +250,7 @@ The following arrays are for the Lagrangian markers:
 
 ## `strainr`
 
-*   **Meaning:** Deviatoric strain rate components for each sub-triangle.
+*   **Meaning:** Deviatoric strain rate components for each sub-triangle [1/s].
 *   **Shape:** `(3, 4, nz-1, nx-1)`
 *   **Dimension 1 (3):** Strain rate components (1: sr_xx, 2: sr_zz, 3: sr_xz).
 *   **Dimension 2 (4):** Sub-triangle index.
@@ -359,7 +263,7 @@ The following arrays are for the Lagrangian markers:
 
 ## `e2sr`
 
-*   **Meaning:** Second invariant of the deviatoric strain rate, averaged over time.
+*   **Meaning:** Second invariant of the deviatoric strain rate, averaged over time [1/s].
 *   **Shape:** `(nz-1, nx-1)`
 *   **Update Locations:**
     *   **Main Update:** `src/fl_srate.f90` (averaged over `ifreq_avgsr` time steps).
@@ -384,7 +288,7 @@ The following arrays are for the Lagrangian markers:
 
 ## `area`
 
-*   **Meaning:** Geometric property of sub-triangles. Specifically, it stores the **inverse of twice the area** ($1 / (2 \times \text{Area})$) of each sub-triangle.
+*   **Meaning:** Geometric property of sub-triangles. Specifically, it stores the **inverse of twice the area** ($1 / (2 \times \text{Area})$) of each sub-triangle [1/m^2].
 *   **Shape:** `(nz-1, nx-1, 4)`
 *   **Dimension 1 (`nz-1`):** Vertical index (element).
 *   **Dimension 2 (`nx-1`):** Horizontal index (element).
@@ -600,6 +504,98 @@ The following arrays are for the Lagrangian markers:
     *   **Creation/Deletion:** `src/marker_data.f90` (updated via `add_marker` or when markers are removed).
 
 ---
+
+## `mark_x`
+
+*   **Meaning:** Global Eulerian X-coordinates of Lagrangian markers [m]. Accurate only during remeshing.
+*   **Shape:** `(max_markers)`
+*   **Dimension 1:** Total marker index.
+*   **Update Locations:**
+    *   **Initialization:** `src/init_marker.f90`.
+    *   **Main Update:** `src/fl_move.f90` (advection using interpolated nodal velocities).
+    *   **Creation:** `src/marker2elem.f90` (fills element gaps).
+
+---
+
+## `mark_y`
+
+*   **Meaning:** Global Eulerian Z-coordinates (depth/vertical) of Lagrangian markers [m]. Accurate only during remeshing. Note that in the codebase `mark_y` corresponds to the vertical coordinate.
+*   **Shape:** `(max_markers)`
+*   **Dimension 1:** Total marker index.
+*   **Update Locations:**
+    *   **Initialization:** `src/init_marker.f90`.
+    *   **Main Update:** `src/fl_move.f90` (advection using interpolated nodal velocities).
+    *   **Creation:** `src/marker2elem.f90` (fills element gaps).
+
+---
+
+## `mark_a1`
+
+*   **Meaning:** First local barycentric coordinate of markers within a specific element (relative distance to horizontal element boundaries).
+*   **Shape:** `(max_markers)`
+*   **Dimension 1:** Total marker index.
+*   **Update Locations:**
+    *   **Main Update:** `src/marker2elem.f90` (calculated whenever markers move or grid is reorganized).
+
+---
+
+## `mark_a2`
+
+*   **Meaning:** Second local barycentric coordinate of markers within a specific element (relative distance to vertical element boundaries).
+*   **Shape:** `(max_markers)`
+*   **Dimension 1:** Total marker index.
+*   **Update Locations:**
+    *   **Main Update:** `src/marker2elem.f90` (calculated whenever markers move or grid is reorganized).
+
+---
+
+## `mark_phase`
+
+*   **Meaning:** Material phase ID assigned to each marker.
+*   **Shape:** `(max_markers)`
+*   **Dimension 1:** Total marker index.
+*   **Update Locations:**
+    *   **Initialization:** `src/init_marker.f90`.
+    *   **Phase Changes:** `src/change_phase.f90` (based on P-T history and composition).
+
+---
+
+## `mark_age`
+
+*   **Meaning:** Creation time or geological age of each marker [second].
+*   **Shape:** `(max_markers)`
+*   **Update Locations:**
+    *   **Creation:** `src/marker_data.f90` (assigned in `add_marker`).
+    *   **Initialization:** `src/init_marker.f90`.
+
+---
+
+## `mark_dead`
+
+*   **Meaning:** Status flag for marker activity.
+*   **Value:** `1` for active, `0` for dead/inactive.
+*   **Shape:** `(max_markers)`
+*   **Update Locations:**
+    *   **Activation:** `src/marker_data.f90` (set to `1` in `add_marker`).
+    *   **Deactivation:** `src/fl_move.f90` (set to `0` if a marker moves outside the domain boundaries).
+
+---
+
+## `mark_ntriag`
+
+*   **Meaning:** Index of the sub-triangle within an element where the marker is currently located.
+*   **Shape:** `(max_markers)`
+*   **Update Locations:**
+    *   **Main Update:** `src/marker2elem.f90` (re-calculated during the search process to find which element/triangle contains the marker).
+
+---
+
+## `mark_ID`
+
+*   **Meaning:** Unique identification number for each marker.
+*   **Shape:** `(max_markers)`
+*   **Update Locations:**
+    *   **Assignment:** `src/marker_data.f90` (typically assigned once during creation in `add_marker`).
 
 ## Remeshing and Temporary Workspace Arrays
 
