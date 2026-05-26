@@ -5,6 +5,9 @@ use arrays
 use params
 include 'precision.inc'
 
+integer, parameter :: kk(3, 4) = reshape((/ 2,3,4, 1,2,3, 1,2,4, 1,3,4 /), (/3, 4/))
+integer, parameter :: mm(3, 4) = reshape((/ 3,3,2, 2,2,2, 3,1,3, 1,1,1 /), (/3, 4/))
+
 !  1 - 3
 !  |   |
 !  2 - 4
@@ -31,7 +34,7 @@ include 'precision.inc'
 drat = dt / dt_elastic
 if (drat .lt. 1.d0) drat = 1.d0
 
-!$OMP parallel private(i, j, fx, fy, factor, &
+!$OMP parallel private(i, j, k, fx, fy, factor, &
 !$OMP                  p_est, rosubg, &
 !$OMP                  press_norm_l, dlx_l, dly_l, &
 !$OMP                  press_norm_r, dlx_r, dly_r, &
@@ -49,98 +52,54 @@ do i = 1,nx
         
         ! Element (j-1,i-1). Triangles B,C,D
         if ( j.ne.1 .and. i.ne.1 ) then
-            ! triangle B (n_loc = 3)
-            factor = 0.25d0 / area(j-1,i-1,2)
-            fx = factor * (stress0(j-1,i-1,1,2) * shpdx(j-1,i-1,3,2) + stress0(j-1,i-1,3,2) * shpdz(j-1,i-1,3,2))
-            fy = factor * (stress0(j-1,i-1,3,2) * shpdx(j-1,i-1,3,2) + stress0(j-1,i-1,2,2) * shpdz(j-1,i-1,3,2))
-            force(j,i,1) = force(j,i,1) - fx
-            force(j,i,2) = force(j,i,2) - fy
-
-            ! triangle C (n_loc = 3)
-            factor = 0.25d0 / area(j-1,i-1,3)
-            fx = factor * (stress0(j-1,i-1,1,3) * shpdx(j-1,i-1,3,3) + stress0(j-1,i-1,3,3) * shpdz(j-1,i-1,3,3))
-            fy = factor * (stress0(j-1,i-1,3,3) * shpdx(j-1,i-1,3,3) + stress0(j-1,i-1,2,3) * shpdz(j-1,i-1,3,3))
-            force(j,i,1) = force(j,i,1) - fx
-            force(j,i,2) = force(j,i,2) - fy
-
-            ! triangle D (n_loc = 2)
-            factor = 0.25d0 / area(j-1,i-1,4)
-            fx = factor * (stress0(j-1,i-1,1,4) * shpdx(j-1,i-1,2,4) + stress0(j-1,i-1,3,4) * shpdz(j-1,i-1,2,4))
-            fy = factor * (stress0(j-1,i-1,3,4) * shpdx(j-1,i-1,2,4) + stress0(j-1,i-1,2,4) * shpdz(j-1,i-1,2,4))
-            force(j,i,1) = force(j,i,1) - fx
-            force(j,i,2) = force(j,i,2) - fy
+            do k = 1, 3
+                factor = 0.25d0 / area(j-1,i-1,kk(k,1))
+                fx = factor * (stress0(j-1,i-1,1,kk(k,1)) * shpdx(j-1,i-1,mm(k,1),kk(k,1)) + &
+                               stress0(j-1,i-1,3,kk(k,1)) * shpdz(j-1,i-1,mm(k,1),kk(k,1)))
+                fy = factor * (stress0(j-1,i-1,3,kk(k,1)) * shpdx(j-1,i-1,mm(k,1),kk(k,1)) + &
+                               stress0(j-1,i-1,2,kk(k,1)) * shpdz(j-1,i-1,mm(k,1),kk(k,1)))
+                force(j,i,1) = force(j,i,1) - fx
+                force(j,i,2) = force(j,i,2) - fy
+            enddo
         endif
 
         ! Element (j-1,i). Triangles A,B,C.
         if ( j.ne.1 .and. i.ne.nx ) then
-            ! triangle A (n_loc = 2)
-            factor = 0.25d0 / area(j-1,i,1)
-            fx = factor * (stress0(j-1,i,1,1) * shpdx(j-1,i,2,1) + stress0(j-1,i,3,1) * shpdz(j-1,i,2,1))
-            fy = factor * (stress0(j-1,i,3,1) * shpdx(j-1,i,2,1) + stress0(j-1,i,2,1) * shpdz(j-1,i,2,1))
-            force(j,i,1) = force(j,i,1) - fx
-            force(j,i,2) = force(j,i,2) - fy
-
-            ! triangle B (n_loc = 2)
-            factor = 0.25d0 / area(j-1,i,2)
-            fx = factor * (stress0(j-1,i,1,2) * shpdx(j-1,i,2,2) + stress0(j-1,i,3,2) * shpdz(j-1,i,2,2))
-            fy = factor * (stress0(j-1,i,3,2) * shpdx(j-1,i,2,2) + stress0(j-1,i,2,2) * shpdz(j-1,i,2,2))
-            force(j,i,1) = force(j,i,1) - fx
-            force(j,i,2) = force(j,i,2) - fy
-
-            ! triangle C (n_loc = 2)
-            factor = 0.25d0 / area(j-1,i,3)
-            fx = factor * (stress0(j-1,i,1,3) * shpdx(j-1,i,2,3) + stress0(j-1,i,3,3) * shpdz(j-1,i,2,3))
-            fy = factor * (stress0(j-1,i,3,3) * shpdx(j-1,i,2,3) + stress0(j-1,i,2,3) * shpdz(j-1,i,2,3))
-            force(j,i,1) = force(j,i,1) - fx
-            force(j,i,2) = force(j,i,2) - fy
+            do k = 1, 3
+                factor = 0.25d0 / area(j-1,i,kk(k,2))
+                fx = factor * (stress0(j-1,i,1,kk(k,2)) * shpdx(j-1,i,mm(k,2),kk(k,2)) + &
+                               stress0(j-1,i,3,kk(k,2)) * shpdz(j-1,i,mm(k,2),kk(k,2)))
+                fy = factor * (stress0(j-1,i,3,kk(k,2)) * shpdx(j-1,i,mm(k,2),kk(k,2)) + &
+                               stress0(j-1,i,2,kk(k,2)) * shpdz(j-1,i,mm(k,2),kk(k,2)))
+                force(j,i,1) = force(j,i,1) - fx
+                force(j,i,2) = force(j,i,2) - fy
+            enddo
         endif
 
         ! Element (j,i-1). Triangles A,B,D
         if ( j.ne.nz .and. i.ne.1 ) then
-            ! triangle A (n_loc = 3)
-            factor = 0.25d0 / area(j,i-1,1)
-            fx = factor * (stress0(j,i-1,1,1) * shpdx(j,i-1,3,1) + stress0(j,i-1,3,1) * shpdz(j,i-1,3,1))
-            fy = factor * (stress0(j,i-1,3,1) * shpdx(j,i-1,3,1) + stress0(j,i-1,2,1) * shpdz(j,i-1,3,1))
-            force(j,i,1) = force(j,i,1) - fx
-            force(j,i,2) = force(j,i,2) - fy
-
-            ! triangle B (n_loc = 1)
-            factor = 0.25d0 / area(j,i-1,2)
-            fx = factor * (stress0(j,i-1,1,2) * shpdx(j,i-1,1,2) + stress0(j,i-1,3,2) * shpdz(j,i-1,1,2))
-            fy = factor * (stress0(j,i-1,3,2) * shpdx(j,i-1,1,2) + stress0(j,i-1,2,2) * shpdz(j,i-1,1,2))
-            force(j,i,1) = force(j,i,1) - fx
-            force(j,i,2) = force(j,i,2) - fy
-
-            ! triangle D (n_loc = 3)
-            factor = 0.25d0 / area(j,i-1,4)
-            fx = factor * (stress0(j,i-1,1,4) * shpdx(j,i-1,3,4) + stress0(j,i-1,3,4) * shpdz(j,i-1,3,4))
-            fy = factor * (stress0(j,i-1,3,4) * shpdx(j,i-1,3,4) + stress0(j,i-1,2,4) * shpdz(j,i-1,3,4))
-            force(j,i,1) = force(j,i,1) - fx
-            force(j,i,2) = force(j,i,2) - fy
+            do k = 1, 3
+                factor = 0.25d0 / area(j,i-1,kk(k,3))
+                fx = factor * (stress0(j,i-1,1,kk(k,3)) * shpdx(j,i-1,mm(k,3),kk(k,3)) + &
+                               stress0(j,i-1,3,kk(k,3)) * shpdz(j,i-1,mm(k,3),kk(k,3)))
+                fy = factor * (stress0(j,i-1,3,kk(k,3)) * shpdx(j,i-1,mm(k,3),kk(k,3)) + &
+                               stress0(j,i-1,2,kk(k,3)) * shpdz(j,i-1,mm(k,3),kk(k,3)))
+                force(j,i,1) = force(j,i,1) - fx
+                force(j,i,2) = force(j,i,2) - fy
+            enddo
         endif
 
         ! Element (j,i). Triangles A,C,D
         if ( j.ne.nz .and. i.ne.nx ) then
-            ! triangle A (n_loc = 1)
-            factor = 0.25d0 / area(j,i,1)
-            fx = factor * (stress0(j,i,1,1) * shpdx(j,i,1,1) + stress0(j,i,3,1) * shpdz(j,i,1,1))
-            fy = factor * (stress0(j,i,3,1) * shpdx(j,i,1,1) + stress0(j,i,2,1) * shpdz(j,i,1,1))
-            force(j,i,1) = force(j,i,1) - fx
-            force(j,i,2) = force(j,i,2) - fy
-
-            ! triangle C (n_loc = 1)
-            factor = 0.25d0 / area(j,i,3)
-            fx = factor * (stress0(j,i,1,3) * shpdx(j,i,1,3) + stress0(j,i,3,3) * shpdz(j,i,1,3))
-            fy = factor * (stress0(j,i,3,3) * shpdx(j,i,1,3) + stress0(j,i,2,3) * shpdz(j,i,1,3))
-            force(j,i,1) = force(j,i,1) - fx
-            force(j,i,2) = force(j,i,2) - fy
-
-            ! triangle D (n_loc = 1)
-            factor = 0.25d0 / area(j,i,4)
-            fx = factor * (stress0(j,i,1,4) * shpdx(j,i,1,4) + stress0(j,i,3,4) * shpdz(j,i,1,4))
-            fy = factor * (stress0(j,i,3,4) * shpdx(j,i,1,4) + stress0(j,i,2,4) * shpdz(j,i,1,4))
-            force(j,i,1) = force(j,i,1) - fx
-            force(j,i,2) = force(j,i,2) - fy
+            do k = 1, 3
+                factor = 0.25d0 / area(j,i,kk(k,4))
+                fx = factor * (stress0(j,i,1,kk(k,4)) * shpdx(j,i,mm(k,4),kk(k,4)) + &
+                               stress0(j,i,3,kk(k,4)) * shpdz(j,i,mm(k,4),kk(k,4)))
+                fy = factor * (stress0(j,i,3,kk(k,4)) * shpdx(j,i,mm(k,4),kk(k,4)) + &
+                               stress0(j,i,2,kk(k,4)) * shpdz(j,i,mm(k,4),kk(k,4)))
+                force(j,i,1) = force(j,i,1) - fx
+                force(j,i,2) = force(j,i,2) - fy
+            enddo
         endif
 
         ! GRAVITY FORCE
