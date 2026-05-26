@@ -50,8 +50,70 @@ do i = 1,nx-1
     enddo
 enddo
 !$OMP end parallel do
+call compute_shape_fn
 return
 end
+
+subroutine compute_shape_fn
+use arrays
+use params
+include 'precision.inc'
+integer :: i, j
+double precision :: x1, y1, x2, y2, x3, y3, x4, y4
+
+!$OMP parallel do &
+!$OMP private(i, j, x1, y1, x2, y2, x3, y3, x4, y4)
+do i = 1, nx-1
+    do j = 1, nz-1
+        x1 = cord(j  ,i  ,1)
+        y1 = cord(j  ,i  ,2)
+        x2 = cord(j+1,i  ,1)
+        y2 = cord(j+1,i  ,2)
+        x3 = cord(j  ,i+1,1)
+        y3 = cord(j  ,i+1,2)
+        x4 = cord(j+1,i+1,1)
+        y4 = cord(j+1,i+1,2)
+
+        ! Triangle A (k=1)
+        shpdx(j, i, 1, 1) = (y2 - y3) * area(j, i, 1)
+        shpdx(j, i, 2, 1) = (y3 - y1) * area(j, i, 1)
+        shpdx(j, i, 3, 1) = (y1 - y2) * area(j, i, 1)
+
+        shpdz(j, i, 1, 1) = (x3 - x2) * area(j, i, 1)
+        shpdz(j, i, 2, 1) = (x1 - x3) * area(j, i, 1)
+        shpdz(j, i, 3, 1) = (x2 - x1) * area(j, i, 1)
+
+        ! Triangle B (k=2)
+        shpdx(j, i, 1, 2) = (y2 - y4) * area(j, i, 2)
+        shpdx(j, i, 2, 2) = (y4 - y3) * area(j, i, 2)
+        shpdx(j, i, 3, 2) = (y3 - y2) * area(j, i, 2)
+
+        shpdz(j, i, 1, 2) = (x4 - x2) * area(j, i, 2)
+        shpdz(j, i, 2, 2) = (x3 - x4) * area(j, i, 2)
+        shpdz(j, i, 3, 2) = (x2 - x3) * area(j, i, 2)
+
+        ! Triangle C (k=3)
+        shpdx(j, i, 1, 3) = (y2 - y4) * area(j, i, 3)
+        shpdx(j, i, 2, 3) = (y4 - y1) * area(j, i, 3)
+        shpdx(j, i, 3, 3) = (y1 - y2) * area(j, i, 3)
+
+        shpdz(j, i, 1, 3) = (x4 - x2) * area(j, i, 3)
+        shpdz(j, i, 2, 3) = (x1 - x4) * area(j, i, 3)
+        shpdz(j, i, 3, 3) = (x2 - x1) * area(j, i, 3)
+
+        ! Triangle D (k=4)
+        shpdx(j, i, 1, 4) = (y4 - y3) * area(j, i, 4)
+        shpdx(j, i, 2, 4) = (y3 - y1) * area(j, i, 4)
+        shpdx(j, i, 3, 4) = (y1 - y4) * area(j, i, 4)
+
+        shpdz(j, i, 1, 4) = (x3 - x4) * area(j, i, 4)
+        shpdz(j, i, 2, 4) = (x1 - x3) * area(j, i, 4)
+        shpdz(j, i, 3, 4) = (x4 - x1) * area(j, i, 4)
+    enddo
+enddo
+!$OMP end parallel do
+return
+end subroutine compute_shape_fn
 
 !  1 - 3
 !  |   |

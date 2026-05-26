@@ -181,12 +181,12 @@ do i = 1,nx-1
         dummye(j,i) = ( source(j,i) + dissip/den(iph) ) / cp_eff
 
         ! (1) A element:
-        flux(1,1,j,i) = -diff * ( t1*(y2-y3)+t2*(y3-y1)+t3*(y1-y2) ) * area(j,i,1)
-        flux(1,2,j,i) = -diff * ( t1*(x3-x2)+t2*(x1-x3)+t3*(x2-x1) ) * area(j,i,1)
+        flux(1,1,j,i) = -diff * ( t1 * shpdx(j, i, 1, 1) + t2 * shpdx(j, i, 2, 1) + t3 * shpdx(j, i, 3, 1) )
+        flux(1,2,j,i) = -diff * ( t1 * shpdz(j, i, 1, 1) + t2 * shpdz(j, i, 2, 1) + t3 * shpdz(j, i, 3, 1) )
  
         ! (2) B element: Interchange of numeration: (1 -> 3,  3 -> 4)
-        flux(2,1,j,i) = -diff * ( t3*(y2-y4)+t2*(y4-y3)+t4*(y3-y2) ) * area(j,i,2)
-        flux(2,2,j,i) = -diff * ( t3*(x4-x2)+t2*(x3-x4)+t4*(x2-x3) ) * area(j,i,2)
+        flux(2,1,j,i) = -diff * ( t3 * shpdx(j, i, 1, 2) + t2 * shpdx(j, i, 2, 2) + t4 * shpdx(j, i, 3, 2) )
+        flux(2,2,j,i) = -diff * ( t3 * shpdz(j, i, 1, 2) + t2 * shpdz(j, i, 2, 2) + t4 * shpdz(j, i, 3, 2) )
 
     end do
 end do    

@@ -146,7 +146,7 @@ do  i = 1,nx-1
 enddo
 !$OMP end do
 !$OMP end parallel
-
+call compute_shape_fn
 return
 end subroutine fl_move
 
