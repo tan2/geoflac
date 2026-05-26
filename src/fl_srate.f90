@@ -5,9 +5,8 @@ subroutine fl_srate
 use arrays
 use params
 implicit none
-integer :: i,j
-double precision :: x1,y1,x2,y2,x3,y3,x4,y4, &
-         vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4, &
+integer :: i,j,k
+double precision :: vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4, &
          em,eda,edb,s11,s22,s12, &
          srII,srI,srs2,stII
 
@@ -15,23 +14,13 @@ dtavg = dtavg + dt
 !$ACC update device(dtavg) async(2)
 
 !$OMP parallel do &
-!$OMP private(i,j,x1,y1,x2,y2,x3,y3,x4,y4, &
+!$OMP private(i,j,k, &
 !$OMP         vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4, &
 !$OMP         em,eda,edb,s11,s22,s12, &
 !$OMP         srII,srI,srs2,stII)
 !$ACC parallel loop collapse(2) async(1)
 do i = 1,nx-1
     do j = 1,nz-1
-
-        ! Coordinates and strain rates on the element
-        x1 = cord(j  ,i  ,1)
-        y1 = cord(j  ,i  ,2)
-        x2 = cord(j+1,i  ,1)
-        y2 = cord(j+1,i  ,2)
-        x3 = cord(j  ,i+1,1)
-        y3 = cord(j  ,i+1,2)
-        x4 = cord(j+1,i+1,1)
-        y4 = cord(j+1,i+1,2)
  
         ! Velocities:
         vx1 = vel(j  ,i  ,1)
@@ -75,32 +64,22 @@ do i = 1,nx-1
         
         !  Mixed discretization of Cundall
         if ( mix_strain .eq. 1 ) then
-
-            ! For couple A and B:
-            em = 0.5d0*(strainr(1,1,j,i)+strainr(2,1,j,i)+strainr(1,2,j,i)+strainr(2,2,j,i))
-            eda = strainr(1,1,j,i)-strainr(2,1,j,i)
-            edb = strainr(1,2,j,i)-strainr(2,2,j,i)
-            strainr(1,1,j,i) = 0.5d0*(em+eda)
-            strainr(2,1,j,i) = 0.5d0*(em-eda)
-            strainr(1,2,j,i) = 0.5d0*(em+edb)
-            strainr(2,2,j,i) = 0.5d0*(em-edb)
-
-            ! For couple C and D:
-            em = 0.5d0*(strainr(1,3,j,i)+strainr(2,3,j,i)+strainr(1,4,j,i)+strainr(2,4,j,i))
-            eda = strainr(1,3,j,i)-strainr(2,3,j,i)
-            edb = strainr(1,4,j,i)-strainr(2,4,j,i)
-            strainr(1,3,j,i) = 0.5d0*(em+eda)
-            strainr(2,3,j,i) = 0.5d0*(em-eda)
-            strainr(1,4,j,i) = 0.5d0*(em+edb)
-            strainr(2,4,j,i) = 0.5d0*(em-edb)
-
+            do k = 1, 3, 2
+                em = 0.5d0*(strainr(1,k,j,i)+strainr(2,k,j,i)+strainr(1,k+1,j,i)+strainr(2,k+1,j,i))
+                eda = strainr(1,k,j,i)-strainr(2,k,j,i)
+                edb = strainr(1,k+1,j,i)-strainr(2,k+1,j,i)
+                strainr(1,k,j,i) = 0.5d0*(em+eda)
+                strainr(2,k,j,i) = 0.5d0*(em-eda)
+                strainr(1,k+1,j,i) = 0.5d0*(em+edb)
+                strainr(2,k+1,j,i) = 0.5d0*(em-edb)
+            enddo
         endif
 
 
         ! integration for averaging of strain rate and dissipation function
-        s11 = 0.25d0 * (strainr(1,1,j,i)+strainr(1,2,j,i)+strainr(1,3,j,i)+strainr(1,4,j,i))
-        s22 = 0.25d0 * (strainr(2,1,j,i)+strainr(2,2,j,i)+strainr(2,3,j,i)+strainr(2,4,j,i))
-        s12 = 0.25d0 * (strainr(3,1,j,i)+strainr(3,2,j,i)+strainr(3,3,j,i)+strainr(3,4,j,i))
+        s11 = 0.25d0 * sum(strainr(1,:,j,i))
+        s22 = 0.25d0 * sum(strainr(2,:,j,i))
+        s12 = 0.25d0 * sum(strainr(3,:,j,i))
         srII = 0.5d0 * sqrt((s11-s22)**2 + 4*s12*s12)
         srI = (s11+s22)/2
         srs2 = (s11-srI)*(s11-srI) + (s22-srI)*(s22-srI) + 2*s12*s12
@@ -108,9 +87,9 @@ do i = 1,nx-1
         se2sr(j,i,2) = se2sr(j,i,2) + s22*dt
         se2sr(j,i,3) = se2sr(j,i,3) + s12*dt
 
-        s11 = 0.25d0 * (stress0(j,i,1,1)+stress0(j,i,1,2)+stress0(j,i,1,3)+stress0(j,i,1,4))
-        s22 = 0.25d0 * (stress0(j,i,2,1)+stress0(j,i,2,2)+stress0(j,i,2,3)+stress0(j,i,2,4))
-        s12 = 0.25d0 * (stress0(j,i,3,1)+stress0(j,i,3,2)+stress0(j,i,3,3)+stress0(j,i,3,4))
+        s11 = 0.25d0 * sum(stress0(j,i,1,:))
+        s22 = 0.25d0 * sum(stress0(j,i,2,:))
+        s12 = 0.25d0 * sum(stress0(j,i,3,:))
         stII = 0.5d0 * sqrt((s11-s22)**2 + 4*s12*s12)
         if( srII.ne.0.d0 ) sshrheat(j,i) = sshrheat(j,i) + stII/srII*srs2*dt
     enddo
