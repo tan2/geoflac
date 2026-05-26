@@ -31,7 +31,7 @@ include 'precision.inc'
 drat = dt / dt_elastic
 if (drat .lt. 1.d0) drat = 1.d0
 
-!$OMP parallel private(i, j, fx, fy, &
+!$OMP parallel private(i, j, fx, fy, factor, &
 !$OMP                  p_est, rosubg, &
 !$OMP                  press_norm_l, dlx_l, dly_l, &
 !$OMP                  press_norm_r, dlx_r, dly_r, &
@@ -49,210 +49,98 @@ do i = 1,nx
         
         ! Element (j-1,i-1). Triangles B,C,D
         if ( j.ne.1 .and. i.ne.1 ) then
-            ! triangle B
-            ! side 2-3
-            fx = stress0(j-1,i-1,1,2) * (cord(j  ,i  ,2)-cord(j  ,i-1,2)) - &
-                 stress0(j-1,i-1,3,2) * (cord(j  ,i  ,1)-cord(j  ,i-1,1))
-            fy = stress0(j-1,i-1,3,2) * (cord(j  ,i  ,2)-cord(j  ,i-1,2)) - &
-                 stress0(j-1,i-1,2,2) * (cord(j  ,i  ,1)-cord(j  ,i-1,1))
-            force(j,i,1) = force(j,i,1) - 0.25d0*fx
-            force(j,i,2) = force(j,i,2) - 0.25d0*fy
-            ! side 3-1
-            fx = stress0(j-1,i-1,1,2) * (cord(j-1,i  ,2)-cord(j  ,i  ,2)) - &
-                 stress0(j-1,i-1,3,2) * (cord(j-1,i  ,1)-cord(j  ,i  ,1))
-            fy = stress0(j-1,i-1,3,2) * (cord(j-1,i  ,2)-cord(j  ,i  ,2)) - &
-                 stress0(j-1,i-1,2,2) * (cord(j-1,i  ,1)-cord(j  ,i  ,1))
-            force(j,i,1) = force(j,i,1) - 0.25d0*fx
-            force(j,i,2) = force(j,i,2) - 0.25d0*fy
+            ! triangle B (n_loc = 3)
+            factor = 0.25d0 / area(j-1,i-1,2)
+            fx = factor * (stress0(j-1,i-1,1,2) * shpdx(j-1,i-1,3,2) + stress0(j-1,i-1,3,2) * shpdz(j-1,i-1,3,2))
+            fy = factor * (stress0(j-1,i-1,3,2) * shpdx(j-1,i-1,3,2) + stress0(j-1,i-1,2,2) * shpdz(j-1,i-1,3,2))
+            force(j,i,1) = force(j,i,1) - fx
+            force(j,i,2) = force(j,i,2) - fy
 
-            ! triangle C
-            ! side 2-3
-            fx = stress0(j-1,i-1,1,3) * (cord(j  ,i  ,2)-cord(j  ,i-1,2)) - &
-                 stress0(j-1,i-1,3,3) * (cord(j  ,i  ,1)-cord(j  ,i-1,1))
-            fy = stress0(j-1,i-1,3,3) * (cord(j  ,i  ,2)-cord(j  ,i-1,2)) - &
-                 stress0(j-1,i-1,2,3) * (cord(j  ,i  ,1)-cord(j  ,i-1,1))
-            force(j,i,1) = force(j,i,1) - 0.25d0*fx
-            force(j,i,2) = force(j,i,2) - 0.25d0*fy
-            ! side 3-1
-            fx = stress0(j-1,i-1,1,3) * (cord(j-1,i-1,2)-cord(j  ,i  ,2)) - &
-                 stress0(j-1,i-1,3,3) * (cord(j-1,i-1,1)-cord(j  ,i  ,1))
-            fy = stress0(j-1,i-1,3,3) * (cord(j-1,i-1,2)-cord(j  ,i  ,2)) - &
-                 stress0(j-1,i-1,2,3) * (cord(j-1,i-1,1)-cord(j  ,i  ,1))
-            force(j,i,1) = force(j,i,1) - 0.25d0*fx
-            force(j,i,2) = force(j,i,2) - 0.25d0*fy
+            ! triangle C (n_loc = 3)
+            factor = 0.25d0 / area(j-1,i-1,3)
+            fx = factor * (stress0(j-1,i-1,1,3) * shpdx(j-1,i-1,3,3) + stress0(j-1,i-1,3,3) * shpdz(j-1,i-1,3,3))
+            fy = factor * (stress0(j-1,i-1,3,3) * shpdx(j-1,i-1,3,3) + stress0(j-1,i-1,2,3) * shpdz(j-1,i-1,3,3))
+            force(j,i,1) = force(j,i,1) - fx
+            force(j,i,2) = force(j,i,2) - fy
 
-            ! triangle D
-            ! side 1-2
-            fx = stress0(j-1,i-1,1,4) * (cord(j  ,i  ,2)-cord(j-1,i-1,2)) - &
-                 stress0(j-1,i-1,3,4) * (cord(j  ,i  ,1)-cord(j-1,i-1,1))
-            fy = stress0(j-1,i-1,3,4) * (cord(j  ,i  ,2)-cord(j-1,i-1,2)) - &
-                 stress0(j-1,i-1,2,4) * (cord(j  ,i  ,1)-cord(j-1,i-1,1))
-            force(j,i,1) = force(j,i,1) - 0.25d0*fx
-            force(j,i,2) = force(j,i,2) - 0.25d0*fy
-            ! side 2-3
-            fx = stress0(j-1,i-1,1,4) * (cord(j-1,i  ,2)-cord(j  ,i  ,2)) - &
-                 stress0(j-1,i-1,3,4) * (cord(j-1,i  ,1)-cord(j  ,i  ,1))
-            fy = stress0(j-1,i-1,3,4) * (cord(j-1,i  ,2)-cord(j  ,i  ,2)) - &
-                 stress0(j-1,i-1,2,4) * (cord(j-1,i  ,1)-cord(j  ,i  ,1))
-            force(j,i,1) = force(j,i,1) - 0.25d0*fx
-            force(j,i,2) = force(j,i,2) - 0.25d0*fy
-
+            ! triangle D (n_loc = 2)
+            factor = 0.25d0 / area(j-1,i-1,4)
+            fx = factor * (stress0(j-1,i-1,1,4) * shpdx(j-1,i-1,2,4) + stress0(j-1,i-1,3,4) * shpdz(j-1,i-1,2,4))
+            fy = factor * (stress0(j-1,i-1,3,4) * shpdx(j-1,i-1,2,4) + stress0(j-1,i-1,2,4) * shpdz(j-1,i-1,2,4))
+            force(j,i,1) = force(j,i,1) - fx
+            force(j,i,2) = force(j,i,2) - fy
         endif
 
         ! Element (j-1,i). Triangles A,B,C.
         if ( j.ne.1 .and. i.ne.nx ) then
-            ! triangle A
-            ! side 1-2
-            fx = stress0(j-1,i  ,1,1) * (cord(j  ,i  ,2)-cord(j-1,i  ,2)) - &
-                 stress0(j-1,i  ,3,1) * (cord(j  ,i  ,1)-cord(j-1,i  ,1))
-            fy = stress0(j-1,i  ,3,1) * (cord(j  ,i  ,2)-cord(j-1,i  ,2)) - &
-                 stress0(j-1,i  ,2,1) * (cord(j  ,i  ,1)-cord(j-1,i  ,1))
-            force(j,i,1) = force(j,i,1) - 0.25d0*fx
-            force(j,i,2) = force(j,i,2) - 0.25d0*fy
-            ! side 2-3
-            fx = stress0(j-1,i  ,1,1) * (cord(j-1,i+1,2)-cord(j  ,i  ,2)) - &
-                 stress0(j-1,i  ,3,1) * (cord(j-1,i+1,1)-cord(j  ,i  ,1))
-            fy = stress0(j-1,i  ,3,1) * (cord(j-1,i+1,2)-cord(j  ,i  ,2)) - &
-                 stress0(j-1,i  ,2,1) * (cord(j-1,i+1,1)-cord(j  ,i  ,1))
-            force(j,i,1) = force(j,i,1) - 0.25d0*fx
-            force(j,i,2) = force(j,i,2) - 0.25d0*fy
+            ! triangle A (n_loc = 2)
+            factor = 0.25d0 / area(j-1,i,1)
+            fx = factor * (stress0(j-1,i,1,1) * shpdx(j-1,i,2,1) + stress0(j-1,i,3,1) * shpdz(j-1,i,2,1))
+            fy = factor * (stress0(j-1,i,3,1) * shpdx(j-1,i,2,1) + stress0(j-1,i,2,1) * shpdz(j-1,i,2,1))
+            force(j,i,1) = force(j,i,1) - fx
+            force(j,i,2) = force(j,i,2) - fy
 
-            ! triangle B
-            ! side 1-2
-            fx = stress0(j-1,i  ,1,2) * (cord(j  ,i  ,2)-cord(j-1,i+1,2)) - &
-                 stress0(j-1,i  ,3,2) * (cord(j  ,i  ,1)-cord(j-1,i+1,1))
-            fy = stress0(j-1,i  ,3,2) * (cord(j  ,i  ,2)-cord(j-1,i+1,2)) - &
-                 stress0(j-1,i  ,2,2) * (cord(j  ,i  ,1)-cord(j-1,i+1,1))
-            force(j,i,1) = force(j,i,1) - 0.25d0*fx
-            force(j,i,2) = force(j,i,2) - 0.25d0*fy
-            ! side 2-3
-            fx = stress0(j-1,i  ,1,2) * (cord(j  ,i+1,2)-cord(j  ,i  ,2)) - &
-                 stress0(j-1,i  ,3,2) * (cord(j  ,i+1,1)-cord(j  ,i  ,1))
-            fy = stress0(j-1,i  ,3,2) * (cord(j  ,i+1,2)-cord(j  ,i  ,2)) - &
-                 stress0(j-1,i  ,2,2) * (cord(j  ,i+1,1)-cord(j  ,i  ,1))
-            force(j,i,1) = force(j,i,1) - 0.25d0*fx
-            force(j,i,2) = force(j,i,2) - 0.25d0*fy
+            ! triangle B (n_loc = 2)
+            factor = 0.25d0 / area(j-1,i,2)
+            fx = factor * (stress0(j-1,i,1,2) * shpdx(j-1,i,2,2) + stress0(j-1,i,3,2) * shpdz(j-1,i,2,2))
+            fy = factor * (stress0(j-1,i,3,2) * shpdx(j-1,i,2,2) + stress0(j-1,i,2,2) * shpdz(j-1,i,2,2))
+            force(j,i,1) = force(j,i,1) - fx
+            force(j,i,2) = force(j,i,2) - fy
 
-            ! triangle C
-            ! side 1-2
-            fx = stress0(j-1,i  ,1,3) * (cord(j  ,i  ,2)-cord(j-1,i  ,2)) - &
-                 stress0(j-1,i  ,3,3) * (cord(j  ,i  ,1)-cord(j-1,i  ,1))
-            fy = stress0(j-1,i  ,3,3) * (cord(j  ,i  ,2)-cord(j-1,i  ,2)) - &
-                 stress0(j-1,i  ,2,3) * (cord(j  ,i  ,1)-cord(j-1,i  ,1))
-            force(j,i,1) = force(j,i,1) - 0.25d0*fx
-            force(j,i,2) = force(j,i,2) - 0.25d0*fy
-            ! side 2-3
-            fx = stress0(j-1,i  ,1,3) * (cord(j  ,i+1,2)-cord(j  ,i  ,2)) - &
-                 stress0(j-1,i  ,3,3) * (cord(j  ,i+1,1)-cord(j  ,i  ,1))
-            fy = stress0(j-1,i  ,3,3) * (cord(j  ,i+1,2)-cord(j  ,i  ,2)) - &
-                 stress0(j-1,i  ,2,3) * (cord(j  ,i+1,1)-cord(j  ,i  ,1))
-            force(j,i,1) = force(j,i,1) - 0.25d0*fx
-            force(j,i,2) = force(j,i,2) - 0.25d0*fy
-
+            ! triangle C (n_loc = 2)
+            factor = 0.25d0 / area(j-1,i,3)
+            fx = factor * (stress0(j-1,i,1,3) * shpdx(j-1,i,2,3) + stress0(j-1,i,3,3) * shpdz(j-1,i,2,3))
+            fy = factor * (stress0(j-1,i,3,3) * shpdx(j-1,i,2,3) + stress0(j-1,i,2,3) * shpdz(j-1,i,2,3))
+            force(j,i,1) = force(j,i,1) - fx
+            force(j,i,2) = force(j,i,2) - fy
         endif
-        
+
         ! Element (j,i-1). Triangles A,B,D
         if ( j.ne.nz .and. i.ne.1 ) then
-            ! triangle A
-            ! side 2-3
-            fx = stress0(j  ,i-1,1,1) * (cord(j  ,i  ,2)-cord(j+1,i-1,2)) - &
-                 stress0(j  ,i-1,3,1) * (cord(j  ,i  ,1)-cord(j+1,i-1,1))
-            fy = stress0(j  ,i-1,3,1) * (cord(j  ,i  ,2)-cord(j+1,i-1,2)) - &
-                 stress0(j  ,i-1,2,1) * (cord(j  ,i  ,1)-cord(j+1,i-1,1))
-            force(j,i,1) = force(j,i,1) - 0.25d0*fx
-            force(j,i,2) = force(j,i,2) - 0.25d0*fy
-            ! side 3-1
-            fx = stress0(j  ,i-1,1,1) * (cord(j  ,i-1,2)-cord(j  ,i  ,2)) - &
-                 stress0(j  ,i-1,3,1) * (cord(j  ,i-1,1)-cord(j  ,i  ,1))
-            fy = stress0(j  ,i-1,3,1) * (cord(j  ,i-1,2)-cord(j  ,i  ,2)) - &
-                 stress0(j  ,i-1,2,1) * (cord(j  ,i-1,1)-cord(j  ,i  ,1))
-            force(j,i,1) = force(j,i,1) - 0.25d0*fx
-            force(j,i,2) = force(j,i,2) - 0.25d0*fy
+            ! triangle A (n_loc = 3)
+            factor = 0.25d0 / area(j,i-1,1)
+            fx = factor * (stress0(j,i-1,1,1) * shpdx(j,i-1,3,1) + stress0(j,i-1,3,1) * shpdz(j,i-1,3,1))
+            fy = factor * (stress0(j,i-1,3,1) * shpdx(j,i-1,3,1) + stress0(j,i-1,2,1) * shpdz(j,i-1,3,1))
+            force(j,i,1) = force(j,i,1) - fx
+            force(j,i,2) = force(j,i,2) - fy
 
-            ! triangle B
-            ! side 1-2
-            fx = stress0(j  ,i-1,1,2) * (cord(j+1,i-1,2)-cord(j  ,i  ,2)) - &
-                 stress0(j  ,i-1,3,2) * (cord(j+1,i-1,1)-cord(j  ,i  ,1))
-            fy = stress0(j  ,i-1,3,2) * (cord(j+1,i-1,2)-cord(j  ,i  ,2)) - &
-                 stress0(j  ,i-1,2,2) * (cord(j+1,i-1,1)-cord(j  ,i  ,1))
-            force(j,i,1) = force(j,i,1) - 0.25d0*fx
-            force(j,i,2) = force(j,i,2) - 0.25d0*fy
-            ! side 3-1
-            fx = stress0(j  ,i-1,1,2) * (cord(j  ,i  ,2)-cord(j+1,i  ,2)) - &
-                 stress0(j  ,i-1,3,2) * (cord(j  ,i  ,1)-cord(j+1,i  ,1))
-            fy = stress0(j  ,i-1,3,2) * (cord(j  ,i  ,2)-cord(j+1,i  ,2)) - &
-                 stress0(j  ,i-1,2,2) * (cord(j  ,i  ,1)-cord(j+1,i  ,1))
-            force(j,i,1) = force(j,i,1) - 0.25d0*fx
-            force(j,i,2) = force(j,i,2) - 0.25d0*fy
+            ! triangle B (n_loc = 1)
+            factor = 0.25d0 / area(j,i-1,2)
+            fx = factor * (stress0(j,i-1,1,2) * shpdx(j,i-1,1,2) + stress0(j,i-1,3,2) * shpdz(j,i-1,1,2))
+            fy = factor * (stress0(j,i-1,3,2) * shpdx(j,i-1,1,2) + stress0(j,i-1,2,2) * shpdz(j,i-1,1,2))
+            force(j,i,1) = force(j,i,1) - fx
+            force(j,i,2) = force(j,i,2) - fy
 
-            ! triangle D
-            ! side 2-3
-            fx = stress0(j  ,i-1,1,4) * (cord(j  ,i  ,2)-cord(j+1,i  ,2)) - &
-                 stress0(j  ,i-1,3,4) * (cord(j  ,i  ,1)-cord(j+1,i  ,1))
-            fy = stress0(j  ,i-1,3,4) * (cord(j  ,i  ,2)-cord(j+1,i  ,2)) - &
-                 stress0(j  ,i-1,2,4) * (cord(j  ,i  ,1)-cord(j+1,i  ,1))
-            force(j,i,1) = force(j,i,1) - 0.25d0*fx
-            force(j,i,2) = force(j,i,2) - 0.25d0*fy
-            ! side 3-1
-            fx = stress0(j  ,i-1,1,4) * (cord(j  ,i-1,2)-cord(j  ,i  ,2)) - &
-                 stress0(j  ,i-1,3,4) * (cord(j  ,i-1,1)-cord(j  ,i  ,1))
-            fy = stress0(j  ,i-1,3,4) * (cord(j  ,i-1,2)-cord(j  ,i  ,2)) - &
-                 stress0(j  ,i-1,2,4) * (cord(j  ,i-1,1)-cord(j  ,i  ,1))
-            force(j,i,1) = force(j,i,1) - 0.25d0*fx
-            force(j,i,2) = force(j,i,2) - 0.25d0*fy
-
+            ! triangle D (n_loc = 3)
+            factor = 0.25d0 / area(j,i-1,4)
+            fx = factor * (stress0(j,i-1,1,4) * shpdx(j,i-1,3,4) + stress0(j,i-1,3,4) * shpdz(j,i-1,3,4))
+            fy = factor * (stress0(j,i-1,3,4) * shpdx(j,i-1,3,4) + stress0(j,i-1,2,4) * shpdz(j,i-1,3,4))
+            force(j,i,1) = force(j,i,1) - fx
+            force(j,i,2) = force(j,i,2) - fy
         endif
 
         ! Element (j,i). Triangles A,C,D
         if ( j.ne.nz .and. i.ne.nx ) then
-            ! triangle A
-            ! side 1-2
-            fx = stress0(j  ,i  ,1,1) * (cord(j+1,i  ,2)-cord(j  ,i  ,2)) - &
-                 stress0(j  ,i  ,3,1) * (cord(j+1,i  ,1)-cord(j  ,i  ,1))
-            fy = stress0(j  ,i  ,3,1) * (cord(j+1,i  ,2)-cord(j  ,i  ,2)) - &
-                 stress0(j  ,i  ,2,1) * (cord(j+1,i  ,1)-cord(j  ,i  ,1))
-            force(j,i,1) = force(j,i,1) - 0.25d0*fx
-            force(j,i,2) = force(j,i,2) - 0.25d0*fy
-            ! side 3-1
-            fx = stress0(j  ,i  ,1,1) * (cord(j  ,i  ,2)-cord(j  ,i+1,2)) - &
-                 stress0(j  ,i  ,3,1) * (cord(j  ,i  ,1)-cord(j  ,i+1,1))
-            fy = stress0(j  ,i  ,3,1) * (cord(j  ,i  ,2)-cord(j  ,i+1,2)) - &
-                 stress0(j  ,i  ,2,1) * (cord(j  ,i  ,1)-cord(j  ,i+1,1))
-            force(j,i,1) = force(j,i,1) - 0.25d0*fx
-            force(j,i,2) = force(j,i,2) - 0.25d0*fy
+            ! triangle A (n_loc = 1)
+            factor = 0.25d0 / area(j,i,1)
+            fx = factor * (stress0(j,i,1,1) * shpdx(j,i,1,1) + stress0(j,i,3,1) * shpdz(j,i,1,1))
+            fy = factor * (stress0(j,i,3,1) * shpdx(j,i,1,1) + stress0(j,i,2,1) * shpdz(j,i,1,1))
+            force(j,i,1) = force(j,i,1) - fx
+            force(j,i,2) = force(j,i,2) - fy
 
-            ! triangle C
-            ! side 1-2
-            fx = stress0(j  ,i  ,1,3) * (cord(j+1,i  ,2)-cord(j  ,i  ,2)) - &
-                 stress0(j  ,i  ,3,3) * (cord(j+1,i  ,1)-cord(j  ,i  ,1))
-            fy = stress0(j  ,i  ,3,3) * (cord(j+1,i  ,2)-cord(j  ,i  ,2)) - &
-                 stress0(j  ,i  ,2,3) * (cord(j+1,i  ,1)-cord(j  ,i  ,1))
-            force(j,i,1) = force(j,i,1) - 0.25d0*fx
-            force(j,i,2) = force(j,i,2) - 0.25d0*fy
-            ! side 3-1
-            fx = stress0(j  ,i  ,1,3) * (cord(j  ,i  ,2)-cord(j+1,i+1,2)) - &
-                 stress0(j  ,i  ,3,3) * (cord(j  ,i  ,1)-cord(j+1,i+1,1))
-            fy = stress0(j  ,i  ,3,3) * (cord(j  ,i  ,2)-cord(j+1,i+1,2)) - &
-                 stress0(j  ,i  ,2,3) * (cord(j  ,i  ,1)-cord(j+1,i+1,1))
-            force(j,i,1) = force(j,i,1) - 0.25d0*fx
-            force(j,i,2) = force(j,i,2) - 0.25d0*fy
+            ! triangle C (n_loc = 1)
+            factor = 0.25d0 / area(j,i,3)
+            fx = factor * (stress0(j,i,1,3) * shpdx(j,i,1,3) + stress0(j,i,3,3) * shpdz(j,i,1,3))
+            fy = factor * (stress0(j,i,3,3) * shpdx(j,i,1,3) + stress0(j,i,2,3) * shpdz(j,i,1,3))
+            force(j,i,1) = force(j,i,1) - fx
+            force(j,i,2) = force(j,i,2) - fy
 
-            ! triangle D
-            ! side 1-2
-            fx = stress0(j  ,i  ,1,4) * (cord(j+1,i+1,2)-cord(j  ,i  ,2)) - &
-                 stress0(j  ,i  ,3,4) * (cord(j+1,i+1,1)-cord(j  ,i  ,1))
-            fy = stress0(j  ,i  ,3,4) * (cord(j+1,i+1,2)-cord(j  ,i  ,2)) - &
-                 stress0(j  ,i  ,2,4) * (cord(j+1,i+1,1)-cord(j  ,i  ,1))
-            force(j,i,1) = force(j,i,1) - 0.25d0*fx
-            force(j,i,2) = force(j,i,2) - 0.25d0*fy
-            ! side 3-1
-            fx = stress0(j  ,i  ,1,4) * (cord(j  ,i  ,2)-cord(j  ,i+1,2)) - &
-                 stress0(j  ,i  ,3,4) * (cord(j  ,i  ,1)-cord(j  ,i+1,1))
-            fy = stress0(j  ,i  ,3,4) * (cord(j  ,i  ,2)-cord(j  ,i+1,2)) - &
-                 stress0(j  ,i  ,2,4) * (cord(j  ,i  ,1)-cord(j  ,i+1,1))
-            force(j,i,1) = force(j,i,1) - 0.25d0*fx
-            force(j,i,2) = force(j,i,2) - 0.25d0*fy
-
+            ! triangle D (n_loc = 1)
+            factor = 0.25d0 / area(j,i,4)
+            fx = factor * (stress0(j,i,1,4) * shpdx(j,i,1,4) + stress0(j,i,3,4) * shpdz(j,i,1,4))
+            fy = factor * (stress0(j,i,3,4) * shpdx(j,i,1,4) + stress0(j,i,2,4) * shpdz(j,i,1,4))
+            force(j,i,1) = force(j,i,1) - fx
+            force(j,i,2) = force(j,i,2) - fy
         endif
 
         ! GRAVITY FORCE
