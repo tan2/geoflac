@@ -11,6 +11,8 @@ include 'precision.inc'
 double precision :: D(3,3)  ! diffusion operator
 double precision :: diff_elem(nz-1, nx-1)
 double precision :: inv_area
+double precision :: x1, y1, x2, y2, x3, y3, x4, y4
+double precision :: shpdx_1, shpdx_2, shpdx_3, shpdz_1, shpdz_2, shpdz_3
 
 tan_mzone = tan(0.5d0 * angle_mzone * 3.14159265358979323846d0 / 180.d0)
 ! max. width of the magma zone @ moho (as if melting occurs at 200 km)
@@ -42,7 +44,9 @@ endif
 !$OMP Parallel private(i,j,iph,cp_eff,cond_eff,dissip,quad_area, &
 !$OMP                  fr_lambda, &
 !$OMP                  delta_fmagma,deltaT,real_area13,area_n,rhs, &
-!$OMP                  jm,area_ratio,z_moho,z_melt,x_melt,h,x,z,inv_area)
+!$OMP                  jm,area_ratio,z_moho,z_melt,x_melt,h,x,z,inv_area, &
+!$OMP                  x1,y1,x2,y2,x3,y3,x4,y4, &
+!$OMP                  shpdx_1,shpdx_2,shpdx_3,shpdz_1,shpdz_2,shpdz_3)
 
 if (itype_melting == 1) then
     ! M: fmegma, magma fraction in the element
@@ -183,10 +187,22 @@ do i = 1,nx
             inv_area = 1.d0/area(j-1,i-1,2)
             real_area13 = inv_area / 6.d0
             area_n = area_n + real_area13
+            y2 = cord(j  ,i-1,2)
+            y3 = cord(j-1,i  ,2)
+            y4 = cord(j  ,i  ,2)
+            x2 = cord(j  ,i-1,1)
+            x3 = cord(j-1,i  ,1)
+            x4 = cord(j  ,i  ,1)
+            shpdx_1 = (y2 - y4) * area(j-1,i-1,2)
+            shpdx_2 = (y4 - y3) * area(j-1,i-1,2)
+            shpdx_3 = (y3 - y2) * area(j-1,i-1,2)
+            shpdz_1 = (x4 - x2) * area(j-1,i-1,2)
+            shpdz_2 = (x3 - x4) * area(j-1,i-1,2)
+            shpdz_3 = (x2 - x3) * area(j-1,i-1,2)
             rhs = rhs + dummye(j-1,i-1) * real_area13 - 0.5d0 * diff_elem(j-1,i-1) * inv_area * ( &
-                temp(j-1,i  ) * (shpdx(j-1,i-1,1,2)*shpdx(j-1,i-1,3,2) + shpdz(j-1,i-1,1,2)*shpdz(j-1,i-1,3,2)) + &
-                temp(j  ,i-1) * (shpdx(j-1,i-1,2,2)*shpdx(j-1,i-1,3,2) + shpdz(j-1,i-1,2,2)*shpdz(j-1,i-1,3,2)) + &
-                temp(j  ,i  ) * (shpdx(j-1,i-1,3,2)*shpdx(j-1,i-1,3,2) + shpdz(j-1,i-1,3,2)*shpdz(j-1,i-1,3,2)) )
+                temp(j-1,i  ) * (shpdx_1 * shpdx_3 + shpdz_1 * shpdz_3) + &
+                temp(j  ,i-1) * (shpdx_2 * shpdx_3 + shpdz_2 * shpdz_3) + &
+                temp(j  ,i  ) * (shpdx_3 * shpdx_3 + shpdz_3 * shpdz_3) )
         endif
 
         ! Element (j-1,i). Triangles A,B
@@ -195,19 +211,43 @@ do i = 1,nx
             inv_area = 1.d0/area(j-1,i,1)
             real_area13 = inv_area / 6.d0
             area_n = area_n + real_area13
+            y1 = cord(j-1,i  ,2)
+            y2 = cord(j  ,i  ,2)
+            y3 = cord(j-1,i+1,2)
+            x1 = cord(j-1,i  ,1)
+            x2 = cord(j  ,i  ,1)
+            x3 = cord(j-1,i+1,1)
+            shpdx_1 = (y2 - y3) * area(j-1,i,1)
+            shpdx_2 = (y3 - y1) * area(j-1,i,1)
+            shpdx_3 = (y1 - y2) * area(j-1,i,1)
+            shpdz_1 = (x3 - x2) * area(j-1,i,1)
+            shpdz_2 = (x1 - x3) * area(j-1,i,1)
+            shpdz_3 = (x2 - x1) * area(j-1,i,1)
             rhs = rhs + dummye(j-1,i) * real_area13 - 0.5d0 * diff_elem(j-1,i) * inv_area * ( &
-                temp(j-1,i  ) * (shpdx(j-1,i,1,1)*shpdx(j-1,i,2,1) + shpdz(j-1,i,1,1)*shpdz(j-1,i,2,1)) + &
-                temp(j  ,i  ) * (shpdx(j-1,i,2,1)*shpdx(j-1,i,2,1) + shpdz(j-1,i,2,1)*shpdz(j-1,i,2,1)) + &
-                temp(j-1,i+1) * (shpdx(j-1,i,3,1)*shpdx(j-1,i,2,1) + shpdz(j-1,i,3,1)*shpdz(j-1,i,2,1)) )
+                temp(j-1,i  ) * (shpdx_1 * shpdx_2 + shpdz_1 * shpdz_2) + &
+                temp(j  ,i  ) * (shpdx_2 * shpdx_2 + shpdz_2 * shpdz_2) + &
+                temp(j-1,i+1) * (shpdx_3 * shpdx_2 + shpdz_3 * shpdz_2) )
 
             ! triangle B
             inv_area = 1.d0/area(j-1,i,2)
             real_area13 = inv_area / 6.d0
             area_n = area_n + real_area13
+            y2 = cord(j  ,i  ,2)
+            y3 = cord(j-1,i+1,2)
+            y4 = cord(j  ,i+1,2)
+            x2 = cord(j  ,i  ,1)
+            x3 = cord(j-1,i+1,1)
+            x4 = cord(j  ,i+1,1)
+            shpdx_1 = (y2 - y4) * area(j-1,i,2)
+            shpdx_2 = (y4 - y3) * area(j-1,i,2)
+            shpdx_3 = (y3 - y2) * area(j-1,i,2)
+            shpdz_1 = (x4 - x2) * area(j-1,i,2)
+            shpdz_2 = (x3 - x4) * area(j-1,i,2)
+            shpdz_3 = (x2 - x3) * area(j-1,i,2)
             rhs = rhs + dummye(j-1,i) * real_area13 - 0.5d0 * diff_elem(j-1,i) * inv_area * ( &
-                temp(j-1,i+1) * (shpdx(j-1,i,1,2)*shpdx(j-1,i,2,2) + shpdz(j-1,i,1,2)*shpdz(j-1,i,2,2)) + &
-                temp(j  ,i  ) * (shpdx(j-1,i,2,2)*shpdx(j-1,i,2,2) + shpdz(j-1,i,2,2)*shpdz(j-1,i,2,2)) + &
-                temp(j  ,i+1) * (shpdx(j-1,i,3,2)*shpdx(j-1,i,2,2) + shpdz(j-1,i,3,2)*shpdz(j-1,i,2,2)) )
+                temp(j-1,i+1) * (shpdx_1 * shpdx_2 + shpdz_1 * shpdz_2) + &
+                temp(j  ,i  ) * (shpdx_2 * shpdx_2 + shpdz_2 * shpdz_2) + &
+                temp(j  ,i+1) * (shpdx_3 * shpdx_2 + shpdz_3 * shpdz_2) )
         endif
         
         ! Element (j,i-1). Triangles A,B
@@ -216,19 +256,43 @@ do i = 1,nx
             inv_area = 1.d0/area(j,i-1,1)
             real_area13 = inv_area / 6.d0
             area_n = area_n + real_area13
+            y1 = cord(j  ,i-1,2)
+            y2 = cord(j+1,i-1,2)
+            y3 = cord(j  ,i  ,2)
+            x1 = cord(j  ,i-1,1)
+            x2 = cord(j+1,i-1,1)
+            x3 = cord(j  ,i  ,1)
+            shpdx_1 = (y2 - y3) * area(j,i-1,1)
+            shpdx_2 = (y3 - y1) * area(j,i-1,1)
+            shpdx_3 = (y1 - y2) * area(j,i-1,1)
+            shpdz_1 = (x3 - x2) * area(j,i-1,1)
+            shpdz_2 = (x1 - x3) * area(j,i-1,1)
+            shpdz_3 = (x2 - x1) * area(j,i-1,1)
             rhs = rhs + dummye(j,i-1) * real_area13 - 0.5d0 * diff_elem(j,i-1) * inv_area * ( &
-                temp(j  ,i-1) * (shpdx(j,i-1,1,1)*shpdx(j,i-1,3,1) + shpdz(j,i-1,1,1)*shpdz(j,i-1,3,1)) + &
-                temp(j+1,i-1) * (shpdx(j,i-1,2,1)*shpdx(j,i-1,3,1) + shpdz(j,i-1,2,1)*shpdz(j,i-1,3,1)) + &
-                temp(j  ,i  ) * (shpdx(j,i-1,3,1)*shpdx(j,i-1,3,1) + shpdz(j,i-1,3,1)*shpdz(j,i-1,3,1)) )
+                temp(j  ,i-1) * (shpdx_1 * shpdx_3 + shpdz_1 * shpdz_3) + &
+                temp(j+1,i-1) * (shpdx_2 * shpdx_3 + shpdz_2 * shpdz_3) + &
+                temp(j  ,i  ) * (shpdx_3 * shpdx_3 + shpdz_3 * shpdz_3) )
 
             ! triangle B
             inv_area = 1.d0/area(j,i-1,2)
             real_area13 = inv_area / 6.d0
             area_n = area_n + real_area13
+            y2 = cord(j+1,i-1,2)
+            y3 = cord(j  ,i  ,2)
+            y4 = cord(j+1,i  ,2)
+            x2 = cord(j+1,i-1,1)
+            x3 = cord(j  ,i  ,1)
+            x4 = cord(j+1,i  ,1)
+            shpdx_1 = (y2 - y4) * area(j,i-1,2)
+            shpdx_2 = (y4 - y3) * area(j,i-1,2)
+            shpdx_3 = (y3 - y2) * area(j,i-1,2)
+            shpdz_1 = (x4 - x2) * area(j,i-1,2)
+            shpdz_2 = (x3 - x4) * area(j,i-1,2)
+            shpdz_3 = (x2 - x3) * area(j,i-1,2)
             rhs = rhs + dummye(j,i-1) * real_area13 - 0.5d0 * diff_elem(j,i-1) * inv_area * ( &
-                temp(j  ,i  ) * (shpdx(j,i-1,1,2)*shpdx(j,i-1,1,2) + shpdz(j,i-1,1,2)*shpdz(j,i-1,1,2)) + &
-                temp(j+1,i-1) * (shpdx(j,i-1,2,2)*shpdx(j,i-1,1,2) + shpdz(j,i-1,2,2)*shpdz(j,i-1,1,2)) + &
-                temp(j+1,i  ) * (shpdx(j,i-1,3,2)*shpdx(j,i-1,1,2) + shpdz(j,i-1,3,2)*shpdz(j,i-1,1,2)) )
+                temp(j  ,i  ) * (shpdx_1 * shpdx_1 + shpdz_1 * shpdz_1) + &
+                temp(j+1,i-1) * (shpdx_2 * shpdx_1 + shpdz_2 * shpdz_1) + &
+                temp(j+1,i  ) * (shpdx_3 * shpdx_1 + shpdz_3 * shpdz_1) )
         endif
 
         ! Element (j,i). Triangle A
@@ -236,10 +300,22 @@ do i = 1,nx
             inv_area = 1.d0/area(j,i,1)
             real_area13 = inv_area / 6.d0
             area_n = area_n + real_area13
+            y1 = cord(j  ,i  ,2)
+            y2 = cord(j+1,i  ,2)
+            y3 = cord(j  ,i+1,2)
+            x1 = cord(j  ,i  ,1)
+            x2 = cord(j+1,i  ,1)
+            x3 = cord(j  ,i+1,1)
+            shpdx_1 = (y2 - y3) * area(j,i,1)
+            shpdx_2 = (y3 - y1) * area(j,i,1)
+            shpdx_3 = (y1 - y2) * area(j,i,1)
+            shpdz_1 = (x3 - x2) * area(j,i,1)
+            shpdz_2 = (x1 - x3) * area(j,i,1)
+            shpdz_3 = (x2 - x1) * area(j,i,1)
             rhs = rhs + dummye(j,i) * real_area13 - 0.5d0 * diff_elem(j,i) * inv_area * ( &
-                temp(j  ,i  ) * (shpdx(j,i,1,1)*shpdx(j,i,1,1) + shpdz(j,i,1,1)*shpdz(j,i,1,1)) + &
-                temp(j+1,i  ) * (shpdx(j,i,2,1)*shpdx(j,i,1,1) + shpdz(j,i,2,1)*shpdz(j,i,1,1)) + &
-                temp(j  ,i+1) * (shpdx(j,i,3,1)*shpdx(j,i,1,1) + shpdz(j,i,3,1)*shpdz(j,i,1,1)) )
+                temp(j  ,i  ) * (shpdx_1 * shpdx_1 + shpdz_1 * shpdz_1) + &
+                temp(j+1,i  ) * (shpdx_2 * shpdx_1 + shpdz_2 * shpdz_1) + &
+                temp(j  ,i+1) * (shpdx_3 * shpdx_1 + shpdz_3 * shpdz_1) )
         endif
 
         ! Update Temperature by Eulerian method 

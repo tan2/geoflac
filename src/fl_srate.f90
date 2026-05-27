@@ -9,6 +9,8 @@ integer :: i,j,k
 double precision :: vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4, &
          em,eda,edb,s11,s22,s12, &
          srII,srI,srs2,stII
+double precision :: x1,y1,x2,y2,x3,y3,x4,y4
+double precision :: shpdx_loc(3, 4), shpdz_loc(3, 4)
 
 dtavg = dtavg + dt
 !$ACC update device(dtavg) async(2)
@@ -17,7 +19,9 @@ dtavg = dtavg + dt
 !$OMP private(i,j,k, &
 !$OMP         vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4, &
 !$OMP         em,eda,edb,s11,s22,s12, &
-!$OMP         srII,srI,srs2,stII)
+!$OMP         srII,srI,srs2,stII, &
+!$OMP         x1,y1,x2,y2,x3,y3,x4,y4, &
+!$OMP         shpdx_loc,shpdz_loc)
 !$ACC parallel loop collapse(2) async(1)
 do i = 1,nx-1
     do j = 1,nz-1
@@ -37,29 +41,75 @@ do i = 1,nx-1
         ! 4 different elements (combinations):
         ! b: [d/dx],   c: [d/dy]
  
+        ! Coordinates:
+        x1 = cord(j  ,i  ,1)
+        y1 = cord(j  ,i  ,2)
+        x2 = cord(j+1,i  ,1)
+        y2 = cord(j+1,i  ,2)
+        x3 = cord(j  ,i+1,1)
+        y3 = cord(j  ,i+1,2)
+        x4 = cord(j+1,i+1,1)
+        y4 = cord(j+1,i+1,2)
+
+        ! Triangle A (k=1)
+        shpdx_loc(1, 1) = (y2 - y3) * area(j, i, 1)
+        shpdx_loc(2, 1) = (y3 - y1) * area(j, i, 1)
+        shpdx_loc(3, 1) = (y1 - y2) * area(j, i, 1)
+
+        shpdz_loc(1, 1) = (x3 - x2) * area(j, i, 1)
+        shpdz_loc(2, 1) = (x1 - x3) * area(j, i, 1)
+        shpdz_loc(3, 1) = (x2 - x1) * area(j, i, 1)
+
+        ! Triangle B (k=2)
+        shpdx_loc(1, 2) = (y2 - y4) * area(j, i, 2)
+        shpdx_loc(2, 2) = (y4 - y3) * area(j, i, 2)
+        shpdx_loc(3, 2) = (y3 - y2) * area(j, i, 2)
+
+        shpdz_loc(1, 2) = (x4 - x2) * area(j, i, 2)
+        shpdz_loc(2, 2) = (x3 - x4) * area(j, i, 2)
+        shpdz_loc(3, 2) = (x2 - x3) * area(j, i, 2)
+
+        ! Triangle C (k=3)
+        shpdx_loc(1, 3) = (y2 - y4) * area(j, i, 3)
+        shpdx_loc(2, 3) = (y4 - y1) * area(j, i, 3)
+        shpdx_loc(3, 3) = (y1 - y2) * area(j, i, 3)
+
+        shpdz_loc(1, 3) = (x4 - x2) * area(j, i, 3)
+        shpdz_loc(2, 3) = (x1 - x4) * area(j, i, 3)
+        shpdz_loc(3, 3) = (x2 - x1) * area(j, i, 3)
+
+        ! Triangle D (k=4)
+        shpdx_loc(1, 4) = (y4 - y3) * area(j, i, 4)
+        shpdx_loc(2, 4) = (y3 - y1) * area(j, i, 4)
+        shpdx_loc(3, 4) = (y1 - y4) * area(j, i, 4)
+
+        shpdz_loc(1, 4) = (x3 - x4) * area(j, i, 4)
+        shpdz_loc(2, 4) = (x1 - x3) * area(j, i, 4)
+        shpdz_loc(3, 4) = (x4 - x1) * area(j, i, 4)
+
         ! (1) A element:
-        strainr(1,1,j,i) = vx1 * shpdx(j, i, 1, 1) + vx2 * shpdx(j, i, 2, 1) + vx3 * shpdx(j, i, 3, 1)
-        strainr(2,1,j,i) = vy1 * shpdz(j, i, 1, 1) + vy2 * shpdz(j, i, 2, 1) + vy3 * shpdz(j, i, 3, 1)
-        strainr(3,1,j,i) = 0.5d0*(vx1 * shpdz(j, i, 1, 1) + vx2 * shpdz(j, i, 2, 1) + vx3 * shpdz(j, i, 3, 1) + &
-                                  vy1 * shpdx(j, i, 1, 1) + vy2 * shpdx(j, i, 2, 1) + vy3 * shpdx(j, i, 3, 1))
+        strainr(1,1,j,i) = vx1 * shpdx_loc(1, 1) + vx2 * shpdx_loc(2, 1) + vx3 * shpdx_loc(3, 1)
+        strainr(2,1,j,i) = vy1 * shpdz_loc(1, 1) + vy2 * shpdz_loc(2, 1) + vy3 * shpdz_loc(3, 1)
+        strainr(3,1,j,i) = 0.5d0*(vx1 * shpdz_loc(1, 1) + vx2 * shpdz_loc(2, 1) + vx3 * shpdz_loc(3, 1) + &
+                                  vy1 * shpdx_loc(1, 1) + vy2 * shpdx_loc(2, 1) + vy3 * shpdx_loc(3, 1))
  
         !(2) B element: Interchange of numeration: (1 -> 3,  3 -> 4)
-        strainr(1,2,j,i) = vx3 * shpdx(j, i, 1, 2) + vx2 * shpdx(j, i, 2, 2) + vx4 * shpdx(j, i, 3, 2)
-        strainr(2,2,j,i) = vy3 * shpdz(j, i, 1, 2) + vy2 * shpdz(j, i, 2, 2) + vy4 * shpdz(j, i, 3, 2)
-        strainr(3,2,j,i) = 0.5d0*(vx3 * shpdz(j, i, 1, 2) + vx2 * shpdz(j, i, 2, 2) + vx4 * shpdz(j, i, 3, 2) + &
-                                  vy3 * shpdx(j, i, 1, 2) + vy2 * shpdx(j, i, 2, 2) + vy4 * shpdx(j, i, 3, 2))
+        strainr(1,2,j,i) = vx3 * shpdx_loc(1, 2) + vx2 * shpdx_loc(2, 2) + vx4 * shpdx_loc(3, 2)
+        strainr(2,2,j,i) = vy3 * shpdz_loc(1, 2) + vy2 * shpdz_loc(2, 2) + vy4 * shpdz_loc(3, 2)
+        strainr(3,2,j,i) = 0.5d0*(vx3 * shpdz_loc(1, 2) + vx2 * shpdz_loc(2, 2) + vx4 * shpdz_loc(3, 2) + &
+                                  vy3 * shpdx_loc(1, 2) + vy2 * shpdx_loc(2, 2) + vy4 * shpdx_loc(3, 2))
  
         ! (3) C element: ( 3 -> 4 )
-        strainr(1,3,j,i) = vx1 * shpdx(j, i, 1, 3) + vx2 * shpdx(j, i, 2, 3) + vx4 * shpdx(j, i, 3, 3)
-        strainr(2,3,j,i) = vy1 * shpdz(j, i, 1, 3) + vy2 * shpdz(j, i, 2, 3) + vy4 * shpdz(j, i, 3, 3)
-        strainr(3,3,j,i) = 0.5d0*(vx1 * shpdz(j, i, 1, 3) + vx2 * shpdz(j, i, 2, 3) + vx4 * shpdz(j, i, 3, 3) + &
-                                  vy1 * shpdx(j, i, 1, 3) + vy2 * shpdx(j, i, 2, 3) + vy4 * shpdx(j, i, 3, 3))
+        strainr(1,3,j,i) = vx1 * shpdx_loc(1, 3) + vx2 * shpdx_loc(2, 3) + vx4 * shpdx_loc(3, 3)
+        strainr(2,3,j,i) = vy1 * shpdz_loc(1, 3) + vy2 * shpdz_loc(2, 3) + vy4 * shpdz_loc(3, 3)
+        strainr(3,3,j,i) = 0.5d0*(vx1 * shpdz_loc(1, 3) + vx2 * shpdz_loc(2, 3) + vx4 * shpdz_loc(3, 3) + &
+                                  vy1 * shpdx_loc(1, 3) + vy2 * shpdx_loc(2, 3) + vy4 * shpdx_loc(3, 3))
 
         ! (4) D element: (2 -> 4 )
-        strainr(1,4,j,i) = vx1 * shpdx(j, i, 1, 4) + vx4 * shpdx(j, i, 2, 4) + vx3 * shpdx(j, i, 3, 4)
-        strainr(2,4,j,i) = vy1 * shpdz(j, i, 1, 4) + vy4 * shpdz(j, i, 2, 4) + vy3 * shpdz(j, i, 3, 4)
-        strainr(3,4,j,i) = 0.5d0*(vx1 * shpdz(j, i, 1, 4) + vx4 * shpdz(j, i, 2, 4) + vx3 * shpdz(j, i, 3, 4) + &
-                                  vy1 * shpdx(j, i, 1, 4) + vy4 * shpdx(j, i, 2, 4) + vy3 * shpdx(j, i, 3, 4))
+        strainr(1,4,j,i) = vx1 * shpdx_loc(1, 4) + vx4 * shpdx_loc(2, 4) + vx3 * shpdx_loc(3, 4)
+        strainr(2,4,j,i) = vy1 * shpdz_loc(1, 4) + vy4 * shpdz_loc(2, 4) + vy3 * shpdz_loc(3, 4)
+        strainr(3,4,j,i) = 0.5d0*(vx1 * shpdz_loc(1, 4) + vx4 * shpdz_loc(2, 4) + vx3 * shpdz_loc(3, 4) + &
+                                  vy1 * shpdx_loc(1, 4) + vy4 * shpdx_loc(2, 4) + vy3 * shpdx_loc(3, 4))
 
         
         !  Mixed discretization of Cundall

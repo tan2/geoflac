@@ -8,6 +8,10 @@ include 'precision.inc'
 integer, parameter :: kk(3, 4) = reshape((/ 2,3,4, 1,2,3, 1,2,4, 1,3,4 /), (/3, 4/))
 integer, parameter :: mm(3, 4) = reshape((/ 3,3,2, 2,2,2, 3,1,3, 1,1,1 /), (/3, 4/))
 
+integer :: i, j, k, je, ie
+double precision :: x1, y1, x2, y2, x3, y3, x4, y4
+double precision :: shpdx_loc(3, 4), shpdz_loc(3, 4)
+
 !  1 - 3
 !  |   |
 !  2 - 4
@@ -38,7 +42,9 @@ if (drat .lt. 1.d0) drat = 1.d0
 !$OMP                  p_est, rosubg, &
 !$OMP                  press_norm_l, dlx_l, dly_l, &
 !$OMP                  press_norm_r, dlx_r, dly_r, &
-!$OMP                  iunknown, rho_water_g, water_depth)
+!$OMP                  iunknown, rho_water_g, water_depth, &
+!$OMP                  je, ie, x1, y1, x2, y2, x3, y3, x4, y4, &
+!$OMP                  shpdx_loc, shpdz_loc)
 !
 !$OMP do
 !$ACC parallel loop collapse(2) async(1)
@@ -52,12 +58,47 @@ do i = 1,nx
         
         ! Element (j-1,i-1). Triangles B,C,D
         if ( j.ne.1 .and. i.ne.1 ) then
+            je = j-1
+            ie = i-1
+            x1 = cord(je  ,ie  ,1)
+            y1 = cord(je  ,ie  ,2)
+            x2 = cord(je+1,ie  ,1)
+            y2 = cord(je+1,ie  ,2)
+            x3 = cord(je  ,ie+1,1)
+            y3 = cord(je  ,ie+1,2)
+            x4 = cord(je+1,ie+1,1)
+            y4 = cord(je+1,ie+1,2)
+
+            ! Triangle B (k=2)
+            shpdx_loc(1, 2) = (y2 - y4) * area(je, ie, 2)
+            shpdx_loc(2, 2) = (y4 - y3) * area(je, ie, 2)
+            shpdx_loc(3, 2) = (y3 - y2) * area(je, ie, 2)
+            shpdz_loc(1, 2) = (x4 - x2) * area(je, ie, 2)
+            shpdz_loc(2, 2) = (x3 - x4) * area(je, ie, 2)
+            shpdz_loc(3, 2) = (x2 - x3) * area(je, ie, 2)
+
+            ! Triangle C (k=3)
+            shpdx_loc(1, 3) = (y2 - y4) * area(je, ie, 3)
+            shpdx_loc(2, 3) = (y4 - y1) * area(je, ie, 3)
+            shpdx_loc(3, 3) = (y1 - y2) * area(je, ie, 3)
+            shpdz_loc(1, 3) = (x4 - x2) * area(je, ie, 3)
+            shpdz_loc(2, 3) = (x1 - x4) * area(je, ie, 3)
+            shpdz_loc(3, 3) = (x2 - x1) * area(je, ie, 3)
+
+            ! Triangle D (k=4)
+            shpdx_loc(1, 4) = (y4 - y3) * area(je, ie, 4)
+            shpdx_loc(2, 4) = (y3 - y1) * area(je, ie, 4)
+            shpdx_loc(3, 4) = (y1 - y4) * area(je, ie, 4)
+            shpdz_loc(1, 4) = (x3 - x4) * area(je, ie, 4)
+            shpdz_loc(2, 4) = (x1 - x3) * area(je, ie, 4)
+            shpdz_loc(3, 4) = (x4 - x1) * area(je, ie, 4)
+
             do k = 1, 3
-                factor = 0.25d0 / area(j-1,i-1,kk(k,1))
-                fx = factor * (stress0(j-1,i-1,1,kk(k,1)) * shpdx(j-1,i-1,mm(k,1),kk(k,1)) + &
-                               stress0(j-1,i-1,3,kk(k,1)) * shpdz(j-1,i-1,mm(k,1),kk(k,1)))
-                fy = factor * (stress0(j-1,i-1,3,kk(k,1)) * shpdx(j-1,i-1,mm(k,1),kk(k,1)) + &
-                               stress0(j-1,i-1,2,kk(k,1)) * shpdz(j-1,i-1,mm(k,1),kk(k,1)))
+                factor = 0.25d0 / area(je,ie,kk(k,1))
+                fx = factor * (stress0(je,ie,1,kk(k,1)) * shpdx_loc(mm(k,1),kk(k,1)) + &
+                               stress0(je,ie,3,kk(k,1)) * shpdz_loc(mm(k,1),kk(k,1)))
+                fy = factor * (stress0(je,ie,3,kk(k,1)) * shpdx_loc(mm(k,1),kk(k,1)) + &
+                               stress0(je,ie,2,kk(k,1)) * shpdz_loc(mm(k,1),kk(k,1)))
                 force(j,i,1) = force(j,i,1) - fx
                 force(j,i,2) = force(j,i,2) - fy
             enddo
@@ -65,12 +106,47 @@ do i = 1,nx
 
         ! Element (j-1,i). Triangles A,B,C.
         if ( j.ne.1 .and. i.ne.nx ) then
+            je = j-1
+            ie = i
+            x1 = cord(je  ,ie  ,1)
+            y1 = cord(je  ,ie  ,2)
+            x2 = cord(je+1,ie  ,1)
+            y2 = cord(je+1,ie  ,2)
+            x3 = cord(je  ,ie+1,1)
+            y3 = cord(je  ,ie+1,2)
+            x4 = cord(je+1,ie+1,1)
+            y4 = cord(je+1,ie+1,2)
+
+            ! Triangle A (k=1)
+            shpdx_loc(1, 1) = (y2 - y3) * area(je, ie, 1)
+            shpdx_loc(2, 1) = (y3 - y1) * area(je, ie, 1)
+            shpdx_loc(3, 1) = (y1 - y2) * area(je, ie, 1)
+            shpdz_loc(1, 1) = (x3 - x2) * area(je, ie, 1)
+            shpdz_loc(2, 1) = (x1 - x3) * area(je, ie, 1)
+            shpdz_loc(3, 1) = (x2 - x1) * area(je, ie, 1)
+
+            ! Triangle B (k=2)
+            shpdx_loc(1, 2) = (y2 - y4) * area(je, ie, 2)
+            shpdx_loc(2, 2) = (y4 - y3) * area(je, ie, 2)
+            shpdx_loc(3, 2) = (y3 - y2) * area(je, ie, 2)
+            shpdz_loc(1, 2) = (x4 - x2) * area(je, ie, 2)
+            shpdz_loc(2, 2) = (x3 - x4) * area(je, ie, 2)
+            shpdz_loc(3, 2) = (x2 - x3) * area(je, ie, 2)
+
+            ! Triangle C (k=3)
+            shpdx_loc(1, 3) = (y2 - y4) * area(je, ie, 3)
+            shpdx_loc(2, 3) = (y4 - y1) * area(je, ie, 3)
+            shpdx_loc(3, 3) = (y1 - y2) * area(je, ie, 3)
+            shpdz_loc(1, 3) = (x4 - x2) * area(je, ie, 3)
+            shpdz_loc(2, 3) = (x1 - x4) * area(je, ie, 3)
+            shpdz_loc(3, 3) = (x2 - x1) * area(je, ie, 3)
+
             do k = 1, 3
-                factor = 0.25d0 / area(j-1,i,kk(k,2))
-                fx = factor * (stress0(j-1,i,1,kk(k,2)) * shpdx(j-1,i,mm(k,2),kk(k,2)) + &
-                               stress0(j-1,i,3,kk(k,2)) * shpdz(j-1,i,mm(k,2),kk(k,2)))
-                fy = factor * (stress0(j-1,i,3,kk(k,2)) * shpdx(j-1,i,mm(k,2),kk(k,2)) + &
-                               stress0(j-1,i,2,kk(k,2)) * shpdz(j-1,i,mm(k,2),kk(k,2)))
+                factor = 0.25d0 / area(je,ie,kk(k,2))
+                fx = factor * (stress0(je,ie,1,kk(k,2)) * shpdx_loc(mm(k,2),kk(k,2)) + &
+                               stress0(je,ie,3,kk(k,2)) * shpdz_loc(mm(k,2),kk(k,2)))
+                fy = factor * (stress0(je,ie,3,kk(k,2)) * shpdx_loc(mm(k,2),kk(k,2)) + &
+                               stress0(je,ie,2,kk(k,2)) * shpdz_loc(mm(k,2),kk(k,2)))
                 force(j,i,1) = force(j,i,1) - fx
                 force(j,i,2) = force(j,i,2) - fy
             enddo
@@ -78,12 +154,47 @@ do i = 1,nx
 
         ! Element (j,i-1). Triangles A,B,D
         if ( j.ne.nz .and. i.ne.1 ) then
+            je = j
+            ie = i-1
+            x1 = cord(je  ,ie  ,1)
+            y1 = cord(je  ,ie  ,2)
+            x2 = cord(je+1,ie  ,1)
+            y2 = cord(je+1,ie  ,2)
+            x3 = cord(je  ,ie+1,1)
+            y3 = cord(je  ,ie+1,2)
+            x4 = cord(je+1,ie+1,1)
+            y4 = cord(je+1,ie+1,2)
+
+            ! Triangle A (k=1)
+            shpdx_loc(1, 1) = (y2 - y3) * area(je, ie, 1)
+            shpdx_loc(2, 1) = (y3 - y1) * area(je, ie, 1)
+            shpdx_loc(3, 1) = (y1 - y2) * area(je, ie, 1)
+            shpdz_loc(1, 1) = (x3 - x2) * area(je, ie, 1)
+            shpdz_loc(2, 1) = (x1 - x3) * area(je, ie, 1)
+            shpdz_loc(3, 1) = (x2 - x1) * area(je, ie, 1)
+
+            ! Triangle B (k=2)
+            shpdx_loc(1, 2) = (y2 - y4) * area(je, ie, 2)
+            shpdx_loc(2, 2) = (y4 - y3) * area(je, ie, 2)
+            shpdx_loc(3, 2) = (y3 - y2) * area(je, ie, 2)
+            shpdz_loc(1, 2) = (x4 - x2) * area(je, ie, 2)
+            shpdz_loc(2, 2) = (x3 - x4) * area(je, ie, 2)
+            shpdz_loc(3, 2) = (x2 - x3) * area(je, ie, 2)
+
+            ! Triangle D (k=4)
+            shpdx_loc(1, 4) = (y4 - y3) * area(je, ie, 4)
+            shpdx_loc(2, 4) = (y3 - y1) * area(je, ie, 4)
+            shpdx_loc(3, 4) = (y1 - y4) * area(je, ie, 4)
+            shpdz_loc(1, 4) = (x3 - x4) * area(je, ie, 4)
+            shpdz_loc(2, 4) = (x1 - x3) * area(je, ie, 4)
+            shpdz_loc(3, 4) = (x4 - x1) * area(je, ie, 4)
+
             do k = 1, 3
-                factor = 0.25d0 / area(j,i-1,kk(k,3))
-                fx = factor * (stress0(j,i-1,1,kk(k,3)) * shpdx(j,i-1,mm(k,3),kk(k,3)) + &
-                               stress0(j,i-1,3,kk(k,3)) * shpdz(j,i-1,mm(k,3),kk(k,3)))
-                fy = factor * (stress0(j,i-1,3,kk(k,3)) * shpdx(j,i-1,mm(k,3),kk(k,3)) + &
-                               stress0(j,i-1,2,kk(k,3)) * shpdz(j,i-1,mm(k,3),kk(k,3)))
+                factor = 0.25d0 / area(je,ie,kk(k,3))
+                fx = factor * (stress0(je,ie,1,kk(k,3)) * shpdx_loc(mm(k,3),kk(k,3)) + &
+                               stress0(je,ie,3,kk(k,3)) * shpdz_loc(mm(k,3),kk(k,3)))
+                fy = factor * (stress0(je,ie,3,kk(k,3)) * shpdx_loc(mm(k,3),kk(k,3)) + &
+                               stress0(je,ie,2,kk(k,3)) * shpdz_loc(mm(k,3),kk(k,3)))
                 force(j,i,1) = force(j,i,1) - fx
                 force(j,i,2) = force(j,i,2) - fy
             enddo
@@ -91,12 +202,47 @@ do i = 1,nx
 
         ! Element (j,i). Triangles A,C,D
         if ( j.ne.nz .and. i.ne.nx ) then
+            je = j
+            ie = i
+            x1 = cord(je  ,ie  ,1)
+            y1 = cord(je  ,ie  ,2)
+            x2 = cord(je+1,ie  ,1)
+            y2 = cord(je+1,ie  ,2)
+            x3 = cord(je  ,ie+1,1)
+            y3 = cord(je  ,ie+1,2)
+            x4 = cord(je+1,ie+1,1)
+            y4 = cord(je+1,ie+1,2)
+
+            ! Triangle A (k=1)
+            shpdx_loc(1, 1) = (y2 - y3) * area(je, ie, 1)
+            shpdx_loc(2, 1) = (y3 - y1) * area(je, ie, 1)
+            shpdx_loc(3, 1) = (y1 - y2) * area(je, ie, 1)
+            shpdz_loc(1, 1) = (x3 - x2) * area(je, ie, 1)
+            shpdz_loc(2, 1) = (x1 - x3) * area(je, ie, 1)
+            shpdz_loc(3, 1) = (x2 - x1) * area(je, ie, 1)
+
+            ! Triangle C (k=3)
+            shpdx_loc(1, 3) = (y2 - y4) * area(je, ie, 3)
+            shpdx_loc(2, 3) = (y4 - y1) * area(je, ie, 3)
+            shpdx_loc(3, 3) = (y1 - y2) * area(je, ie, 3)
+            shpdz_loc(1, 3) = (x4 - x2) * area(je, ie, 3)
+            shpdz_loc(2, 3) = (x1 - x4) * area(je, ie, 3)
+            shpdz_loc(3, 3) = (x2 - x1) * area(je, ie, 3)
+
+            ! Triangle D (k=4)
+            shpdx_loc(1, 4) = (y4 - y3) * area(je, ie, 4)
+            shpdx_loc(2, 4) = (y3 - y1) * area(je, ie, 4)
+            shpdx_loc(3, 4) = (y1 - y4) * area(je, ie, 4)
+            shpdz_loc(1, 4) = (x3 - x4) * area(je, ie, 4)
+            shpdz_loc(2, 4) = (x1 - x3) * area(je, ie, 4)
+            shpdz_loc(3, 4) = (x4 - x1) * area(je, ie, 4)
+
             do k = 1, 3
-                factor = 0.25d0 / area(j,i,kk(k,4))
-                fx = factor * (stress0(j,i,1,kk(k,4)) * shpdx(j,i,mm(k,4),kk(k,4)) + &
-                               stress0(j,i,3,kk(k,4)) * shpdz(j,i,mm(k,4),kk(k,4)))
-                fy = factor * (stress0(j,i,3,kk(k,4)) * shpdx(j,i,mm(k,4),kk(k,4)) + &
-                               stress0(j,i,2,kk(k,4)) * shpdz(j,i,mm(k,4),kk(k,4)))
+                factor = 0.25d0 / area(je,ie,kk(k,4))
+                fx = factor * (stress0(je,ie,1,kk(k,4)) * shpdx_loc(mm(k,4),kk(k,4)) + &
+                               stress0(je,ie,3,kk(k,4)) * shpdz_loc(mm(k,4),kk(k,4)))
+                fy = factor * (stress0(je,ie,3,kk(k,4)) * shpdx_loc(mm(k,4),kk(k,4)) + &
+                               stress0(je,ie,2,kk(k,4)) * shpdz_loc(mm(k,4),kk(k,4)))
                 force(j,i,1) = force(j,i,1) - fx
                 force(j,i,2) = force(j,i,2) - fy
             enddo
