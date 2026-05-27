@@ -228,7 +228,11 @@ if (itype_melting == 1) then
                     ! fraction of partial melting
                     ! 10% of melting at solidus + 50 C
                     ! Hirschmann, 2000 G3.
-                    pmelt = min((tmpr - solidus) / 50 * 0.1d0, 0.1d0)
+                    if (latent_heat_magma > 0.d0) then
+                        pmelt = min(cp(ksed1) * (tmpr - solidus) / latent_heat_magma, 0.1d0)
+                    else
+                        pmelt = min((tmpr - solidus) / 50.d0 * 0.1d0, 0.1d0)
+                    endif
                     fmelt(j,i) = pmelt * total_phase_ratio
                     !print *, j, i, tmpr, pmelt
                 endif
@@ -266,7 +270,11 @@ if (itype_melting == 1) then
                 if (tmpr > solidus) then
                     ! fraction of partial melting
                     ! XXX: assuming 10% of melting at solidus + 20 C
-                    pmelt = min((tmpr - solidus) / 20 * 0.1d0, 0.1d0)
+                    if (latent_heat_magma > 0.d0) then
+                        pmelt = min(cp(kocean1) * (tmpr - solidus) / latent_heat_magma, 0.1d0)
+                    else
+                        pmelt = min((tmpr - solidus) / 20.d0 * 0.1d0, 0.1d0)
+                    endif
                     !$ACC atomic update
                     !$OMP atomic update
                     fmelt(j,i) = fmelt(j,i) + pmelt * total_phase_ratio
@@ -302,7 +310,11 @@ if (itype_melting == 1) then
                         ! fraction of partial melting
                         ! 10% of melting at solidus + 50 C
                         ! Hirschmann, 2000 G3.
-                        pmelt = min((tmpr - solidus) / 50 * 0.1d0, 0.1d0)
+                        if (latent_heat_magma > 0.d0) then
+                            pmelt = min(cp(kmant1) * (tmpr - solidus) / latent_heat_magma, 0.1d0)
+                        else
+                            pmelt = min((tmpr - solidus) / 50.d0 * 0.1d0, 0.1d0)
+                        endif
                         !$ACC atomic update
                         !$OMP atomic update
                         fmelt(jj,i) = fmelt(jj,i) + pmelt * (phase_ratio(kmant1, jj, i)  &
