@@ -255,7 +255,7 @@ Phase changes are activated and will take place among certain of the defined pha
 
 | Parameters  | Types |  Description  |
 |:------------|:-----:|:--------------|
-|**itype-melting, nelem-serp, prod-magma, rho-magma, nelem-dike**|3 int, 2 dbl| See below.|
+|**itype-melting, nelem-serp, nelem-dike, prod-magma, rho-magma**|3 int, 2 dbl| See below.|
 |**angle-mzone, fmagma-max, ratio-mantle-mzone**|4 dbl| See below.|
 |**latent-heat-magma, lambda-freeze, lambda-freeze-tdep**|3 dbl| See below.|
 |**weaken-ratio-plastic, weaken-ratio-viscous**|2 dbl| See below.|
