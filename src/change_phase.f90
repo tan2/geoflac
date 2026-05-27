@@ -12,7 +12,7 @@ integer :: jj, j, i, iph, &
            jbelow, k, kinc, kk, n
 double precision :: yy, dep2, depth, press, quad_area, &
                     tmpr, trtmpr, trpres, trpres2, &
-                    solidus, pmelt, total_phase_ratio
+                    solidus, pmelt, total_phase_ratio, dt_melt
 
 ! max. depth (m) of eclogite phase transition, no serpentinization below it
 real*8, parameter :: max_basalt_depth = 150.d3
@@ -206,7 +206,7 @@ enddo
 !$OMP end parallel do
 
 if (itype_melting == 1) then
-    !$OMP parallel do private(tmpr, yy, depth, solidus, pmelt, total_phase_ratio)
+    !$OMP parallel do private(tmpr, yy, depth, solidus, pmelt, total_phase_ratio, dt_melt)
     !$ACC parallel loop collapse(2) async(1)
     do i = 1, nx-1
         do j = 1, nz-1
@@ -235,13 +235,28 @@ if (itype_melting == 1) then
                     endif
                     fmelt(j,i) = pmelt * total_phase_ratio
                     !print *, j, i, tmpr, pmelt
+                    
+                    ! Pull temperature back to solidus
+                    dt_melt = tmpr - solidus
+                    !$ACC atomic update
+                    !$OMP atomic update
+                    temp(j,i) = temp(j,i) - dt_melt
+                    !$ACC atomic update
+                    !$OMP atomic update
+                    temp(j,i+1) = temp(j,i+1) - dt_melt
+                    !$ACC atomic update
+                    !$OMP atomic update
+                    temp(j+1,i) = temp(j+1,i) - dt_melt
+                    !$ACC atomic update
+                    !$OMP atomic update
+                    temp(j+1,i+1) = temp(j+1,i+1) - dt_melt
                 endif
             endif
         enddo
     enddo
     !$OMP end parallel do
 
-    !$OMP parallel do private(tmpr, yy, depth, solidus, pmelt, total_phase_ratio, press)
+    !$OMP parallel do private(tmpr, yy, depth, solidus, pmelt, total_phase_ratio, press, dt_melt)
     !$ACC parallel loop collapse(2) async(1)
     do i = 1, nx-1
         do j = 1, nz-1
@@ -278,13 +293,28 @@ if (itype_melting == 1) then
                     !$ACC atomic update
                     !$OMP atomic update
                     fmelt(j,i) = fmelt(j,i) + pmelt * total_phase_ratio
+                    
+                    ! Pull temperature back to solidus
+                    dt_melt = tmpr - solidus
+                    !$ACC atomic update
+                    !$OMP atomic update
+                    temp(j,i) = temp(j,i) - dt_melt
+                    !$ACC atomic update
+                    !$OMP atomic update
+                    temp(j,i+1) = temp(j,i+1) - dt_melt
+                    !$ACC atomic update
+                    !$OMP atomic update
+                    temp(j+1,i) = temp(j+1,i) - dt_melt
+                    !$ACC atomic update
+                    !$OMP atomic update
+                    temp(j+1,i+1) = temp(j+1,i+1) - dt_melt
                 endif
             endif
         enddo
     enddo
     !$OMP end parallel do
 
-    !$OMP parallel do private(tmpr, yy, depth, jj, solidus, pmelt)
+    !$OMP parallel do private(tmpr, yy, depth, jj, solidus, pmelt, dt_melt)
     !$ACC parallel loop async(1)
     do i = 1, nx-1
         do j = nz-1, 1, -1
@@ -321,6 +351,21 @@ if (itype_melting == 1) then
                                                              + phase_ratio(kmant2, jj, i) &
                                                              + phase_ratio(kserp, jj, i))
                         !print *, jj, i, tmpr, pmelt
+                        
+                        ! Pull temperature back to solidus
+                        dt_melt = tmpr - solidus
+                        !$ACC atomic update
+                        !$OMP atomic update
+                        temp(jj,i) = temp(jj,i) - dt_melt
+                        !$ACC atomic update
+                        !$OMP atomic update
+                        temp(jj,i+1) = temp(jj,i+1) - dt_melt
+                        !$ACC atomic update
+                        !$OMP atomic update
+                        temp(jj+1,i) = temp(jj+1,i) - dt_melt
+                        !$ACC atomic update
+                        !$OMP atomic update
+                        temp(jj+1,i+1) = temp(jj+1,i+1) - dt_melt
                     endif
                 enddo
                 ! no need to look up further
