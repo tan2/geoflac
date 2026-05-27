@@ -225,9 +225,8 @@ if (itype_melting == 1) then
 
                 solidus = max(680+0.6d-3*(depth-140d3), 930-313*(1-exp(-depth/7d3)))
                 if (tmpr > solidus) then
-                    ! fraction of partial melting
-                    ! 10% of melting at solidus + 50 C
-                    ! Hirschmann, 2000 G3.
+                    ! fraction of partial melting (enthalpy formulation)
+                    ! F = cp * (T - T_solidus) / L_fusion, capped at 10%
                     if (latent_heat_magma > 0.d0) then
                         pmelt = min(cp(ksed1) * (tmpr - solidus) / latent_heat_magma, 0.1d0)
                     else
@@ -236,7 +235,8 @@ if (itype_melting == 1) then
                     fmelt(j,i) = pmelt * total_phase_ratio
                     !print *, j, i, tmpr, pmelt
                     
-                    ! Pull temperature back to solidus
+                    ! Pull temperature back to solidus (latent heat buffering)
+                    ! Subtract overshoot (T_apparent - T_solidus) from element's 4 corner nodes
                     dt_melt = tmpr - solidus
                     !$ACC atomic update
                     !$OMP atomic update
@@ -283,8 +283,8 @@ if (itype_melting == 1) then
                 endif
 
                 if (tmpr > solidus) then
-                    ! fraction of partial melting
-                    ! XXX: assuming 10% of melting at solidus + 20 C
+                    ! fraction of partial melting (enthalpy formulation)
+                    ! F = cp * (T - T_solidus) / L_fusion, capped at 10%
                     if (latent_heat_magma > 0.d0) then
                         pmelt = min(cp(kocean1) * (tmpr - solidus) / latent_heat_magma, 0.1d0)
                     else
@@ -294,7 +294,8 @@ if (itype_melting == 1) then
                     !$OMP atomic update
                     fmelt(j,i) = fmelt(j,i) + pmelt * total_phase_ratio
                     
-                    ! Pull temperature back to solidus
+                    ! Pull temperature back to solidus (latent heat buffering)
+                    ! Subtract overshoot (T_apparent - T_solidus) from element's 4 corner nodes
                     dt_melt = tmpr - solidus
                     !$ACC atomic update
                     !$OMP atomic update
@@ -337,9 +338,8 @@ if (itype_melting == 1) then
                         solidus = 800 + 6.2e-8 * (depth - 80.d3)**2
                     endif
                     if (tmpr > solidus) then
-                        ! fraction of partial melting
-                        ! 10% of melting at solidus + 50 C
-                        ! Hirschmann, 2000 G3.
+                        ! fraction of partial melting (enthalpy formulation)
+                        ! F = cp * (T - T_solidus) / L_fusion, capped at 10%
                         if (latent_heat_magma > 0.d0) then
                             pmelt = min(cp(kmant1) * (tmpr - solidus) / latent_heat_magma, 0.1d0)
                         else
@@ -352,7 +352,8 @@ if (itype_melting == 1) then
                                                              + phase_ratio(kserp, jj, i))
                         !print *, jj, i, tmpr, pmelt
                         
-                        ! Pull temperature back to solidus
+                        ! Pull temperature back to solidus (latent heat buffering)
+                        ! Subtract overshoot (T_apparent - T_solidus) from element's 4 corner nodes
                         dt_melt = tmpr - solidus
                         !$ACC atomic update
                         !$OMP atomic update
