@@ -243,7 +243,7 @@ call AdvanceToNextInputLine(4, line)
 read(4,*,err=1000) v_min, v_max, ivis_shape,efoldc
 line = line + 1
 call AdvanceToNextInputLine(4, line)
-read(4,*,err=1000) itype_melting, nelem_serp, prod_magma, rho_magma
+read(4,*,err=1000) itype_melting, nelem_serp, prod_magma, rho_magma, nelem_dike
 line = line + 1
 call AdvanceToNextInputLine(4, line)
 read(4,*,err=1000) angle_mzone, fmagma_max, ratio_mantle_mzone

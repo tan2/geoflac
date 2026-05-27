@@ -255,13 +255,14 @@ Phase changes are activated and will take place among certain of the defined pha
 
 | Parameters  | Types |  Description  |
 |:------------|:-----:|:--------------|
-|**itype-melting, nelem-serp, prod-magma, rho-magma**|2 int, 2 dbl| See below.|
+|**itype-melting, nelem-serp, prod-magma, rho-magma, nelem-dike**|3 int, 2 dbl| See below.|
 |**angle-mzone, fmagma-max, ratio-mantle-mzone**|4 dbl| See below.|
 |**latent-heat-magma, lambda-freeze, lambda-freeze-tdep**|3 dbl| See below.|
 |**weaken-ratio-plastic, weaken-ratio-viscous**|2 dbl| See below.|
 
 * **itype-melting**: 0 for no melting. 1 for arc-type melting.
 * **nelem-serp**: the thickness (# elements) of serpentinization zone above subducted oceanic crust.
+* **nelem-dike**: the width of magma diking (migration) in the crust (number of elements wide).
 * **prod-magma**: the production rate of magma migrating away from the active melting (m^3 of magma/m^3 of melt/second)
 * **rho-magma**: the density of magma (kg/m^3)
 * **angle-mzone**: angle (in degree) of the magma zone in the mantle

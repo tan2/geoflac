@@ -41,12 +41,13 @@ if (istress_therm > 0 .or. itype_melting == 1) then
     !$ACC end kernels
 endif
 
-!$OMP Parallel private(i,j,iph,cp_eff,cond_eff,dissip,quad_area, &
-!$OMP                  fr_lambda, &
-!$OMP                  delta_fmagma,deltaT,real_area13,area_n,rhs, &
-!$OMP                  jm,area_ratio,z_moho,z_melt,x_melt,h,x,z,inv_area, &
-!$OMP                  x1,y1,x2,y2,x3,y3,x4,y4, &
-!$OMP                  shpdx_1,shpdx_2,shpdx_3,shpdz_1,shpdz_2,shpdz_3)
+    !$OMP Parallel private(i,j,iph,cp_eff,cond_eff,dissip,quad_area, &
+    !$OMP                  fr_lambda, &
+    !$OMP                  delta_fmagma,deltaT,real_area13,area_n,rhs, &
+    !$OMP                  jm,area_ratio,z_moho,z_melt,x_melt,h,x,z,inv_area, &
+    !$OMP                  x1,y1,x2,y2,x3,y3,x4,y4, &
+    !$OMP                  shpdx_1,shpdx_2,shpdx_3,shpdz_1,shpdz_2,shpdz_3, &
+    !$OMP                  ii,ihalf,ii_start,ii_end,ncol)
 
 if (itype_melting == 1) then
     ! M: fmegma, magma fraction in the element
@@ -110,15 +111,24 @@ if (itype_melting == 1) then
                 ! This element is under melting. The melt will migrate to the
                 ! mantle and crust above. Treat the migration as instantaneous.
 
-                ! Within crust, melts migrate by diking, propagate upward vertically
+                ! Within crust, melts migrate by diking, propagate upward vertically over nelem_dike width
                 ! area_ratio: the area of the crust column / the area of the melting element
                 !     ~ the thickness of the crust column / the thickness of the melting element
                 area_ratio = (cord(1,i,2)+cord(1,i+1,2)-cord(jm,i,2)-cord(jm,i+1,2)) / &
                     (cord(j,i,2)+cord(j,i+1,2)-cord(j+1,i,2)-cord(j+1,i+1,2))
-                do jj = 1, jm
-                    !$OMP atomic update
-                    !$ACC atomic update
-                    fmagma(jj,i) = fmagma(jj,i) + fmelt(j,i) * (1d0 - ratio_mantle_mzone) * area_ratio * prod_magma * dt
+                
+                ihalf = max(0, (nelem_dike - 1) / 2)
+                ii_start = max(1, i - ihalf)
+                ii_end = min(nx-1, ii_start + max(1, nelem_dike) - 1)
+                ii_start = max(1, ii_end - max(1, nelem_dike) + 1)
+                ncol = ii_end - ii_start + 1
+
+                do ii = ii_start, ii_end
+                    do jj = 1, jmoho(ii)
+                        !$OMP atomic update
+                        !$ACC atomic update
+                        fmagma(jj,ii) = fmagma(jj,ii) + fmelt(j,i) * (1d0 - ratio_mantle_mzone) * area_ratio * prod_magma * dt / ncol
+                    enddo
                 enddo
 
                 ! Within mantle, melts migrate by percolation, propagate upward slantly

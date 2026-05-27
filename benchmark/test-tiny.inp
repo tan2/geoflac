@@ -179,8 +179,8 @@ phasedat.inp   ; file with distribution of phase on the 2D grid (phasedat)
 1.0e+20,                     3.e+27,         2,         500.
 ;
 ;Magma:
-; itype_melting, nelem_serp, prod_magma, rho_magma
-0,               2,          2e-15,      2700
+; itype_melting, nelem_serp, prod_magma, rho_magma, nelem_dike
+0,               2,          2e-15,      2700,       1
 ; angle_mzone, fmagma_max, ratio_mantle_mzone
 30,            0.1,        0.1
 ; latent_heat_magma, lambda_freeze, lambda_freeze_tdep
