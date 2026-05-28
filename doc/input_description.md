@@ -28,6 +28,8 @@
     python3 util/update_inp.py <old_input_file.inp> <YYYY-MM-DD_code_date>
     ```
     The script parses old layouts according to their date of introduction and outputs a clean, modernized, fully commented `.inp` file.
+    * For details on the upgrade script, see the [update_inp.py utility](../util/update_inp.py).
+    * For instructions on extracting the target code date from a diff/snapshot file, see the [determine_code_date.md guide](determine_code_date.md).
 
 ----
 ## MESH PARAMETERS
