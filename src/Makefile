@@ -151,6 +151,7 @@ SRCS =	\
 	dt_mass.f90 \
 	euler2bar.f90 \
 	fl_move.f90 \
+	fl_flexure.f90 \
 	fl_node.f90 \
 	fl_rheol.f90 \
 	fl_srate.f90 \

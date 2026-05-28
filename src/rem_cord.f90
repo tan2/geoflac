@@ -5,6 +5,7 @@ use params
 implicit none
 integer :: i, j, ii
 double precision :: xl, xr, xx, zl, zr, zz
+logical :: is_flex
 
 ! X - coordinate
 !$ACC parallel loop async(1)
@@ -56,8 +57,17 @@ do i = 1, nx
         endif
     end do
     
-    ! For mode_rem=3 bottom is always fixed
-    if( mode_rem .eq. 3.or.mode_rem.eq.1 ) cord(nz,i,2) = z0 + rzbo
+    ! For mode_rem=3 bottom is always fixed, unless flexural BC is active
+    is_flex = .false.
+    do ii = 1, nofbc
+        if (nbc(ii) .eq. 200 .and. nofside(ii) .eq. 2) then
+            is_flex = .true.
+            exit
+        endif
+    enddo
+    if (.not. is_flex) then
+        if( mode_rem .eq. 3.or.mode_rem.eq.1 ) cord(nz,i,2) = z0 + rzbo
+    endif
 
     ! Creating Mesh inside of the boundaries
     call mesh1 (cord(1,i,2),cord(nz,i,2),stmpn,nz,nzony,nelz_y,sizez_y)

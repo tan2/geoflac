@@ -67,6 +67,11 @@
     + 30 - vely (strike slip version). (Experimental, used at your own risk.)
     + 40 - shear stress out of the plane. (Experimental, used at your own risk.)
     + 50 - velx with visc-dep profile. (Experimental, used at your own risk.)
+    + 200 - flexural bottom boundary condition (deforming thin elastic plate). Only applicable to the bottom boundary (`nofside` = 2).
+        * **bca**: Effective elastic thickness ($T_e$) of the plate in meters.
+        * **bcb**: Density ($\rho_m$) of the underlying fluid asthenosphere in kg/m^3.
+        * **bcc** ~ **bci**: Unused (set to 0.0).
+        * The elastic properties (Young's Modulus and Poisson's ratio) are derived dynamically from the bottom elements' Lamé parameters.
 * If the BC is a velocity in x or z, it is provided in units of meters/sec, a very small number.  For reference, 1 mm/year = 1 km/myr = 3.17E-11 m/s.
 * The BC function **fbc(s) = a + b S + c S^2 + (d cos (2pi e S) + f sin (2pi g S))*exp(-(S - i)^2 h^2 )** is measured *along this segment* as the length ratio. **S** is normalized between 0~1, i.e. **S** = (node-in-segment - **nbc1**) / (**nbc2** - **nbc1**).
 

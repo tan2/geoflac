@@ -30,6 +30,12 @@ enddo
 !$OMP end do
 !$OMP end parallel
 
+!$ACC wait(1)
+!$ACC update self(cord, vel)
+
+! Call flexural boundary update
+call fl_flexure
+
 ! Diffuse topography
 if( topo_kappa.gt.0.d0) call diff_topo
 

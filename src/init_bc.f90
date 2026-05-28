@@ -111,7 +111,7 @@ subroutine init_bc
               numbp = n + nbc1(i) - 1
               x = (cord (nz,numbp,1) - x1)/(x2-x1)
 
-              if (nbc(i).eq.1.or.nbc(i).eq.10.or.nbc(i).eq.30)  &
+              if (nbc(i).eq.1.or.nbc(i).eq.10.or.nbc(i).eq.30.or.nbc(i).eq.200)  &
                    call velbc (i,numbp,x,0)
               if (nbc(i).eq.2.or.nbc(i).eq.20.or.nbc(i).eq.40) then
                   nnop = nnop + 1
@@ -323,10 +323,13 @@ subroutine velbc (i,numbp,x,mid_j)
   endif
 
   ! - z component
-  if (nbc(i) .eq. 1 ) then
+  if (nbc(i) .eq. 1 .or. nbc(i) .eq. 200) then
       ncod(jj1,ii1,2) = 1
-      bc  (jj1,ii1,2) = fun
-      !       write(*,*) ncod(jj1,ii1,2),bc(jj1,ii1,2)
+      if (nbc(i) .eq. 200) then
+          bc(jj1,ii1,2) = 0.d0
+      else
+          bc(jj1,ii1,2) = fun
+      endif
   endif
 
   ! - y component 
