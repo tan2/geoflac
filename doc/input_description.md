@@ -23,6 +23,12 @@
 
 7. A diagram showing the geometry and phase changes of a subduction model. ![input_description.png](input_description.png)
 
+8. **Upgrading Old Input Files**: If you have a parameter file (`.inp`) written for a historical version of GeoFLAC, you can automatically convert and upgrade it to the newest engine format by running:
+    ```bash
+    python3 util/update_inp.py <old_input_file.inp> <YYYY-MM-DD_code_date>
+    ```
+    The script parses old layouts according to their date of introduction and outputs a clean, modernized, fully commented `.inp` file.
+
 ----
 ## MESH PARAMETERS
 
