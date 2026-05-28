@@ -20,7 +20,7 @@ module arrays
       strainr(:,:,:,:), flux(:,:,:,:), &
       aps(:,:),visn(:,:),e2sr(:,:), &
       temp0(:,:),source(:,:),shrheat(:,:), &
-      bcstress(:,:)
+      bcstress(:,:), q_init(:)
 
   double precision, allocatable :: se2sr(:,:,:), sshrheat(:,:)
 
@@ -93,6 +93,7 @@ contains
     allocate(dummye(nz-1, nx-1))
     allocate(stmpn(max(nx,nz)))
     allocate(itmp(nz, nx))
+    allocate(q_init(nx))
 
   end subroutine allocate_arrays
 

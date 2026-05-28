@@ -45,6 +45,13 @@ open (1,file='extr_acc.rs',access='direct',recl=(nx-1)*kindr)
 read (1,rec=nrec) extr_acc(1:nx-1)
 close (1)
 
+open (1,file='q_init.rs',access='direct',recl=nx*kindr,status='old',err=101)
+read (1,rec=nrec) q_init
+close (1)
+goto 102
+101 q_init = 0.d0
+102 continue
+
 open (1,file='vel.rs',access='direct',recl=nwords*kindr) 
 read (1,rec=nrec) vel
 close (1)

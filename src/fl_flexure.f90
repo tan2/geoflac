@@ -3,7 +3,7 @@ subroutine fl_flexure
     use params
     implicit none
 
-    double precision :: q(nx), w_flex(nx)
+    double precision :: q(nx), w_flex(nx), Load(nx)
     double precision :: a_block(2, 2, nx), b_block(2, 2, nx), c_block(2, 2, nx)
     double precision :: r_block(2, nx), u_block(2, nx)
     double precision :: x(nx), dx(nx)
@@ -28,6 +28,16 @@ subroutine fl_flexure
 
     ! 2. Compute current vertical column weights (lithostatic loads)
     call get_column_weights(q)
+
+    ! 3. If q_init is completely uninitialized (all zeros), initialize it with the starting column weights
+    if (all(q_init .eq. 0.d0)) then
+        q_init = q
+    endif
+
+    ! Compute excess load
+    do i = 1, nx
+        Load(i) = q(i) - q_init(i)
+    enddo
 
     ! 4. Set up grid coordinates and spacings in X
     do i = 1, nx
@@ -78,7 +88,7 @@ subroutine fl_flexure
     
     r_block(1, 1) = 0.d0
     if (rho_m * g .gt. 0.d0) then
-        w_winkler_1 = q(1) / (rho_m * g)
+        w_winkler_1 = Load(1) / (rho_m * g)
     else
         w_winkler_1 = 0.d0
     endif
@@ -106,7 +116,7 @@ subroutine fl_flexure
         b_block(2, 1, i) = 1.0d0 / D(i)
         b_block(2, 2, i) = b_i
 
-        r_block(1, i) = -q(i)
+        r_block(1, i) = -Load(i)
         r_block(2, i) = 0.d0
     enddo
 
@@ -120,7 +130,7 @@ subroutine fl_flexure
     
     r_block(1, nx) = 0.d0
     if (rho_m * g .gt. 0.d0) then
-        w_winkler_nx = q(nx) / (rho_m * g)
+        w_winkler_nx = Load(nx) / (rho_m * g)
     else
         w_winkler_nx = 0.d0
     endif

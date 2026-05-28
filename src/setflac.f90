@@ -55,6 +55,7 @@ fmelt = 0
 fmagma = 0
 e2sr = 1d-16
 se2sr = 1d-16
+q_init = 0.d0
 
 call update_acc
 
