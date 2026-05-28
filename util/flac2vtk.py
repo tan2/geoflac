@@ -171,7 +171,7 @@ def compute_s1(sxx, szz, sxz):
 def vts_dataarray(f, data, data_name=None, data_comps=None):
     if data.dtype in (int, np.int32, np.int_):
         dtype = 'Int32'
-    elif data.dtype in (float, np.single, np.double, np.float,
+    elif data.dtype in (float, np.single, np.double,
                         np.float32, np.float64, np.float128):
         dtype = 'Float32'
     else:
