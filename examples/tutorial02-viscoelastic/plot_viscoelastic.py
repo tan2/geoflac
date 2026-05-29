@@ -49,7 +49,7 @@ def main():
         print(f"{i}\t{t_kyr:.1f}\t\t{mean_sxx_mpa:.4f}")
 
     # Physical parameters for Maxwell Viscoelastic Model
-    eta = 1.0e20          # Viscosity in Pa.s
+    eta = 1.0e21          # Viscosity in Pa.s
     lambda_lame = 3.0e10  # Lamé parameter lambda in Pa
     mu_lame = 3.0e10      # Shear modulus mu in Pa
     
@@ -96,7 +96,7 @@ def main():
 
     plt.text(50.0, sigma_xx_steady_mpa * 0.7, 
              f"Analytical parameters:\n"
-             f"$\\eta = 1.0\\times 10^{{20}}$ Pa$\\cdot$s\n"
+             f"$\\eta = 1.0\\times 10^{{21}}$ Pa$\\cdot$s\n"
              f"$\\dot{{\\epsilon}}_{{xx}} = {strain_rate_s*1e14:.4f}\\times 10^{{-14}}$ s$^{{-1}}$\n"
              f"$\\tau_{{eff}} = {tau_eff_yr:.2f}$ years\n"
              f"$\\sigma_{{xx}}^{{steady}} = {sigma_xx_steady_mpa:.4f}$ MPa",

@@ -16,7 +16,7 @@ The model represents a vertical two-dimensional column of homogenous viscoelasti
 The material is a Newtonian Maxwell viscoelastic rock defined in the input file `maxwell.inp`:
 * **Lamé constant ($\lambda$)**: $3.0 \times 10^{10} \text{ Pa}$ (`Lame:rl`)
 * **Shear Modulus ($\mu$)**: $3.0 \times 10^{10} \text{ Pa}$ (`Lame:rm`)
-* **Newtonian Viscosity ($\eta$)**: $1.0 \times 10^{20} \text{ Pa}\cdot\text{s}$
+* **Newtonian Viscosity ($\eta$)**: $1.0 \times 10^{21} \text{ Pa}\cdot\text{s}$
 * **Density ($\rho$)**: $2700 \text{ kg/m}^3$ (`den`)
 * **Gravity ($g$)**: $0.0 \text{ m/s}^2$ (pure compression without gravity-induced pre-stress or hydrostatic gradients).
 
@@ -26,8 +26,8 @@ The material is a Newtonian Maxwell viscoelastic rock defined in the input file 
 > * Power exponent $n = 1.0$ (`pln = 1.0`)
 > * Zero thermal and pressure activation dependencies (`eactiv = 0.0`, `vactiv = 0.0`)
 > * The pre-exponential coefficient `acoef` calculated from viscosity as:
->   $$\text{acoef} = \frac{10^6}{3 \eta} = 3.3333333 \times 10^{-15}$$
-> * The viscosity limit bounds in `maxwell.inp` are set to `1.0e+18` and `1.0e+25` so the target $10^{20} \text{ Pa}\cdot\text{s}$ is safely inside the range.
+>   $$\text{acoef} = \frac{10^6}{3 \eta} = 3.3333333 \times 10^{-16}$$
+> * The viscosity limit bounds in `maxwell.inp` are set to `1.0e+18` and `1.0e+25` so the target $10^{21} \text{ Pa}\cdot\text{s}$ is safely inside the range.
 
 ---
 
@@ -60,13 +60,13 @@ where:
    $$\dot{\epsilon}_{xx} = \frac{V_x}{L} = \frac{-0.01 \text{ m/yr}}{20000 \text{ m}} \approx -1.584384 \times 10^{-14} \text{ s}^{-1}$$
 2. **Effective Viscous Resistance**:
    Under plane strain Newtonian flow, the effective viscosity resisting horizontal contraction is $\eta_{eff} = 4\eta$.
-   $$\sigma_{xx}^{steady} = 4\eta\dot{\epsilon}_{xx} = 4 \times 10^{20} \text{ Pa}\cdot\text{s} \times (-1.584384 \times 10^{-14} \text{ s}^{-1}) = -6.3375 \text{ MPa}$$
+   $$\sigma_{xx}^{steady} = 4\eta\dot{\epsilon}_{xx} = 4 \times 10^{21} \text{ Pa}\cdot\text{s} \times (-1.584384 \times 10^{-14} \text{ s}^{-1}) = -63.375 \text{ MPa}$$
 3. **Effective Relaxation Time ($\tau_{eff}$)**:
    $$\tau_{eff} = \frac{\eta_{eff}}{E_{eff}} = \frac{4\eta}{\frac{4\mu(\lambda + \mu)}{\lambda + 2\mu}} = \frac{\eta (\lambda + 2\mu)}{\mu (\lambda + \mu)}$$
    Using Lamé constants $\lambda = \mu = 3.0 \times 10^{10} \text{ Pa}$:
-   $$\tau_{eff} = 5.0 \times 10^9 \text{ s} \approx 158.44 \text{ years}$$
+   $$\tau_{eff} = 5.0 \times 10^{10} \text{ s} \approx 1584.38 \text{ years} = 1.584 \text{ Kyr}$$
 
-Because the relaxation time ($\approx 158.4$ years) is much shorter than the simulation's 10 Kyr output interval, the stress is fully relaxed to its steady-state Newtonian plateau by the first output step ($10,000$ years $\approx 63\tau_{eff}$).
+Because the relaxation time ($\approx 1.584$ Kyr) is much shorter than the simulation's 10 Kyr output interval, the stress is fully relaxed to its steady-state Newtonian plateau by the first output step ($10,000$ years $\approx 6.3\tau_{eff}$).
 
 ---
 
@@ -110,20 +110,20 @@ The simulation shows outstanding agreement with the analytical steady-state plat
 | Frame | Time (Kyr) | Simulated $\sigma_{xx}$ (MPa) | Analytical Steady-State (MPa) | Discrepancy (%) |
 |:---:|:---:|:---:|:---:|:---:|
 | 1 | 0.0 | 0.0000 | 0.0000 | — |
-| 2 | 10.0 | -6.5888 | -6.3375 | 3.9% |
-| 3 | 20.1 | -6.4651 | -6.3375 | 2.0% |
-| 4 | 30.1 | -6.5204 | -6.3375 | 2.9% |
-| 5 | 40.1 | -6.4754 | -6.3375 | 2.2% |
-| 6 | 50.2 | -6.5202 | -6.3375 | 2.9% |
-| 7 | 60.2 | -6.5427 | -6.3375 | 3.2% |
-| 8 | 70.2 | -6.5758 | -6.3375 | 3.8% |
-| 9 | 80.3 | -6.6127 | -6.3375 | 4.3% |
-| 10 | 90.3 | -6.6492 | -6.3375 | 4.9% |
-| 11 | 100.3 | -6.6847 | -6.3375 | 5.5% |
+| 2 | 10.0 | -65.7561 | -63.3750 | 3.8% |
+| 3 | 20.1 | -64.3144 | -63.3750 | 1.5% |
+| 4 | 30.1 | -64.3319 | -63.3750 | 1.5% |
+| 5 | 40.1 | -64.6287 | -63.3750 | 2.0% |
+| 6 | 50.2 | -64.9607 | -63.3750 | 2.5% |
+| 7 | 60.2 | -65.2965 | -63.3750 | 3.0% |
+| 8 | 70.2 | -65.6359 | -63.3750 | 3.6% |
+| 9 | 80.3 | -65.9789 | -63.3750 | 4.1% |
+| 10 | 90.3 | -66.3255 | -63.3750 | 4.7% |
+| 11 | 100.3 | -66.6757 | -63.3750 | 5.5% |
 
 ### Verification Chart
 The generated plot `stress_relaxation.png` displays:
 1. **Blue Dots**: The simulation output points spaced at 10 Kyr intervals.
-2. **Red Dashed Line**: The theoretical analytical relaxation curve showing the quick elastic stress build-up and the long-term viscoelastic steady-state plateau at $-6.3375$ MPa.
+2. **Red Dashed Line**: The theoretical analytical relaxation curve showing the quick elastic stress build-up and the long-term viscoelastic steady-state plateau at $-63.375$ MPa.
 
 The extremely minor 2-5% discrepancy represents physical geometrical thinning as the domain is compressed continuously over 100 Kyr (large strain effects), confirming the physical validity and high numerical precision of **GeoFLAC**'s viscoelastic mechanical solver.
