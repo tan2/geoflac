@@ -117,13 +117,13 @@ phasedat.inp
 ; Time parameters below are in thousands years
 ;
 ; Max time of calculations (in Kyr)
-101.0
+40.2
 ;
 ; Time interval for screen output of calc. progress (in Kyr)
-10.0
+1.0
 ;
 ; Time interval for file output (in Kyr)
-10.0
+1.0
 ;
 ; Variables to print
 ; vel srII eII aps sII sxx szz sxz pres temp phase visc unused dens src diss forc hfl topo
@@ -133,7 +133,7 @@ phasedat.inp
 0
 ;
 ; Time interval for process saving
-100.0
+20.0
 ;
 ; saving the last step only
 1
