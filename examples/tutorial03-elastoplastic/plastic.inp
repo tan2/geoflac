@@ -64,7 +64,7 @@ proftemp.dat
 ;
 ;irheol,_,den, alfa,  beta,    n,       A,       E,    V,  Lame:rl, Lame:rm,pls1,pls2,fric1,fric2, coh1, coh2,dilat1,dilat2,cond,    cp,     Ts,     Tl,     Tk, fk
 ;(1) Mohr-Coulomb elastoplastic bar
-6, 1., 2700., 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3.0e+10, 3.0e+10, 0.0, 0.1, 30.0, 30.0, 2.0e+7, 2.0e+7, 0, 0, 3.0, 1000., 1300., 1600., 1600., 1.
+6, 1., 2700., 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3.0e+10, 3.0e+10, 0.0, 0.1, 30.0, 30.0, 2.0e+7, 2.0e+6, 0, 0, 3.0, 1000., 1300., 1600., 1600., 1.
 ;
 ; INITIAL PHASE DISTRIBUTION
 0              ; irphase
