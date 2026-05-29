@@ -94,7 +94,7 @@ def main():
     plt.plot(times_kyr, stresses_mpa, 'o', color='#1f77b4', markersize=8, label='GeoFLAC Simulation')
     plt.plot(times_kyr, stresses_mpa, '-', color='#1f77b4', linewidth=1.5, alpha=0.7)
 
-    plt.text(50.0, sigma_xx_steady_mpa * 0.7, 
+    plt.text(18.0, sigma_xx_steady_mpa * 0.7, 
              f"Analytical parameters:\n"
              f"$\\eta = 1.0\\times 10^{{21}}$ Pa$\\cdot$s\n"
              f"$\\dot{{\\epsilon}}_{{xx}} = {strain_rate_s*1e14:.4f}\\times 10^{{-14}}$ s$^{{-1}}$\n"
@@ -106,7 +106,7 @@ def main():
     plt.xlabel('Time (Kyr)', fontsize=12, labelpad=10)
     plt.ylabel(r'Total Stress $\sigma_{xx}$ (MPa)', fontsize=12, labelpad=10)
     
-    plt.xlim(-5.0, 105.0)
+    plt.xlim(-2.0, 42.0)
     # Stress is compressive (negative), so we set the limits accordingly
     plt.ylim(sigma_xx_steady_mpa * 1.25, 0.5)
     
