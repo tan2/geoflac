@@ -35,20 +35,24 @@ subroutine fl_flexure
     endif
 
     ! Compute excess load
+    !$OMP parallel do
     do i = 1, nx
         Load(i) = q(i) - q_init(i)
     enddo
 
     ! 4. Set up grid coordinates and spacings in X
+    !$OMP parallel do
     do i = 1, nx
         x(i) = cord(nz, i, 1)
     enddo
+    !$OMP parallel do
     do i = 1, nx-1
         dx(i) = x(i+1) - x(i)
         if (dx(i) .le. 0.d0) dx(i) = 1.d0  ! Safeguard against zero/negative spacing
     enddo
 
     ! 5. Compute local flexural rigidity D(i) based on Lamé parameters of the bottom elements
+    !$OMP parallel do private(iph, lambda, mu, E, nu)
     do i = 1, nx
         if (i .lt. nx) then
             iph = iphase(nz-1, i)
@@ -95,6 +99,7 @@ subroutine fl_flexure
     r_block(2, 1) = w_winkler_1
 
     ! Inner nodes using non-uniform 2nd-order central differences
+    !$OMP parallel do private(a_i, c_i, b_i)
     do i = 2, nx-1
         a_i = 2.d0 / (dx(i-1) * (dx(i) + dx(i-1)))
         c_i = 2.d0 / (dx(i) * (dx(i) + dx(i-1)))
@@ -141,6 +146,7 @@ subroutine fl_flexure
 
     ! 8. Apply new deflections, update bottom boundary coordinates & velocities
     w_flex = u_block(2, :)
+    !$OMP parallel do private(cord_old_z)
     do i = 1, nx
         cord_old_z = cord(nz, i, 2)
         cord(nz, i, 2) = zoriginal(nz, i) - w_flex(i)
@@ -161,6 +167,7 @@ subroutine get_column_weights(q)
     integer :: i, j
     double precision, external :: Eff_dens
 
+    !$OMP parallel do private(rho, dz, j)
     do i = 1, nx
         q(i) = 0.d0
         do j = 1, nz-1
