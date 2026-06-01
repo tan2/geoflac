@@ -106,9 +106,9 @@ MODULE marker_data
     integer :: j1, j2, i1, i2, iph, &
                kk, n, j, i
 
-    !$ACC loop collapse(2)
-    !$OMP parallel do private(i,j,n,kk)
     ! reset the markers within elements in the rectangular region
+    !$OMP parallel do private(i,j,n,kk)
+    !$ACC loop collapse(2)
     do i = i1, i2
       do j = j1, j2
 
