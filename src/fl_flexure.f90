@@ -3,7 +3,7 @@ subroutine fl_flexure
     use params
     implicit none
 
-    double precision :: q(nx), w_flex(nx), Load(nx)
+    double precision :: q(nx), Load(nx)
     double precision :: a_block(2, 2, nx), b_block(2, 2, nx), c_block(2, 2, nx)
     double precision :: r_block(2, nx), u_block(2, nx)
     double precision :: x(nx), dx(nx)
@@ -26,25 +26,33 @@ subroutine fl_flexure
     Te = bca(bc_idx)       ! Elastic thickness in meters
     rho_m = bcb(bc_idx)    ! Asthenosphere density in kg/m3
 
+    ! Wrap the main computations in an OpenACC data region for stack arrays
+    !$ACC data create(q, Load, a_block, b_block, c_block, r_block, u_block, x, dx, D)
+
     ! 2. Compute current vertical column weights (lithostatic loads)
     call get_column_weights(q)
 
     ! 3. If q_init is completely uninitialized (all zeros), initialize it with the starting column weights
+    ! Handled cleanly on host and page-migrated automatically by CUDA Managed Memory
     if (all(q_init .eq. 0.d0)) then
         q_init = q
     endif
 
     ! Compute excess load
+    !$ACC parallel loop async(1)
     !$OMP parallel do
     do i = 1, nx
         Load(i) = q(i) - q_init(i)
     enddo
 
     ! 4. Set up grid coordinates and spacings in X
+    !$ACC parallel loop async(1)
     !$OMP parallel do
     do i = 1, nx
         x(i) = cord(nz, i, 1)
     enddo
+    
+    !$ACC parallel loop async(1)
     !$OMP parallel do
     do i = 1, nx-1
         dx(i) = x(i+1) - x(i)
@@ -52,6 +60,7 @@ subroutine fl_flexure
     enddo
 
     ! 5. Compute local flexural rigidity D(i) based on Lamé parameters of the bottom elements
+    !$ACC parallel loop private(iph, lambda, mu, E, nu) async(1)
     !$OMP parallel do private(iph, lambda, mu, E, nu)
     do i = 1, nx
         if (i .lt. nx) then
@@ -83,6 +92,7 @@ subroutine fl_flexure
 
     ! 6. Construct the Block Tridiagonal System of Equations
     ! Boundary condition at left end: M_1 = 0, w_1 = q(1) / (rho_m * g)
+    !$ACC serial async(1)
     a_block(:, :, 1) = 0.d0
     c_block(:, :, 1) = 0.d0
     b_block(1, 1, 1) = 1.d0
@@ -97,8 +107,10 @@ subroutine fl_flexure
         w_winkler_1 = 0.d0
     endif
     r_block(2, 1) = w_winkler_1
+    !$ACC end serial
 
     ! Inner nodes using non-uniform 2nd-order central differences
+    !$ACC parallel loop private(a_i, c_i, b_i) async(1)
     !$OMP parallel do private(a_i, c_i, b_i)
     do i = 2, nx-1
         a_i = 2.d0 / (dx(i-1) * (dx(i) + dx(i-1)))
@@ -126,6 +138,7 @@ subroutine fl_flexure
     enddo
 
     ! Boundary condition at right end: M_nx = 0, w_nx = q(nx) / (rho_m * g)
+    !$ACC serial async(1)
     a_block(:, :, nx) = 0.d0
     c_block(:, :, nx) = 0.d0
     b_block(1, 1, nx) = 1.d0
@@ -140,20 +153,24 @@ subroutine fl_flexure
         w_winkler_nx = 0.d0
     endif
     r_block(2, nx) = w_winkler_nx
+    !$ACC end serial
 
-    ! 7. Solve the block tridiagonal system directly
+    ! 7. Solve the block tridiagonal system directly on GPU
+    !$ACC serial async(1)
     call solve_block_tridiagonal(nx, a_block, b_block, c_block, r_block, u_block)
+    !$ACC end serial
 
     ! 8. Apply new deflections, update bottom boundary coordinates & velocities
-    w_flex = u_block(2, :)
+    !$ACC parallel loop private(cord_old_z) async(1)
     !$OMP parallel do private(cord_old_z)
     do i = 1, nx
         cord_old_z = cord(nz, i, 2)
-        cord(nz, i, 2) = zoriginal(nz, i) - w_flex(i)
+        cord(nz, i, 2) = zoriginal(nz, i) - u_block(2, i)
         vel(nz, i, 2) = (cord(nz, i, 2) - cord_old_z) / dt
     enddo
 
-    !$ACC update device(cord, vel)
+    !$ACC wait(1)
+    !$ACC end data
 
 end subroutine fl_flexure
 
@@ -166,7 +183,9 @@ subroutine get_column_weights(q)
     double precision :: rho, dz
     integer :: i, j
     double precision, external :: Eff_dens
+    !$ACC routine(Eff_dens) seq
 
+    !$ACC parallel loop private(rho, dz, j) async(1)
     !$OMP parallel do private(rho, dz, j)
     do i = 1, nx
         q(i) = 0.d0
@@ -186,6 +205,7 @@ end subroutine get_column_weights
 
 
 subroutine solve_block_tridiagonal(n, a, b, c, r, u)
+    !$ACC routine seq
     implicit none
     integer, intent(in) :: n
     double precision, intent(in) :: a(2, 2, n), b(2, 2, n), c(2, 2, n), r(2, n)
