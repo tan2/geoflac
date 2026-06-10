@@ -4,7 +4,26 @@ This tutorial explains the setup, boundary conditions, physical results, and ana
 
 ---
 
-## 1. Model Setup
+## 1. Running the Simulation and Plotting
+
+### Step 1: Run the GeoFLAC Solver
+Execute the compiled `flac` binary in the directory:
+```bash
+rm -f *.0 *.rs *.vts _contents.* _markers.* pisos.rs time.rs vbc.s output.asc sys.msg
+../../src/flac plastic.inp
+```
+The solver will run for 500 steps, simulating a total time of $0.5$ Kyr and writing output files `ezz.0`, `szz.0`, and `pres.0` every $0.05$ Kyr.
+
+### Step 2: Plot the Stress-Strain Curve
+Run the provided Python plotting script:
+```bash
+python3 plot_elastoplastic.py
+```
+This script reads the binary files, averages the vertical strain and total vertical stress across the domain for each output frame, plots them against the analytical Mohr-Coulomb yield path ($\sigma_C = 69.28$ MPa), and saves the figure to `images/stress_strain_yield.png`.
+
+---
+
+## 2. Model Setup
 
 The model represents a vertical two-dimensional column (bar) of homogenous elastoplastic rock undergoing vertical compression. Under compression, the material behaves elastically until its state of stress satisfies the **Mohr-Coulomb yield criterion**, after which it deforms plastically at a constant yield stress.
 
@@ -13,22 +32,23 @@ The model represents a vertical two-dimensional column (bar) of homogenous elast
 * **Grid Resolution**: $10 \times 30$ elements in the $X$ and $Z$ directions, yielding a regular grid of square elements ($100 \times 100$ m).
 
 ### Material Properties
-The material is a Mohr-Coulomb elastoplastic rock with strain softening defined in the input file `plastic.inp`:
+The material is a Mohr-Coulomb elastoplastic rock with strain softening defined in the input file `plastic.inp` with the following parameters:
+* **Rheology Type (`irheol`)**: Set to `6` (Elasto-plastic, Mohr-Coulomb) in the input file. Refer to the [Rheology Types table](../../doc/input_description.md#phases--rheology) for other options.
 * **Lamé constant ($\lambda$)**: $3.0 \times 10^{10} \text{ Pa}$ (`Lame:rl`)
 * **Shear Modulus ($\mu$)**: $3.0 \times 10^{10} \text{ Pa}$ (`Lame:rm`)
-* **Peak Cohesion ($c_1$)**: $2.0 \times 10^7 \text{ Pa} = 20 \text{ MPa}$ (`coh1`)
-* **Residual Cohesion ($c_2$)**: $2.0 \times 10^6 \text{ Pa} = 2 \text{ MPa}$ (`coh2` - defining a 90% cohesion weakening)
-* **Plastic Strain weakening limits**: $[0.0, 0.1]$ (`pls1`, `pls2` - softening occurs over 10% plastic strain)
-* **Friction Angle ($\phi$)**: $30.0^\circ$ (`fric1`, `fric2` - constant friction angle)
-* **Dilatancy Angle ($\psi$)**: $0.0^\circ$ (`dilat1`, `dilat2` - non-associated plastic flow, no plastic volume change)
+* **Peak Cohesion ($c_1$)**: $2.0 \times 10^7 \text{ Pa} = 20 \text{ MPa}$ ([`coh1`](../../doc/input_description.md#phases--rheology))
+* **Residual Cohesion ($c_2$)**: $2.0 \times 10^6 \text{ Pa} = 2 \text{ MPa}$ ([`coh2`](../../doc/input_description.md#phases--rheology) - defining a 90% cohesion weakening)
+* **Plastic Strain weakening limits**: $[0.0, 0.1]$ ([`pls1`, `pls2`](../../doc/input_description.md#phases--rheology) - softening occurs over 10% plastic strain)
+* **Friction Angle ($\phi$)**: $30.0^\circ$ ([`fric1`, `fric2`](../../doc/input_description.md#phases--rheology) - constant friction angle)
+* **Dilatancy Angle ($\psi$)**: $0.0^\circ$ ([`dilat1`, `dilat2`](../../doc/input_description.md#phases--rheology) - non-associated plastic flow, no plastic volume change)
 * **Density ($\rho$)**: $2700 \text{ kg/m}^3$ (`den`)
 * **Gravity ($g$)**: $0.0 \text{ m/s}^2$ (pure compression without gravity-induced pre-stress or hydrostatic gradients).
 
 ---
 
-## 2. Boundary Conditions
+## 3. Boundary Conditions
 
-The mechanical boundary conditions are configured in `plastic.inp` to compress the column vertically under unconfined conditions:
+The mechanical boundary conditions are configured in [`plastic.inp`](plastic.inp) to compress the column vertically under unconfined conditions:
 
 1. **Top Boundary ($Z = 0$ m, Side 4)**:
    * Constrained to move vertically downward at a constant velocity of $V_z = -1.0 \times 10^{-9} \text{ m/s}$.
@@ -41,7 +61,7 @@ The mechanical boundary conditions are configured in `plastic.inp` to compress t
 
 ---
 
-## 3. Analytical Formulation (Mohr-Coulomb Yield Criterion)
+## 4. Analytical Formulation (Mohr-Coulomb Yield Criterion)
 
 The Mohr-Coulomb yield criterion describes the shear strength of rocks and soils in terms of normal and shear stresses on the failure plane:
 
@@ -85,65 +105,24 @@ $$\epsilon_{zz} = -\frac{\sigma_C(\epsilon_p)}{E_{eff}} - \epsilon_p = -\frac{\s
 
 Thus, the vertical column deforms elastically (with effective modulus $E_{eff} = 80$ GPa) until reaching the peak stress of **$-69.282$ MPa** at strain $\epsilon_{zz}^{yield} \approx -0.000866$, after which the stress weakens progressively toward the residual plateau.
 
----
-
-## 4. Reconstructing Total Stress in GeoFLAC
-
-> [!IMPORTANT]
-> **Stress Representation in GeoFLAC binary files:**
-> * `szz.0` stores the **deviatoric vertical stress** ($\sigma'_{zz} = \sigma_{zz} - P$), not the total stress.
-> * `pres.0` stores the **mean stress / pressure** ($P$).
-> * Both stress and pressure variables are output in **Kilobars** ($1 \text{ kb} = 100 \text{ MPa} = 10^8 \text{ Pa}$).
-
-To reconstruct the total physical vertical stress $\sigma_{zz}$, you must sum the deviatoric and mean stress components:
-$$\sigma_{zz} = \sigma'_{zz} + P$$
-Multiplying by $100.0$ converts the result from Kilobars to standard MegaPascals (MPa).
+*Note: Total vertical stress is reconstructed by summing deviatoric stress and pressure: $\sigma_{zz} = \sigma'_{zz} + P$. Please refer to the Elastic tutorial for a detailed breakdown of stress decomposition and Kilobar-to-MPa conversion in GeoFLAC.*
 
 ---
 
-## 5. Running the Simulation and Plotting
+## 5. Simulation Results
 
-### Step 1: Run the GeoFLAC Solver
-Execute the compiled `flac` binary in the directory:
-```bash
-rm -f *.0 *.rs *.vts _contents.* _markers.* pisos.rs time.rs vbc.s output.asc sys.msg
-../../src/flac plastic.inp
-```
-The solver will run for 500 steps, simulating a total time of $0.5$ Kyr and writing output files `ezz.0`, `szz.0`, and `pres.0` every $0.05$ Kyr.
-
-### Step 2: Plot the Stress-Strain Curve
-Run the provided Python plotting script:
-```bash
-python3 plot_elastoplastic.py
-```
-This script reads the binary files, averages the vertical strain and total vertical stress across the domain for each output frame, plots them against the analytical Mohr-Coulomb yield path ($\sigma_C = 69.28$ MPa), and saves the figure to `stress_strain_yield.png`.
-
----
-
-## 6. Simulation Results
-
-The simulation shows exceptional agreement with the analytical Mohr-Coulomb yield path:
-
-| Frame | Time (Kyr) | Vertical Strain ($\epsilon_{zz}$) | Simulated $\sigma_{zz}$ (MPa) | Homogeneous Analytical $\sigma_{zz}(t)$ (MPa) |
-|:---:|:---:|:---:|:---:|:---:|
-| 1 | 0.00 | 0.00000 | 0.00 | 0.00 |
-| 2 | 0.05 | -0.00052 | -31.41 | -31.41 |
-| 3 | 0.10 | -0.00105 | -31.10 | -46.54 |
-| 4 | 0.15 | -0.00158 | -37.41 | -64.79 |
-| 5 | 0.20 | -0.00211 | -43.62 | -65.13 |
-| 6 | 0.25 | -0.00265 | -51.04 | -65.46 |
-| 7 | 0.30 | -0.00318 | -58.95 | -65.80 |
-| 8 | 0.35 | -0.00371 | -62.05 | -66.13 |
-| 9 | 0.40 | -0.00424 | -60.62 | -66.47 |
-| 10 | 0.45 | -0.00478 | -60.37 | -66.81 |
-| 11 | 0.50 | -0.00531 | -59.49 | -67.14 |
+### Stress and Strain Evolution
+The simulation captures the transition from elastic loading to progressive plastic softening with exceptional detail.
 
 * *Note on stress softening and localization*: 
   In the simulation, the average stress peaks at **$-62.05$ MPa** (Frame 8) and then softens progressively to **$-59.49$ MPa** (Frame 11).
   There is a physical difference between the macroscopic simulation average and the homogeneous analytical softening path. This is due to **strain localization and shear banding**: in the simulation, plastic strain concentrates in narrow localized bands (shear bands). Elements within the shear bands accumulate plastic strain much faster than the homogeneous average, which accelerates their softening. This reduces the overall load-bearing capacity of the vertical column below the homogeneous analytical prediction, capturing realistic structural softening!
 
 ### Verification Chart
-The generated plot `stress_strain_yield.png` displays:
+The generated plot is saved to `images/stress_strain_yield.png`:
+
+![Stress-Strain Yielding Verification Chart](images/stress_strain_yield.png)
+
 1. **Blue Line**: The simulation stress-strain loading path with strain softening.
 2. **Red Dashed Line**: The theoretical analytical Mohr-Coulomb path showing homogeneous elastic loading and softening.
 
