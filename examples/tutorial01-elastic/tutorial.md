@@ -23,16 +23,29 @@ The material is a linear isotropic elastic rock defined by its Lamé parameters 
 
 ## 2. Boundary Conditions
 
-The mechanical boundary conditions are configured in `bar.inp` to produce a **uniaxial stress** state along the vertical axis:
+The mechanical boundary conditions are configured in [`bar.inp`](bar.inp) to produce a **uniaxial stress** state along the vertical axis:
 
-1. **Top Boundary ($Z = 0$ m, Side 4)**:
-   * Constrained to move vertically downward at a constant velocity of $V_z = -1.0 \times 10^{-9} \text{ m/s}$.
-   * Free to move horizontally (no shear traction).
-2. **Bottom Boundary ($Z = -3000$ m, Side 2)**:
-   * Constrained vertically to zero velocity ($V_z = 0.0$ m/s).
-   * Free to expand/slide horizontally (free-slip boundary condition).
-3. **Lateral Boundaries ($X = 0$ m and $X = 1000$ m, Sides 1 and 3)**:
-   * Completely free of traction ($\sigma_{xx} = 0$ and $\sigma_{xz} = 0$).
+```fortran
+;nofside  nbc1 nbc2  nbc   a       b    c     d     e     f      g     h     i 
+2         1    11    01    0.0     0.   0.    0.    0.    0.     0.    0.    0.  ; Bottom fixed in Z
+4         1    11    01   -1.e-9   0.   0.    0.    0.    0.     0.    0.    0.  ; Top compression in Z
+```
+
+### Syntax and Parameters Breakdown:
+* **Side Selection (`nofside`)**:
+  * **`2`**: Represents the **bottom boundary** ($Z = -3000\text{ m}$).
+  * **`4`**: Represents the **top boundary** ($Z = 0\text{ m}$).
+* **Node Range (`nbc1` to `nbc2`)**:
+  * The mesh is set to $10 \times 30$ elements, giving 11 nodes along the horizontal axis. Specifying nodes **`1` to `11`** applies the boundary condition continuously across the entire width of the domain.
+* **Boundary Condition Type (`nbc`)**:
+  * **`01`**: Specifies a **vertical velocity ($V_z$) constraint** in meters/second. Refer to the [Boundary Condition Types table](../../doc/input_description.md#mechanical-conditions) for other options.
+* **Spatial Profile Coefficient (`a`)**:
+  * The velocity profile is governed by a spatial function, where `a` is the constant coefficient:
+    * **Bottom (`nofside = 2`)**: Setting `a = 0.0` m/s restricts vertical movement, fixing the base vertically ($V_z = 0$).
+    * **Top (`nofside = 4`)**: Setting `a = -1.e-9` m/s moves the boundary vertically downward ($V_z = -1.0 \times 10^{-9}\text{ m/s}$), driving the compression.
+* **Horizontal & Lateral Conditions (Implicit)**:
+  * Since no horizontal velocity constraints (`nbc = 10`) are defined on the top or bottom, they default to **free-slip** (free to expand sideways).
+  * Since no boundary conditions are defined for the left (`nofside = 1`) and right (`nofside = 3`) boundaries, they default to completely **free/traction-free surfaces** ($\sigma_{xx} = 0$, $\sigma_{xz} = 0$).
 
 ---
 
