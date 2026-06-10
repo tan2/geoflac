@@ -21,6 +21,13 @@ python3 plot_elastoplastic.py
 ```
 This script reads the binary files, averages the vertical strain and total vertical stress across the domain for each output frame, plots them against the analytical Mohr-Coulomb yield path ($\sigma_C = 69.28$ MPa), and saves the figure to `images/stress_strain_yield.png`.
 
+### Step 3: Convert Output to VTK Format (VTS)
+To visualize the spatial distribution of stresses, strains, and yielding in ParaView or VisIt, convert the binary output files to `.vts` structured grid files using the provided utility:
+```bash
+python3 ../../util/flac2vtk.py .
+```
+This will generate `flac.000001.vts` to `flac.000010.vts` in your current directory.
+
 ---
 
 ## 2. Model Setup
@@ -48,16 +55,28 @@ The material is a Mohr-Coulomb elastoplastic rock with strain softening defined 
 
 ## 3. Boundary Conditions
 
-The mechanical boundary conditions are configured in [`plastic.inp`](plastic.inp) to compress the column vertically under unconfined conditions:
+The mechanical boundary conditions are configured in [`plastic.inp`](plastic.inp) to compress the column vertically:
 
-1. **Top Boundary ($Z = 0$ m, Side 4)**:
-   * Constrained to move vertically downward at a constant velocity of $V_z = -1.0 \times 10^{-9} \text{ m/s}$.
-   * Free to move horizontally (no shear traction).
-2. **Bottom Boundary ($Z = -3000$ m, Side 2)**:
-   * Constrained vertically to zero velocity ($V_z = 0.0$ m/s).
-   * Free to expand/slide horizontally (free-slip boundary condition).
-3. **Lateral Boundaries ($X = 0$ m and $X = 1000$ m, Sides 1 and 3)**:
-   * Completely free of traction ($\sigma_{xx} = 0.0$ and $\sigma_{xz} = 0.0$).
+```fortran
+;nofside  nbc1 nbc2  nbc   a       b    c     d     e     f      g     h     i 
+2         1    11    01    0.0     0.   0.    0.    0.    0.     0.    0.    0.  ; Bottom fixed in Z (free-slip)
+4         1    11    01   -1.e-9   0.   0.    0.    0.    0.     0.    0.    0.  ; Top compression in Z
+4         1    11    10    0.0     0.   0.    0.    0.    0.     0.    0.    0.  ; Top fixed in X (no-slip)
+```
+
+### Parameters Breakdown:
+1. **Side Selection (`nofside`)**:
+   * **`2`**: Represents the **bottom boundary** ($Z = -3000\text{ m}$).
+   * **`4`**: Represents the **top boundary** ($Z = 0\text{ m}$).
+2. **Node Range (`nbc1` to `nbc2`)**:
+   * The grid is $10 \times 30$ elements, giving 11 nodes along the horizontal axis. Specifying nodes **`1` to `11`** applies the boundary condition continuously across the entire width of the domain.
+3. **Boundary Condition Type (`nbc`)**:
+   * **`01`**: Specifies a **vertical velocity ($V_z$) constraint** in meters/second.
+   * **`10`**: Specifies a **horizontal velocity ($V_x$) constraint** in meters/second.
+4. **Boundary Condition Profiles**:
+   * **Bottom Boundary**: Vertically fixed ($V_z = 0$) but free to slide horizontally (free-slip).
+   * **Top Boundary**: Compressing vertically downward at a constant velocity of $V_z = -1.0 \times 10^{-9}\text{ m/s}$ and fixed horizontally at $V_x = 0$ (no-slip condition).
+   * **Lateral Boundaries ($X = 0$ m and $X = 1000$ m, Sides 1 and 3)**: Completely free of traction ($\sigma_{xx} = 0.0$, $\sigma_{xz} = 0.0$).
 
 ---
 
@@ -114,16 +133,24 @@ Thus, the vertical column deforms elastically (with effective modulus $E_{eff} =
 ### Stress and Strain Evolution
 The simulation captures the transition from elastic loading to progressive plastic softening with exceptional detail.
 
-* *Note on stress softening and localization*: 
-  In the simulation, the average stress peaks at **$-62.05$ MPa** (Frame 8) and then softens progressively to **$-59.49$ MPa** (Frame 11).
-  There is a physical difference between the macroscopic simulation average and the homogeneous analytical softening path. This is due to **strain localization and shear banding**: in the simulation, plastic strain concentrates in narrow localized bands (shear bands). Elements within the shear bands accumulate plastic strain much faster than the homogeneous average, which accelerates their softening. This reduces the overall load-bearing capacity of the vertical column below the homogeneous analytical prediction, capturing realistic structural softening!
+* **Confinement Effect**:
+  Due to the horizontal no-slip condition ($V_x = 0$) at the top boundary, the material is restricted from expanding horizontally at the contact surface. This restriction acts as a local confinement, which increases the effective compressive strength. As a result, the peak vertical stress in the simulation increases to **$-74.49$ MPa** (Frame 7), exceeding the analytical unconfined compressive strength (UCS) of **$-69.282$ MPa** (which assumes completely free lateral boundaries without any horizontal restriction).
+  
+* **Yielding/Failure Nucleation**:
+  Under vertical compression, the material naturally expands horizontally due to Poisson's effect.
+  * At the bottom boundary, nodes are free to slide horizontally (free-slip, $V_x$ is unconstrained), so the base expands freely without stress concentration.
+  * At the top boundary, however, the no-slip condition ($V_x = 0$) prevents this lateral expansion. This constraint forces the material near the top contact to remain stationary in X while being pushed downward in Z, creating a severe shear stress gradient and concentration at the top corners.
+  * Consequently, yielding (plastic strain `aps`) initiates in the top corner elements (Row 1, columns 1 and 10) rather than the bottom, and then propagates downward as localized shear bands.
+
+* **Stress Softening and Localization**: 
+  After reaching the peak of **$-74.49$ MPa** (Frame 7), the average vertical stress softens progressively to **$-66.20$ MPa** (Frame 10). This structural softening is driven by **strain localization and shear banding**: plastic strain concentrates in narrow localized bands. Elements within the shear bands accumulate plastic strain much faster than the homogeneous average, which accelerates their softening and reduces the overall load-bearing capacity of the vertical column.
 
 ### Verification Chart
 The generated plot is saved to `images/stress_strain_yield.png`:
 
 ![Stress-Strain Yielding Verification Chart](images/stress_strain_yield.png)
 
-1. **Blue Line**: The simulation stress-strain loading path with strain softening.
-2. **Red Dashed Line**: The theoretical analytical Mohr-Coulomb path showing homogeneous elastic loading and softening.
+1. **Blue Line**: The simulation stress-strain loading path with strain softening under top confinement.
+2. **Red Dashed Line**: The theoretical analytical Mohr-Coulomb path showing homogeneous elastic loading and softening (unconfined).
 
 The simulation accurately captures the transition from elastic loading to progressive plastic softening, verifying both the correct implementation and numerical stability of GeoFLAC's strain-softening mechanics.

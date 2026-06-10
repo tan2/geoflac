@@ -19,11 +19,12 @@
 ;===================================================================
 0  0              nystressbc, nydrsides
 ; nofbc: Number of boundary conditions
-2
+3
 ;-------------------------------------------------------------------------------
 ;nofside  nbc1 nbc2  nbc   a       b    c     d     e     f      g     h     i 
 2         1    11    01    0.0     0.   0.    0.    0.    0.     0.    0.    0.  ; Bottom fixed in Z (free-slip)
 4         1    11    01   -1.e-9   0.   0.    0.    0.    0.     0.    0.    0.  ; Top compression in Z
+4         1    11    10    0.0     0.   0.    0.    0.    0.     0.    0.    0.  ; Top fixed in X (no-slip)
 ;
 ; Hydrostatic pressure
 0                   0.                       8            0.            0.e+7
