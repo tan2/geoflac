@@ -58,8 +58,17 @@ The mechanical boundary conditions are configured in [`bar.inp`](bar.inp) to pro
 
 ## 3. Analytical Formulation (2D Plane Strain)
 
-Because GeoFLAC is a 2D plane strain modeling engine, the out-of-plane strain is zero ($\epsilon_{yy} = 0$). 
+### What is Plane Strain?
+**Plane Strain** is a simplified state of strain in solid mechanics where the deformation in one direction (usually the out-of-plane direction, $Y$, or axis 3 in GeoFLAC) is constrained to be zero. Specifically:
+$$\epsilon_{yy} = 0, \quad \gamma_{xy} = 0, \quad \gamma_{zy} = 0$$
 
+This assumption is physically applicable to structures that are very long in one dimension relative to their cross-section (such as tunnels, retaining walls, or regional tectonic columns). 
+
+Because the out-of-plane expansion or contraction is prevented, a normal stress is induced in that direction:
+$$\sigma_{yy} = \nu (\sigma_{xx} + \sigma_{zz})$$
+This out-of-plane stress acts as a confinement, which increases the effective stiffness of the rock column, leading to the **effective vertical modulus** $E_{eff} = E / (1 - \nu^2)$ instead of the standard Young's Modulus $E$.
+
+### Mathematical Derivation
 Using the 3D isotropic Hooke's Law under these boundary conditions:
 1. **Zero Out-of-Plane Strain ($\epsilon_{yy} = 0$)**:
    $$\epsilon_{yy} = \frac{1}{E} \left[ \sigma_{yy} - \nu (\sigma_{xx} + \sigma_{zz}) \right] = 0 \implies \sigma_{yy} = \nu (\sigma_{xx} + \sigma_{zz})$$
@@ -68,7 +77,7 @@ Using the 3D isotropic Hooke's Law under these boundary conditions:
 3. **Vertical Strain ($\epsilon_{zz}$)**:
    $$\epsilon_{zz} = \frac{1}{E} \left[ \sigma_{zz} - \nu (\sigma_{xx} + \sigma_{yy}) \right] = \frac{1 - \nu^2}{E} \sigma_{zz}$$
 
-Therefore, the vertical stress-strain relationship is governed by the **effective vertical modulus** $E_{eff}$:
+Therefore, the vertical stress-strain relationship is governed by the **effective vertical modulus** $E_{eff}$ :
 $$\sigma_{zz} = E_{eff} \epsilon_{zz}$$
 where:
 $$E_{eff} = \frac{E}{1 - \nu^2} = \frac{4\mu(\lambda + \mu)}{\lambda + 2\mu}$$
@@ -83,6 +92,13 @@ $$E_{eff} = \frac{E}{1 - \nu^2} = \frac{4\mu(\lambda + \mu)}{\lambda + 2\mu}$$
 
 Under pure compression, the Poisson expansion in the horizontal direction is:
 $$\epsilon_{xx} = -\frac{\lambda}{\lambda + 2\mu} \epsilon_{zz} = -\frac{1}{3} \epsilon_{zz}$$
+
+### Configuration of Out-of-Plane Stress in GeoFLAC
+While the elastic equations in GeoFLAC natively assume plane strain ($\epsilon_{yy} = 0$), calculating and tracking the out-of-plane stress component ($\sigma_{yy}$) for complex materials (like Maxwell creep and plastic yielding) is optional. 
+
+This behavior is controlled by the **`ndim`** parameter in the [`PROCESS CONTROL`](../../doc/input_description.md#process-control) section of the input file:
+* **`ndim = 2` (Default)**: Normal 2D mode. Only the in-plane stress components ($\sigma_{xx}$, $\sigma_{zz}$, $\sigma_{xz}$) are used to check for plastic yielding or to compute Maxwell relaxation. The deviatoric out-of-plane stress ($\sigma'_{yy}$) is assumed to be zero to simplify and speed up calculations.
+* **`ndim = 3`**: In/out-of-plane stress mode (3D mode). The out-of-plane stress ($\sigma_{yy}$) is computed dynamically and included in plastic yield criteria (e.g., Mohr-Coulomb in 3D principal stress space) and viscoelastic creep flow.
 
 ---
 
