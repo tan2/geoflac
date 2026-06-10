@@ -140,7 +140,7 @@ if(incoming_left==1) then
         !$ACC serial async(1)
         ju = jl
         do j = jl, nz-1
-            if((cord(1,i,2) - 0.5d0*(cord(j,i,2)+cord(j+1,i,2))) > hc(n,m)*1d3) then
+            if((-0.5d0*(cord(j,i,2)+cord(j+1,i,2))) > hc(n,m)*1d3) then
                 jl = j
                 exit
             endif
@@ -168,7 +168,7 @@ if(incoming_right==1) then
         !$ACC serial async(1)
         ju = jl
         do j = jl, nz-1
-            if((cord(1,i+1,2) - 0.5d0*(cord(j,i+1,2)+cord(j+1,i+1,2))) > hc(n,m)*1d3) then
+            if((-0.5d0*(cord(j,i+1,2)+cord(j+1,i+1,2))) > hc(n,m)*1d3) then
                 jl = j
                 exit
             endif
