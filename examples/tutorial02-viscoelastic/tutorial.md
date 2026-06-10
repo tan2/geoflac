@@ -4,7 +4,26 @@ This tutorial explains the setup, boundary conditions, physical results, and ana
 
 ---
 
-## 1. Model Setup
+## 1. Running the Simulation and Plotting
+
+### Step 1: Run the GeoFLAC Solver
+First, ensure that the output directory is clean of any past run files, and execute the compiled `flac` binary:
+```bash
+rm -f *.0 *.rs *.vts _contents.* _markers.* pisos.rs time.rs vbc.s output.asc sys.msg
+../../src/flac maxwell.inp
+```
+The solver will run for 76,500 steps, simulating a total time of $40.0$ Kyr and writing outputs every $1.0$ Kyr.
+
+### Step 2: Plot the Stress-Relaxation Curve
+Run the provided Python plotting script:
+```bash
+python3 plot_viscoelastic.py
+```
+This script reads the binary files, reconstructs the total horizontal stress $\sigma_{xx}$, and plots the simulation points alongside the high-resolution analytical relaxation curve, saving the plot as `images/stress_relaxation.png`.
+
+---
+
+## 2. Model Setup
 
 The model represents a vertical two-dimensional column of homogenous viscoelastic rock undergoing horizontal compression. Under compression, the material exhibits both transient elastic stress build-up and long-term viscous relaxation governed by a Newtonian Maxwell rheology.
 
@@ -23,17 +42,17 @@ The material is a Newtonian Maxwell viscoelastic rock defined in the input file 
 > [!NOTE]
 > **Formulating Newtonian Viscosity in GeoFLAC:**
 > Because GeoFLAC models viscosity using power-law creep ($\dot{\epsilon} = A \sigma^n$), we simulate Newtonian Maxwell rheology by setting:
-> * Power exponent $n = 1.0$ (`pln = 1.0`)
-> * Zero thermal and pressure activation dependencies (`eactiv = 0.0`, `vactiv = 0.0`)
-> * The pre-exponential coefficient `acoef` calculated from viscosity as:
+> * Power exponent $n = 1.0$ ([`pln = 1.0`](../../doc/input_description.md#phases--rheology))
+> * Zero thermal and pressure activation dependencies ([`eactiv = 0.0`, `vactiv = 0.0`](../../doc/input_description.md#phases--rheology))
+> * The pre-exponential coefficient [`acoef`](../../doc/input_description.md#phases--rheology) calculated from viscosity as:
 >   $$\text{acoef} = \frac{10^6}{3 \eta} = 3.3333333 \times 10^{-16}$$
 > * The viscosity limit bounds in `maxwell.inp` are set to `1.0e+18` and `1.0e+25` so the target $10^{21} \text{ Pa}\cdot\text{s}$ is safely inside the range.
 
 ---
 
-## 2. Boundary Conditions
+## 3. Boundary Conditions
 
-The mechanical boundary conditions are configured in `maxwell.inp` to compress the block horizontally:
+The mechanical boundary conditions are configured in [`maxwell.inp`](maxwell.inp) to compress the block horizontally:
 
 1. **Left Boundary ($X = 0$ km, Side 1)**:
    * Constrained to move horizontally inward (to the right) at a constant velocity of $V_x = 1.0 \text{ cm/yr} \approx 3.1687686 \times 10^{-10} \text{ m/s}$.
@@ -49,7 +68,7 @@ The mechanical boundary conditions are configured in `maxwell.inp` to compress t
 
 ---
 
-## 3. Analytical Formulation (Newtonian Maxwell Flow)
+## 4. Analytical Formulation (Newtonian Maxwell Flow)
 
 Under 2D plane strain ($\epsilon_{yy} = 0$) and a free top surface ($\sigma_{zz} = 0$), the total horizontal compressive stress $\sigma_{xx}(t)$ builds up elastically and relaxes viscously over time:
 
@@ -68,61 +87,20 @@ where:
 
 Because the relaxation time ($\approx 1.584$ Kyr) is much shorter than the simulation's 10 Kyr output interval, the stress is fully relaxed to its steady-state Newtonian plateau by the first output step ($10,000$ years $\approx 6.3\tau_{eff}$).
 
----
-
-## 4. Reconstructing Total Stress in GeoFLAC
-
-> [!IMPORTANT]
-> **Stress Representation in GeoFLAC binary files:**
-> * `sxx.0` and `szz.0` store the **deviatoric stresses** ($\sigma'_{xx} = \sigma_{xx} - P$ and $\sigma'_{zz} = \sigma_{zz} - P$), not the total stresses.
-> * `pres.0` stores the **mean stress / pressure** ($P$).
-> * All stress outputs are in **Kilobars** ($1 \text{ kb} = 100 \text{ MPa} = 10^8 \text{ Pa}$).
-
-To obtain the total horizontal stress $\sigma_{xx}$, you must sum the deviatoric horizontal stress and pressure:
-$$\sigma_{xx} = \sigma'_{xx} + P$$
-Multiplying by $100.0$ converts the result from Kilobars to standard MegaPascals (MPa).
+*Note: Total horizontal stress is reconstructed by summing deviatoric stress and pressure: $\sigma_{xx} = \sigma'_{xx} + P$. Please refer to the Elastic tutorial for a detailed breakdown of stress decomposition and Kilobar-to-MPa conversion in GeoFLAC.*
 
 ---
 
-## 5. Running the Simulation and Plotting
+## 5. Simulation Results
 
-### Step 1: Run the GeoFLAC Solver
-First, ensure that the output directory is clean of any past run files, and execute the compiled `flac` binary:
-```bash
-rm -f *.0 *.rs *.vts _contents.* _markers.* pisos.rs time.rs vbc.s output.asc sys.msg
-../../src/flac maxwell.inp
-```
-The solver will run for 76,500 steps, simulating a total time of $40.0$ Kyr and writing outputs every $1.0$ Kyr.
-
-### Step 2: Plot the Stress-Relaxation Curve
-Run the provided Python plotting script:
-```bash
-python3 plot_viscoelastic.py
-```
-This script reads the binary files, reconstructs the total horizontal stress $\sigma_{xx}$, and plots the simulation points alongside the high-resolution analytical relaxation curve, saving the plot as `stress_relaxation.png`.
-
----
-
-## 6. Simulation Results
-
-The simulation captures both the elastic stress build-up and the Newtonian Maxwell viscoelastic relaxation process over time with exceptional detail:
-
-| Frame | Time (Kyr) | Simulated $\sigma_{xx}$ (MPa) | Analytical $\sigma_{xx}(t)$ (MPa) | Discrepancy (%) |
-|:---:|:---:|:---:|:---:|:---:|
-| 1 | 0.0 | 0.0000 | 0.0000 | — |
-| 2 | 1.1 | -33.4529 | -31.7188 | 5.5% |
-| 3 | 2.1 | -49.4856 | -46.5413 | 6.3% |
-| 4 | 3.2 | -57.9465 | -54.9576 | 5.4% |
-| 5 | 4.2 | -62.9233 | -58.9009 | 6.8% |
-| 6 | 5.3 | -64.5999 | -61.2721 | 5.4% |
-| 7 | 6.3 | -66.3060 | -62.1906 | 6.6% |
-| 11 | 10.6 | -65.9780 | -63.2982 | 4.2% |
-| 20 | 20.1 | -64.3144 | -63.3750 | 1.5% |
-| 30 | 30.6 | -64.3453 | -63.3750 | 1.5% |
-| 39 | 40.1 | -64.6287 | -63.3750 | 2.0% |
+### Stress and Strain Evolution
+The simulation captures both the elastic stress build-up and the Newtonian Maxwell viscoelastic relaxation process over time with exceptional detail.
 
 ### Verification Chart
-The generated plot `stress_relaxation.png` displays:
+The generated plot is saved to `images/stress_relaxation.png`:
+
+![Stress-Relaxation Verification Chart](images/stress_relaxation.png)
+
 1. **Blue Dots**: The simulation output points spaced at 1 Kyr intervals, showing the transient relaxation curves.
 2. **Red Dashed Line**: The theoretical analytical relaxation curve showing the quick elastic stress build-up and the long-term viscoelastic steady-state plateau at $-63.375$ MPa.
 

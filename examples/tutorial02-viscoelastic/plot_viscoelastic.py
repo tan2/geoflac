@@ -115,7 +115,8 @@ def main():
     
     # Adjust layout and save figure
     plt.tight_layout()
-    plot_path = 'stress_relaxation.png'
+    os.makedirs('images', exist_ok=True)
+    plot_path = 'images/stress_relaxation.png'
     plt.savefig(plot_path, dpi=300)
     print(f"\nPlot saved successfully to '{plot_path}'")
 
