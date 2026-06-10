@@ -27,7 +27,7 @@ def main():
         sys.exit(1)
 
     # Create a directory for plots if it doesn't exist
-    os.makedirs('plots', exist_ok=True)
+    os.makedirs('images', exist_ok=True)
     
     # We will generate a premium plot for the final state
     final_frame = nrec
@@ -112,9 +112,8 @@ def main():
     ax2.set_ylim(-30, 2)
     
     plt.tight_layout()
-    plt.savefig('core_complex.png', dpi=300)
-    plt.savefig('plots/final_state_core_complex.png', dpi=300)
-    print("Saved 'core_complex.png' and 'plots/final_state_core_complex.png'")
+    plt.savefig('images/core_complex.png', dpi=300)
+    print("Saved 'images/core_complex.png'")
     
     # Let's also create an evolution plot if we have multiple frames
     if nrec >= 3:
@@ -136,8 +135,8 @@ def main():
             
         axes_evo[-1].set_xlabel('Distance (km)', fontsize=11, fontweight='bold')
         fig_evo.colorbar(im, ax=axes_evo.tolist(), orientation='vertical', pad=0.02, shrink=0.6, label='Plastic Strain')
-        plt.savefig('plots/evolution_core_complex.png', dpi=300)
-        print("Saved 'plots/evolution_core_complex.png'")
+        plt.savefig('images/evolution_core_complex.png', dpi=300)
+        print("Saved 'images/evolution_core_complex.png'")
         
 if __name__ == '__main__':
     main()
