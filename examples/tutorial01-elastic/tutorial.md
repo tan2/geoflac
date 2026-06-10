@@ -12,6 +12,13 @@ The model represents a vertical two-dimensional column (bar) of homogenous elast
 * **Dimensions**: 1000 meters wide ($X \in [0, 1000]$ m), 3000 meters high ($Z \in [-3000, 0]$ m).
 * **Grid Resolution**: $3 \times 10$ elements in the $X$ and $Z$ directions, yielding a grid of elements ($333.3 \times 300$ m).
 
+![GeoFLAC grid structure and node/element relationship](images/mesh.png)
+
+#### Grid Elements and Nodes:
+GeoFLAC uses a structured 2D quadrilateral mesh. It distinguishes between **nodes** and **elements**:
+* **Nodes**: Located at element corners. Nodal variables include coordinates (`x`, `z`), velocities (`vx`, `vz`), and temperature (`temperature`). For a grid of $3 \times 10$ elements, there are $4 \times 11 = 44$ nodes. Node indices range from `(1, 1)` (top-left) to `(nx, nz)` (bottom-right).
+* **Elements**: The quadrilaterals bounded by nodes. Elemental variables include stresses (`sxx`, `szz`, `sxz`), pressure (`pres`), phases (`phase`), and accumulated plastic strain (`aps`). For a $3 \times 10$ element grid, there are $3 \times 10 = 30$ elements. Element indices range from `(1, 1)` to `(nex, nez)`.
+
 ### Material Properties
 The material is a linear isotropic elastic rock defined by its Lamé parameters in the input file `bar.inp`:
 * **Lamé constant ($\lambda$)**: $3.0 \times 10^{10} \text{ Pa}$ (`Lame:rl`)
