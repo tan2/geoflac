@@ -60,9 +60,20 @@ do i = 1, inhom
         cord(1, ix2(i):iy1(i), 2) = cord(1, ix2(i):iy1(i), 2) + amp
         do j = iy1(i)+1, iy2(i)
             cord(1,j,2) = cord(1,j,2) + amp*real(iy2(i)-j)/(iy2(i)-iy1(i))
-        enddo 
+        enddo
     endif
 enddo
+
+! Re-distribute every column from (new top) to (fixed bottom) so the
+! initial vertical mesh matches what rem_cord produces at runtime.
+! Without this, the first rem_cord call after t=0 stretches the column
+! and drags depth-based initial phase layers up by ~amp.
+do i = 1, nx
+    call mesh1(cord(1,i,2), cord(nz,i,2), rmesh1, nz, nzony, nelz_y, sizez_y)
+    do j = 1, nz
+        cord(j,i,2) = rmesh1(j)
+    end do
+end do
 
 
 200 continue
