@@ -138,21 +138,13 @@ Multiplying by $100.0$ converts the result from Kilobars to standard MegaPascals
 ## 6. Simulation Results
 
 ### Stress and Strain Evolution
-The simulation outputs 8 frames, showing excellent linear scaling matching the analytical slope:
-
-| Frame | Time (Myr) | Vertical Strain ($\epsilon_{zz}$) | Total Stress ($\sigma_{zz}$, MPa) | Effective Slope (GPa) |
-|:---:|:---:|:---:|:---:|:---:|
-| 1 | 0.0000 | 0.00000 | 0.00 | — |
-| 2 | 0.0016 | -0.01677 | -1341.81 | 80.01 |
-| 3 | 0.0032 | -0.03374 | -2700.09 | 80.02 |
-| 4 | 0.0047 | -0.05088 | -4070.73 | 80.00 |
-| 5 | 0.0063 | -0.06818 | -5455.01 | 80.00 |
-| 6 | 0.0078 | -0.08565 | -6852.12 | 80.00 |
-| 7 | 0.0093 | -0.10328 | -8262.22 | 80.00 |
-| 8 | 0.0108 | -0.12106 | -9684.99 | 80.00 |
+The simulation outputs 8 frames, showing excellent linear scaling matching the analytical slope.
 
 ### Verification Chart
-The generated plot `stress_strain.png` displays:
+The generated plot is saved to `images/stress_strain.png`:
+
+![Stress-Strain Verification Chart](images/stress_strain.png)
+
 1. **Blue Line**: The averaged simulation stress vs strain.
 2. **Red Dashed Line**: The theoretical analytical solution slope of $80$ GPa.
 
