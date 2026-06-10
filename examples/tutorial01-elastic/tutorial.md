@@ -4,7 +4,25 @@ This tutorial explains the setup, boundary conditions, physical results, and ana
 
 ---
 
-## 1. Model Setup
+## 1. Running the Simulation and Plotting
+
+### Step 1: Run the GeoFLAC Solver
+Execute the compiled `flac` binary using the input configuration file:
+```bash
+../../src/flac bar.inp
+```
+The solver will run for 3,000 steps, simulating a total time of $0.0108$ Myr ($10,800$ years) and creating binary files `ezz.0`, `szz.0`, and `pres.0`.
+
+### Step 2: Plot the Stress-Strain Curve
+Run the provided Python plotting script:
+```bash
+python3 plot_elastic.py
+```
+This script reads the binary files, averages the strain and total vertical stress across the domain for each output frame, plots them against the analytical line ($E_{eff} = 80$ GPa), and saves the figure to `stress_strain.png`.
+
+---
+
+## 2. Model Setup
 
 The model represents a vertical two-dimensional column (bar) of homogenous elastic rock undergoing vertical compression. 
 
@@ -28,7 +46,7 @@ The material is a linear isotropic elastic rock defined by its Lamé parameters 
 
 ---
 
-## 2. Boundary Conditions
+## 3. Boundary Conditions
 
 The mechanical boundary conditions are configured in [`bar.inp`](bar.inp) to produce a **uniaxial stress** state along the vertical axis:
 
@@ -56,7 +74,7 @@ The mechanical boundary conditions are configured in [`bar.inp`](bar.inp) to pro
 
 ---
 
-## 3. Analytical Formulation (2D Plane Strain)
+## 4. Analytical Formulation (2D Plane Strain)
 
 ### What is Plane Strain?
 **Plane Strain** is a simplified state of strain in solid mechanics where the deformation in one direction (usually the out-of-plane direction, $Y$, or axis 3 in GeoFLAC) is constrained to be zero. Specifically:
@@ -102,7 +120,7 @@ This behavior is controlled by the **`ndim`** parameter in the [`PROCESS CONTROL
 
 ---
 
-## 4. Understanding GeoFLAC Stress Output
+## 5. Understanding GeoFLAC Stress Output
 
 > [!IMPORTANT]
 > **Stress Representation in GeoFLAC binary files:**
@@ -113,24 +131,6 @@ This behavior is controlled by the **`ndim`** parameter in the [`PROCESS CONTROL
 To reconstruct the total physical vertical stress $\sigma_{zz}$, you must sum the deviatoric and mean stress components:
 $$\sigma_{zz} = \sigma'_{zz} + P$$
 Multiplying by $100.0$ converts the result from Kilobars to standard MegaPascals (MPa).
-
----
-
-## 5. Running the Simulation and Plotting
-
-### Step 1: Run the GeoFLAC Solver
-Execute the compiled `flac` binary using the input configuration file:
-```bash
-../../src/flac bar.inp
-```
-The solver will run for 3,000 steps, simulating a total time of $0.0108$ Myr ($10,800$ years) and creating binary files `ezz.0`, `szz.0`, and `pres.0`.
-
-### Step 2: Plot the Stress-Strain Curve
-Run the provided Python plotting script:
-```bash
-python3 plot_elastic.py
-```
-This script reads the binary files, averages the strain and total vertical stress across the domain for each output frame, plots them against the analytical line ($E_{eff} = 80$ GPa), and saves the figure to `stress_strain.png`.
 
 ---
 
