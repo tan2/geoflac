@@ -32,7 +32,8 @@ The model represents a vertical two-dimensional column of homogenous viscoelasti
 * **Grid Resolution**: $40 \times 10$ elements in the $X$ and $Z$ directions, yielding a regular grid of square elements ($500 \times 500$ m).
 
 ### Material Properties
-The material is a Newtonian Maxwell viscoelastic rock defined in the input file `maxwell.inp`:
+The material is a Newtonian Maxwell viscoelastic rock defined in the input file `maxwell.inp` with the following parameters:
+* **Rheology Type (`irheol`)**: Set to `3` (Visco-elastic, Maxwell, Non-Newtonian) in the input file. Refer to the [Rheology Types table](../../doc/input_description.md#phases--rheology) for other options.
 * **Lamé constant ($\lambda$)**: $3.0 \times 10^{10} \text{ Pa}$ (`Lame:rl`)
 * **Shear Modulus ($\mu$)**: $3.0 \times 10^{10} \text{ Pa}$ (`Lame:rm`)
 * **Newtonian Viscosity ($\eta$)**: $1.0 \times 10^{21} \text{ Pa}\cdot\text{s}$
