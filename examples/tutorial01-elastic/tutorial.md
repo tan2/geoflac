@@ -38,7 +38,8 @@ GeoFLAC uses a structured 2D quadrilateral mesh. It distinguishes between **node
 * **Elements**: The quadrilaterals bounded by nodes. Elemental variables include stresses (`sxx`, `szz`, `sxz`), pressure (`pres`), phases (`phase`), and accumulated plastic strain (`aps`). For a $3 \times 10$ element grid, there are $3 \times 10 = 30$ elements. Element indices range from `(1, 1)` to `(nex, nez)`.
 
 ### Material Properties
-The material is a linear isotropic elastic rock defined by its Lamé parameters in the input file `bar.inp`:
+The material is a linear isotropic elastic rock defined in the input file `bar.inp` with the following parameters:
+* **Rheology Type (`irheol`)**: Set to `1` (Elastic) for linear isotropic elastic behavior. Refer to the [Rheology Types table](../../doc/input_description.md#phases--rheology) for other options.
 * **Lamé constant ($\lambda$)**: $3.0 \times 10^{10} \text{ Pa}$ (`Lame:rl`)
 * **Shear Modulus ($\mu$)**: $3.0 \times 10^{10} \text{ Pa}$ (`Lame:rm`)
 * **Density ($\rho$)**: $2700 \text{ kg/m}^3$ (`den`)
