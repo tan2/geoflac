@@ -10,7 +10,7 @@ The model represents a vertical two-dimensional column (bar) of homogenous elast
 
 ### Geometry and Mesh
 * **Dimensions**: 1000 meters wide ($X \in [0, 1000]$ m), 3000 meters high ($Z \in [-3000, 0]$ m).
-* **Grid Resolution**: $10 \times 30$ elements in the $X$ and $Z$ directions, yielding a regular grid of square elements ($100 \times 100$ m).
+* **Grid Resolution**: $3 \times 10$ elements in the $X$ and $Z$ directions, yielding a grid of elements ($333.3 \times 300$ m).
 
 ### Material Properties
 The material is a linear isotropic elastic rock defined by its Lamé parameters in the input file `bar.inp`:
@@ -27,8 +27,8 @@ The mechanical boundary conditions are configured in [`bar.inp`](bar.inp) to pro
 
 ```fortran
 ;nofside  nbc1 nbc2  nbc   a       b    c     d     e     f      g     h     i 
-2         1    11    01    0.0     0.   0.    0.    0.    0.     0.    0.    0.  ; Bottom fixed in Z
-4         1    11    01   -1.e-9   0.   0.    0.    0.    0.     0.    0.    0.  ; Top compression in Z
+2         1    4     01    0.0     0.   0.    0.    0.    0.     0.    0.    0.  ; Bottom fixed in Z
+4         1    4     01   -1.e-9   0.   0.    0.    0.    0.     0.    0.    0.  ; Top compression in Z
 ```
 
 ### Syntax and Parameters Breakdown:
@@ -36,7 +36,7 @@ The mechanical boundary conditions are configured in [`bar.inp`](bar.inp) to pro
   * **`2`**: Represents the **bottom boundary** ($Z = -3000\text{ m}$).
   * **`4`**: Represents the **top boundary** ($Z = 0\text{ m}$).
 * **Node Range (`nbc1` to `nbc2`)**:
-  * The mesh is set to $10 \times 30$ elements, giving 11 nodes along the horizontal axis. Specifying nodes **`1` to `11`** applies the boundary condition continuously across the entire width of the domain.
+  * The mesh is set to $3 \times 10$ elements, giving 4 nodes along the horizontal axis. Specifying nodes **`1` to `4`** applies the boundary condition continuously across the entire width of the domain.
 * **Boundary Condition Type (`nbc`)**:
   * **`01`**: Specifies a **vertical velocity ($V_z$) constraint** in meters/second. Refer to the [Boundary Condition Types table](../../doc/input_description.md#mechanical-conditions) for other options.
 * **Spatial Profile Coefficient (`a`)**:
@@ -96,11 +96,11 @@ Multiplying by $100.0$ converts the result from Kilobars to standard MegaPascals
 ## 5. Running the Simulation and Plotting
 
 ### Step 1: Run the GeoFLAC Solver
-Execute the compiled `geoflac` binary using the input configuration file:
+Execute the compiled `flac` binary using the input configuration file:
 ```bash
-../../src/geoflac bar.inp
+../../src/flac bar.inp
 ```
-The solver will run for 10,500 steps, simulating a total time of $0.0104$ Myr ($10,400$ years) and creating binary files `ezz.0`, `szz.0`, and `pres.0`.
+The solver will run for 3,000 steps, simulating a total time of $0.0108$ Myr ($10,800$ years) and creating binary files `ezz.0`, `szz.0`, and `pres.0`.
 
 ### Step 2: Plot the Stress-Strain Curve
 Run the provided Python plotting script:
@@ -119,13 +119,13 @@ The simulation outputs 8 frames, showing excellent linear scaling matching the a
 | Frame | Time (Myr) | Vertical Strain ($\epsilon_{zz}$) | Total Stress ($\sigma_{zz}$, MPa) | Effective Slope (GPa) |
 |:---:|:---:|:---:|:---:|:---:|
 | 1 | 0.0000 | 0.00000 | 0.00 | — |
-| 2 | 0.0010 | -0.01063 | -851.09 | 80.06 |
-| 3 | 0.0020 | -0.02135 | -1708.14 | 80.01 |
-| 4 | 0.0035 | -0.03757 | -3005.66 | 80.01 |
-| 5 | 0.0050 | -0.05395 | -4316.44 | 80.00 |
-| 6 | 0.0065 | -0.07051 | -5640.78 | 80.00 |
-| 7 | 0.0079 | -0.08723 | -6978.56 | 80.00 |
-| 8 | 0.0094 | -0.10412 | -8329.62 | 80.00 |
+| 2 | 0.0016 | -0.01677 | -1341.81 | 80.01 |
+| 3 | 0.0032 | -0.03374 | -2700.09 | 80.02 |
+| 4 | 0.0047 | -0.05088 | -4070.73 | 80.00 |
+| 5 | 0.0063 | -0.06818 | -5455.01 | 80.00 |
+| 6 | 0.0078 | -0.08565 | -6852.12 | 80.00 |
+| 7 | 0.0093 | -0.10328 | -8262.22 | 80.00 |
+| 8 | 0.0108 | -0.12106 | -9684.99 | 80.00 |
 
 ### Verification Chart
 The generated plot `stress_strain.png` displays:
