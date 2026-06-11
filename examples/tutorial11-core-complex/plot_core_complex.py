@@ -36,8 +36,8 @@ def main():
     
     # Read mesh coordinates
     x, z = fl.read_mesh(final_frame)
-    X_km = x / 1e3
-    Z_km = z / 1e3
+    X_km = x
+    Z_km = z
     
     # Read variables
     aps = fl.read_aps(final_frame)
@@ -45,10 +45,9 @@ def main():
     temp = fl.read_temperature(final_frame)
     vx, vz = fl.read_vel(final_frame)
     
-    # Convert velocity to cm/yr
-    # 1 m/s = 100 cm/s * 3.1536e7 s/yr = 3.1536e9 cm/yr
-    vx_cm_yr = vx * 3.1536e9
-    vz_cm_yr = vz * 3.1536e9
+    # Coordinates are already in km, velocities are already in cm/yr
+    vx_cm_yr = vx
+    vz_cm_yr = vz
     
     # Create the final state premium plot
     fig, axes = plt.subplots(2, 1, figsize=(12, 10), sharex=True)
@@ -62,6 +61,7 @@ def main():
     
     # Plot aps
     im1 = ax1.pcolormesh(X_km, Z_km, aps, cmap=cmap_aps, vmin=0.01, vmax=4.0, shading='flat')
+    ax1.plot(X_km[:, 0], Z_km[:, 0], color='black', linewidth=1.5)
     cbar1 = fig.colorbar(im1, ax=ax1, orientation='vertical', pad=0.02, shrink=0.8)
     cbar1.set_label('Accumulated Plastic Strain', fontsize=11, fontweight='bold')
     
@@ -79,7 +79,8 @@ def main():
     ax1.set_title(f'Metamorphic Core Complex: Strain Localization & Exhumation at {time_myr:.2f} Myr', 
                   fontsize=14, fontweight='bold', pad=12)
     ax1.grid(True, linestyle=':', alpha=0.5, color='gray')
-    ax1.set_ylim(-30, 2)
+    ax1.set_ylim(-11, 2)
+    ax1.set_aspect('equal')
     
     # Subplot 2: Lithological Phases & Temperature Structure (Isotherms)
     ax2 = axes[1]
@@ -89,27 +90,32 @@ def main():
     cmap_phase = mcolors.ListedColormap(colors_phase)
     
     im2 = ax2.pcolormesh(X_km, Z_km, phase, cmap=cmap_phase, shading='flat', vmin=0.5, vmax=2.5)
+    ax2.plot(X_km[:, 0], Z_km[:, 0], color='black', linewidth=1.5)
     
     # Legend for phases
     from matplotlib.patches import Patch
     legend_elements = [
-        Patch(facecolor='#e5c494', edgecolor='gray', label='Upper Crust (Phase 1)'),
-        Patch(facecolor='#8da0cb', edgecolor='gray', label='Lower Crust (Phase 2)')
+        Patch(facecolor='#e5c494', edgecolor='gray', label='Center Crust (Phase 1)'),
+        Patch(facecolor='#8da0cb', edgecolor='gray', label='Strong Edge Crust (Phase 2)')
     ]
     ax2.legend(handles=legend_elements, loc='upper right', framealpha=0.9)
     
-    # Overlay temperature isotherms
-    # Compute temperature node coordinates (temp is on nodes, shape (nx, nz))
-    levels = [200, 300, 400, 500, 600, 700]
-    cs = ax2.contour(X_km, Z_km, temp, levels=levels, colors='#e63946', linewidths=1.5, linestyles='--')
-    ax2.clabel(cs, inline=True, fmt='%d°C', fontsize=9, colors='#e63946')
+    # Overlay temperature isotherms if not constant
+    if np.max(temp) - np.min(temp) > 1.0:
+        levels = [200, 300, 400, 500, 600, 700]
+        cs = ax2.contour(X_km, Z_km, temp, levels=levels, colors='#e63946', linewidths=1.5, linestyles='--')
+        ax2.clabel(cs, inline=True, fmt='%d°C', fontsize=9, colors='#e63946')
+    else:
+        ax2.text(0.05, 0.05, f'Temperature: {np.mean(temp):.1f}°C (Uniform)', transform=ax2.transAxes,
+                 color='#e63946', fontweight='bold', bbox=dict(facecolor='white', alpha=0.8, edgecolor='none'))
     
     ax2.set_xlabel('Distance (km)', fontsize=12, fontweight='bold')
     ax2.set_ylabel('Depth (km)', fontsize=12, fontweight='bold')
-    ax2.set_title(f'Crustal Structure & Thermal Geotherm (Isotherms) at {time_myr:.2f} Myr', 
+    ax2.set_title(f'Crustal Structure at {time_myr:.2f} Myr', 
                   fontsize=14, fontweight='bold', pad=12)
     ax2.grid(True, linestyle=':', alpha=0.5, color='gray')
-    ax2.set_ylim(-30, 2)
+    ax2.set_ylim(-11, 2)
+    ax2.set_aspect('equal')
     
     plt.tight_layout()
     plt.savefig('images/core_complex.png', dpi=300)
@@ -127,11 +133,13 @@ def main():
             aps_f = fl.read_aps(f_idx)
             t_f = fl.time[f_idx - 1]
             
-            im = ax.pcolormesh(x_f/1e3, z_f/1e3, aps_f, cmap=cmap_aps, vmin=0.01, vmax=4.0, shading='flat')
+            im = ax.pcolormesh(x_f, z_f, aps_f, cmap=cmap_aps, vmin=0.01, vmax=4.0, shading='flat')
+            ax.plot(x_f[:, 0], z_f[:, 0], color='black', linewidth=1.5)
             ax.set_title(f'Accumulated Plastic Strain at t = {t_f:.2f} Myr', fontsize=12, fontweight='bold')
             ax.set_ylabel('Depth (km)', fontsize=10)
-            ax.set_ylim(-30, 2)
+            ax.set_ylim(-11, 2)
             ax.grid(True, linestyle=':', alpha=0.5)
+            ax.set_aspect('equal')
             
         axes_evo[-1].set_xlabel('Distance (km)', fontsize=11, fontweight='bold')
         fig_evo.colorbar(im, ax=axes_evo.tolist(), orientation='vertical', pad=0.02, shrink=0.6, label='Plastic Strain')
