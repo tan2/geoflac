@@ -57,22 +57,31 @@ The model represents a vertical 2D cross-section of a 10 km thick crustal column
   100.e+3,-10.e+3    rxbo,rzbo (100 km wide, 10 km deep)
   ```
 
-### Two-Layer Phase Distribution
+### Two-Layer Phase Distribution (`nzone_age`)
 We partition the domain into a stiff upper crust and a weak basal detachment:
 * **Upper layer (Phase 1, 0–9 km depth)**: Stiff elastoplastic rock ($c = 20 \text{ MPa}$, $\phi = 30^\circ$).
 * **Basal layer (Phase 2, 9–10 km depth)**: A $1 \text{ km}$ thick weak basal detachment layer ($c = 1 \text{ MPa}$, $\phi = 5^\circ$).
-* **Parsing**: Configured in `convergent_wedge.inp` using `nzone_age` layer boundaries:
+* **`nzone_age` Layer Syntax**: Configured in `convergent_wedge.inp` using column boundaries and layer interface depths:
   ```fortran
   1              - nzone_age
    1, 100., 0, 0, 1, 51
       2, 9.0
       1, 2
   ```
-  This places the interface at $9 \text{ km}$ depth, defining Phase 1 in the upper 18 element rows and Phase 2 in the bottom 2 element rows.
+  Here:
+  * `1` specifies there is 1 horizontal column representing the entire domain (nodes 1 to 51).
+  * `2, 9.0` defines that the column contains 2 layers, with the interface located at $9.0\text{ km}$ depth.
+  * `1, 2` defines the phase IDs from top to bottom (Phase 1 for the upper layer, Phase 2 for the lower layer).
 
-### Gravity and Thermal Settings
-* **Gravity**: Set to $10.0 \text{ m/s}^2$ to balance tectonic push against gravitational loading.
-* **Thermal Geotherm**: Uniform temperature $T = 0^\circ\text{C}$ everywhere (`t_top = 0.0`, `t_bot = 0.0`). This suppresses any temperature-dependent viscous creep, allowing the model to act as a purely mechanical, friction-controlled accretionary sandbox.
+### Gravity and Lithostatic Stress
+* **Gravity Acceleration**: Set to $10.0 \text{ m/s}^2$ (`Gravity` parameter).
+* **Physical Significance**: Non-zero gravity generates a vertical lithostatic stress gradient with depth ($z$):
+  $$\sigma_{zz}^{litho} = -\rho g z$$
+  This lithostatic gradient increases the confining pressure with depth, which increases the Mohr-Coulomb shear yield strength of the rock down-dip.
+
+### Thermal Settings
+* **Thermal Geotherm**: Uniform temperature $T = 0^\circ\text{C}$ everywhere (`t_top = 0.0`, `t_bot = 0.0`).
+* **Initial Thermal Profile**: Linear geotherm between 0°C and 0°C (resulting in a constant 0°C throughout). This suppresses any temperature-dependent viscous creep, allowing the model to act as a purely mechanical, friction-controlled accretionary sandbox.
 
 ---
 
@@ -96,6 +105,7 @@ In GeoFLAC, this is natively achieved by splitting Side 1 into two boundary segm
 ### Other Boundaries
 * **Right Boundary (Side 3, nodes 1 to 21)**: Horizontal velocity $V_x = 0.0$ (`nbc = 10`), acting as a rigid vertical backstop.
 * **Bottom Boundary (Side 2, nodes 1 to 51)**: Vertical velocity $V_z = 0.0$ (`nbc = 01`). Horizontal velocity is free-slip, permitting the basal detachment to slide.
+* **Winkler Foundation / Hydrostatic Pressure Support**: Disabled in this simulation (`nyhydro = 0` on line 58) to enforce a flat, rigid bottom plate, representing a stable lower crust or slab underthrusting.
 
 ---
 
@@ -122,7 +132,7 @@ Clean any old outputs and run the solver in this directory:
 rm -f *.0 *.rs *.vts _contents.* _markers.* pisos.rs time.rs vbc.s output.asc sys.msg
 ../../src/flac convergent_wedge.inp
 ```
-The solver will run to **1.5 Myr** (`1500.0` Kyr) of total convergence, outputting data frames every **0.15 Myr** (`150.0` Kyr). Because it is a purely mechanical elastoplastic grid of $50 \times 20$ elements, it executes extremely fast.
+The solver will run to **0.54 Myr** of total convergence, outputting data frames every **0.06 Myr**. Because it is a purely mechanical elastoplastic grid of $50 \times 20$ elements, it executes extremely fast.
 
 ### Step 2: Plot the Accretionary Wedge
 Run the provided Python plotting script:
@@ -137,7 +147,77 @@ This script reads the binary outputs and generates two premium visualizations:
 
 ---
 
-## 6. Analysis of Results
+## 6. Understanding the Simulation Output (output.asc)
+
+During the simulation, GeoFLAC prints real-time logs to the screen, which are also mirrored in the [output.asc](file:///home/tan2/dv/geoflac/examples/tutorial12-convergent-wedge/output.asc) file. Below is an explanation of these outputs:
+
+### Startup Logs
+* **`you have NEW start conditions`**: Indicates the model is starting a fresh simulation rather than resuming from a checkpoint.
+* **`# of markers ...`**: The total count of Lagrangian markers tracking material phases and properties across the domain.
+
+### Per-Iteration Timestep Logs
+```txt
+        min.angle= 17.67     dt(yr)=  9.309143
+```
+* **`min.angle`**: The minimum internal angle (in degrees) of all sub-triangles in the mesh elements. Because elements deform with the flow, they stretch and shear. If `min.angle` drops below the critical angle set for remeshing (`angle_rem = 5.0`), it triggers a remeshing cycle to regularize the grid.
+* **`dt(yr)`**: The dynamic numerical time step size in years. GeoFLAC dynamically adjusts the time step at each iteration based on stability criteria (e.g., CFL wave speed under mass scaling and Maxwell viscoelastic parameters).
+
+### Periodic Step Summary Logs
+```txt
+      7300's step. Time[My]=  0.100,  elapsed sec-     2.3
+```
+* **`7300's step`**: The current computational loop iteration number.
+* **`Time[My]`**: The cumulative physical model time in millions of years (Myr).
+* **`elapsed sec`**: The total elapsed wall-clock computing time (in seconds) since the solver started.
+
+### Remeshing Trigger Logs
+* **`Remeshing due to angle required.`**: The grid elements have become too sheared (`min.angle` reached the limit), triggering a remeshing cycle.
+* **`Remeshing due to shortening required.`**: The model has experienced horizontal deformation beyond the threshold set by `dx_rem`, triggering grid regularization.
+
+---
+
+## 7. EP Rheological Formulation
+
+In Elasto-Plastic (EP) rheology, deformation is entirely accommodated by elastic strain and plastic yielding. Viscous creep is completely omitted, which is appropriate for low-temperature settings like the $0^\circ\text{C}$ crust in this model.
+
+The total strain rate tensor is decomposed into elastic and plastic components:
+
+$$\dot{\boldsymbol{\epsilon}} = \dot{\boldsymbol{\epsilon}}_e + \dot{\boldsymbol{\epsilon}}_p$$
+
+During each time step, the solver performs the following steps:
+
+### 1. Elastic Stress Trial Increment
+Under Hooke's Law, the new trial stresses $\boldsymbol{\sigma}^{\text{trial}}$ are calculated assuming a purely elastic increment:
+
+$$\sigma_{11}^{\text{trial}} = \sigma_{11} + (de_{22} + de_{33}) e_2 + de_{11} e_1$$
+$$\sigma_{22}^{\text{trial}} = \sigma_{22} + (de_{11} + de_{33}) e_2 + de_{22} e_1$$
+$$\sigma_{33}^{\text{trial}} = \sigma_{33} + (de_{11} + de_{22}) e_2 + de_{33} e_1$$
+$$\sigma_{12}^{\text{trial}} = \sigma_{12} + 2 \mu \, de_{12}$$
+
+Where:
+* $e_1 = K + \frac{4}{3}\mu$ and $e_2 = K - \frac{2}{3}\mu$
+* $K$ is the bulk modulus (`rl(iph) + 2*rm(iph)/3`)
+* $\mu$ is the shear modulus (`rm(iph)`)
+* $de_{ij}$ are the incremental strains over the time step $dt$.
+
+### 2. Mohr-Coulomb Yielding and Plastic Correction
+If the trial stress state violates the Mohr-Coulomb yield criterion or the tension cutoff, the stresses are mapped back to the yield surface:
+
+$$f(\sigma_1, \sigma_3) = \sigma_3 - \sigma_1 N_\phi + 2 c \sqrt{N_\phi} = 0$$
+
+Where:
+* $N_\phi = \frac{1 + \sin\phi}{1 - \sin\phi}$
+* $\phi$ is the friction angle.
+* $c$ is the cohesion (which softens dynamically as a function of the accumulated plastic strain `aps` in Phase 1).
+* $\sigma_1 \ge \sigma_3$ are the principal stresses (tension is positive).
+
+If yielding occurs ($f(\boldsymbol{\sigma}^{\text{trial}}) > 0$), a plastic return mapping is performed:
+1. The solver projects the stress state back to the yield envelope.
+2. The plastic strain increment is accumulated into the Eulerian element's total `aps` array.
+
+---
+
+## 8. Analysis of Results
 
 ### Fault Localization and Thrust Imbricates
 In the upper panel of `convergent_wedge.png`, you will observe that strain localizes into distinct narrow bands of high plastic strain (`aps`). These represent **thrust faults**!
