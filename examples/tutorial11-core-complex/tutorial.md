@@ -32,7 +32,36 @@ This will generate `flac.000001.vts` to `flac.000010.vts` in your current direct
 
 ---
 
-## 2. Physical Background
+## 2. Understanding the Simulation Output (output.asc)
+
+During the simulation, GeoFLAC prints real-time logs to the screen, which are also mirrored in the [output.asc](file:///home/tan2/dv/geoflac/examples/tutorial11-core-complex/output.asc) file. Below is an explanation of these outputs:
+
+### Startup Logs
+* **`you have NEW start conditions`**: Indicates the model is starting a fresh simulation rather than resuming from a checkpoint.
+* **`# of markers 11610`**: The total count of Lagrangian markers tracking material phases and properties across the domain.
+
+### Per-Iteration Timestep Logs
+```txt
+        min.angle= 17.67     dt(yr)=  9.309143
+```
+* **`min.angle`**: The minimum internal angle (in degrees) of all sub-triangles in the mesh elements. Because elements deform with the flow, they stretch and shear. If `min.angle` drops below the critical angle set for remeshing (`angle_rem = 5.0`), it triggers a remeshing cycle to regularize the grid.
+* **`dt(yr)`**: The dynamic numerical time step size in years. GeoFLAC dynamically adjusts the time step at each iteration based on stability criteria (e.g., CFL wave speed under mass scaling and Maxwell viscoelastic parameters).
+
+### Periodic Step Summary Logs
+```txt
+      7300's step. Time[My]=  0.100,  elapsed sec-     2.3
+```
+* **`7300's step`**: The current computational loop iteration number.
+* **`Time[My]`**: The cumulative physical model time in millions of years (Myr).
+* **`elapsed sec`**: The total elapsed wall-clock computing time (in seconds) since the solver started.
+
+### Remeshing Trigger Logs
+* **`Remeshing due to angle required.`**: The grid elements have become too sheared (`min.angle` reached the limit), triggering a remeshing cycle.
+* **`Remeshing due to shortening required.`**: The model has experienced horizontal deformation beyond the threshold set by `dx_rem`, triggering grid regularization.
+
+---
+
+## 3. Physical Background
 
 A **Metamorphic Core Complex (MCC)** is a tectonic feature formed during high-magnitude crustal extension, characterized by the exhumation of middle-to-deep crustal rocks through a low-angle detachment fault system.
 
@@ -54,7 +83,7 @@ This tutorial explores a simplified, end-member physical configuration:
 
 ---
 
-## 3. Model Setup
+## 4. Model Setup
 
 ### Geometry and Mesh
 * **Dimensions**: $100 \text{ km}$ wide ($X \in [0, 100] \text{ km}$), $10 \text{ km}$ deep ($Z \in [-10, 0] \text{ km}$).
@@ -116,7 +145,7 @@ GeoFLAC allows dividing the model domain horizontally into multiple columns (zon
 
 ---
 
-## 4. Boundary Conditions
+## 5. Boundary Conditions
 
 The model is extended horizontally by applying constant velocities on the left and right boundaries:
 
@@ -138,7 +167,7 @@ The model is extended horizontally by applying constant velocities on the left a
 
 ---
 
-## 5. Initial Inhomogeneities
+## 6. Initial Inhomogeneities
 
 In GeoFLAC, initial inhomogeneities can be configured to modify the phase distribution, temperature, topography, or initial accumulated plastic strain (strength weakening).
 
@@ -181,7 +210,7 @@ To localize strain and nucleate a major detachment fault in the center of the do
 
 ---
 
-## 6. EP Rheological Formulation
+## 7. EP Rheological Formulation
 
 In Elasto-Plastic (EP) rheology, deformation is entirely accommodated by elastic strain and plastic yielding. Viscous creep is completely omitted, which is appropriate for low-temperature settings like the $10^\circ\text{C}$ crust in this model.
 
@@ -222,7 +251,7 @@ If yielding occurs ($f(\boldsymbol{\sigma}^{\text{trial}}) > 0$), a plastic retu
 
 ---
 
-## 7. Analysis of Results
+## 8. Analysis of Results
 
 ### Slant Fault Propagation
 In the upper panel of `images/core_complex.png`, you will observe that strain localizes into a sharp, narrow shear band (detachment fault) that propagates diagonally from the **slant weak seed** at depth up to the surface.
