@@ -112,7 +112,7 @@ do kk = 1 , nmarkers
                 exit
             endif
         enddo
-    case (kocean0, kocean1, kocean2)
+    case (koceandry, kocean1, kocean2)
         ! basalt -> eclogite
         ! phase change pressure
         ! Phase Diagram taken from Hacker, JGR, 2003 (Figure 8 or Figure 1)
@@ -264,7 +264,7 @@ if (itype_melting == 1) then
             ! basalt and eclogite rock melting
             ! solidus from Gutscher, 2000 Geology
             total_phase_ratio = phase_ratio(kocean1,j,i) + phase_ratio(kocean2,j,i) &
-                                + phase_ratio(kocean0,j,i) + phase_ratio(keclg,j,i)
+                                + phase_ratio(koceandry,j,i) + phase_ratio(keclg,j,i)
             if (total_phase_ratio > 0.6d0 .and. cord(j,i,2) > -max_melting_depth) then
                 tmpr = 0.25d0 * (temp(j,i)+temp(j,i+1)+temp(j+1,i)+temp(j+1,i+1))
 

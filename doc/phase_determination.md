@@ -99,7 +99,7 @@ When subducting oceanic crust releases fluids, it hydrates the overlying mantle 
 *   **Dehydration Transition (`kserp` $\rightarrow$ `khydmant`)**:
     *   Occurs if serpentinite is subducted beyond its pressure/temperature stability boundaries, dehydrating back into a hydrated mantle phase.
 
-### 4.2. Basalt-to-Eclogite Transition (`kocean0`/`1`/`2` $\rightarrow$ `keclg`)
+### 4.2. Basalt-to-Eclogite Transition (`koceandry`/`kocean1`/`kocean2` $\rightarrow$ `keclg`)
 Oceanic basalt transitions to dense eclogite at depth:
 *   Uses a parameterized stability boundary derived from *Hacker (JGR, 2003)*:
     $$P_{\text{transition}} = f(T)$$
