@@ -10,30 +10,30 @@
 ;==================================================================
 ;             M e s h    P a r a m e t e r s 
 ;==================================================================
-86,15             number of _elements_ in X and Z directions: (nx-1),(nz-1)
-0.e+3,0.           x0,z0 begin.coord
-100.e+3,-10.e+3    rxbo,rzbo (size of the region, rxbo > 0, rzbo < 0)
+86,15
+0.0,0.0
+100000.0,-10000.0
 ;
-0, points.xy    ircoord, coordfile: read init. coordinates from the file
+0, points.xy
 ;
 ; X direction
-5     Number zones X-direction (0 for regular grid, or odd#)
+5
 ; nelem_per_zone    size (relative)
- 15  4
-  8  0
- 40  1
-  8  0
- 15  4
+ 15  4.0
+ 8  0.0
+ 40  1.0
+ 8  0.0
+ 15  4.0
 ;
 ; Z direction
-0                Number zones Z-direction (0 - regular grid)
+0
 ; 
 ;===================================================================
 ;        C o n d i t i o n s:  M e c h a n i c a l
 ;===================================================================
 ; nystressbc, nydrsides
 ; Stress boundary conditions (0:no,1:yes), lithostatic stress bc on the sides (0/1)
-0  0 
+0  0
 ; nofbc: Number of boundary conditions
 2
 ;----------------------------------------------------------------
@@ -54,45 +54,45 @@
 ;where x is undimensional. i.e. x = (x - x(na1)) / (x(na2) - x(na1))
 ;-------------------------------------------------------------------------------
 ;nofside  nbc1 nbc2  nbc   a       b    c     d     e     f      g     h     i 
-1         1    16    10   -1.58438e-10  0.   0.    0.    0.    0.     0.    0.    0.
-3         1    16    10    1.58438e-10  0.   0.    0.    0.    0.     0.    0.    0.
+1  1  16  10  -1.58438e-10  0  0  0  0  0  0  0  0
+3  1  16  10  1.58438e-10  0  0  0  0  0  0  0  0
 ;
 ; Hydrostatic pressure  applied at the bottom (on the depth of rzbo and TOP!!)
 ; {y,n(1,0),auto(2)}, Pressure at compens.depth, substratum phase, addit. dens. diff, damp_vis
-2                   0.                       2            0.            0.e+7
+2  0.0  2  0.0  0.0
 ;
 ; Gravity
-10.
+10.0
 ;=============================================================
 ;            C o n d i t i o n s : T h e r m a l
 ;=============================================================
-0       -iprestress: allow topo build up by isostasy for 600 kyrs
-0.e9    -extra pressure (GPa)
-1        - itherm  (1-mech+therm, 2-no mech)
-0        - istress_therm: Add THERMAL STRESSES (0,1,2-just 1 step)
-0        - ishearh: Add SHEAR heating
-10.0      - t_top (Surface temperature in Celsius). Boundary AND initial condition.
-10.0      - t_bot (Bottom temperature in Celsius). ONLY initial condition.
+0
+0.0
+1
+0
+0
+10.0
+10.0
 ;
 ; Radiogenic heating
-0.e-9, 10.
+0.0, 10.0
 ;
 ; Bottom Boundary conditions flag and value (1- temperature, 2- heat flux in mW/m2 ) 
-1 10. 
+1 10.0
 ;
 ;
 ; Predefined distributions
-0              irtemp (0,1) (read temperature file or not)
-proftemp.dat   temperature profile dat.file
-3              - nzone_age
+0
+proftemp.dat
+3
  21, 10.0, 0.0, 0.0, 1, 16
-    1
+    1, 
     2
  21, 10.0, 0.0, 0.0, 16, 72
-    1
+    1, 
     1
  21, 10.0, 0.0, 0.0, 72, 87
-    1
+    1, 
     2
 ;
 ;===================================================================
@@ -104,17 +104,17 @@ proftemp.dat   temperature profile dat.file
 ;11- visco-elasto-plastic (Mohr-Coulomb,Fixed Maxwell,Newtonian) with softening
 ;12- visco-elasto-plastic (Mohr-Coulomb,Maxwell,Non-Newtonian) with softening
 ;
-2  Number of Different Rheologies (<20)
+2
 ;
 ;irheol,_,den, alfa,  beta,    n,       A,       E,    V,    Lame:rl, Lame:rm,pls1,pls2,fric1,fric2, coh1, coh2,dilat1,dilat2,cond,    cp,     Ts,     Tl,     Tk, fk
 ;(1) Brittle Upper Crust - EP with strain-softening
-6, 1., 2700., 3.0e-5, 0.0, 3.0, 1.25e-1, 2.76e+5, 0.0, 3.0e+10, 3.0e+10, 0.0, 0.1, 30.0, 30.0, 4.4e+7, 0.4e+7, 0, 0, 3.3, 1000., 1300., 1600., 1600., 1.
+6, 1, 2700, 3e-05, 0, 3, 0.125, 276000, 0, 3e+10, 3e+10, 0, 0.1, 30, 30, 4.4e+07, 4e+06, 0, 0, 3.3, 1000, 1300, 1600, 1600, 1
 ;(2) Stronger Edge Crust - EP, higher constant strength
-6, 1., 2700., 3.0e-5, 0.0, 3.0, 1.25e-1, 2.76e+5, 0.0, 3.0e+10, 3.0e+10, 0.0, 0.1, 40.0, 40.0, 6.0e+7, 6.0e+7, 0, 0, 3.3, 1000., 1300., 1600., 1600., 1.
+6, 1, 2700, 3e-05, 0, 3, 0.125, 276000, 0, 3e+10, 3e+10, 0, 0.1, 40, 40, 6e+07, 6e+07, 0, 0, 3.3, 1000, 1300, 1600, 1600, 1
 ;
 ; INITIAL PHASE DISTRIBUTION
-0              ; irphase (0,1) read a distribution of phases
-phasedat.inp   ; file with distribution of phase on the 2D grid (phasedat)
+0; irphase (0,1) read a distribution of phases
+phasedat.inp; file with distribution of phase on the 2D grid (phasedat)
 ; Initial heterogeneities
 ;
 ; Weak zone geometries:
@@ -131,58 +131,58 @@ phasedat.inp   ; file with distribution of phase on the 2D grid (phasedat)
 ; 21- trapzoidal, surface nodes linearly increase ix1-ix2, flat ix2-iy1,
 ;     decrease iy1-iy2, max. elevated by amp
 ;
-1  - inhom(number of inhomogenities)
+1
 ; ix1   ix2   iy1   iy2   phase   geometry    init.pl.strain (amp)
-  40    45    11     6     -1       4          1.0
+  40  45  11  6  -1  4  1
 ;
 ; Tension cut off
-1.e+9
+1000000000.0
 ;
 ; linear healing parameter
 0.0
 ;
 ; VISCOSITY LIMIT
 ;vis_min (MINIMUM VISCOSITY) vis_max     ivis_shape,   efoldc
-1.0e+20,                     3.e+27,         2,         500.
+1e+20, 3e+27, 2, 500.0
 ;
 ;Magma:
 ; itype_melting, nelem_serp, nelem_dike, prod_magma, rho_magma
-0,               2,          1,          2e-15,      2700
+0, 2, 1, 2e-15, 2700.0
 ; angle_mzone, fmagma_max, ratio_mantle_mzone
-30,            0.1,        0.1
+30.0, 0.1, 0.1
 ; latent_heat_magma, lambda_freeze, lambda_freeze_tdep
-4.2e5,               1e-13,         2e-3
+420000.0, 1e-13, 0.002
 ; weaken_ratio_plastic, weaken_ratio_viscous
-1.0,                    1.0
+1.0, 1.0
 ;
 ;=================================================================
 ;                       R e m e s h i n g
 ;=================================================================
 ;ny_rem (0,1), mode_rem(1, 3 or 11),  ntest_rem,  angle_rem(degrees,when magmainj le 10)
-1            3               100         5.
+1  3  100  5.0
 ;
 ; dx_rem (if mode_rem=11 defines critical shortening for remeshing in dx-units)
 1.3
 ;
 ; Diffusion of topography(1) and amplification factor for high elevation
 ; topo_removal_rate     fac_kappa
-1.0e-7	                     0.
+1e-07  0.0
 ;
 ;=================================================================
 ;                   P r o c e s s   c o n t r o l
 ;=================================================================
 ; Inertial Mass Scaling (idt_scale):
-2         0-no scale for DYNAMICS,1-scale for STATICS, 2-Automatic scaling
-1,5.e-4  dt_scale (used if scale =1), tolerance=Vbc/Vsound (if scale=2)
-1,5   Buoyancy + Reynolds (no-0,yes-1), Reynolds number
-1       frequency of re-evaluation of real masses
-1       frequency of re-evaluation of inertial masses
-1       Freq. re-evaluation Non-Newtonian VISC (rheol.eq.12)
-1       Freq. averaging strain rate and dissipation
+2
+1.0,0.0005
+1,5.0
+1
+1
+1
+1
 ;
-0.45,0.5        frac_elastic,frac_maxwell
-1,2                 movegrid (0-no,1-yes,2-move under strain_rate), ndim (num.dim.)
-0.8,1,1             damping, Mixing Procedures:mix1, mix2 (0,1),(strain,stress)
+0.45,0.5
+1,2
+0.8,1,1
 ;
 ;======================================================================
 ;                             O U T P U T
@@ -190,23 +190,23 @@ phasedat.inp   ; file with distribution of phase on the 2D grid (phasedat)
 ; Time parameters below are in thousands years
 ;
 ; Max time of calculations (in Kyr)
-1000.
+1000.0
 ;
 ; Time interval for screen output of calc. progress (in Kyr)
-100.
+100.0
 ;
 ; Time interval for file output (in Kyr)
-100.
+100.0
 ;
 ; Variables to print
 ; vel srII eII aps sII sxx szz sxz pres temp phase visc unused dens src diss forc hfl topo
-  1   1    1   1   1   1   1   1   1    1    1     1    1      1    1   1    1    1   1
+  1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1
 ;
 ; output for last step only (1) or each nout step (0)
 0
 ;
 ; Time interval for process saving
-1000 - nsave (frequency of saving)
+1000.0
 ;
 ; saving the last step only (1) or each nsave step (0)
 1
