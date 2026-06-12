@@ -98,7 +98,7 @@ In GeoFLAC, this is achieved by a single boundary condition segment on Side 1:
    `1  1  21  10  3.1688e-10  0  0  0  0  0  0  0  0`
 
 > [!NOTE]
-> Previously, the boundary condition was split into two segments (a constant velocity in the top 9 km and a piece-wise linear velocity gradient in the bottom 1 km decreasing to 0 at the base) to avoid stress concentration at the bottom-left corner. Those lines are now commented out in `convergent_wedge.inp` but remain documented:
+> Previously, the boundary condition was split into two segments (a constant velocity in the top 9 km and a piece-wise linear velocity gradient in the bottom 1 km decreasing to 0 at the base) to avoid stress concentration at the bottom-left corner. Those configuration lines were:
 > * `1  1  19  10  3.1688e-10  0  0  0  0  0  0  0  0`
 > * `1  19  21  10  3.1688e-10  -3.1688e-10  0  0  0  0  0  0  0`
 
