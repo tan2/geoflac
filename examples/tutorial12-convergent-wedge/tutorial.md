@@ -11,19 +11,20 @@ A **convergent wedge** (also known as an accretionary prism or fold-and-thrust b
 The structural geometry and evolution of convergent wedges are governed by **Critical Taper Theory** (Chapple, 1978; Davis, Suppe, & Dahlen, 1983). A wedge is considered "critical" when it is at the verge of sliding along its basal detachment and yielding internally everywhere due to shear failure.
 
 ```
-                  Wedge Topographic Slope (alpha)
-                           /
-                          v             +---- Rigid Backstop
-                       .·`|             |
-                   .·`    |             v
-  Vx (<-)      .·`        |             |   /|
-    \      .·`            |             |  / |
-     v .·` Accretionary   |             | /  |
-  ====+  Wedge (Phase 1)  |             |/   |
-  ===========================================+  <-- Basal Detachment (Phase 2)
-  -------------------------------------------+  <-- Base (fixed vertical, free-slip)
-      \_________________________________/
-             Basal Slope (beta)
+               +---- Rigid Backstop
+               |
+               v                                   Wedge Topographic Slope (alpha)
+               |\      |    `·.                                     \
+               | \     |        `·.                                  v
+               |  \    |            `·.                   (<-) Vx
+               |   \   |                `·.                    /
+               |    \  |                    `·.               v
+               |     \ |                        `·. Accretionary
+               +-------+============================+ Wedge (Phase 1)
++============================================================+  <-- Basal Detachment (Phase 2)
++------------------------------------------------------------+  <-- Base (fixed vertical, free-slip)
+                       \_________________________________/
+                              Basal Slope (beta)
 ```
 
 The critical taper angle ($\alpha + \beta$, where $\alpha$ is the topographic slope and $\beta$ is the basal dip) is a balance between the tectonic push and gravitational collapse, mathematically described as:
