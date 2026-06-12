@@ -571,7 +571,10 @@ def write_new_inp(data, comments_map, final_comments, filename):
                 trailing_text = trailing
                 if date < D_2026_06_12:
                     trailing_text = remap_comment_text(trailing_text)
-                f.write(f"{content_str}{trailing_text}\n")
+                if trailing_text and not trailing_text[0].isspace():
+                    f.write(f"{content_str}  {trailing_text}\n")
+                else:
+                    f.write(f"{content_str}{trailing_text}\n")
             else:
                 # Fallback to default
                 if default_preceding:
@@ -580,7 +583,10 @@ def write_new_inp(data, comments_map, final_comments, filename):
                             f.write('\n')
                         else:
                             f.write(line + '\n')
-                f.write(f"{content_str}{default_trailing or ''}\n")
+                if default_trailing and not default_trailing[0].isspace():
+                    f.write(f"{content_str}  {default_trailing}\n")
+                else:
+                    f.write(f"{content_str}{default_trailing or ''}\n")
 
         # 1. Mesh
         write_line('nex_nez', f"{data['nex']},{data['nez']}", 

@@ -141,8 +141,8 @@ proftemp.dat
 12, 1, 3200, 3e-05, 0, 3, 70000, 520000, 0, 3e+10, 3e+10, 0, 0.1, 30, 15, 4e+07, 4e+06, 0, 0, 3.3, 1000, 700, 16000, 16000, 1
 ;
 ; INITIAL PHASE DISTRIBUTION
-0; irphase (0,1) read a distribution of phases
-phasedat.inp; file with distribution of phase on the 2D grid (phasedat)
+0  ; irphase (0,1) read a distribution of phases
+phasedat.inp  ; file with distribution of phase on the 2D grid (phasedat)
 ; Initial heterogeneities
 ;
 ; Weak zone geometries:
@@ -223,7 +223,7 @@ phasedat.inp; file with distribution of phase on the 2D grid (phasedat)
 ; Time parameters below are in thousands years
 ;
 ; Max time of calculations (in Kyr)
-0.04;  24 Myrs
+0.04  ;  24 Myrs
 ;
 ; Time interval for screen output of calc. progress (in Kyr)
 0.002

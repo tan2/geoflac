@@ -113,8 +113,8 @@ proftemp.dat
 6, 1, 2700, 3e-05, 0, 3, 0.125, 276000, 0, 3e+10, 3e+10, 0, 0.1, 40, 40, 6e+07, 6e+07, 0, 0, 3.3, 1000, 1300, 1600, 1600, 1
 ;
 ; INITIAL PHASE DISTRIBUTION
-0; irphase (0,1) read a distribution of phases
-phasedat.inp; file with distribution of phase on the 2D grid (phasedat)
+0  ; irphase (0,1) read a distribution of phases
+phasedat.inp  ; file with distribution of phase on the 2D grid (phasedat)
 ; Initial heterogeneities
 ;
 ; Weak zone geometries:
