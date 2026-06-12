@@ -160,7 +160,7 @@ if( topo_kappa .gt. 0.d0 ) then
     ! !$ACC parallel loop async(1)
     ! do i = 1, nx-1
     !     ! higher erosion for sediments above mean topo
-    !     if (iphase(1,i) == ksed2 .and. cord(1,i,2) > topomean) stmpn(i) = stmpn(i) * 10
+    !     if (iphase(1,i) == ksed1 .and. cord(1,i,2) > topomean) stmpn(i) = stmpn(i) * 10
     ! enddo
 
 
@@ -313,7 +313,7 @@ subroutine resurface
       if (chgtopo * kinc >= elz .and. kinc .ne. max_markers_per_elem) then
             ! sedimentation, add a sediment marker
             !write(6,*) 'sediment', i, chgtopo, elz
-            call add_marker_at_top(i, 0.1d0, time, nloop, ksed2)
+            call add_marker_at_top(i, 0.1d0, time, nloop, ksed1)
 
             dhacc(i) = 0
             ichanged = 1

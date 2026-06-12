@@ -71,7 +71,7 @@ do kk = 1 , nmarkers
         !    if(phase_ratio(kocean1,jbelow,i) > 0.8d0 .or. &
         !         phase_ratio(kocean2,jbelow,i) > 0.8d0 .or. &
         !         phase_ratio(karc1,jbelow,i) > 0.8d0 .or. &
-        !         phase_ratio(ksed1,jbelow,i) > 0.8d0) then
+        !         phase_ratio(ksed2,jbelow,i) > 0.8d0) then
         !        !$ACC atomic write
         !        !$OMP atomic write
         !        itmp(j,i) = 1
@@ -104,7 +104,7 @@ do kk = 1 , nmarkers
         do jbelow = min(j+1,nz-1), min(j+nelem_serp,nz-1)
             if(phase_ratio(kocean1,jbelow,i) > 0.8d0 .or. &
                 phase_ratio(kocean2,jbelow,i) > 0.8d0 .or. &
-                phase_ratio(ksed1,jbelow,i) > 0.8d0) then
+                phase_ratio(ksed2,jbelow,i) > 0.8d0) then
                 !$ACC atomic write
                 !$OMP atomic write
                 itmp(j,i) = 1
@@ -138,14 +138,14 @@ do kk = 1 , nmarkers
         !$OMP atomic write
         itmp(j,i) = 1
         mark_phase(kk) = kmant1
-    case (ksed2)
+    case (ksed1)
         ! compaction, uncosolidated sediment -> sedimentary rock
         if (tmpr < 80d0 .or. depth < 2d3) cycle
         !$ACC atomic write
         !$OMP atomic write
         itmp(j,i) = 1
-        mark_phase(kk) = ksed1
-    case (ksed1)
+        mark_phase(kk) = ksed2
+    case (ksed2)
         ! sedimentary rock -> metamorphic sedimentary rock
         if (tmpr < 250d0 .and. depth < 7d3) cycle
         !$ACC atomic write
@@ -228,7 +228,7 @@ if (itype_melting == 1) then
                     ! fraction of partial melting (enthalpy formulation)
                     ! F = cp * (T - T_solidus) / L_fusion, capped at 10%
                     if (latent_heat_magma > 0.d0) then
-                        pmelt = min(cp(ksed1) * (tmpr - solidus) / latent_heat_magma, 0.1d0)
+                        pmelt = min(cp(ksed2) * (tmpr - solidus) / latent_heat_magma, 0.1d0)
                     else
                         pmelt = min((tmpr - solidus) / 50.d0 * 0.1d0, 0.1d0)
                     endif
