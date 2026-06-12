@@ -29,7 +29,7 @@
 ; Stress boundary conditions (0:no,1:yes), lithostatic stress bc on the sides (0/1)
 0  0
 ; nofbc: Number of boundary conditions
-4
+3
 ;----------------------------------------------------------------
 ;nofside       1-left,2-bottom,3-right,4-top
 ;nbc1,nbc2     range of application of boundary condition
@@ -48,10 +48,11 @@
 ;where x is undimensional. i.e. x = (x - x(na1)) / (x(na2) - x(na1))
 ;-------------------------------------------------------------------------------
 ;nofside  nbc1 nbc2  nbc   a       b    c     d     e     f      g     h     i 
-1  1  19  10  3.1688e-10  0  0  0  0  0  0  0  0
-1  19  21  10  3.1688e-10  -3.1688e-10  0  0  0  0  0  0  0
+1  1  21  10  3.1688e-10  0  0  0  0  0  0  0  0
 3  1  21  10  0  0  0  0  0  0  0  0  0
 2  1  51  1  0  0  0  0  0  0  0  0  0
+;1  1  19  10  3.1688e-10  0  0  0  0  0  0  0  0
+;1  19  21  10  3.1688e-10  -3.1688e-10  0  0  0  0  0  0  0
 ;
 ; Hydrostatic pressure applied at bottom (disabled to enforce rigid base)
 ; {y,n(1,0),auto(2)}, Pressure at compens.depth, substratum phase, addit. dens. diff, damp_vis
@@ -158,13 +159,13 @@ phasedat.inp  ; file with distribution of phase on the 2D grid
 ; Time parameters below are in thousands years
 ;
 ; Max time of calculations (in Kyr)
-600.0
+1500.0
 ;
 ; Time interval for screen output of calc. progress (in Kyr)
-60.0
+50.0
 ;
 ; Time interval for file output (in Kyr)
-60.0
+50.0
 ;
 ; Variables to print
 ; vel srII eII aps sII sxx szz sxz pres temp phase visc unused dens src diss forc hfl topo

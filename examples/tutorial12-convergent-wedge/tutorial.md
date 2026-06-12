@@ -89,18 +89,17 @@ We partition the domain into a stiff upper crust and a weak basal detachment:
 
 The mechanical boundary conditions compress the column horizontally and allow easy basal sliding:
 
-### Left Boundary (Side 1) - Piece-wise Linear Shear Inflow
-We apply compression from the left boundary. To avoid numerical stress concentrations at the bottom corner and model a realistic shear zone in the basal detachment:
-* **Top 9 km (nodes 1 to 19)**: Constant horizontal velocity $V_x = 1.0 \text{ cm/yr} \approx 3.1688 \times 10^{-10} \text{ m/s}$.
-* **Bottom 1 km weak layer (nodes 19 to 21)**: Horizontal velocity decreases linearly from $V_x = 1.0 \text{ cm/yr}$ at the top of the layer to $V_x = 0$ at the bottom boundary ($V_x = z \times 1 \text{ cm/km/yr}$, where $z$ is distance from bottom).
+### Left Boundary (Side 1) - Constant Inflow
+We apply a uniform horizontal compression from the left boundary across all nodes (nodes 1 to 21) with a constant velocity $V_x = 1.0 \text{ cm/yr} \approx 3.1688 \times 10^{-10} \text{ m/s}$.
 
-In GeoFLAC, this is natively achieved by splitting Side 1 into two boundary segments:
-1. **BC 1 (nodes 1 to 19)**: Constant function ($a = 3.1688\times 10^{-10}$):
-   `1         1    19    10    3.1688e-10  0.   0.    0.    0.    0.     0.    0.    0.`
-2. **BC 2 (nodes 19 to 21)**: Linear function ($a = 3.1688\times 10^{-10}$, $b = -3.1688\times 10^{-10}$):
-   `1         19   21    10    3.1688e-10 -3.1688e-10 0. 0.   0.    0.     0.    0.    0.`
-   *Here, $x$ is non-dimensionalized along the segment from 0 (at node 19) to 1 (at node 21), yielding a perfect linear gradient:*
-   $$V_x(x) = 3.1688 \times 10^{-10} \times (1 - x) \text{ m/s}$$
+In GeoFLAC, this is achieved by a single boundary condition segment on Side 1:
+1. **BC 1 (nodes 1 to 21)**: Constant function ($a = 3.1688\times 10^{-10}$):
+   `1  1  21  10  3.1688e-10  0  0  0  0  0  0  0  0`
+
+> [!NOTE]
+> Previously, the boundary condition was split into two segments (a constant velocity in the top 9 km and a piece-wise linear velocity gradient in the bottom 1 km decreasing to 0 at the base) to avoid stress concentration at the bottom-left corner. Those lines are now commented out in `convergent_wedge.inp` but remain documented:
+> * `1  1  19  10  3.1688e-10  0  0  0  0  0  0  0  0`
+> * `1  19  21  10  3.1688e-10  -3.1688e-10  0  0  0  0  0  0  0`
 
 ### Other Boundaries
 * **Right Boundary (Side 3, nodes 1 to 21)**: Horizontal velocity $V_x = 0.0$ (`nbc = 10`), acting as a rigid vertical backstop.
@@ -132,7 +131,7 @@ Clean any old outputs and run the solver in this directory:
 rm -f *.0 *.rs *.vts _contents.* _markers.* pisos.rs time.rs vbc.s output.asc sys.msg
 ../../src/flac convergent_wedge.inp
 ```
-The solver will run to **0.54 Myr** of total convergence, outputting data frames every **0.06 Myr**. Because it is a purely mechanical elastoplastic grid of $50 \times 20$ elements, it executes extremely fast.
+The solver will run to **1.5 Myr** of total convergence, outputting data frames every **0.05 Myr**. Because it is a purely mechanical elastoplastic grid of $50 \times 20$ elements, it executes extremely fast.
 
 ### Step 2: Plot the Accretionary Wedge
 Run the provided Python plotting script:
