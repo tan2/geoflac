@@ -12,6 +12,7 @@ D_2023_02_01 = datetime(2023, 2, 1)
 D_2023_02_04 = datetime(2023, 2, 4)
 D_2025_10_17 = datetime(2025, 10, 17)
 D_2026_05_27 = datetime(2026, 5, 27)
+D_2026_06_12 = datetime(2026, 6, 12)
 
 def parse_date(date_str):
     for fmt in ('%Y-%m-%d', '%Y/%m/%d', '%Y%m%d'):
@@ -454,6 +455,39 @@ def parse_inp(lines, date):
     lastout = int(get_tokens()[0])
     dtsave_file = float(get_tokens()[0])
     lastsave = int(get_tokens()[0])
+
+    # Phase mapping for updates before 2026-06-12:
+    # koceandry was 1, ksed1 was 10, ksed2 was 11.
+    # Now koceandry is 10, ksed1 is 1, ksed2 is 11.
+    if date < D_2026_06_12:
+        def remap(ph):
+            if ph == 1:
+                return 10
+            elif ph == 10:
+                return 11
+            elif ph == 11:
+                return 1
+            return ph
+
+        iphsub = remap(iphsub)
+
+        new_zones_age = []
+        for ictherm, age_1, tp1, tp2, nph_layer, hcs, iphs, ixtb1, ixtb2 in zones_age:
+            new_iphs = [remap(iph) for iph in iphs]
+            new_zones_age.append((ictherm, age_1, tp1, tp2, nph_layer, hcs, new_iphs, ixtb1, ixtb2))
+        zones_age = new_zones_age
+
+        if len(phases) >= 11:
+            new_phases = list(phases)
+            new_phases[9] = phases[0]
+            new_phases[10] = phases[9]
+            new_phases[0] = phases[10]
+            phases = new_phases
+
+        new_inhoms = []
+        for ix1_i, ix2_i, iy1_i, iy2_i, inphase_i, igeom_i, amp in inhoms:
+            new_inhoms.append((ix1_i, ix2_i, iy1_i, iy2_i, remap(inphase_i), igeom_i, amp))
+        inhoms = new_inhoms
 
     return {
         'nex': nex, 'nez': nez, 'x0': x0, 'z0': z0, 'rxbo': rxbo, 'rzbo': rzbo,
