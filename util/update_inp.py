@@ -544,7 +544,7 @@ def write_new_inp(data, comments_map, final_comments, filename):
         date = data['date']
         
         def remap_comment_text(comment):
-            if not comment:
+            if not comment or data['nphase'] < 11:
                 return comment
             # Swap (1) -> (10), (10) -> (11), (11) -> (1)
             comment = comment.replace('(1)', '__T1__')
@@ -691,7 +691,7 @@ def write_new_inp(data, comments_map, final_comments, filename):
             line_str = ", ".join(f"{v:g}" if isinstance(v, float) else str(v) for v in p)
             
             comment_key = f'phase_{idx}'
-            if date < D_2026_06_12:
+            if date < D_2026_06_12 and data['nphase'] >= 11:
                 if idx == 0:
                     comment_key = 'phase_10'
                 elif idx == 9:
