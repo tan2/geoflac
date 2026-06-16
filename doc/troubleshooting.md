@@ -166,7 +166,7 @@ These errors relate to solver invocation, environment setup, or unsupported conf
 
 ### Solver Hangs or Takes Too Long
 * **Cause:** The grid size is very large (e.g. 500x200), and the solver is running on a single CPU core.
-* **Resolution:** Ensure OpenMP is enabled by setting `OMP_NUM_THREADS` in your shell to use all available cores:
+* **Resolution:** Ensure OpenMP is enabled by setting `OMP_NUM_THREADS` in your shell to use 15 cores:
   ```bash
-  export OMP_NUM_THREADS=$(nproc)
+  export OMP_NUM_THREADS=15
   ```

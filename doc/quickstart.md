@@ -33,7 +33,7 @@ We provide a standard **Ocean-Ocean Subduction** model under the `examples/` dir
    ```
 3. Set the number of threads for parallel execution (OpenMP):
    ```bash
-   export OMP_NUM_THREADS=$(nproc)
+   export OMP_NUM_THREADS=15
    ```
 4. Run the subduction simulation using the input file:
    ```bash

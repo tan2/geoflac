@@ -107,9 +107,9 @@ As the slab subducts deep into the mantle, elements around the subduction interf
 ## 7. Running the Simulation and Plotting
 
 ### Step 1: Run the Solver
-Because the 24 Myr subduction simulation is computationally heavy ($\sim 4.8$ million steps), we can run a short validation case of **1.0 Myr** by editing `time-max` or running the input file as is:
+Because the 24 Myr subduction simulation is computationally heavy ($\sim 4.8$ million steps), we run a short validation case of **5.0 Myr**:
 ```bash
-export OMP_NUM_THREADS=$(nproc)
+export OMP_NUM_THREADS=15
 ../../src/flac subduction.inp
 ```
 The solver will output binary files (e.g. `phase.0`, `temp.0`, `fmagma.0`, `vel.0`) every 200 kyrs.
