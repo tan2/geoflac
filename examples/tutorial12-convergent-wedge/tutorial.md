@@ -104,8 +104,10 @@ In GeoFLAC, this is achieved by a single boundary condition segment on Side 1:
 
 ### Other Boundaries
 * **Right Boundary (Side 3, nodes 1 to 21)**: Horizontal velocity $V_x = 0.0$ (`nbc = 10`), acting as a rigid vertical backstop.
-* **Bottom Boundary (Side 2, nodes 1 to 51)**: Vertical velocity $V_z = 0.0$ (`nbc = 01`). Horizontal velocity is free-slip, permitting the basal detachment to slide.
-* **Winkler Foundation / Hydrostatic Pressure Support**: Disabled in this simulation (`nyhydro = 0` on line 58) to enforce a flat, rigid bottom plate, representing a stable lower crust or slab underthrusting.
+* **Bottom Boundary (Side 2, nodes 1 to 51)**: Flexural boundary condition (`nbc = 200`), representing a deforming thin elastic plate that supports the wedge weight. It solves the elastic plate deflection equation dynamically under vertical load.
+  * **Effective Elastic Thickness ($T_e$)**: Set to $10 \text{ km}$ (`bca = 10000.0` meters).
+  * **Mantle/Asthenosphere Density ($\rho_m$)**: Set to $3300 \text{ kg/m}^3$ (`bcb = 3300.0`).
+  * Horizontal velocity is free-slip, permitting the basal detachment to slide.
 
 ---
 
@@ -228,5 +230,5 @@ Because the wedge material is compressed against the rigid backstop:
 
 ### Topographic Wedge and Basal Slip
 In the lower panel, the beige upper crust (Phase 1) thickens and deforms upwards, building a beautiful wedge-shaped topography (accretionary prism) sloping away from the rigid backstop.
-The blue-grey basal weak layer (Phase 2) remains relatively flat at the bottom, absorbing most of the shear strain and acting as a perfect detachment layer (décollement) that lets the wedge slide and stack dynamically.
+Under the flexural bottom boundary condition, the basal weak layer (Phase 2) deflects downward under the load of the growing wedge (isostatic flexure), while still absorbing most of the shear strain and acting as a perfect detachment layer (décollement) that lets the wedge slide and stack dynamically.
 The deformed grid lines show strong vertical thickening and horizontal shortening within the wedge, while showing simple shear within the basal detachment layer.
