@@ -1,0 +1,139 @@
+; -*- LISP -*-
+;
+; Simple elastoplastic bar compression under Mohr-Coulomb yield
+;
+;==================================================================
+;             M e s h    P a r a m e t e r s 
+;==================================================================
+50,150
+0.0,0.0
+1000.0,-3000.0
+;
+0, points.xy
+;
+0
+0
+; 
+;===================================================================
+;        C o n d i t i o n s:  M e c h a n i c a l
+;===================================================================
+0  0
+; nofbc: Number of boundary conditions
+3
+;-------------------------------------------------------------------------------
+;nofside  nbc1 nbc2  nbc   a       b    c     d     e     f      g     h     i 
+2  1  51  1  0  0  0  0  0  0  0  0  0  ; Bottom fixed in Z (free-slip)
+4  1  51  1  -1e-09  0  0  0  0  0  0  0  0  ; Top compression in Z
+4  1  51  10  0  0  0  0  0  0  0  0  0  ; Top fixed in X (no-slip)
+;
+; Hydrostatic pressure
+0  0.0  8  0.0  0.0
+;
+; Gravity (set to 0 for pure compression test)
+0.0
+;=============================================================
+;            C o n d i t i o n s : T h e r m a l
+;=============================================================
+0
+0.0
+1
+0
+0
+0.0
+0.0
+;
+; Radiogenic heating
+0.0, 10.0
+;
+; Bottom Boundary conditions flag and value
+1 0.0
+;
+; Predefined distributions
+0
+proftemp.dat
+;
+; Initial structure
+1
+ 21, 3000.0, 0.0, 0.0, 1, 51
+    1, 
+    10
+;
+;===================================================================
+;                     R h e o l o g y
+;===================================================================
+1
+;
+;irheol,_,den, alfa,  beta,    n,       A,       E,    V,  Lame:rl, Lame:rm,pls1,pls2,fric1,fric2, coh1, coh2,dilat1,dilat2,cond,    cp,     Ts,     Tl,     Tk, fk
+;(1) Mohr-Coulomb elastoplastic bar
+6, 1, 2700, 0, 0, 0, 0, 0, 0, 3e+10, 3e+10, 0, 0.1, 30, 30, 2e+07, 2e+06, 0, 0, 3, 1000, 1300, 1600, 1600, 1
+;
+; INITIAL PHASE DISTRIBUTION
+0  ; irphase
+phasedat.inp
+;
+; Initial heterogeneities
+0  ; inhom
+;
+; Tension cut off
+1000000000.0
+;
+; linear healing parameter
+0.0
+;
+; VISCOSITY LIMIT
+1e+20, 1e+25, 2, 500.0
+;
+; itype_melting, nelem_serp, nelem_dike, prod_magma, rho_magma
+0, 2, 1, 2e-15, 2700.0
+30.0, 0.1, 0.1
+420000.0, 1e-13, 0.002
+1.0, 1.0
+;
+;=================================================================
+;                       R e m e s h i n g
+;=================================================================
+0  1  10  5.0
+1.3
+0.0  0.0
+;
+;=================================================================
+;                   P r o c e s s   c o n t r o l
+;=================================================================
+2
+1.0,0.001
+0,0.0
+10
+10
+10
+10
+;
+0.45,0.5
+1,2
+0.8,1,1
+;
+;======================================================================
+;                             O U T P U T
+;======================================================================
+; Time parameters below are in thousands years
+;
+; Max time of calculations (in Kyr)
+0.5
+;
+; Time interval for screen output of calc. progress (in Kyr)
+0.05
+;
+; Time interval for file output (in Kyr)
+0.05
+;
+; Variables to print
+; vel srII eII aps sII sxx szz sxz pres temp phase visc unused dens src diss forc hfl topo
+  1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1
+;
+; output for last step only
+0
+;
+; Time interval for process saving
+0.5
+;
+; saving the last step only
+1
