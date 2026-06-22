@@ -76,7 +76,7 @@ def main():
     ax1.set_title(f'Convergent Wedge: Shear Localization & Thrust Faulting at {time_myr:.2f} Myr', 
                   fontsize=14, fontweight='bold', pad=12)
     ax1.grid(True, linestyle=':', alpha=0.5, color='gray')
-    ax1.set_ylim(-11, 3)
+    ax1.set_ylim(-15, 5)
     ax1.set_aspect('equal')
     
     # Subplot 2: Lithological Phases (Upper Crust vs Basal Detachment)
@@ -109,7 +109,7 @@ def main():
     ax2.set_title(f'Deformed Lithological Phases & Grid Mesh at {time_myr:.2f} Myr', 
                   fontsize=14, fontweight='bold', pad=12)
     ax2.grid(True, linestyle=':', alpha=0.5, color='gray')
-    ax2.set_ylim(-11, 3)
+    ax2.set_ylim(-15, 5)
     ax2.set_aspect('equal')
     
     plt.tight_layout()
@@ -133,7 +133,7 @@ def main():
             ax.plot(x_f[:, 0], z_f[:, 0], color='black', linewidth=1.5)
             ax.set_title(f'Accumulated Plastic Strain at t = {t_f:.2f} Myr', fontsize=12, fontweight='bold')
             ax.set_ylabel('Depth (km)', fontsize=10)
-            ax.set_ylim(-11, 3)
+            ax.set_ylim(-15, 5)
             ax.grid(True, linestyle=':', alpha=0.5)
             ax.set_aspect('equal')
             
