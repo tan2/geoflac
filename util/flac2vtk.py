@@ -170,12 +170,19 @@ def main(path, start=1, end=-1, thermochron=False):
                     points = np.column_stack((x_markers, z_markers))
                     grid_x, grid_z = x, z
                     for c in range(nchron):
-                        nodal_age = griddata(points, marker_ages[c], (grid_x, grid_z), method='linear')
-                        nan_mask = np.isnan(nodal_age)
-                        if np.any(nan_mask):
-                            nodal_age_nearest = griddata(points, marker_ages[c], (grid_x, grid_z), method='nearest')
-                            nodal_age[nan_mask] = nodal_age_nearest[nan_mask]
-                        nodal_ages[c] = nodal_age
+                        ages = marker_ages[c]
+                        valid = ~np.isnan(ages)
+                        if np.any(valid):
+                            points_valid = points[valid]
+                            ages_valid = ages[valid]
+                            nodal_age = griddata(points_valid, ages_valid, (grid_x, grid_z), method='linear')
+                            nan_mask = np.isnan(nodal_age)
+                            if np.any(nan_mask):
+                                nodal_age_nearest = griddata(points_valid, ages_valid, (grid_x, grid_z), method='nearest')
+                                nodal_age[nan_mask] = nodal_age_nearest[nan_mask]
+                            nodal_ages[c] = nodal_age
+                        else:
+                            nodal_ages[c] = np.full((nx, nz), np.nan)
 
         if i < start:
             continue
