@@ -1,0 +1,442 @@
+; -*- LISP -*-
+;
+; This is an input file for flac, not a LISP source code.
+; But it is displayed in LISP mode to distinguish the comments.
+;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Simple ocean-ocean subduction
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;
+;==================================================================
+;             M e s h    P a r a m e t e r s 
+;==================================================================
+125,30
+0.0,0.0
+250000.0,-30000.0
+;
+0, points.xy
+;
+; X direction
+0
+; nelem per zone    size(non-dimen, must sum to 1.0)
+;
+; Z direction
+0
+;
+;===================================================================
+;        C o n d i t i o n s:  M e c h a n i c a l
+;===================================================================
+; ynstressbc, ydrsides
+; Stress boundary conditions (0:no,1:yes), lithostatic stress bc on the sides (0/1)
+0  0
+; nofbc: Number of boundary conditions
+7
+;----------------------------------------------------------------
+;nofside       1-left,2-bottom,3-right,4-top
+;nbc1,nbc2     range of application of boundary condition
+;nbc           type of boundary condition
+;  there are the following forms of boundary conditions:
+;  0  - no conditions
+;  10 - velx            01 - velz
+;  20 - normal stress   02 - shear stress (x,z) plane
+;  30 - vely                (strike slip version)
+;----------------------------------------------------------------
+;  Function of boundary conditions:
+;------------------------------------------------------------------
+;f = a + bx + cx**2 + (d cos (2pi ex) + f sin (2pi gx))*exp((x-i)*h)^2
+;Dependence on time:   f(time) = f*(1 + df1*nstep) + df2*nstep
+;------------------------------------------------------------------
+;where x is undimensional. i.e. x = (x - x(na1)) / (x(na2) - x(na1))
+;-------------------------------------------------------------------------------
+;nofside  nbc1 nbc2  nbc  a         b         c     d     e     f      g     h     i 
+1  1  31  10  0  0  0  0  0  0  0  0  0
+3  1  20  10  -4.65e-10  0  0  0  0  0  0  0  0
+3  21  22  10  -4.65e-10  4.65e-10  0  0  0  0  0  0  0
+3  23  31  10  0  0  0  0  0  0  0  0  0
+3  1  31  1  0  0  0  0  0  0  0  0  0
+2  1  126  10  0  0  0  0  0  0  0  0  0
+2  1  126  1  0  0  0  0  0  0  0  0  0
+;
+; Hydrostatic pressure  applied at the bottom (on the depth of rzbo and TOP!!)
+; {y,n(1,0),auto(2)}, Pressure at compens.depth, substratum phase, addit. dens. diff, damp_vis
+2  0.0  4  0.0  0.0
+;
+; Gravity
+10.0
+;=============================================================
+;            C o n d i t i o n s : T h e r m a l
+;=============================================================
+0
+0.0    -extra pressure (GPa)
+1
+0
+0
+10.0
+910.0
+;
+; Radiogenic heating
+1e-09, 10.0
+;
+; Bottom Boundary conditions flag and value (1- temperature, 2- heat flux in mW/m2 ) 
+1 910.0
+;
+; Initial additional perturbation (quadralateral)
+;0.,40,50,3,8          - temp_per,ix1,ix2,iy1,iy2 (box of thermal perturbation)
+;
+; Predefined distributions
+0
+proftemp.dat
+; Temperature structure for ridges (3 linear segments) above linear
+; Max Temperature or bottom Temperature (iynts:0/no,1/yes,2/use initial geotherm from age), tbos
+;2 910.
+; From the left in grid units A(iax1,iay1), B(ibx1,iby1), C(icx1,icy1),
+;240 55 300 27 301 27 361 55
+; If (iynts = 2) Initially Variable thermal age crust and mantle accross the box 
+18
+;Thermal age (Myr.), layer1 depth (km), layer2 depth, layer3 depth (also Moho depth), layer4 depth, layer1 phase, layer2 phase, layer3 phase, layer4 phase, layer5 phase, x nodes 1 and 2
+ 1, 10.0, 0.0, 0.0, 1, 9 
+    5, 1.0 1.0 1.0 1.0
+    13 14 16 18 19
+ 1, 10.0, 0.0, 0.0, 10, -1 
+    5, 1.0 1.0 1.0 1.0
+    13 14 16 18 19
+ 1, 10.0, 0.0, 0.0, -1, 13 
+    5, 3.0 3.0 3.0 3.0
+    13 14 16 18 19
+ 1, 10.0, 0.0, 0.0, 13, -1 
+    5, 3.0 3.0 3.0 3.0
+    13 14 16 18 19
+ 1, 10.0, 0.0, 0.0, -1, 19 
+    5, 4.0 4.0 4.0 4.0
+    13 14 16 18 19
+ 1, 10.0, 0.0, 0.0, 20, -1 
+    5, 4.0 4.0 4.0 5.0
+    13 14 16 18 19
+ 1, 10.0, 0.0, 0.0, -1, 25 
+    5, 8.0 8.0 8.0 9.0
+    13 14 16 18 19
+ 1, 10.0, 0.0, 0.0, 25, 33 
+    5, 8.0 8.0 8.0 9.0
+    13 14 16 18 19
+ 1, 10.0, 0.0, 0.0, 33, -1 
+    5, 8.0 8.0 8.0 9.0
+    13 14 16 18 19
+ 1, 10.0, 0.0, 0.0, -1, 36 
+    5, 8.0 10.0 10.0 11.0
+    13 14 16 18 19
+ 1, 10.0, 0.0, 0.0, 36, -1 
+    5, 8.0 10.0 10.0 11.0
+    13 14 16 18 19
+ 1, 10.0, 0.0, 0.0, -1, 45 
+    5, 8.0 11.0 11.0 12.0
+    13 14 16 18 19
+ 1, 10.0, 0.0, 0.0, 45, -1 
+    5, 8.0 11.0 11.0 12.0
+    13 14 16 18 19
+ 1, 10.0, 0.0, 0.0, -1, 48 
+    5, 8.0 14.0 14.0 15.0
+    13 14 16 18 19
+ 1, 10.0, 0.0, 0.0, 49, -1 
+    5, 8.0 14.0 14.0 15.0
+    13 14 16 18 19
+ 1, 10.0, 0.0, 0.0, -1, 76 
+    5, 8.0 14.0 20.0 21.0
+    13 14 16 18 19
+ 1, 10.0, 0.0, 0.0, 76, 116 
+    5, 8.0 14.0 20.0 21.0
+    13 14 16 18 19
+ 1, 10.0, 0.0, 0.0, 116, 126 
+    5, 20.0 20.0 20.0 21.0
+    19 19 19 18 19
+; 3., 0.0,  9, 13, 18.5, 14, 15, 16, 17, 14, 341,  -1 ; block
+; 3., 9.0,  9, 13, 18.5, 14, 15, 16, 17, 14,  -1, 350
+; 3., 9.0, 13, 17, 18.5, 14, 16, 17, 18, 14, 351,  -1
+; 3.,13.0, 13, 17, 18.5, 14, 16, 17, 18, 14,  -1, 355
+; 3.,13.0, 13, 17, 18.5, 14, 14, 17, 18, 14, 356,  -1
+; 3.,17.0, 17, 17, 18.5, 14, 14, 17, 18, 14,  -1, 360
+; 3.,17.0, 17, 17, 18.5, 14, 14, 14, 18, 14, 341, 380
+;
+;===================================================================
+;                     R h e o l o g y
+;===================================================================
+; 1- elastic,
+; 3- visco-elastic (Maxwell,Non-Newtonian) with softening
+; 6- elasto-plastic (Mohr-Coulomb) with softening
+;11- visco-elasto-plastic (Mohr-Coulomb,Fixed Maxwell,Newtonian) with softening
+;12- visco-elasto-plastic (Mohr-Coulomb,Maxwell,Non-Newtonian) with softening
+;
+19
+;(1) sediment 2
+12, 1, 2800, 3e-05, 0, 3, 500, 200000, 0, 3e+10, 3e+10, 0, 0.1, 3, 3, 4e+06, 4e+06, 0, 0, 3.3, 1000, 13000, 16000, 16000, 1
+;(2) continental crust, same as (6)
+12, 1, 2800, 3e-05, 0, 3.05, 0.125, 276000, 0, 3e+10, 3e+10, 0, 0.1, 30, 15, 4e+07, 4e+06, 0, 0, 3.3, 1000, 13000, 16000, 16000, 1
+;(3) basalt, same as (7)            
+12, 1, 2880, 3e-05, 0, 3.05, 0.125, 376000, 0, 3e+10, 3e+10, 0, 0.1, 30, 15, 4e+07, 4e+06, 0, 0, 3.3, 1000, 13000, 16000, 16000, 1
+;(4) olivine, same as (8)
+12, 1, 3300, 3e-05, 0, 3, 70000, 520000, 0, 3e+10, 3e+10, 0, 0.1, 30, 15, 4e+07, 4e+06, 0, 0, 3.3, 1000, 13000, 16000, 16000, 1
+;(5) metasediment (gneiss), transformed from (11) and (1)
+11, 1, 2900, 3e-05, 0, 3, 70000, 376000, 0, 3e+10, 3e+10, 0, 0.1, 30, 15, 4e+07, 4e+06, 0, 0, 3.3, 1000, 13000, 16000, 16000, 1
+;(6) continental crust, same as (2)
+12, 1, 2900, 3e-05, 0, 3.05, 0.125, 276000, 0, 3e+10, 3e+10, 0, 0.1, 30, 15, 4e+07, 4e+06, 0, 0, 3.3, 1000, 13000, 16000, 16000, 1
+;(7) basalt, same as (3)
+12, 1, 2880, 3e-05, 0, 3.05, 0.125, 376000, 0, 3e+10, 3e+10, 0, 0.1, 30, 15, 4e+07, 4e+06, 0, 0, 3.3, 1000, 13000, 16000, 16000, 1
+;(8) olivine, same as (4), transformed from (9)
+12, 1, 3300, 3e-05, 0, 3, 70000, 520000, 0, 3e+10, 3e+10, 0, 0.1, 30, 15, 4e+07, 4e+06, 0, 0, 3.3, 1000, 13000, 16000, 16000, 1
+;(9) weak olivine (serpentinite), transformed from (4) and (8), if overlying subducted oceaninc crust phase (3), (7) or (1); transform back to (4) if deeper than 65 km
+12, 1, 3200, 3e-05, 0, 3, 70000, 120000, 0, 3e+10, 3e+10, 0, 0.1, 3, 3, 4e+06, 4e+06, 0, 0, 3.3, 1000, 13000, 16000, 16000, 1
+;
+;irheol,_,den, alfa,  beta,    n,       A,       E,    Lame:rl, Lame:rm,pls1,pls2,fric1,fric2, coh1, coh2,dilat1,dilat2,cond,    cp,     Ts,     Tl,     Tk, fk
+;(10) basalt, no dehydration
+12, 1, 2880, 3e-05, 0, 3.05, 0.125, 376000, 0, 3e+10, 3e+10, 0, 0.1, 30, 15, 4e+07, 4e+06, 0, 0, 3.3, 1000, 13000, 16000, 16000, 1
+;(11) sediment 1, generated by erosion
+12, 1, 2800, 3e-05, 0, 3, 500, 200000, 0, 3e+10, 3e+10, 0, 0.1, 3, 3, 4e+06, 4e+06, 0, 0, 3.3, 1000, 13000, 16000, 16000, 1
+;
+;
+;
+;
+;(12) quartzite(wet) 
+12, 1, 2500, 3e-05, 0, 2.4, 0.032, 160000, 0, 3e+10, 3e+10, 0, 0.1, 3, 3, 4e+06, 4e+06, 0, 0, 3.3, 1000, 13000, 16000, 16000, 1
+;(13) quartzite(wet) 1-01
+12, 1, 2650, 3e-05, 0, 2.4, 0.032, 200000, 0, 3e+10, 3e+10, 0, 0.1, 20, 10, 4e+06, 4e+06, 0, 0, 3.3, 1000, 13000, 16000, 16000, 1
+;(14) quartzite(wet) 1-02-1
+12, 1, 2700, 3e-05, 0, 2.4, 0.032, 252000, 0, 3e+10, 3e+10, 0, 0.1, 30, 15, 4e+07, 4e+06, 0, 0, 3.3, 1000, 13000, 16000, 16000, 1
+;(15) quartzite(wet) 1-02-2
+12, 1, 2700, 3e-05, 0, 2.4, 0.032, 252000, 0, 3e+10, 3e+10, 0, 0.1, 30, 15, 4e+07, 4e+06, 0, 0, 3.3, 1000, 13000, 16000, 16000, 1
+;(16) quartzite(wet) 1-03-1
+12, 1, 2750, 3e-05, 0, 2.4, 0.032, 292000, 0, 3e+10, 3e+10, 0, 1, 30, 15, 4e+07, 4e+06, 0, 0, 3.3, 1000, 13000, 16000, 16000, 1
+;(17) quartzite(wet) 1-03-2
+12, 1, 2750, 3e-05, 0, 2.4, 0.032, 292000, 0, 3e+10, 3e+10, 0, 1, 30, 15, 4e+07, 4e+06, 0, 0, 3.3, 1000, 13000, 16000, 16000, 1
+;(18) decollement ( lowest viscosity )
+12, 1, 2800, 3e-05, 0, 2.4, 0.032, 160000, 0, 3e+10, 3e+10, 0, 0.1, 3, 3, 4e+06, 4e+06, 0, 0, 3.3, 1000, 13000, 16000, 16000, 1
+;(19) arc
+12, 1, 2900, 3e-05, 0, 3.05, 0.125, 576000, 0, 3e+10, 3e+10, 0, 1, 30, 15, 4e+08, 4e+07, 0, 0, 3.3, 1000, 13000, 16000, 16000, 1
+0  ; irphase (0,1) read a distribution of phases
+phasedat.inp  ; file with distribution of phase on the 2D grid (phasedat)
+;
+; Initial heterogeneities
+;
+; Weak zone geometries:
+; 0- rectangular,
+; 1,2- Gauss shape
+; 3- diagonal line
+; 4- diagonal line plus init.plastic strain
+;
+; Thermal anomaly
+; 11- Gaussian shape (halfwidth=ix1-ix2, amplitude=amp), d
+;
+; Topography
+; 20- square, surface nodes ix1-ix2 elevated by amp
+; 21- trapzoidal, surface nodes linearly increase ix1-ix2, flat ix2-iy1,
+;     decrease iy1-iy2, max. elevated by amp
+;
+72
+; ix1   ix2   iy1   iy2   phase   geometry    init.pl.strain (amp)
+  1  115  1  1  12  4  0 ; iph = 12
+  1  115  1  1  12  4  0 ;
+  1  115  1  1  12  4  0 ;
+  9  115  1  1  12  4  0 ;
+  10  115  2  2  12  4  0 ;
+  10  115  2  2  12  4  0 ;
+  11  115  2  2  12  4  0 ;
+  12  115  3  3  12  4  0 ;
+  12  115  3  3  12  4  0 ;
+  14  115  3  3  12  4  0 ;
+  16  115  4  4  12  4  0 ;
+  18  115  4  4  12  4  0 ;
+;
+  44  115  11  11  15  4  0 ;
+  44  115  12  12  15  4  0 ;
+  45  115  12  12  15  4  0 ;
+  46  115  12  12  15  4  0 ;
+  46  115  13  13  15  4  0 ;
+  46  115  13  13  15  4  0 ;
+  46  115  13  13  15  4  0 ;
+  47  115  14  14  15  4  0 ;
+  48  115  14  14  15  4  0 ;
+;
+  62  115  17  17  17  4  0 ;
+  64  115  18  18  17  4  0 ;
+  65  115  18  18  17  4  0 ;
+  66  115  18  18  17  4  0 ;
+  68  115  19  19  17  4  0 ;
+  70  115  19  19  17  4  0 ;
+  71  115  19  19  17  4  0 ;
+  73  115  20  20  17  4  0 ;
+  74  115  20  20  17  4  0 ;
+;
+;    1    35     3    3     -1       4          1.     ; 1-flat 
+;    1    35     4    4     -1       4          1.     ;
+;    1    35     5    5     -1       4          1.     ;
+;    1    35     6    6     -1       4          1.     ;
+;    1    35     7    7     -1       4          1.     ;
+;    1    35     8    8     -1       4          1.     ;
+;
+;   36    50     3    9     -1       4          1.     ; 2-ramp1
+;   36    50     4   10     -1       4          1.     ;
+;   36    50     5   11     -1       4          1.     ;
+;   36    50     6   12     -1       4          1.     ;
+;   36    50     7   13     -1       4          1.     ;
+;   36    50     8   14     -1       4          1.     ;
+;
+;   51    75     9   12     -1       4          1.     ; 3-flat
+;   51    75    10   13     -1       4          1.     ;
+;   51    75    11   14     -1       4          1.     ;
+;   51    75    12   15     -1       4          1.     ;
+;   51    75    13   16     -1       4          1.     ;
+;;   51    75    14   17     -1       4          1.     ;
+;
+  19  24  4  8  -1  4  1 ; 4-ramp 2 30°
+  19  24  4  8  -1  4  1 ;
+  19  24  5  9  -1  4  1 ;
+  19  24  5  9  -1  4  1 ;
+  19  24  5  9  -1  4  1 ;
+  19  24  6  10  -1  4  1 ;
+;
+  24  32  8  8  -1  4  1 ; 5-flat
+  24  32  8  8  -1  4  1 ;
+  24  32  9  9  -1  4  1 ;
+  24  32  9  9  -1  4  1 ;
+  24  32  9  9  -1  4  1 ;
+  24  32  10  10  -1  4  1 ;
+;
+  33  35  8  10  -1  4  1 ; 6-ramp
+  33  35  8  10  -1  4  1 ;
+  33  35  9  11  -1  4  1 ;
+  33  35  9  11  -1  4  1 ;
+  33  35  9  11  -1  4  1 ;
+  33  35  10  12  -1  4  1 ;
+;
+  35  44  10  11  -1  4  1 ; 7-flat
+  35  44  10  11  -1  4  1 ;
+  35  44  11  12  -1  4  1 ;
+  35  44  11  12  -1  4  1 ;
+  35  44  11  12  -1  4  1 ;
+  35  44  12  13  -1  4  1 ;
+;
+  44  48  11  14  -1  4  1 ; 8-ramp 2 45°
+  44  48  11  14  -1  4  1 ;
+  44  48  12  15  -1  4  1 ;
+  44  48  12  15  -1  4  1 ;
+  44  48  12  15  -1  4  1 ;
+  44  48  13  16  -1  4  1 ;
+;
+  48  75  14  20  -1  4  1 ; 9-flat
+  48  75  14  20  -1  4  1 ;
+  48  75  15  21  -1  4  1 ;
+  48  75  15  21  -1  4  1 ;
+  48  75  15  21  -1  4  1 ;
+  48  75  16  22  -1  4  1 ;
+;
+  75  125  20  20  -1  4  1 ; 10-flat
+  75  125  20  20  -1  4  1 ;
+  75  125  21  21  -1  4  1 ;
+  75  125  21  21  -1  4  1 ;
+  75  125  21  21  -1  4  1 ;
+  75  125  22  22  -1  4  1 ;
+; Tesion cut off
+1000000000.0
+;
+; linear healing parameter
+;1.88943e13
+0.0
+;
+; VISCOSITY LIMIT
+;vis_min (MINIMUM VISCOSITY) vis_max     ivis_shape,   efoldc
+1e+20, 3e+27, 2, 500.0
+;
+;igeotherm  g_x0,    g_y0c   g_amplitude  g_width
+;0,         75.e+3,  -11.e+3,  2.e+3,       10.e+3
+;
+;Magma Injection: 
+; ny_inject (0,-no,1-left,2-center), nelem_inject, rate_inject(m/s)
+; Tan2: reuse nelem_inject for thickness of serpentinite layer above subducted oceanic crust
+0, 2, 1, 0.2, 2700.0
+30.0, 0.1, 0.1
+420000.0, 420000.0, 1e-13
+1.0, 1.0
+;
+;=================================================================
+;                       R e m e s h i n g
+;=================================================================
+;ny_rem (0,1), mode_rem(1, 3 or 11),  ntest_rem,  angle_rem(degrees,when magmainj le 10)
+1  3  500  10.0
+;
+; dx_rem (if mode_rem=11 defines critical shortening for remeshing in dx-units)
+1.3
+;
+; Surface process option
+; itopodiff (1:diffusion, 2: kinematic erosion)
+;1
+;**********
+;Mode No.1
+;**********
+; Diffusion of topography(10) and amplification factor for high elevation
+; topo_removal_rate     fac_kappa
+1e-06  0.0
+;
+;**********
+;Mode No.2
+;**********
+; the position of middle of erosions
+; ero_middle, ero_range (1/2 erdoe_wavelength)
+;3.5e+3, 7.e+3
+;
+; nero_rate_sect(10) (number of sections in the left)
+;1
+; the rate sections at left side
+; ero_rate(1,1,:)(km/Myr), ero_rate(1,2,:)(km/Myr), ero_duration (Myr)
+;2.,  2., .5
+;
+; nero_rate_sect(2) (number of sections in the right)
+;1
+; ; the rate sections at right side
+; ero_rate(2,1,:)(km/Myr), ero_rate(2,2,:)(km/Myr), ero_duration (Myr)
+;5.,  2.,  .5
+;
+;=================================================================
+;                   P r o c e s s   c o n t r o l
+;=================================================================
+; Inertial Mass Scaling (idt_scale):
+2
+1.0,0.0005
+1,5.0
+10
+10
+10
+10
+;
+; Acceleration Parameters (Cundall, 1982)
+;1.00,5.e-2,1.e-1    amul,ratl,ratu
+0.45,0.5
+;0                   n_boff_cutoff
+1,2
+0.8,1,1
+;
+;======================================================================
+;                             O U T P U T
+;======================================================================
+; Time parameters below are in thousands years
+;
+; Max time of calculations (in Kyr)
+2001.0  ;  2 Myrs
+;
+; Time interval for screen output of calc. progress (in Kyr)
+100.0
+;
+; Time interval for file output (in Kyr)
+100.0
+;
+; Variables to print
+; vel srII eII aps sII sxx szz sxz pres temp melt visc phas mark src diss forc hfl topo thermochron
+  1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1
+;
+; output for last step only (10) or each nout step (0)
+0
+;
+; Time interval for process saving
+1000.0
+;
+; saving the last step only (10) or each nsave step (0)
+1
+;
+;
