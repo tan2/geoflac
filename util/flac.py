@@ -88,6 +88,17 @@ class Flac(object):
         return T
 
 
+    def read_coolingrate(self, frame):
+        columns = 1
+        f = open('coolingrate.0')
+        offset = (frame-1) * columns * self.nnodes * sizeoffloat
+        f.seek(offset)
+        cr = self._read_data(f, columns)
+        self._reshape_nodal_fields(cr)
+        return cr
+
+
+
     def read_original_mesh(self, frame):
         columns = 1
         f = open('xoriginal.0')
