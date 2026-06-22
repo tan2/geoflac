@@ -64,6 +64,14 @@ if( io_temp.eq.1 ) then
     close (1)
 endif
 
+! Cooling rate (dT/dt) in [C/Myr]
+nwords = nz*nx
+Dn2(1:nz,1:nx,1) = real((temp(1:nz,1:nx) - temp0(1:nz,1:nx)) / (dt / (sec_year * 1.d6)))
+open (1,file='coolingrate.0',access='direct',recl=nwords*kindr)
+write (1,rec=nrec) Dn2(1:nz,1:nx,1)
+close (1)
+
+
 nwords = nz*nx
 Dn2(1:nz,1:nx,1) = real(xoriginal(1:nz,1:nx))
 open (1,file='xoriginal.0',access='direct',recl=nwords*kindr)

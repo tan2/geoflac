@@ -35,11 +35,9 @@ ihalfwidth_mzone = ceiling(tan_mzone * 200e3 / dxmin)
 !  2         2---3
 
 ! saving old temperature
-if (istress_therm > 0 .or. itype_melting == 1) then
-    !$ACC kernels async(1)
-    temp0(:,:) = temp(:,:)
-    !$ACC end kernels
-endif
+!$ACC kernels async(1)
+temp0(:,:) = temp(:,:)
+!$ACC end kernels
 
     !$OMP Parallel private(i,j,iph,cp_eff,cond_eff,dissip,quad_area, &
     !$OMP                  fr_lambda, &
