@@ -69,8 +69,9 @@ def main(path, start=1, end=-1, thermochron=False):
     if thermochron:
         try:
             from scipy.interpolate import griddata
+            import pandas as pd
         except ImportError:
-            print("Error: scipy is required for thermochronology interpolation. Please install scipy.")
+            print("Error: scipy and pandas are required for thermochronology interpolation. Please install them.")
             sys.exit(1)
 
         script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -178,8 +179,11 @@ def main(path, start=1, end=-1, thermochron=False):
                             nodal_age = griddata(points_valid, ages_valid, (grid_x, grid_z), method='linear')
                             nan_mask = np.isnan(nodal_age)
                             if np.any(nan_mask):
-                                nodal_age_nearest = griddata(points_valid, ages_valid, (grid_x, grid_z), method='nearest')
-                                nodal_age[nan_mask] = nodal_age_nearest[nan_mask]
+                                df = pd.DataFrame(nodal_age)
+                                df = df.interpolate(method='linear', limit_direction='both', axis=0)
+                                df = df.interpolate(method='linear', limit_direction='both', axis=1)
+                                df = df.ffill(axis=0).bfill(axis=0).ffill(axis=1).bfill(axis=1)
+                                nodal_age = df.to_numpy()
                             nodal_ages[c] = nodal_age
                         else:
                             nodal_ages[c] = np.full((nx, nz), np.nan)
