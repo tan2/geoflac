@@ -205,7 +205,7 @@ def main(path, start=1, end=-1, thermochron=False):
 
         if thermochron:
             for name, data in zip(thermochron_system_names, nodal_ages):
-                vts_dataarray(fvts, data.swapaxes(0, 1), f'{name}_age')
+                vts_dataarray(fvts, data.swapaxes(0, 1), f'age_{name}')
 
         x0, z0 = fl.read_original_mesh(i)
         vts_dataarray(fvts, x0.swapaxes(0,1), 'x0')
