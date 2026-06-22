@@ -31,10 +31,11 @@ This tutorial implements a thermomechanical wedge model that refines the classic
 
 The model represents a regional cross-section of the orogenic wedge down to $30 depth.
 
-### Geometry and Mesh
+### Geometry, Mesh, and Time
 * **Dimensions**: $250\text{ km}$ wide ($X \in [0, 250]\text{ km}$), $30\text{ km}$ deep ($Z \in [-30, 0]\text{ km}$).
 * **Grid Resolution**: $125 \times 30$ elements ($126 \times 31$ nodes), configured in [`thermochron_wedge.inp`](thermochron_wedge.inp).
 * **Grid Type**: Uniform regular grid.
+* **Model Time**: $6.5\text{ Myr}$ ($6501.0\text{ Kyr}$ total duration).
 
 ---
 

@@ -418,7 +418,7 @@ phasedat.inp  ; file with distribution of phase on the 2D grid (phasedat)
 ; Time parameters below are in thousands years
 ;
 ; Max time of calculations (in Kyr)
-2001.0  ;  2 Myrs
+6501.0  ;  6.5 Myrs
 ;
 ; Time interval for screen output of calc. progress (in Kyr)
 100.0
