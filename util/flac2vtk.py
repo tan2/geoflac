@@ -129,6 +129,7 @@ def main(path, start=1, end=-1, thermochron=False):
                 x_markers = x_markers[valid]
                 z_markers = z_markers[valid]
                 ID_markers = ID_markers[valid]
+                ntriag_markers = ntriag_markers[valid]
                 t_temps = t_temps[valid]
                 t_rates = t_rates[valid]
                 nmarkers = len(ID_markers)
@@ -167,6 +168,12 @@ def main(path, start=1, end=-1, thermochron=False):
 
                 # 4. Interpolate ages from markers to nodes
                 nodal_ages = [np.zeros((nx, nz)) for _ in range(nchron)]
+                # Compute element index for each marker
+                ntriag_clean = np.maximum(1, ntriag_markers)
+                k_m = (ntriag_clean - 1) % 2 + 1
+                j_el = np.clip(((ntriag_clean - k_m) // 2) % (nz - 1), 0, nz - 2)
+                i_el = np.clip(((ntriag_clean - k_m) // 2) // (nz - 1), 0, nx - 2)
+
                 if nmarkers > 0:
                     points = np.column_stack((x_markers, z_markers))
                     grid_x, grid_z = x, z
@@ -184,6 +191,17 @@ def main(path, start=1, end=-1, thermochron=False):
                                 df = df.interpolate(method='linear', limit_direction='both', axis=1)
                                 df = df.ffill(axis=0).bfill(axis=0).ffill(axis=1).bfill(axis=1)
                                 nodal_age = df.to_numpy()
+                            
+                            # Mask out nodes if all markers in their elements are NaN
+                            node_is_nan = np.ones((nx, nz), dtype=bool)
+                            valid_i = i_el[valid]
+                            valid_j = j_el[valid]
+                            node_is_nan[valid_i, valid_j] = False
+                            node_is_nan[valid_i + 1, valid_j] = False
+                            node_is_nan[valid_i, valid_j + 1] = False
+                            node_is_nan[valid_i + 1, valid_j + 1] = False
+                            
+                            nodal_age[node_is_nan] = np.nan
                             nodal_ages[c] = nodal_age
                         else:
                             nodal_ages[c] = np.full((nx, nz), np.nan)
