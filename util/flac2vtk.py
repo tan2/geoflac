@@ -166,8 +166,8 @@ def main(path, start=1, end=-1, thermochron=False):
                         ages[unreset_mask] = np.nan
                         marker_ages[c] = ages
 
-                # 4. Interpolate ages from markers to nodes
-                nodal_ages = [np.zeros((nx, nz)) for _ in range(nchron)]
+                # 4. Interpolate ages from markers to elements
+                elem_ages = [np.zeros((nex, nez)) for _ in range(nchron)]
                 # Compute element index for each marker
                 ntriag_clean = np.maximum(1, ntriag_markers)
                 k_m = (ntriag_clean - 1) % 2 + 1
@@ -176,35 +176,34 @@ def main(path, start=1, end=-1, thermochron=False):
 
                 if nmarkers > 0:
                     points = np.column_stack((x_markers, z_markers))
-                    grid_x, grid_z = x, z
+                    # Element centers coordinates
+                    xc = 0.25 * (x[:-1, :-1] + x[1:, :-1] + x[:-1, 1:] + x[1:, 1:])
+                    zc = 0.25 * (z[:-1, :-1] + z[1:, :-1] + z[:-1, 1:] + z[1:, 1:])
                     for c in range(nchron):
                         ages = marker_ages[c]
                         valid = ~np.isnan(ages)
                         if np.any(valid):
                             points_valid = points[valid]
                             ages_valid = ages[valid]
-                            nodal_age = griddata(points_valid, ages_valid, (grid_x, grid_z), method='linear')
-                            nan_mask = np.isnan(nodal_age)
+                            elem_age = griddata(points_valid, ages_valid, (xc, zc), method='linear')
+                            nan_mask = np.isnan(elem_age)
                             if np.any(nan_mask):
-                                df = pd.DataFrame(nodal_age)
+                                df = pd.DataFrame(elem_age)
                                 df = df.interpolate(method='linear', limit_direction='both', axis=0)
                                 df = df.interpolate(method='linear', limit_direction='both', axis=1)
                                 df = df.ffill(axis=0).bfill(axis=0).ffill(axis=1).bfill(axis=1)
-                                nodal_age = df.to_numpy()
+                                elem_age = df.to_numpy()
                             
-                            # Mask out nodes if all markers in their elements are NaN
-                            node_is_nan = np.ones((nx, nz), dtype=bool)
+                            # Mask out elements if all markers in them are NaN
+                            elem_is_nan = np.ones((nex, nez), dtype=bool)
                             valid_i = i_el[valid]
                             valid_j = j_el[valid]
-                            node_is_nan[valid_i, valid_j] = False
-                            node_is_nan[valid_i + 1, valid_j] = False
-                            node_is_nan[valid_i, valid_j + 1] = False
-                            node_is_nan[valid_i + 1, valid_j + 1] = False
+                            elem_is_nan[valid_i, valid_j] = False
                             
-                            nodal_age[node_is_nan] = np.nan
-                            nodal_ages[c] = nodal_age
+                            elem_age[elem_is_nan] = np.nan
+                            elem_ages[c] = elem_age
                         else:
-                            nodal_ages[c] = np.full((nx, nz), np.nan)
+                            elem_ages[c] = np.full((nex, nez), np.nan)
 
         if i < start:
             continue
@@ -231,10 +230,6 @@ def main(path, start=1, end=-1, thermochron=False):
         else:
             a = fl.read_temperature(i)
         vts_dataarray(fvts, a.swapaxes(0,1), 'Temperature')
-
-        if thermochron:
-            for name, data in zip(thermochron_system_names, nodal_ages):
-                vts_dataarray(fvts, data.swapaxes(0, 1), f'age_{name}')
 
         x0, z0 = fl.read_original_mesh(i)
         vts_dataarray(fvts, x0.swapaxes(0,1), 'x0')
@@ -320,6 +315,10 @@ def main(path, start=1, end=-1, thermochron=False):
         # Work done by stress
         a = sii * 1e8 * eii
         vts_dataarray(fvts, a.swapaxes(0,1), 'Work')
+
+        if thermochron:
+            for name, data in zip(thermochron_system_names, elem_ages):
+                vts_dataarray(fvts, data.swapaxes(0, 1), f'age_{name}')
 
         fvts.write('  </CellData>\n')
 
