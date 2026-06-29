@@ -21,7 +21,7 @@
 
 6. All parameters are in **SI units** (meter, kilogram, second, Pascal, ...), unless specified. The temperature is in Celsius.
 
-7. A diagram showing the geometry and phase changes of a subduction model. ![input_description.png](input_description.png)
+7. A diagram showing the geometry of a subduction model. ![input_description.png](input_description.png)
 
 8. **Upgrading Old Input Files**: If you have a parameter file (`.inp`) written for a historical version of GeoFLAC, you can automatically convert and upgrade it to the newest engine format by running:
     ```bash
