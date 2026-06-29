@@ -246,7 +246,7 @@ ifneq ($(IS_REPO),)
 	@echo >> snapshot.diff
 	@echo >> snapshot.diff
 	@echo '== Code modification (checked-in but not in "origin") ==' >> snapshot.diff
-	@git log --patch --no-merges origin..HEAD >> snapshot.diff
+	@git log --patch --no-merges origin..HEAD >> snapshot.diff 2>/dev/null || true
 else
 	@echo "Warning: Not a git repository. Cannot take code snapshot." | tee -a snapshot.diff
 	@echo "Warning: Use 'git clone' to copy the code!" | tee -a snapshot.diff
