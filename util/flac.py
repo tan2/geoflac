@@ -877,9 +877,8 @@ def elem_coord(x, z):
 
 
 def make_uniform_grid(xmin, xmax, zmin, zmax, dx, dz):
-    # grid size
-    nx = (xmax - xmin) / dx + 1
-    nz = (zmax - zmin) / dz + 1
+    nx = int((xmax - xmin) / dx + 1)
+    nz = int((zmax - zmin) / dz + 1)
 
     # generate uniform grid
     xx = np.linspace(xmin, xmax, nx)
@@ -970,7 +969,7 @@ def printing(*args, **kwd):
     stream = kwd.get('stream')
     if stream == None:
         stream = sys.stdout
-    elif isinstance(stream, (str, unicode)):
+    elif isinstance(stream, str):
         filename = stream
         stream = open(filename, 'w')
 
