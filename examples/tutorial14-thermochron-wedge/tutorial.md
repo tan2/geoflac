@@ -67,9 +67,9 @@ The mechanical boundary conditions simulate the tectonic convergence:
 
 Unlike other setups where thermochronological ages are computed inline during the simulation, this tutorial computes closure ages **offline** in a post-processing step:
 * During the solver run, the node temperatures and the cooling rates (`coolingrate.0`, representing $dT/dt$) are saved.
-* A Python post-processing script, [`flac2vtk.py`](../../util/flac2vtk.py), reads the marker coordinate files, the cooling rates, and a reference parameter database [`thermo_chron.dat`](../../util/thermo_chron.dat).
-* It computes the Zircon Fission Track (ZFT), Zircon (U-Th)/He (ZHe), and Apatite Fission Track (AFT) ages on the Lagrangian markers (which advect with the rock material) and interpolates them back to the grid nodes.
-* The output is written directly into structured VTS files (`flac.*.vts`) for visualization.
+* A Python post-processing script, [`flacmarker2vtk.py`](../../util/flacmarker2vtk.py), reads the marker coordinate files, the cooling rates, and a reference parameter database [`thermo_chron.dat`](../../util/thermo_chron.dat).
+* It computes the Zircon Fission Track (ZFT), Zircon (U-Th)/He (ZHe), Apatite Fission Track (AFT), and other closure ages directly on the Lagrangian markers (which advect with the rock material).
+* The output thermochronology ages are saved directly as point data arrays (`age_ZFT`, `age_ZHe`, `age_AFT`, etc.) in the marker VTP files (`flacmarker.*.vtp`) for visualization.
 
 ---
 
@@ -83,11 +83,11 @@ Run the FLAC solver on the input file:
 The solver will output binary files (such as `phase.0`, `temp.0`, `coolingrate.0`, `vel.0`) at regular time intervals.
 
 ### Step 2: Compute Thermochronological Ages
-Run the post-processing script with the `-t` option to compute offline thermochronology and generate `.vts` visualization files:
+Run the marker post-processing script with the `-t` option to compute offline thermochronology and generate `.vtp` visualization files for the markers:
 ```bash
-python3 ../../util/flac2vtk.py -t .
+python3 ../../util/flacmarker2vtk.py -t .
 ```
-This script reads `coolingrate.0`, the markers, and `util/thermo_chron.dat` to compute ZFT, ZHe, and AFT ages, writing them into `flac.*.vts`.
+This script reads `coolingrate.0`, the markers, and `util/thermo_chron.dat` to compute ZFT, ZHe, and AFT ages directly on the markers, writing them as point arrays (`age_ZFT`, `age_ZHe`, `age_AFT`, etc.) into `flacmarker.*.vtp`.
 
 ### Step 3: Plot results
 Generate diagnostic figures showing the shear zones and phases:
