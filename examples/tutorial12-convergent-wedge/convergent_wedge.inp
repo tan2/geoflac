@@ -50,7 +50,7 @@
 ;nofside  nbc1 nbc2  nbc   a       b    c     d     e     f      g     h     i 
 1  1  21  10  3.1688e-10  0  0  0  0  0  0  0  0
 3  1  21  10  0  0  0  0  0  0  0  0  0
-2  1  51  200  10000.0  3300.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+2  1  51  1  0  0  0  0  0  0  0  0  0
 ;
 ; Hydrostatic pressure applied at bottom (disabled to enforce rigid base)
 ; {y,n(1,0),auto(2)}, Pressure at compens.depth, substratum phase, addit. dens. diff, damp_vis
