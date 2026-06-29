@@ -75,7 +75,7 @@
     + 30 - vely (strike slip version). (Experimental, used at your own risk.)
     + 40 - shear stress out of the plane. (Experimental, used at your own risk.)
     + 50 - velx with visc-dep profile. (Experimental, used at your own risk.)
-    + 200 - flexural bottom boundary condition (deforming thin elastic plate). Only applicable to the bottom boundary (`nofside` = 2).
+    + 200 - (_Experimental_) flexural bottom boundary condition (deforming thin elastic plate). Only applicable to the bottom boundary (`nofside` = 2).
         * **bca**: Effective elastic thickness ($T_e$) of the plate in meters.
         * **bcb**: Density ($\rho_m$) of the underlying fluid asthenosphere in kg/m^3.
         * **bcc** ~ **bci**: Unused (set to 0.0).
