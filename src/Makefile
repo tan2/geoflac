@@ -55,7 +55,7 @@ gprof = 0
 
 ## for GNU gfortran >= 5
 ifeq ($(F90), gfortran)
-	CFLAGS += -ffree-form
+	CFLAGS += -ffree-form -ffree-line-length-none
 	ifeq ($(omp), 1)
 		CFLAGS += -fopenmp
 		LDFLAGS += -fopenmp
