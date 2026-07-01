@@ -63,7 +63,33 @@ The mechanical boundary conditions simulate the tectonic convergence:
 
 ---
 
-## 5. Offline Thermochronology
+## 5. Topographic Surface Processes (Erosion & Sedimentation)
+
+During mountain building, rapid tectonic uplift creates steep topography. Without erosion, the growing wedge would eventually become too heavy, preventing further deformation. In this model, surface processes are simulated via a hillslope diffusion equation on the free surface:
+
+$$\frac{\partial z_s}{\partial t} = \frac{\partial}{\partial x} \left( \kappa \frac{\partial z_s}{\partial x} \right)$$
+
+Where:
+* $z_s(x)$ is the surface node elevation (`cord(1, :, 2)`).
+* $\kappa$ is the topography diffusivity (`topo_removal_rate = 1.0e-6` $\text{m}^2/\text{s}$ or $\approx 31.5\text{ m}^2/\text{yr}$ in [thermochron_wedge.inp](thermochron_wedge.inp)).
+
+### Numerical Formulation
+The second derivative of surface elevation is calculated using a central finite-difference scheme (discretized in [fl_move.f90](../../src/fl_move.f90)):
+
+$$dtopo_i = 0.5 \times dt \times \frac{\kappa_{i+1} S_{i+1/2} - \kappa_{i-1} S_{i-1/2}}{x_{i+1} - x_{i-1}}$$
+
+Where $S_{i+1/2}$ is the local slope. Mountain peaks (convex curvature) experience **erosion** ($dtopo_i < 0$), while valleys and basins (concave curvature) experience **sedimentation** ($dtopo_i > 0$). To prevent numerical instability, the erosion depth is capped at half the top-row element height.
+
+### Lagrangian Marker Adjustment (Resurfacing)
+Because material properties are carried by Lagrangian markers, the solver runs a `resurface` routine (every `ifreq_avgsr = 10` steps):
+* **Erosion**: Markers that end up above the new eroded surface are deleted.
+* **Sedimentation**: The new space created by deposition is filled with new markers assigned to the **unconsolidated sediment phase** (`ksed1 = 1`).
+
+This mass transfer unloading at the surface drives rapid exhumation, which directly influences the cooling paths and closure ages tracked by the thermochronology module.
+
+---
+
+## 6. Offline Thermochronology
 
 Unlike other setups where thermochronological ages are computed inline during the simulation, this tutorial computes closure ages **offline** in a post-processing step:
 * During the solver run, the node temperatures and the cooling rates (`coolingrate.0`, representing $dT/dt$) are saved.
@@ -73,7 +99,7 @@ Unlike other setups where thermochronological ages are computed inline during th
 
 ---
 
-## 6. Running the Simulation and Plotting
+## 7. Running the Simulation and Plotting
 
 ### Step 1: Run the Solver
 Run the FLAC solver on the input file:
@@ -102,6 +128,6 @@ This script creates:
 
 ---
 
-## 7. Reference Literature
+## 8. Reference Literature
 For the physical details, parameter studies, and application to the Taiwan Orogeny, please refer to:
 * **Tan et al. (2024)**, *Mountain building process of the Taiwan orogeny*, Science Advances, 10, eadp8056. [PDF reference](file:///home/tan2/Dropbox/Papers/2024/Science%20Advances/Tan%20et%20al-2024-Mountain%20building%20process%20of%20the%20Taiwan%20orogeny.pdf)
