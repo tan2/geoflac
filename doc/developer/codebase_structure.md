@@ -4,18 +4,7 @@ This document provides a technical overview of the GeoFLAC codebase structure, m
 
 ---
 
-## 1. Directory Layout
-
-The GeoFLAC repository is structured as follows:
-
-*   **`src/`**: The core Fortran 90 solver source code, including headers, math libraries, and the compilation Makefile.
-*   **`util/`**: Post-processing and analysis utility scripts (e.g., VTK converters, plotting scripts).
-*   **`examples/`**: Step-by-step benchmark tutorials (directories starting with `tutorial*`) and input templates.
-*   **`doc/`**: Documentation split into user references (root level) and internal code guides ([`doc/developer/`](./)).
-
----
-
-## 2. Core Solver Modules
+## 1. Core Solver Modules
 
 The execution flow of GeoFLAC is modular, with the main time loop driving thermal, mechanical, and phase transitions.
 
@@ -50,7 +39,7 @@ graph TD
 
 ---
 
-## 3. The Build System
+## 2. The Build System
 
 GeoFLAC uses a classic Unix `make` build system managed by the Makefile in `src/Makefile`.
 
@@ -74,7 +63,7 @@ To ensure reproducibility, GeoFLAC embeds compiling metadata (such as git commit
 
 ---
 
-## 4. Continuous Integration (CI)
+## 3. Continuous Integration (CI)
 
 GeoFLAC includes automated build validation on every commit using **GitHub Actions** (configured in [`.github/workflows/build.yml`](../../.github/workflows/build.yml)):
 *   **Runner Environment**: Runs on both Linux (`ubuntu-latest`) and macOS (`macos-latest`).

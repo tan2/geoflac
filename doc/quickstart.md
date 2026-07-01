@@ -4,7 +4,18 @@ This guide will walk you through compiling the solver, running the standard subd
 
 ---
 
-## 1. Compilation
+## 1. Directory Layout
+
+The GeoFLAC repository is structured as follows:
+
+*   **`src/`**: The core Fortran 90 solver source code, including headers, math libraries, and the compilation Makefile.
+*   **`util/`**: Post-processing and analysis utility scripts (e.g., VTK converters, plotting scripts).
+*   **`examples/`**: Step-by-step benchmark tutorials (directories starting with `tutorial*`) and input templates.
+*   **`doc/`**: Documentation split into user references (root level) and internal code guides ([`doc/developer/`](./developer/)).
+
+---
+
+## 2. Compilation
 
 1. Navigate to the source directory:
    ```bash
@@ -19,7 +30,7 @@ This guide will walk you through compiling the solver, running the standard subd
 
 ---
 
-## 2. Running Your First Simulation
+## 3. Running Your First Simulation
 
 We provide a standard **Ocean-Ocean Subduction** model under the `examples/` directory.
 
@@ -44,7 +55,7 @@ You will see progress messages indicating step count and elapsed execution time.
 
 ---
 
-## 3. Visualizing Results with VisIt or ParaView
+## 4. Visualizing Results with VisIt or ParaView
 
 GeoFLAC writes its outputs in custom format files. We provide a utility script to convert these outputs into standard VTK files.
 
