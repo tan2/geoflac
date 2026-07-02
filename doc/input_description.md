@@ -37,8 +37,8 @@
 | Parameters  | Types |  Description  |
 |:------------|:-----:|:--------------|
 |**nex, nez** | 2 int | # of *elements* in X and Z directions.|
-|**x0, z0** | 2 dbl | Beginning coordinates (Upper Left).|
-|**rxbo, rzbo** | 2 dbl | Size: width from left (positive), vertical thickness (negative), or coordinate value of Lower Right corner (depth is negative).|
+|**x0, z0** | 2 dbl | Beginning coordinates in meters (Upper Left).|
+|**rxbo, rzbo** | 2 dbl | Size in meters: width from left (positive), vertical thickness (negative), or coordinate value of Lower Right corner (depth is negative).|
 |**ircoord, coordfile** | int,str | if **ircoord**=1, read the initial coordinates from the file.|
 
 * In each direction of the mesh, #nodes = #elems + 1 (one more nodes than elements or cells), i.e. **nx** = **nex**+1 and **nz** = **nez**+1.
@@ -68,30 +68,31 @@
 * Each side is composed of one or more segments.  Each segment with its own BC behavior.  The starting and ending nodes of each segment are **nbc1** and **nbc2**.
 * When **nofside**=5, the plate between i=[**nbc1**,**nbc2**] and j=[1,moho_grid * 2] is pushed at a constant velocity Vx. (**nbc** must be 10 in this case.)
 * These are the following types of boundary conditions (**nbc**):
-    +  1 - velz
-    +  2 - shear stress (x,z) plane
-    + 10 - velx 
-    + 20 - normal stress
-    + 30 - vely (strike slip version). (Experimental, used at your own risk.)
-    + 40 - shear stress out of the plane. (Experimental, used at your own risk.)
-    + 50 - velx with visc-dep profile. (Experimental, used at your own risk.)
+    +  1 - velz (velocity in z direction, m/s)
+    +  2 - shear stress (x,z) plane (Pascals, Pa)
+    + 10 - velx (velocity in x direction, m/s)
+    + 20 - normal stress (Pascals, Pa)
+    + 30 - vely (strike slip version, m/s). (Experimental, used at your own risk.)
+    + 40 - shear stress out of the plane (Pascals, Pa). (Experimental, used at your own risk.)
+    + 50 - velx with visc-dep profile (m/s). (Experimental, used at your own risk.)
     + 200 - (_Experimental_) flexural bottom boundary condition (deforming thin elastic plate). Only applicable to the bottom boundary (`nofside` = 2).
         * **bca**: Effective elastic thickness ($T_e$) of the plate in meters.
         * **bcb**: Density ($\rho_m$) of the underlying fluid asthenosphere in kg/m^3.
         * **bcc** ~ **bci**: Unused (set to 0.0).
         * The elastic properties (Young's Modulus and Poisson's ratio) are derived dynamically from the bottom elements' Lamé parameters.
 * If the BC is a velocity in x or z, it is provided in units of meters/sec, a very small number.  For reference, 1 mm/year = 1 km/myr = 3.17E-11 m/s.
-* The BC function **fbc(s) = a + b S + c S^2 + (d cos (2pi e S) + f sin (2pi g S))*exp(-(S - i)^2 h^2 )** is measured *along this segment* as the length ratio. **S** is normalized between 0~1, i.e. **S** = (node-in-segment - **nbc1**) / (**nbc2** - **nbc1**).
+* If the BC is a stress, it is provided in units of Pascals (Pa).
+* The BC function **fbc(s) = a + b S + c S^2 + (d cos (2pi e S) + f sin (2pi g S))*exp(-(S - i)^2 h^2 )** is measured *along this segment* as the length ratio. **S** is normalized between 0~1, i.e. **S** = (node-in-segment - **nbc1**) / (**nbc2** - **nbc1**). The coefficients **a** through **i** (mapped from variables **bca** to **bci**) are in units of m/s for velocity BCs or Pa for stress BCs.
 
 | Parameters  | Types |  Description  |
 |:------------|:-----:|:--------------|
 |**nyhydro,pisos,iphsub,drosub,damp-vis**| int,dbl,int,2 dbl | Winkler-type boundary condition, ie. the bottom boundary is open for flow passing through in and out. Effectively, the bottom is supported by an inviscid fluid.  See below. |
-|**g**| dbl | Acceleration of gravity.  (typically 9.81 or 10).|
+|**g**| dbl | Acceleration of gravity in m/s^2. (typically 9.81 or 10).|
 
 * **nyhydro**: 0-no, 1-yes (manual), 2-yes (auto). If 2, the reference hydrostatic pressure is computed from the column of elements at the _right_ boundary (defined in init_stress.f90).
-* **pisos**: reference hydrostatic pressure at the bottom boundary (used when **nyhydro**=1). Calculated automatically if **nyhydro**=2.
+* **pisos**: reference hydrostatic pressure in Pascals (Pa) at the bottom boundary (used when **nyhydro**=1). Calculated automatically if **nyhydro**=2.
 * **iphsub**: substratum phase (see _PHASE_ Section below) of the inviscid fluid (whose density affects the restoration stress at the bottom).
-* **drosub**: additional density difference of the fluid.
+* **drosub**: additional density difference of the fluid in kg/m^3.
 * **damp-vis**: not used.
 * NOTE: Use nyhdro=2, typically iphsub=8 (mantle phase).
 
@@ -180,33 +181,33 @@ Phase changes are activated and will take place among certain of the defined pha
     + 11- visco-elasto-plastic (Mohr-Coulomb + Fixed Maxwell, Newtonian).
     + 12- visco-elasto-plastic (Mohr-Coulomb + Maxwell, Non-Newtonian). This is the only rheology that is under active use and maintained.
 +  **visc**:  not used.
-+  **den**:  density at 0 Pa and 0 Celsius.
-+  **alfa**:  coeff. of thermal expansion.
-+  **beta**: compressibility. How the density increases with pressure.
-+  **pln**:  n for viscosity power law
-+  **acoef**: A for viscosity power law
-+  **eactiv**: E - activation energy for viscosity
-+  **vactiv**: V - activation volume for viscosity, in m^3/mol (or Pa^-1 equivalent).
++  **den**:  density at 0 Pa and 0 Celsius in kg/m^3.
++  **alfa**:  coeff. of thermal expansion in K^-1 (or °C^-1).
++  **beta**: compressibility in Pa^-1. How the density increases with pressure.
++  **pln**:  n exponent for viscosity power law (dimensionless).
++  **acoef**: A coefficient for viscosity power law in Pa^-n s^-1.
++  **eactiv**: E - activation energy for viscosity in J/mol.
++  **vactiv**: V - activation volume for viscosity in m^3/mol.
 + The non-newtonian viscosity is calculated by this equation: visc = 0.25e6 (0.75 **acoef**)^(-1/**pln**) *strain-rate*^(1/**pln** - 1) exp[ (**eactiv** + **vactiv** * *pressure*) / (**pln** *R* (*T* + 273))]. Where *strain-rate* is the second invariant of the deviatoric strain rate, *R* is the gas constant (8.314 J/(mol K)), *T* is the temperature in Celsius, and *pressure* is the pressure in Pascal.
-+  **rl**:  Lame parameter: lambda
-+  **rm**:  Shear modulus: mu
++  **rl**:  Lame parameter: lambda in Pascals (Pa).
++  **rm**:  Shear modulus: mu in Pascals (Pa).
 + Under tectonic time scale, the elastic constants are different from that from seismic waves.
-+  **plstrain1**: Mohr-Coulomb: plastic strain of onset softening
-+  **plstrain2**: Mohr-Coulomb: plastic strain of saturated softening
-+  **fric1**: Mohr-Coulomb: friction angle before softening
-+  **fric2**: Mohr-Coulomb: friction angle of saturated softening, in degree
-+  **cohesion1**: Mohr-Coulomb: cohesion before softening
-+  **cohesion2**: Mohr-Coulomb: cohesion of saturated softening, in Pa
-+  **dilat1**: Mohr-Coulomb: dilation angle before softening, non-associated plastic flow.
-+  **dilat2**: Mohr-Coulomb: dilation angle of saturated softening, in degree
++  **plstrain1**: Mohr-Coulomb: plastic strain of onset softening (dimensionless).
++  **plstrain2**: Mohr-Coulomb: plastic strain of saturated softening (dimensionless).
++  **fric1**: Mohr-Coulomb: friction angle before softening in degrees.
++  **fric2**: Mohr-Coulomb: friction angle of saturated softening in degrees.
++  **cohesion1**: Mohr-Coulomb: cohesion before softening in Pascals (Pa).
++  **cohesion2**: Mohr-Coulomb: cohesion of saturated softening in Pascals (Pa).
++  **dilat1**: Mohr-Coulomb: dilation angle before softening in degrees (non-associated plastic flow).
++  **dilat2**: Mohr-Coulomb: dilation angle of saturated softening in degrees.
 + The Mohr-Coulomb yield stress is **cohesion** + *tan*(**fric**) *normal-stress*. The non-associated plastic flow with strain softening is used.
 + Most material starts with 0 plastic strain. The yield stress is calculated from the pre-softening parameters (**fric1**, **cohesion1**, **dilat1**).
 + When the plasitc strain is greater than **plstrain1**, softening begins. The Mohr-Coulomb parameters are linear interpolated.
 + When the plasitc strain is greater than **plstrain2**, softening saturates, and the yield stress is calculated from the pre-softening parameters (**fric2**, **cohesion2**, **dilat2**).
-+  **conduct**: thermal conductivity
-+  **cp**:  heat capacity at constant pressure, J/(kg C)
-+  **ts**:  solidus temperature, only used for the hydrated mantle phase.
-+  **tl**:  liquidus temperature, only used.
++  **conduct**: thermal conductivity in W/(m K).
++  **cp**:  heat capacity at constant pressure in J/(kg K) (or J/(kg C)).
++  **ts**:  solidus temperature in Celsius, only used for the hydrated mantle phase.
++  **tl**:  liquidus temperature in Celsius.
 +  **tk**:  latent heat of fusion temperature, not used.
 +  **fk**:  coeff of latent heat of fusion, not used.
 
@@ -252,8 +253,8 @@ Phase changes are activated and will take place among certain of the defined pha
 
 | Parameters  | Types |  Description  |
 |:------------|:-----:|:--------------|
-|**ten-off**  |  dbl  | Tension cut-off. |
-|**tau-heal** |  dbl  | Healing time. 0 for no healing. For healing, use 1e13 ~ 0.3 myr. |
+|**ten-off**  |  dbl  | Tension cut-off in Pascals (Pa). |
+|**tau-heal** |  dbl  | Healing time in seconds. 0 for no healing. For healing, use 1e13 s ~ 0.3 myr. |
 
 * Plastic strain can heal over time by exponentially decays with time.
 
@@ -261,8 +262,8 @@ Phase changes are activated and will take place among certain of the defined pha
 |:------------|:-----:|:--------------|
 |**v-min, v-max, ivis-shape, efoldc**| 2 dbl, int, dbl| Viscosity limits. See below. |
 
-* **v-min**: Minimum viscosity cut-off. If the visc. is too small, the maxwell time scale will control how big the time step is.
-* **v-max**: Maximum viscosity cut-off.
+* **v-min**: Minimum viscosity cut-off in Pa s. If the visc. is too small, the maxwell time scale will control how big the time step is.
+* **v-max**: Maximum viscosity cut-off in Pa s.
 * **ivis-shape** and **efoldc**: not used.
 
 | Parameters  | Types |  Description  |
@@ -275,13 +276,13 @@ Phase changes are activated and will take place among certain of the defined pha
 * **itype-melting**: 0 for no melting. 1 for arc-type melting.
 * **nelem-serp**: the thickness (# elements) of serpentinization zone above subducted oceanic crust.
 * **nelem-dike**: the width of magma diking (migration) in the crust (number of elements wide).
-* **prod-magma**: the production rate of magma migrating away from the active melting (m^3 of magma/m^3 of melt/second)
-* **rho-magma**: the density of magma (kg/m^3)
-* **angle-mzone**: angle (in degree) of the magma zone in the mantle
-* **fmagma-max**: max volume ratio of magma
+* **prod-magma**: the production rate of magma migrating away from the active melting (m^3 of magma/m^3 of melt/second, i.e., s^-1).
+* **rho-magma**: the density of magma in kg/m^3.
+* **angle-mzone**: angle (in degrees) of the magma zone in the mantle.
+* **fmagma-max**: max volume ratio of magma (dimensionless fraction).
 * **ratio-mantle-mzone**: ratio of magma staying in the mantle. It will affect how much magma resides in the mantle wedge, respectively.
-* **latent-heat-magma**: the latent heat of magma freezing (J/kg)
-* **lambda-freeze, lambda-freeze-tdep**: temperature-dependent decaying constant of magma (ie. freezing) M(dt)=M(0)*(1-lambda*dt), where lambda = **lambda-freeze** x exp(-**lambda-freeze-tdep** x (T - **t_top**)). These will affect how long magma can remain in the mantle wedge. Additionally, more freezing will release more latent heat and increase the temperature in the mantle wedge.
+* **latent-heat-magma**: the latent heat of magma freezing in J/kg.
+* **lambda-freeze, lambda-freeze-tdep**: temperature-dependent decaying constant of magma (ie. freezing) M(dt)=M(0)*(1-lambda*dt), where lambda = **lambda-freeze** (in s^-1) x exp(-**lambda-freeze-tdep** x (T - **t_top**)). These will affect how long magma can remain in the mantle wedge. Additionally, more freezing will release more latent heat and increase the temperature in the mantle wedge.
 * **weaken-ratio-plastic, weaken-ratio-viscous**: Magma induced weakening for yield stress (plastic) and viscosity. Saturated at **fmagma-max**.
 
 ## REMESHING
@@ -299,9 +300,9 @@ Phase changes are activated and will take place among certain of the defined pha
     - 4: L,R restored to vertical walls straight from the top corners, top as is.
     - 11: L,R restored to initial sides, top,bottom as is.
 * **ntest-rem**  #time steps to test if remeshing needed.
-* **angle-rem**  critical angle (in degree) to trigger remeshing.
+* **angle-rem**  critical angle (in degrees) to trigger remeshing.
 * **dx-rem** critical distance of shortening for **mode-rem**=3 or 11. Normalized size = **rxb0/nex**. 
-* The surface topography can change due to erosion and sedimentation, which is modeled as hill slope diffusion (see fl_move.f90). The diffusivity is controlled by **topo-kappa**. Use 0 for no erosion, 1e-5 or larger for strong erosion.
+* The surface topography can change due to erosion and sedimentation, which is modeled as hill slope diffusion (see fl_move.f90). The diffusivity is controlled by **topo-kappa** in m^2/s. Use 0 for no erosion, 1e-5 or larger for strong erosion.
 
 
 ## PROCESS CONTROL
