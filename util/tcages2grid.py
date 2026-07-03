@@ -159,6 +159,66 @@ def interpolate_vtp_to_vts(vtp_path, vts_path):
         if name and (name.startswith("age_") or name == "max_temp"):
             ages = read_data_array(da)
             
+            # Filter out young outliers from newly inserted/replenished markers.
+            # Newly inserted markers are assigned large IDs (> max ID of initial markers).
+            # If they are created in a cold element, they instantly record a cooling age of 0.0 Myr.
+            if name.startswith("age_"):
+                # Try to find the maximum initial marker ID from the first frame
+                max_initial_id = None
+                dirname = os.path.dirname(vtp_path)
+                initial_vtp_path = os.path.join(dirname, "flacmarker.000001.vtp")
+                if os.path.exists(initial_vtp_path):
+                    try:
+                        initial_tree = ET.parse(initial_vtp_path)
+                        initial_root = initial_tree.getroot()
+                        initial_point_data_el = initial_root.find(".//PointData")
+                        if initial_point_data_el is not None:
+                            for tmp_da in initial_point_data_el.findall("DataArray"):
+                                if tmp_da.get("Name") == "ID":
+                                    initial_ids = read_data_array(tmp_da)
+                                    if len(initial_ids) > 0:
+                                        max_initial_id = np.max(initial_ids)
+                                    break
+                    except Exception:
+                        pass
+                
+                # Try to read the ID array of the current frame
+                current_ids = None
+                for tmp_da in point_data_el.findall("DataArray"):
+                    if tmp_da.get("Name") == "ID":
+                        current_ids = read_data_array(tmp_da)
+                        break
+                
+                if max_initial_id is not None and current_ids is not None and len(current_ids) == len(ages):
+                    # Precise filter: exclude any markers with IDs larger than the initial marker count
+                    outlier_mask = (current_ids > max_initial_id)
+                    if np.any(outlier_mask):
+                        ages = ages.copy()
+                        ages[outlier_mask] = np.nan
+                else:
+                    # Robust fallback: filter outliers using a local median absolute/relative threshold
+                    elem_markers = {}
+                    valid_indices = np.where(ages > -0.5)[0]
+                    for idx in valid_indices:
+                        key = (j_el[idx], i_el[idx])
+                        if key not in elem_markers:
+                            elem_markers[key] = []
+                        elem_markers[key].append(idx)
+                    
+                    outlier_indices = []
+                    for key, indices in elem_markers.items():
+                        if len(indices) >= 3:
+                            element_ages = ages[indices]
+                            median_age = np.median(element_ages)
+                            if median_age > 0.1:
+                                for idx in indices:
+                                    if ages[idx] < 0.15 * median_age:
+                                        outlier_indices.append(idx)
+                                        
+                    if len(outlier_indices) > 0:
+                        ages = ages.copy()
+                        ages[outlier_indices] = np.nan
+            
             # Determine state of each cell that contains markers
             # Priority: Reset (0) > Unclosed (1) > Unreset (2)
             has_reset = np.zeros((nez, nex), dtype=bool)
