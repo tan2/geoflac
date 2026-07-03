@@ -55,7 +55,7 @@ def main():
     
     # Grid parameters
     L = 20000.0           # Width of the domain in m
-    Vx = -0.01            # Left boundary velocity in m/yr (1 cm/yr compressive)
+    Vx = -0.001           # Left boundary velocity in m/yr (0.1 cm/yr compressive)
     sec_year = 3.1558e7   # Seconds in a year
     
     # Strain rate in s^-1
@@ -106,7 +106,7 @@ def main():
     plt.xlabel('Time (Kyr)', fontsize=12, labelpad=10)
     plt.ylabel(r'Total Stress $\sigma_{xx}$ (MPa)', fontsize=12, labelpad=10)
     
-    plt.xlim(-2.0, 42.0)
+    plt.xlim(-1.0, 21.0)
     # Stress is compressive (negative), so we set the limits accordingly
     plt.ylim(sigma_xx_steady_mpa * 1.25, 0.5)
     

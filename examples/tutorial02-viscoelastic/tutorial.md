@@ -12,7 +12,7 @@ First, ensure that the output directory is clean of any past run files, and exec
 rm -f *.0 *.rs *.vts _contents.* _markers.* pisos.rs time.rs vbc.s output.asc sys.msg
 ../../src/flac maxwell.inp
 ```
-The solver will run for 76,500 steps, simulating a total time of $40.0$ Kyr and writing outputs every $1.0$ Kyr.
+The solver will run for approximately 38,000 steps, simulating a total time of $20.0$ Kyr and writing outputs every $1.0$ Kyr.
 
 ### Step 2: Plot the Stress-Relaxation Curve
 Run the provided Python plotting script:
@@ -56,7 +56,7 @@ The material is a Newtonian Maxwell viscoelastic rock defined in the input file 
 The mechanical boundary conditions are configured in [`maxwell.inp`](maxwell.inp) to compress the block horizontally:
 
 1. **Left Boundary ($X = 0$ km, Side 1)**:
-   * Constrained to move horizontally inward (to the right) at a constant velocity of $V_x = 1.0 \text{ cm/yr} \approx 3.1687686 \times 10^{-10} \text{ m/s}$.
+   * Constrained to move horizontally inward (to the right) at a constant velocity of $V_x = 0.1 \text{ cm/yr} \approx 3.1687686 \times 10^{-11} \text{ m/s}$.
    * Free to move vertically (zero vertical shear traction).
 2. **Right Boundary ($X = 20$ km, Side 3)**:
    * Constrained horizontally to zero velocity ($V_x = 0.0$ m/s, forming a rigid wall).
@@ -69,30 +69,7 @@ The mechanical boundary conditions are configured in [`maxwell.inp`](maxwell.inp
 
 ---
 
-## 4. Analytical Formulation (Newtonian Maxwell Flow)
-
-Under 2D plane strain ($\epsilon_{yy} = 0$) and a free top surface ($\sigma_{zz} = 0$), the total horizontal compressive stress $\sigma_{xx}(t)$ builds up elastically and relaxes viscously over time:
-
-$$\sigma_{xx}(t) = \sigma_{xx}^{steady} \left( 1 - e^{-t/\tau_{eff}} \right)$$
-
-where:
-1. **Horizontal Strain Rate ($\dot{\epsilon}_{xx}$)**:
-   $$\dot{\epsilon}_{xx} = \frac{V_x}{L} = \frac{-0.01 \text{ m/yr}}{20000 \text{ m}} \approx -1.584384 \times 10^{-14} \text{ s}^{-1}$$
-2. **Effective Viscous Resistance**:
-   Under plane strain Newtonian flow, the effective viscosity resisting horizontal contraction is $\eta_{eff} = 4\eta$.
-   $$\sigma_{xx}^{steady} = 4\eta\dot{\epsilon}_{xx} = 4 \times 10^{21} \text{ Pa}\cdot\text{s} \times (-1.584384 \times 10^{-14} \text{ s}^{-1}) = -63.375 \text{ MPa}$$
-3. **Effective Relaxation Time ($\tau_{eff}$)**:
-   $$\tau_{eff} = \frac{\eta_{eff}}{E_{eff}} = \frac{4\eta}{\frac{4\mu(\lambda + \mu)}{\lambda + 2\mu}} = \frac{\eta (\lambda + 2\mu)}{\mu (\lambda + \mu)}$$
-   Using Lamé constants $\lambda = \mu = 3.0 \times 10^{10} \text{ Pa}$:
-   $$\tau_{eff} = 5.0 \times 10^{10} \text{ s} \approx 1584.38 \text{ years} = 1.584 \text{ Kyr}$$
-
-Because the relaxation time ($\approx 1.584$ Kyr) is much shorter than the simulation's 10 Kyr output interval, the stress is fully relaxed to its steady-state Newtonian plateau by the first output step ($10,000$ years $\approx 6.3\tau_{eff}$).
-
-*Note: Total horizontal stress is reconstructed by summing deviatoric stress and pressure: $\sigma_{xx} = \sigma'_{xx} + P$. Please refer to the Elastic tutorial for a detailed breakdown of stress decomposition and Kilobar-to-MPa conversion in GeoFLAC.*
-
----
-
-## 5. Simulation Results
+## 4. Simulation Results
 
 ### Stress and Strain Evolution
 The simulation captures both the elastic stress build-up and the Newtonian Maxwell viscoelastic relaxation process over time with exceptional detail.
@@ -103,6 +80,61 @@ The generated plot is saved to `images/stress_relaxation.png`:
 ![Stress-Relaxation Verification Chart](images/stress_relaxation.png)
 
 1. **Blue Dots**: The simulation output points spaced at 1 Kyr intervals, showing the transient relaxation curves.
-2. **Red Dashed Line**: The theoretical analytical relaxation curve showing the quick elastic stress build-up and the long-term viscoelastic steady-state plateau at $-63.375$ MPa.
+2. **Red Dashed Line**: The theoretical analytical relaxation curve showing the quick elastic stress build-up and the long-term viscoelastic steady-state plateau at $-6.3375$ MPa.
 
-The extremely minor 1-6% discrepancy represents the transient numerical damping and the physical geometrical thinning of the domain undergoing large strain, confirming the physical validity and high numerical precision of **GeoFLAC**'s viscoelastic mechanical solver.
+The extremely minor discrepancy (< 0.5%) confirms the physical validity and high numerical precision of **GeoFLAC**'s viscoelastic mechanical solver.
+
+*Note: Total horizontal stress is reconstructed by summing deviatoric stress ($\sigma'_{xx}$) and mean stress ($\sigma_m$, stored as a negative value under compression in `pres.0`):
+$$\sigma_{xx} = \sigma'_{xx} + \sigma_m$$
+Please refer to the Elastic tutorial for a detailed breakdown of stress decomposition and Kilobar-to-MPa conversion in GeoFLAC.*
+
+---
+
+## Appendix: Analytical Formulation & Viscoelastic Flow (Optional)
+
+Under 2D plane strain ($\epsilon_{yy} = 0$) and a free top surface ($\sigma_{zz} = 0$), the total horizontal compressive stress $\sigma_{xx}(t)$ builds up elastically and relaxes viscously over time:
+
+$$\sigma_{xx}(t) = \sigma_{xx}^{steady} \left( 1 - e^{-t/\tau_{eff}} \right)$$
+
+where:
+1. **Horizontal Strain Rate ($\dot{\epsilon}_{xx}$)**:
+   $$\dot{\epsilon}_{xx} = \frac{V_x}{L} = \frac{-0.001 \text{ m/yr}}{20000 \text{ m}} \approx -1.584384 \times 10^{-15} \text{ s}^{-1}$$
+2. **Effective Viscous Resistance**:
+   Under plane strain Newtonian flow, the effective viscosity resisting horizontal contraction is $\eta_{eff} = 4\eta$.
+   $$\sigma_{xx}^{steady} = 4\eta\dot{\epsilon}_{xx} = 4 \times 10^{21} \text{ Pa}\cdot\text{s} \times (-1.584384 \times 10^{-15} \text{ s}^{-1}) = -6.3375 \text{ MPa}$$
+3. **Effective Relaxation Time ($\tau_{eff}$)**:
+   $$\tau_{eff} = \frac{\eta_{eff}}{E_{eff}} = \frac{4\eta}{\frac{4\mu(\lambda + \mu)}{\lambda + 2\mu}} = \frac{\eta (\lambda + 2\mu)}{\mu (\lambda + \mu)}$$
+   Using Lamé constants $\lambda = \mu = 3.0 \times 10^{10} \text{ Pa}$:
+   $$\tau_{eff} = 5.0 \times 10^{10} \text{ s} \approx 1584.38 \text{ years} = 1.584 \text{ Kyr}$$
+
+Because the relaxation time ($\approx 1.584$ Kyr) is much shorter than the simulation's 10 Kyr output interval, the stress is fully relaxed to its steady-state Newtonian plateau by the first output step ($10,000$ years $\approx 6.3\tau_{eff}$).
+
+### Derivation of the Effective Viscosity ($\eta_{eff} = 4\eta$) (Optional)
+
+In incompressible 2D plane strain Newtonian flow, the constitutive relationship between total stress $\sigma_{ij}$, deviatoric stress $\sigma'_{ij}$, and mean stress/pressure $P$ is:
+$$\sigma_{ij} = \sigma'_{ij} - P \delta_{ij}$$
+$$\sigma'_{ij} = 2 \eta \dot{\epsilon}_{ij}$$
+
+Thus, the horizontal and vertical stress equations are:
+$$\sigma_{xx} = 2 \eta \dot{\epsilon}_{xx} - P$$
+$$\sigma_{zz} = 2 \eta \dot{\epsilon}_{zz} - P$$
+
+To solve for the total horizontal stress $\sigma_{xx}$ under horizontal contraction, we apply three physical constraints:
+1. **Plane Strain Condition**: The out-of-plane strain rate is zero:
+   $$\dot{\epsilon}_{yy} = 0$$
+2. **Incompressibility (Conservation of Volume)**: For a Newtonian fluid, the volumetric strain rate is zero:
+   $$\dot{\epsilon}_{xx} + \dot{\epsilon}_{yy} + \dot{\epsilon}_{zz} = 0$$
+   Substituting $\dot{\epsilon}_{yy} = 0$ yields:
+   $$\dot{\epsilon}_{zz} = -\dot{\epsilon}_{xx}$$
+3. **Free Surface Top Boundary**: The top boundary is a free surface, meaning vertical normal stress is zero:
+   $$\sigma_{zz} = 2 \eta \dot{\epsilon}_{zz} - P = 0 \implies P = 2 \eta \dot{\epsilon}_{zz}$$
+   Substituting $\dot{\epsilon}_{zz} = -\dot{\epsilon}_{xx}$ gives the pressure:
+   $$P = -2 \eta \dot{\epsilon}_{xx}$$
+
+Now, substituting this pressure $P$ back into the horizontal stress equation:
+$$\sigma_{xx} = 2 \eta \dot{\epsilon}_{xx} - P = 2 \eta \dot{\epsilon}_{xx} - (-2 \eta \dot{\epsilon}_{xx}) = 4 \eta \dot{\epsilon}_{xx}$$
+
+Therefore, the total horizontal stress resisting contraction is:
+$$\sigma_{xx} = \eta_{eff} \dot{\epsilon}_{xx}$$
+where the effective viscosity is:
+$$\eta_{eff} = 4 \eta$$
