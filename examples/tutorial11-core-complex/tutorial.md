@@ -19,9 +19,8 @@ Run the provided Python plotting script:
 ```bash
 python3 plot_core_complex.py
 ```
-This script reads the output files, extracts the grid coordinates, accumulated plastic strain (`aps`), lithology phases (`phase`), velocity field (`vx`, `vz`), and temperature (`temp`), and creates two premium visualizations:
-1. **`images/core_complex.png`**: A detailed, publication-ready two-panel plot of the final state (0.9 Myr) showing detachment faulting, exhumation velocity vectors, and temperature isotherms.
-2. **`images/evolution_core_complex.png`**: An evolutionary chart showing how the shear bands and detachment faults develop over time.
+This script reads the output files, extracts the grid coordinates, accumulated plastic strain (`aps`), and velocity field (`vx`, `vz`), and creates a multi-panel evolution visualization:
+* **`images/evolution_core_complex.png`**: An evolutionary chart showing how the shear bands develop over time, overlaid with downsampled velocity vectors and their scale key to track exhumation dynamics.
 
 ### Step 3: Convert Output to VTK Format (VTS)
 To visualize the spatial distribution of stresses, strain rates, temperature, and material phases in ParaView or VisIt, convert the binary output files to `.vts` structured grid files using the provided utility:
@@ -213,20 +212,20 @@ To localize strain and nucleate a major detachment fault in the center of the do
 ## 7. Analysis of Results
 
 ### Slant Fault Propagation
-In the upper panel of `images/core_complex.png`, you will observe that strain localizes into a sharp, narrow shear band (detachment fault) that propagates diagonally from the **slant weak seed** at depth up to the surface.
-Using a slant weak seed facilitates the nucleation of a single major low-angle detachment fault aligned with the conjugate shear direction, matching core complex geometry.
+In the evolution chart `images/evolution_core_complex.png`, you will observe that strain localizes into a sharp, narrow shear band (detachment fault) that propagates diagonally from the **slant weak seed** at depth up to the surface. Using a slant weak seed facilitates the nucleation of a single major low-angle detachment fault aligned with the conjugate shear direction, matching core complex geometry.
 
-![Metamorphic Core Complex final State](images/core_complex.png)
+### Velocity Field & Exhumation
+The overlaid velocity vectors show the exhumation dynamics. In the early stages, the velocity is horizontally uniform. As the detachment fault cuts through the crust, the block above the fault slides downward and outward, while the footwall block below is exhumed upward, shown by the upward-pointing velocity vectors in the central core complex region.
 
 ### Zero Edge Failure
 Due to the high strength of the Phase 2 boundary material (friction angle of 40°, cohesion of 60 MPa), the edges are protected from yielding and remain entirely in the elastic regime during extensional pulling. Consequently, plastic strain (`aps`) at the edges is virtually zero ($< 0.01$), forcing all deformation to localize cleanly into the central region.
 
 ### Uniform Thermal State
-In the lower panel, the temperature remains perfectly uniform at $10^\circ\text{C}$, showing flat, steady isotherms.
+The temperature remains perfectly uniform at $10^\circ\text{C}$ throughout the simulation.
 
-The evolutionary progress of the core complex on the refined grid is shown below:
+The evolutionary progress of the core complex and velocity field on the refined grid is shown below:
 
-![Metamorphic Core Complex Strain Evolution](images/evolution_core_complex.png)
+![Metamorphic Core Complex Strain & Velocity Evolution](images/evolution_core_complex.png)
 
 ---
 
