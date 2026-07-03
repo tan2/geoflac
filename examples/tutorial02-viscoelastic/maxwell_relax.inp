@@ -24,7 +24,7 @@
 ;nofside  nbc1 nbc2  nbc   a       b    c     d     e     f      g     h     i 
 2  1  41  1  0  0  0  0  0  0  0  0  0  ; Bottom free-slip
 3  1  11  10  0  0  0  0  0  0  0  0  0  ; Right free-slip
-1  1  11  10  3.16877e-11  0  0  0  0  0  0  0  0  ; Left moving in at 0.1 cm/yr
+1  1  11  10  0.0  0  0  0  0  0  0  0  0  ; Left boundary fixed (relaxation)
 ;
 ; Hydrostatic pressure
 0  0.0  8  0.0  0.0
@@ -117,7 +117,7 @@ phasedat.inp
 ; Time parameters below are in thousands years
 ;
 ; Max time of calculations (in Kyr)
-10.0
+20.0
 ;
 ; Time interval for screen output of calc. progress (in Kyr)
 0.99

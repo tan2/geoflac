@@ -1,25 +1,47 @@
-# GeoFLAC Tutorial: Viscoelastic Maxwell Compression
+# GeoFLAC Tutorial: Viscoelastic Maxwell Loading & Relaxation (Restart)
 
-This tutorial explains the setup, boundary conditions, physical results, and analytical verification of the viscoelastic Maxwell compression benchmark in **GeoFLAC**.
+This tutorial explains the setup, boundary conditions, physical results, and analytical verification of the two-stage viscoelastic Maxwell loading and relaxation benchmark in **GeoFLAC**, utilizing the native checkpoint save-and-restart mechanism.
 
 ---
 
 ## 1. Running the Simulation and Plotting
 
-### Step 1: Run the GeoFLAC Solver
-First, ensure that the output directory is clean of any past run files, and execute the compiled `flac` binary:
+To demonstrate the physical behavior of a Maxwell body under both constant strain rate (loading) and constant strain (relaxation), we run the simulation in two stages:
+1. **Stage 1 (0 to 10.0 Kyr)**: Compress the viscoelastic column at a rate of $0.1\text{ cm/yr}$, letting compressive stress build up.
+2. **Stage 2 (10.0 to 20.0 Kyr)**: Restart the simulation using a second input file where the boundary velocity is set to `0.0`, letting the built-up stress relax viscously.
+
+### How Restarting Works in GeoFLAC
+* **Save States**: When the solver reaches a process saving interval, it writes the binary coordinates, stresses, velocities, and marker arrays to `.rs` files (e.g. `time.rs`, `vel.rs`, `phase.rs`, `marker1.rs`). 
+* **Checkpoint Registry**: It registers the step number and physical time of the last save in `_contents.save`.
+* **Restart Trigger**: When you run the solver, if a file named `_contents.rs` exists in the execution directory, it will read `_contents.rs`, load the saved binary `.rs` files, and resume execution. If `_contents.rs` is absent, it starts a fresh run.
+
+### Step 1: Run Stage 1 (0 to 10.0 Kyr)
+Clean the output directory of any past run files and execute the solver with the loading input file:
 ```bash
 rm -f *.0 *.rs *.vts _contents.* _markers.* pisos.rs time.rs vbc.s output.asc sys.msg
 ../../src/flac maxwell.inp
 ```
-The solver will run for approximately 38,000 steps, simulating a total time of $20.0$ Kyr and writing outputs every $1.0$ Kyr.
+The solver will run up to 10.0 Kyr, write the first 11 frames of output (every 0.99 Kyr), and save the final checkpoint to `_contents.save`.
 
-### Step 2: Plot the Stress-Relaxation Curve
-Run the provided Python plotting script:
+### Step 2: Stage the Restart Checkpoint
+Copy the checkpoint registry to the active restart filename:
+```bash
+cp _contents.save _contents.rs
+```
+
+### Step 3: Run Stage 2 (10.0 to 20.0 Kyr)
+Resume the simulation using the relaxation input file `maxwell_relax.inp` (which has the left boundary velocity set to `0.0` and the max time set to `20.0` Kyr):
+```bash
+../../src/flac maxwell_relax.inp
+```
+The solver detects `_contents.rs`, prints `you have RESTART start conditions`, loads the 10.0 Kyr binary state, and continues calculations up to 20.0 Kyr.
+
+### Step 4: Plot the Stress Loading and Relaxation Curve
+Run the plotting script:
 ```bash
 python3 plot_viscoelastic.py
 ```
-This script reads the binary files, reconstructs the total horizontal stress $\sigma_{xx}$, and plots the simulation points alongside the high-resolution analytical relaxation curve, saving the plot as `images/stress_relaxation.png`.
+This script reads the binary files, reconstructs the total horizontal stress $\sigma_{xx}$, and plots the simulation points alongside the two-stage analytical curve, saving the plot as `images/stress_relaxation.png`.
 
 ---
 
@@ -32,7 +54,7 @@ The model represents a vertical two-dimensional column of homogenous viscoelasti
 * **Grid Resolution**: $40 \times 10$ elements in the $X$ and $Z$ directions, yielding a regular grid of square elements ($500 \times 500$ m).
 
 ### Material Properties
-The material is a Newtonian Maxwell viscoelastic rock defined in the input file `maxwell.inp` with the following parameters:
+The material is a Newtonian Maxwell viscoelastic rock defined in the input files with the following parameters:
 * **Rheology Type (`irheol`)**: Set to `3` (Visco-elastic, Maxwell, Non-Newtonian) in the input file. Refer to the [Rheology Types table](../../doc/input_description.md#phases--rheology) for other options.
 * **Lamé constant ($\lambda$)**: $3.0 \times 10^{10} \text{ Pa}$ (`Lame:rl`)
 * **Shear Modulus ($\mu$)**: $3.0 \times 10^{10} \text{ Pa}$ (`Lame:rm`)
@@ -47,14 +69,15 @@ The material is a Newtonian Maxwell viscoelastic rock defined in the input file 
 > * Zero thermal and pressure activation dependencies ([`eactiv = 0.0`, `vactiv = 0.0`](../../doc/input_description.md#phases--rheology))
 > * The pre-exponential coefficient [`acoef`](../../doc/input_description.md#phases--rheology) calculated from viscosity as:
 >   $$\text{acoef} = \frac{10^6}{3 \eta} = 3.3333333 \times 10^{-16}$$
-> * The viscosity limit bounds in `maxwell.inp` are set to `1.0e+18` and `1.0e+25` so the target $10^{21} \text{ Pa}\cdot\text{s}$ is safely inside the range.
+> * The viscosity limit bounds in the input files are set to `1.0e+18` and `1.0e+25` so the target $10^{21} \text{ Pa}\cdot\text{s}$ is safely inside the range.
 
 ---
 
 ## 3. Boundary Conditions
 
-The mechanical boundary conditions are configured in [`maxwell.inp`](maxwell.inp) to compress the block horizontally:
+The mechanical boundary conditions are configured to deform the column in two stages:
 
+### Stage 1: Viscoelastic Loading (`maxwell.inp`)
 1. **Left Boundary ($X = 0$ km, Side 1)**:
    * Constrained to move horizontally inward (to the right) at a constant velocity of $V_x = 0.1 \text{ cm/yr} \approx 3.1687686 \times 10^{-11} \text{ m/s}$.
    * Free to move vertically (zero vertical shear traction).
@@ -67,22 +90,28 @@ The mechanical boundary conditions are configured in [`maxwell.inp`](maxwell.inp
 4. **Top Boundary ($Z = 0$ km, Side 4)**:
    * Completely free of traction ($\sigma_{zz} = 0.0$ and $\sigma_{zx} = 0.0$).
 
+### Stage 2: Stress Relaxation (`maxwell_relax.inp`)
+* The left boundary velocity is set to $V_x = 0.0$ m/s (zero incoming velocity).
+* All other boundary conditions remain identical to Stage 1. This fixes the horizontal width of the column, causing the built-up stress to relax viscously under constant strain.
+
 ---
 
 ## 4. Simulation Results
 
-### Stress and Strain Evolution
-The simulation captures both the elastic stress build-up and the Newtonian Maxwell viscoelastic relaxation process over time with exceptional detail.
+### Stress Evolution
+The simulation captures the two-stage stress profile with exceptional detail:
+* **0 to 10.0/Kyr**: The stress builds up elastically, starting to approach the Newtonian steady-state level of $-6.3375$ MPa.
+* **10.0 to 20.0/Kyr**: The stress decays exponentially back toward zero.
 
 ### Verification Chart
 The generated plot is saved to `images/stress_relaxation.png`:
 
 ![Stress-Relaxation Verification Chart](images/stress_relaxation.png)
 
-1. **Blue Dots**: The simulation output points spaced at 1 Kyr intervals, showing the transient relaxation curves.
-2. **Red Dashed Line**: The theoretical analytical relaxation curve showing the quick elastic stress build-up and the long-term viscoelastic steady-state plateau at $-6.3375$ MPa.
+1. **Blue Dots / Line**: The simulation output points spaced at 0.99/Kyr intervals, showing the loading and subsequent relaxation curves.
+2. **Red Dashed Line**: The theoretical analytical relaxation curve showing the elastic stress build-up during Stage 1 and the exponential stress decay during Stage 2.
 
-The extremely minor discrepancy (< 0.5%) confirms the physical validity and high numerical precision of **GeoFLAC**'s viscoelastic mechanical solver.
+The extremely close fit confirms the physical validity and high numerical precision of **GeoFLAC**'s viscoelastic mechanical solver.
 
 *Note: Total horizontal stress is reconstructed by summing deviatoric stress ($\sigma'_{xx}$) and mean stress ($\sigma_m$, stored as a negative value under compression in `pres.0`):
 $$\sigma_{xx} = \sigma'_{xx} + \sigma_m$$
@@ -90,10 +119,11 @@ Please refer to the Elastic tutorial for a detailed breakdown of stress decompos
 
 ---
 
-## Appendix: Analytical Formulation & Viscoelastic Flow (Optional)
+## Appendix: Analytical Formulation & Viscoelastic Flow
 
-Under 2D plane strain ($\epsilon_{yy} = 0$) and a free top surface ($\sigma_{zz} = 0$), the total horizontal compressive stress $\sigma_{xx}(t)$ builds up elastically and relaxes viscously over time:
+Under 2D plane strain ($\epsilon_{yy} = 0$) and a free top surface ($\sigma_{zz} = 0$), the total horizontal compressive stress $\sigma_{xx}(t)$ is formulated for the two stages:
 
+### Stage 1: Viscoelastic Loading ($0 \le t \le 10.0$ Kyr)
 $$\sigma_{xx}(t) = \sigma_{xx}^{steady} \left( 1 - e^{-t/\tau_{eff}} \right)$$
 
 where:
@@ -107,9 +137,16 @@ where:
    Using Lamé constants $\lambda = \mu = 3.0 \times 10^{10} \text{ Pa}$:
    $$\tau_{eff} = 5.0 \times 10^{10} \text{ s} \approx 1584.38 \text{ years} = 1.584 \text{ Kyr}$$
 
-Because the relaxation time ($\approx 1.584$ Kyr) is much shorter than the simulation's 10 Kyr output interval, the stress is fully relaxed to its steady-state Newtonian plateau by the first output step ($10,000$ years $\approx 6.3\tau_{eff}$).
+### Stage 2: Stress Relaxation ($10.0 < t \le 20.0$ Kyr)
+When the boundary velocity is set to zero, the strain rate $\dot{\epsilon}_{xx} = 0$. The stress decays exponentially from its value at the end of Stage 1 ($t_{switch} = 10.0$ Kyr):
 
-### Derivation of the Effective Viscosity ($\eta_{eff} = 4\eta$) (Optional)
+$$\sigma_{xx}(t) = \sigma_{xx}(t_{switch}) \cdot e^{-(t - t_{switch})/\tau_{eff}}$$
+
+where:
+* $\sigma_{xx}(t_{switch}) = -6.3375 \times \left(1 - e^{-10/1.584}\right) \approx -6.3262 \text{ MPa}$
+* $\tau_{eff} = 1.584 \text{ Kyr}$
+
+### Derivation of the Effective Viscosity ($\eta_{eff} = 4\eta$)
 
 In incompressible 2D plane strain Newtonian flow, the constitutive relationship between total stress $\sigma_{ij}$, deviatoric stress $\sigma'_{ij}$, and mean stress/pressure $P$ is:
 $$\sigma_{ij} = \sigma'_{ij} - P \delta_{ij}$$

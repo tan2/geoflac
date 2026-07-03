@@ -25,28 +25,20 @@ def main():
     
     print("Frame\tTime (Kyr)\tStress (xx, MPa)")
     for i in range(1, fl.nrec + 1):
-        # Time in Myr
         t_myr = fl.time[i-1]
         t_kyr = t_myr * 1000.0
         
-        # GeoFLAC outputs deviatoric stresses to sxx.0, and pressure (mean stress) to pres.0.
-        # Both are stored in Kilobars (1 kb = 100 MPa = 10^8 Pa).
         sxx_dev = fl.read_sxx(i)
         pres = fl.read_pres(i)
-        
-        # Total horizontal stress = deviatoric horizontal stress + mean stress (pressure)
         sxx_total = sxx_dev + pres
         
-        # Average over the entire model domain
         mean_sxx_kb = np.mean(sxx_total)
-        
-        # Convert stress to MPa (1 Kilobar = 100 MPa)
         mean_sxx_mpa = mean_sxx_kb * 100.0
         
         times_myr.append(t_myr)
         stresses_mpa.append(mean_sxx_mpa)
         
-        print(f"{i}\t{t_kyr:.1f}\t\t{mean_sxx_mpa:.4f}")
+        print(f"{i}\t{t_kyr:.4f}\t\t{mean_sxx_mpa:.4f}")
 
     # Physical parameters for Maxwell Viscoelastic Model
     eta = 1.0e21          # Viscosity in Pa.s
@@ -55,59 +47,63 @@ def main():
     
     # Grid parameters
     L = 20000.0           # Width of the domain in m
-    Vx = -0.001           # Left boundary velocity in m/yr (0.1 cm/yr compressive)
+    Vx = -0.001           # Compression velocity in m/yr (0.1 cm/yr compressive)
     sec_year = 3.1558e7   # Seconds in a year
     
     # Strain rate in s^-1
-    strain_rate_s = (Vx / L) / sec_year  # approx -1.584384e-14 s^-1
+    strain_rate_s = (Vx / L) / sec_year  # approx -1.584384e-15 s^-1
     
-    # Effective 2D plane strain elastic modulus (E_eff = E / (1 - nu^2))
-    # E_eff = 4 * mu * (lambda + mu) / (lambda + 2 * mu) = 80 GPa = 80,000 MPa
-    E_eff = 4.0 * mu_lame * (lambda_lame + mu_lame) / (lambda_lame + 2.0 * mu_lame)
-    
-    # Effective relaxation time: tau_eff = eta_eff / E_eff = 4 * eta / E_eff
-    # tau_eff = eta * (lambda + 2*mu) / (mu * (lambda + mu)) = 5.0e9 seconds (~158.438 years)
+    # Effective relaxation time
     tau_eff_s = eta * (lambda_lame + 2.0 * mu_lame) / (mu_lame * (lambda_lame + mu_lame))
     tau_eff_yr = tau_eff_s / sec_year
-    tau_eff_kyr = tau_eff_yr / 1000.0
     
-    # Analytical steady-state stress: sigma_xx_steady = 4 * eta * strain_rate
+    # Analytical steady-state stress under compression
     sigma_xx_steady_pa = 4.0 * eta * strain_rate_s
     sigma_xx_steady_mpa = sigma_xx_steady_pa / 1.0e6  # approx -6.3375 MPa
     
-    # High-resolution time array for analytical curve (in Kyr)
-    t_analytical_kyr = np.linspace(0.0, max(times_myr) * 1000.0, 1000)
-    t_analytical_s = t_analytical_kyr * 1000.0 * sec_year
+    # High-resolution time array for two-stage analytical curve (in Kyr)
+    t_analytical_kyr = np.linspace(0.0, 20.0, 1000)
+    sxx_analytical_mpa = []
     
-    # Analytical stress over time: sigma_xx(t) = sigma_xx_steady * (1 - exp(-t / tau_eff))
-    sxx_analytical_mpa = sigma_xx_steady_mpa * (1.0 - np.exp(-t_analytical_s / tau_eff_s))
+    # Stress at 10.0 Kyr (end of stage 1 compression)
+    t_switch_kyr = 10.0
+    t_switch_s = t_switch_kyr * 1000.0 * sec_year
+    sigma_at_switch = sigma_xx_steady_mpa * (1.0 - np.exp(-t_switch_s / tau_eff_s))
+    
+    for t_kyr in t_analytical_kyr:
+        if t_kyr <= t_switch_kyr:
+            # Stage 1: Viscoelastic loading/compression
+            t_s = t_kyr * 1000.0 * sec_year
+            s = sigma_xx_steady_mpa * (1.0 - np.exp(-t_s / tau_eff_s))
+        else:
+            # Stage 2: Pure Maxwell relaxation (strain rate = 0)
+            t_relax_s = (t_kyr - t_switch_kyr) * 1000.0 * sec_year
+            s = sigma_at_switch * np.exp(-t_relax_s / tau_eff_s)
+        sxx_analytical_mpa.append(s)
+        
+    sxx_analytical_mpa = np.array(sxx_analytical_mpa)
 
     # Plot results
     plt.figure(figsize=(9, 6.5))
     
     # Plot high-resolution analytical solution
     plt.plot(t_analytical_kyr, sxx_analytical_mpa, '--', color='#d62728', linewidth=2.0, 
-             label=r'Analytical Solution ($\sigma_{xx}(t) = 4\eta\dot{\epsilon}_{xx}(1 - e^{-t/\tau_{eff}})$)')
+             label='Analytical Solution (Two-Stage)')
     
     # Plot simulation points
     times_kyr = np.array(times_myr) * 1000.0
     plt.plot(times_kyr, stresses_mpa, 'o', color='#1f77b4', markersize=8, label='GeoFLAC Simulation')
     plt.plot(times_kyr, stresses_mpa, '-', color='#1f77b4', linewidth=1.5, alpha=0.7)
 
-    plt.text(18.0, sigma_xx_steady_mpa * 0.7, 
-             f"Analytical parameters:\n"
-             f"$\\eta = 1.0\\times 10^{{21}}$ Pa$\\cdot$s\n"
-             f"$\\dot{{\\epsilon}}_{{xx}} = {strain_rate_s*1e14:.4f}\\times 10^{{-14}}$ s$^{{-1}}$\n"
-             f"$\\tau_{{eff}} = {tau_eff_yr:.2f}$ years\n"
-             f"$\\sigma_{{xx}}^{{steady}} = {sigma_xx_steady_mpa:.4f}$ MPa",
-             fontsize=10.5, bbox=dict(facecolor='white', alpha=0.8, boxstyle='round,pad=0.5'))
+    # Add vertical line indicating the restart / relaxation boundary
+    plt.axvline(x=10.0, color='gray', linestyle=':', linewidth=1.5)
+    plt.text(10.2, sigma_xx_steady_mpa * 0.95, 'Velocity set to 0.0 (Restart)', fontsize=10.5, color='gray', rotation=90, va='bottom')
 
-    plt.title(r'Viscoelastic Stress Relaxation: Total $\sigma_{xx}$ over Time', fontsize=14, fontweight='bold', pad=15)
+    plt.title(r'Viscoelastic Stress Relaxation: Loading (0-10 Kyr) & Relaxation (10-20 Kyr)', fontsize=13, fontweight='bold', pad=15)
     plt.xlabel('Time (Kyr)', fontsize=12, labelpad=10)
     plt.ylabel(r'Total Stress $\sigma_{xx}$ (MPa)', fontsize=12, labelpad=10)
     
     plt.xlim(-1.0, 21.0)
-    # Stress is compressive (negative), so we set the limits accordingly
     plt.ylim(sigma_xx_steady_mpa * 1.25, 0.5)
     
     plt.grid(True, linestyle=':', alpha=0.6)
