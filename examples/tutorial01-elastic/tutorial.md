@@ -75,7 +75,39 @@ The mechanical boundary conditions are configured in [`bar.inp`](bar.inp) to pro
 
 ---
 
-## 4. Analytical Formulation (2D Plane Strain)
+## 4. Understanding GeoFLAC Stress Output
+
+> [!IMPORTANT]
+> **Stress Representation in GeoFLAC binary files:**
+> * `szz.0` stores the **deviatoric vertical stress** ($\sigma'_{zz}$), not the total stress:
+>   $$\sigma'_{zz} = \sigma_{zz} - \sigma_m$$
+> * `pres.0` stores the **mean stress** ($\sigma_m$, which is negative in compression).
+> * Both stress and pressure variables are output in **Kilobars** ($1 \text{ kb} = 100 \text{ MPa} = 10^8 \text{ Pa}$).
+
+To reconstruct the total physical vertical stress $\sigma_{zz}$, you must sum the deviatoric and mean stress components:
+$$\sigma_{zz} = \sigma'_{zz} + \sigma_m$$
+Multiplying by $100.0$ converts the result from Kilobars to standard MegaPascals (MPa).
+
+---
+
+## 5. Simulation Results
+
+### Stress and Strain Evolution
+The simulation outputs 8 frames, showing excellent linear scaling matching the analytical slope.
+
+### Verification Chart
+The generated plot is saved to `images/stress_strain.png`:
+
+![Stress-Strain Verification Chart](images/stress_strain.png)
+
+1. **Blue Line**: The averaged simulation stress vs strain.
+2. **Red Dashed Line**: The theoretical analytical solution slope of $80$ GPa.
+
+The two lines align with exceptional accuracy, confirming the physical validity and high numerical precision of **GeoFLAC**'s elastic mechanics solver and boundary condition implementation.
+
+---
+
+## Appendix: Analytical Formulation & Mathematical Derivation (Optional)
 
 ### What is Plane Strain?
 **Plane Strain** is a simplified state of strain in solid mechanics where the deformation in one direction (usually the out-of-plane direction, $Y$, or axis 3 in GeoFLAC) is constrained to be zero. Specifically:
@@ -118,34 +150,3 @@ While the elastic equations in GeoFLAC natively assume plane strain ($\epsilon_{
 This behavior is controlled by the **`ndim`** parameter in the [`PROCESS CONTROL`](../../doc/input_description.md#process-control) section of the input file:
 * **`ndim = 2` (Default)**: Normal 2D mode. Only the in-plane stress components ($\sigma_{xx}$, $\sigma_{zz}$, $\sigma_{xz}$) are used to check for plastic yielding or to compute Maxwell relaxation. The deviatoric out-of-plane stress ($\sigma'_{yy}$) is assumed to be zero to simplify and speed up calculations.
 * **`ndim = 3`**: In/out-of-plane stress mode (3D mode). The out-of-plane stress ($\sigma_{yy}$) is computed dynamically and included in plastic yield criteria (e.g., Mohr-Coulomb in 3D principal stress space) and viscoelastic creep flow.
-
----
-
-## 5. Understanding GeoFLAC Stress Output
-
-> [!IMPORTANT]
-> **Stress Representation in GeoFLAC binary files:**
-> * `szz.0` stores the **deviatoric vertical stress** ($\sigma'_{zz} = \sigma_{zz} - P$), not the total stress.
-> * `pres.0` stores the **mean stress / pressure** ($P$).
-> * Both stress and pressure variables are output in **Kilobars** ($1 \text{ kb} = 100 \text{ MPa} = 10^8 \text{ Pa}$).
-
-To reconstruct the total physical vertical stress $\sigma_{zz}$, you must sum the deviatoric and mean stress components:
-$$\sigma_{zz} = \sigma'_{zz} + P$$
-Multiplying by $100.0$ converts the result from Kilobars to standard MegaPascals (MPa).
-
----
-
-## 6. Simulation Results
-
-### Stress and Strain Evolution
-The simulation outputs 8 frames, showing excellent linear scaling matching the analytical slope.
-
-### Verification Chart
-The generated plot is saved to `images/stress_strain.png`:
-
-![Stress-Strain Verification Chart](images/stress_strain.png)
-
-1. **Blue Line**: The averaged simulation stress vs strain.
-2. **Red Dashed Line**: The theoretical analytical solution slope of $80$ GPa.
-
-The two lines align with exceptional accuracy, confirming the physical validity and high numerical precision of **GeoFLAC**'s elastic mechanics solver and boundary condition implementation.

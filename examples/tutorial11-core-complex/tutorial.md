@@ -210,7 +210,34 @@ To localize strain and nucleate a major detachment fault in the center of the do
 
 ---
 
-## 7. EP Rheological Formulation
+## 7. Analysis of Results
+
+### Slant Fault Propagation
+In the upper panel of `images/core_complex.png`, you will observe that strain localizes into a sharp, narrow shear band (detachment fault) that propagates diagonally from the **slant weak seed** at depth up to the surface.
+Using a slant weak seed facilitates the nucleation of a single major low-angle detachment fault aligned with the conjugate shear direction, matching core complex geometry.
+
+![Metamorphic Core Complex final State](images/core_complex.png)
+
+### Zero Edge Failure
+Due to the high strength of the Phase 2 boundary material (friction angle of 40°, cohesion of 60 MPa), the edges are protected from yielding and remain entirely in the elastic regime during extensional pulling. Consequently, plastic strain (`aps`) at the edges is virtually zero ($< 0.01$), forcing all deformation to localize cleanly into the central region.
+
+### Uniform Thermal State
+In the lower panel, the temperature remains perfectly uniform at $10^\circ\text{C}$, showing flat, steady isotherms.
+
+The evolutionary progress of the core complex on the refined grid is shown below:
+
+![Metamorphic Core Complex Strain Evolution](images/evolution_core_complex.png)
+
+---
+
+> [!TIP]
+> **Key takeaways for core complex physics with a variable grid:**
+> * Refinement in the central 20 km allows us to capture the sharp boundaries of the detachment fault without incurring the high computational cost of refining the entire 100 km wide domain.
+> * Using a stronger material phase at the boundaries is a robust way to avoid unwanted boundary edge failure in extensional lithospheric setups.
+
+---
+
+## Appendix: Elasto-Plastic Solver Formulation (Optional)
 
 In Elasto-Plastic (EP) rheology, deformation is entirely accommodated by elastic strain and plastic yielding. Viscous creep is completely omitted, which is appropriate for low-temperature settings like the $10^\circ\text{C}$ crust in this model.
 
@@ -248,30 +275,3 @@ Where:
 If yielding occurs ($f(\boldsymbol{\sigma}^{\text{trial}}) > 0$), a plastic return mapping is performed:
 1. The solver projects the stress state back to the yield envelope.
 2. The plastic strain increment is accumulated into the Eulerian element's total `aps` array.
-
----
-
-## 8. Analysis of Results
-
-### Slant Fault Propagation
-In the upper panel of `images/core_complex.png`, you will observe that strain localizes into a sharp, narrow shear band (detachment fault) that propagates diagonally from the **slant weak seed** at depth up to the surface.
-Using a slant weak seed facilitates the nucleation of a single major low-angle detachment fault aligned with the conjugate shear direction, matching core complex geometry.
-
-![Metamorphic Core Complex final State](images/core_complex.png)
-
-### Zero Edge Failure
-Due to the high strength of the Phase 2 boundary material (friction angle of 40°, cohesion of 60 MPa), the edges are protected from yielding and remain entirely in the elastic regime during extensional pulling. Consequently, plastic strain (`aps`) at the edges is virtually zero ($< 0.01$), forcing all deformation to localize cleanly into the central region.
-
-### Uniform Thermal State
-In the lower panel, the temperature remains perfectly uniform at $10^\circ\text{C}$, showing flat, steady isotherms.
-
-The evolutionary progress of the core complex on the refined grid is shown below:
-
-![Metamorphic Core Complex Strain Evolution](images/evolution_core_complex.png)
-
----
-
-> [!TIP]
-> **Key takeaways for core complex physics with a variable grid:**
-> * Refinement in the central 20 km allows us to capture the sharp boundaries of the detachment fault without incurring the high computational cost of refining the entire 100 km wide domain.
-> * Using a stronger material phase at the boundaries is a robust way to avoid unwanted boundary edge failure in extensional lithospheric setups.

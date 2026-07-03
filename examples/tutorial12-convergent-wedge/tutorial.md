@@ -175,7 +175,23 @@ During the simulation, GeoFLAC prints real-time logs to the screen, which are al
 
 ---
 
-## 7. EP Rheological Formulation
+## 7. Analysis of Results
+
+### Fault Localization and Thrust Imbricates
+In the upper panel of `convergent_wedge.png`, you will observe that strain localizes into distinct narrow bands of high plastic strain (`aps`). These represent **thrust faults**!
+Because the wedge material is compressed against the rigid backstop:
+- Stress builds up near the backstop and exceeds the yield strength.
+- Conjugate thrust faults (slanted shear bands) form: **pro-thrusts** (dipping to the left) and **retro-thrusts** (dipping to the right).
+- As convergence continues, old thrust faults lock up (due to isostatic gravity load) and new thrust faults step outwards (propagate to the left) into the undeformed crust, forming a classic **imbricate thrust fan**.
+
+### Topographic Wedge and Basal Slip
+In the lower panel, the beige upper crust (Phase 1) thickens and deforms upwards, building a beautiful wedge-shaped topography (accretionary prism) sloping away from the rigid backstop.
+Under the rigid bottom boundary condition, the bottom boundary remains flat and undeformed, while the basal weak layer (Phase 2) absorbs most of the shear strain and acts as a perfect detachment layer (décollement) that lets the wedge slide and stack dynamically.
+The deformed grid lines show strong vertical thickening and horizontal shortening within the wedge, while showing simple shear within the basal detachment layer.
+
+---
+
+## Appendix: Elasto-Plastic Solver Formulation (Optional)
 
 In Elasto-Plastic (EP) rheology, deformation is entirely accommodated by elastic strain and plastic yielding. Viscous creep is completely omitted, which is appropriate for low-temperature settings like the $0^\circ\text{C}$ crust in this model.
 
@@ -213,19 +229,3 @@ Where:
 If yielding occurs ($f(\boldsymbol{\sigma}^{\text{trial}}) > 0$), a plastic return mapping is performed:
 1. The solver projects the stress state back to the yield envelope.
 2. The plastic strain increment is accumulated into the Eulerian element's total `aps` array.
-
----
-
-## 8. Analysis of Results
-
-### Fault Localization and Thrust Imbricates
-In the upper panel of `convergent_wedge.png`, you will observe that strain localizes into distinct narrow bands of high plastic strain (`aps`). These represent **thrust faults**!
-Because the wedge material is compressed against the rigid backstop:
-- Stress builds up near the backstop and exceeds the yield strength.
-- Conjugate thrust faults (slanted shear bands) form: **pro-thrusts** (dipping to the left) and **retro-thrusts** (dipping to the right).
-- As convergence continues, old thrust faults lock up (due to isostatic gravity load) and new thrust faults step outwards (propagate to the left) into the undeformed crust, forming a classic **imbricate thrust fan**.
-
-### Topographic Wedge and Basal Slip
-In the lower panel, the beige upper crust (Phase 1) thickens and deforms upwards, building a beautiful wedge-shaped topography (accretionary prism) sloping away from the rigid backstop.
-Under the rigid bottom boundary condition, the bottom boundary remains flat and undeformed, while the basal weak layer (Phase 2) absorbs most of the shear strain and acts as a perfect detachment layer (décollement) that lets the wedge slide and stack dynamically.
-The deformed grid lines show strong vertical thickening and horizontal shortening within the wedge, while showing simple shear within the basal detachment layer.
