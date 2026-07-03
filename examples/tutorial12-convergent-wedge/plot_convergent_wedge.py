@@ -27,7 +27,7 @@ def main():
         sys.exit(1)
 
     # Create a directory for plots if it doesn't exist
-    os.makedirs('plots', exist_ok=True)
+    os.makedirs('images', exist_ok=True)
     
     # We will generate a premium plot for the final state
     final_frame = nrec
@@ -66,17 +66,20 @@ def main():
     # nx is 51, nz is 21. Let's skip every 2 elements in x and 1 in z
     skip_x = 2
     skip_z = 1
-    ax1.quiver(X_km[::skip_z, ::skip_x], Z_km[::skip_z, ::skip_x], 
-               vx_cm_yr[::skip_z, ::skip_x], vz_cm_yr[::skip_z, ::skip_x],
-               color='#1d3557', scale=30.0, width=0.0015, headwidth=4, headlength=5,
-               label='Velocity field (cm/yr)')
-    ax1.legend(loc='upper left', framealpha=0.9)
+    q1 = ax1.quiver(X_km[::skip_z, ::skip_x], Z_km[::skip_z, ::skip_x], 
+                    vx_cm_yr[::skip_z, ::skip_x], vz_cm_yr[::skip_z, ::skip_x],
+                    color='#1d3557', scale=30.0, width=0.0015, headwidth=4, headlength=5)
+    
+    # Add velocity scale key at bottom right
+    ax1.quiverkey(q1, X=0.90, Y=0.08, U=1.0, label='1 cm/yr', labelpos='E',
+                  coordinates='axes', fontproperties={'weight': 'bold', 'size': 9})
     
     ax1.set_ylabel('Depth (km)', fontsize=12, fontweight='bold')
     ax1.set_title(f'Convergent Wedge: Shear Localization & Thrust Faulting at {time_myr:.2f} Myr', 
                   fontsize=14, fontweight='bold', pad=12)
     ax1.grid(True, linestyle=':', alpha=0.5, color='gray')
-    ax1.set_ylim(-15, 5)
+    ax1.set_xlim(0, 70)
+    ax1.set_ylim(-10, 7)
     ax1.set_aspect('equal')
     
     # Subplot 2: Lithological Phases (Upper Crust vs Basal Detachment)
@@ -109,13 +112,13 @@ def main():
     ax2.set_title(f'Deformed Lithological Phases & Grid Mesh at {time_myr:.2f} Myr', 
                   fontsize=14, fontweight='bold', pad=12)
     ax2.grid(True, linestyle=':', alpha=0.5, color='gray')
-    ax2.set_ylim(-15, 5)
+    ax2.set_xlim(0, 70)
+    ax2.set_ylim(-10, 7)
     ax2.set_aspect('equal')
     
     plt.tight_layout()
-    plt.savefig('convergent_wedge.png', dpi=300)
-    plt.savefig('plots/final_state_convergent_wedge.png', dpi=300)
-    print("Saved 'convergent_wedge.png' and 'plots/final_state_convergent_wedge.png'")
+    plt.savefig('images/final_state_convergent_wedge.png', dpi=300)
+    print("Saved 'images/final_state_convergent_wedge.png'")
     
     # Create an evolution plot
     if nrec >= 3:
@@ -133,14 +136,15 @@ def main():
             ax.plot(x_f[:, 0], z_f[:, 0], color='black', linewidth=1.5)
             ax.set_title(f'Accumulated Plastic Strain at t = {t_f:.2f} Myr', fontsize=12, fontweight='bold')
             ax.set_ylabel('Depth (km)', fontsize=10)
-            ax.set_ylim(-15, 5)
+            ax.set_xlim(0, 70)
+            ax.set_ylim(-10, 7)
             ax.grid(True, linestyle=':', alpha=0.5)
             ax.set_aspect('equal')
             
         axes_evo[-1].set_xlabel('Distance (km)', fontsize=11, fontweight='bold')
         fig_evo.colorbar(im, ax=axes_evo.tolist(), orientation='vertical', pad=0.02, shrink=0.6, label='Plastic Strain')
-        plt.savefig('plots/evolution_convergent_wedge.png', dpi=300)
-        print("Saved 'plots/evolution_convergent_wedge.png'")
+        plt.savefig('images/evolution_convergent_wedge.png', dpi=300)
+        print("Saved 'images/evolution_convergent_wedge.png'")
         
 if __name__ == '__main__':
     main()

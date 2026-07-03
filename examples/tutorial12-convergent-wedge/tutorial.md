@@ -139,10 +139,10 @@ Run the provided Python plotting script:
 python3 plot_convergent_wedge.py
 ```
 This script reads the binary outputs and generates two premium visualizations:
-1. **`convergent_wedge.png`**: A detailed two-panel plot of the final deformed state showing:
+1. **`images/final_state_convergent_wedge.png`**: A detailed two-panel plot of the final deformed state showing:
    - **Top Panel**: Accumulated Plastic Strain (`aps`) highlighting localized thrust faults (conjugate shear bands), overlaid with velocity vectors showing wedge uplift.
    - **Bottom Panel**: Layer phases (`phase`) showing accretionary topography and basal slip, overlaid with a deformed grid mesh.
-2. **`plots/evolution_convergent_wedge.png`**: A three-panel evolutionary sequence showing how the thrust sheets nucleate and step outwards over time.
+2. **`images/evolution_convergent_wedge.png`**: A three-panel evolutionary sequence showing how the thrust sheets nucleate and step outwards over time.
 
 ---
 
@@ -178,7 +178,7 @@ During the simulation, GeoFLAC prints real-time logs to the screen, which are al
 ## 7. Analysis of Results
 
 ### Fault Localization and Thrust Imbricates
-In the upper panel of `convergent_wedge.png`, you will observe that strain localizes into distinct narrow bands of high plastic strain (`aps`). These represent **thrust faults**!
+In the upper panel of `images/final_state_convergent_wedge.png`, you will observe that strain localizes into distinct narrow bands of high plastic strain (`aps`). These represent **thrust faults**!
 Because the wedge material is compressed against the rigid backstop:
 - Stress builds up near the backstop and exceeds the yield strength.
 - Conjugate thrust faults (slanted shear bands) form: **pro-thrusts** (dipping to the left) and **retro-thrusts** (dipping to the right).
