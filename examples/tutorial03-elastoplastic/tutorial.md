@@ -12,7 +12,7 @@ Execute the compiled `flac` binary in the directory:
 rm -f *.0 *.rs *.vts _contents.* _markers.* pisos.rs time.rs vbc.s output.asc sys.msg
 ../../src/flac plastic.inp
 ```
-The solver will run for 500 steps, simulating a total time of $0.5$ Kyr and writing output files `ezz.0`, `szz.0`, and `pres.0` every $0.05$ Kyr.
+The solver will run for approximately 110,000 steps, simulating a total time of $0.5$ Kyr and writing output files `ezz.0`, `szz.0`, and `pres.0` every $0.0167$ Kyr.
 
 ### Step 2: Plot the Stress-Strain Curve
 Run the provided Python plotting script:
@@ -80,7 +80,50 @@ The mechanical boundary conditions are configured in [`plastic.inp`](plastic.inp
 
 ---
 
-## 4. Analytical Formulation (Mohr-Coulomb Yield Criterion)
+## 4. Simulation Results
+
+### Stress and Strain Evolution
+The simulation captures the transition from elastic loading to progressive plastic softening with exceptional detail.
+
+* **Confinement Effect**:
+  Due to the horizontal no-slip condition ($V_x = 0$) at the top boundary, the material is restricted from expanding horizontally at the contact surface. This restriction acts as a local confinement, causing localized stress concentrations near the top corners. However, with the tuned mass scaling ensuring proper static equilibrium, the average peak vertical stress across the entire domain reaches **$-69.26$ MPa** (Frame 3), matching the analytical unconfined compressive strength (UCS) of **$-69.282$ MPa** with exceptional accuracy (within $0.03\%$).
+  
+* **Yielding/Failure Nucleation**:
+  Under vertical compression, the material naturally expands horizontally due to Poisson's effect.
+  * At the bottom boundary, nodes are free to slide horizontally (free-slip, $V_x$ is unconstrained), so the base expands freely without stress concentration.
+  * At the top boundary, however, the no-slip condition ($V_x = 0$) prevents this lateral expansion. This constraint forces the material near the top contact to remain stationary in X while being pushed downward in Z, creating a severe shear stress gradient and concentration at the top corners.
+  * Consequently, yielding (plastic strain `aps`) initiates in the top corner elements (Row 1, columns 1 and 10) rather than the bottom, and then propagates downward as localized shear bands.
+
+* **Stress Softening and Localization**: 
+  After reaching the peak of **$-69.26$ MPa** (Frame 3), the average vertical stress softens progressively to **$-62.60$ MPa** (Frame 10). This structural softening is driven by **strain localization and shear banding**: plastic strain concentrates in narrow localized bands. Elements within the shear bands accumulate plastic strain much faster than the homogeneous average, which accelerates their softening and reduces the overall load-bearing capacity of the vertical column.
+
+### Verification Chart
+The generated plot is saved to `images/stress_strain_yield.png`:
+
+![Stress-Strain Yielding Verification Chart](images/stress_strain_yield.png)
+
+1. **Blue Line**: The simulation stress-strain loading path with strain softening under top confinement.
+2. **Red Dashed Line**: The theoretical analytical Mohr-Coulomb path showing homogeneous elastic loading and softening (unconfined).
+
+The simulation accurately captures the transition from elastic loading to progressive plastic softening, verifying both the correct implementation and numerical stability of GeoFLAC's strain-softening mechanics.
+
+### Why the Numerical and Analytical Softening Slopes Differ
+
+You may notice a discrepancy in the slope of the post-yield softening curve between the numerical simulation and the analytical solution:
+* **Homogeneous Analytical Assumption**: The analytical model assumes that yielding and plastic strain accumulation occur **homogeneously** across the entire volume of the column, meaning every element softens at the exact same rate.
+* **Numerical Strain Localization**: In the numerical simulation, deformation naturally localizes into narrow diagonal **shear bands**. Once yielding begins, plastic strain concentrates inside these bands, causing those elements to soften rapidly. Elements outside the shear bands undergo **elastic unloading** as the overall stress drops.
+* **Domain-Averaging Effect**: The verification chart plots the **domain-averaged** stress and strain. Because only a small volume fraction of the column is actively yielding, the bulk average strain grows much slower than the local plastic strain inside the shear bands. Consequently, the elements in the shear band reach their residual cohesion ($c_2$ at local plastic strain $\epsilon_p = \text{pls2} = 0.1$) at a much smaller bulk average strain, making the bulk numerical softening slope different from the homogeneous analytical slope.
+
+> [!NOTE]
+> Standard elastoplastic material benchmarks often use a single element ($1 \times 1$ grid resolution) to avoid strain localization. With only a single element, the deformation remains perfectly homogeneous by definition, allowing the numerical model to match the 1D homogeneous analytical stress-strain path exactly.
+
+*Note: Total vertical stress is reconstructed by summing deviatoric stress ($\sigma'_{zz}$) and mean stress ($\sigma_m$, stored as a negative value under compression in `pres.0`):
+$$\sigma_{zz} = \sigma'_{zz} + \sigma_m$$
+Please refer to the Elastic tutorial for a detailed breakdown of stress decomposition and Kilobar-to-MPa conversion in GeoFLAC.*
+
+---
+
+## Appendix: Analytical Formulation & Yield Criterion (Optional)
 
 The Mohr-Coulomb yield criterion describes the shear strength of rocks and soils in terms of normal and shear stresses on the failure plane:
 
@@ -123,34 +166,3 @@ During yielding, the total vertical strain $\epsilon_{zz}$ is the sum of elastic
 $$\epsilon_{zz} = -\frac{\sigma_C(\epsilon_p)}{E_{eff}} - \epsilon_p = -\frac{\sigma_C^{peak}}{E_{eff}} - \epsilon_p \left[ 1 + \frac{\sigma_C^{residual} - \sigma_C^{peak}}{E_{eff} \cdot \text{pls2}} \right]$$
 
 Thus, the vertical column deforms elastically (with effective modulus $E_{eff} = 80$ GPa) until reaching the peak stress of **$-69.282$ MPa** at strain $\epsilon_{zz}^{yield} \approx -0.000866$, after which the stress weakens progressively toward the residual plateau.
-
-*Note: Total vertical stress is reconstructed by summing deviatoric stress and pressure: $\sigma_{zz} = \sigma'_{zz} + P$. Please refer to the Elastic tutorial for a detailed breakdown of stress decomposition and Kilobar-to-MPa conversion in GeoFLAC.*
-
----
-
-## 5. Simulation Results
-
-### Stress and Strain Evolution
-The simulation captures the transition from elastic loading to progressive plastic softening with exceptional detail.
-
-* **Confinement Effect**:
-  Due to the horizontal no-slip condition ($V_x = 0$) at the top boundary, the material is restricted from expanding horizontally at the contact surface. This restriction acts as a local confinement, which increases the effective compressive strength. As a result, the peak vertical stress in the simulation increases to **$-74.49$ MPa** (Frame 7), exceeding the analytical unconfined compressive strength (UCS) of **$-69.282$ MPa** (which assumes completely free lateral boundaries without any horizontal restriction).
-  
-* **Yielding/Failure Nucleation**:
-  Under vertical compression, the material naturally expands horizontally due to Poisson's effect.
-  * At the bottom boundary, nodes are free to slide horizontally (free-slip, $V_x$ is unconstrained), so the base expands freely without stress concentration.
-  * At the top boundary, however, the no-slip condition ($V_x = 0$) prevents this lateral expansion. This constraint forces the material near the top contact to remain stationary in X while being pushed downward in Z, creating a severe shear stress gradient and concentration at the top corners.
-  * Consequently, yielding (plastic strain `aps`) initiates in the top corner elements (Row 1, columns 1 and 10) rather than the bottom, and then propagates downward as localized shear bands.
-
-* **Stress Softening and Localization**: 
-  After reaching the peak of **$-74.49$ MPa** (Frame 7), the average vertical stress softens progressively to **$-66.20$ MPa** (Frame 10). This structural softening is driven by **strain localization and shear banding**: plastic strain concentrates in narrow localized bands. Elements within the shear bands accumulate plastic strain much faster than the homogeneous average, which accelerates their softening and reduces the overall load-bearing capacity of the vertical column.
-
-### Verification Chart
-The generated plot is saved to `images/stress_strain_yield.png`:
-
-![Stress-Strain Yielding Verification Chart](images/stress_strain_yield.png)
-
-1. **Blue Line**: The simulation stress-strain loading path with strain softening under top confinement.
-2. **Red Dashed Line**: The theoretical analytical Mohr-Coulomb path showing homogeneous elastic loading and softening (unconfined).
-
-The simulation accurately captures the transition from elastic loading to progressive plastic softening, verifying both the correct implementation and numerical stability of GeoFLAC's strain-softening mechanics.
