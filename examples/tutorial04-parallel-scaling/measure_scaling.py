@@ -4,25 +4,6 @@ import time
 import sys
 
 def main():
-    # Overwrite plastic.inp with the 50x150 scaled version
-    inp_path = "plastic.inp"
-    with open(inp_path, "r") as f:
-        lines = f.readlines()
-
-    new_lines = []
-    for line in lines:
-        if line.strip().startswith("10,30"):
-            new_lines.append("50,150\n")
-        elif " 11 " in line:
-            new_lines.append(line.replace(" 11 ", " 51 "))
-        elif ", 11" in line:
-            new_lines.append(line.replace(", 11", ", 51"))
-        else:
-            new_lines.append(line)
-
-    with open(inp_path, "w") as f:
-        f.writelines(new_lines)
-
     # Thread counts to test
     threads_to_test = [1, 2, 4, 8, 12, 16]
     results = []

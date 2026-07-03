@@ -108,4 +108,4 @@ The following measurements were taken on a **16-core CPU**:
   2. **Thread Management Overhead**: For smaller grid sizes ($50 \times 150$), the computational load per thread is small. The overhead of spawning, synchronizing, and joining OpenMP threads becomes comparable to the time saved by parallel computation.
   
 > [!TIP]
-> **Best Practice**: For maximum throughput on medium-sized models, setting `OMP_NUM_THREADS` to **4 or 8** often provides the best balance of speedup and CPU resource conservation.
+> **Best Practice**: For any given grid size and physical model, always benchmark the parallel scaling first (using different thread counts) to identify where speedup saturates. This helps you find the optimal balance of speedup and CPU resource conservation for your specific simulation workload.
