@@ -9,16 +9,20 @@ This tutorial explains the geodynamical principles, model setup, boundary condit
 Subduction zones are the primary drivers of plate tectonics and volcanic arc systems. An oceanic plate subducts into the mantle due to negative buoyancy (slab pull). As the slab descends, it undergoes substantial thermomechanical and mineralogical changes:
 
 ```
-  Subducting Plate (Oceanic)                   Overriding Plate (Oceanic)
+                                Trench                  Arc
+                                  |                     Volcano
+                                  |
+  Subducting                      V                    +---+   Overriding 
+  Plate (Oceanic)                                     /     \  Plate (Oceanic)
   =======================================================================
-  Crust (Basalt, Ph 3)   |                   | Crust (Basalt, Ph 3)
-  -----------------------+                   +---------------------------
-  Lithospheric Mantle     \  Serp. (Ph 9)   /
-  (Phase 4)                \~~~~~~.        /
-                            \ H.M. `·.    /         Mantle Wedge
-                             \        `·./           (Phase 4/8)
-                              \ Basalt   \
-                               \ (Ph 3)   \       Magma Migration
+  Crust (Basalt, Ph 3)             \ |   Crust (Basalt, Ph 3)
+  -----------------------+          \+---------------------------
+  Lithospheric Mantle     \ Basalt   \  \<-- Serp. (Ph 9)  
+  (Phase 4)                \ (Ph 3)   \  \ 
+                            \          \  \           Mantle Wedge
+                             \        ..\  \         (Phase 4/8)
+                              \    ...   \ |
+                               \...       \|       Magma Migration
                                 \          \             ^
                                  \ Eclogite \            |
                                   \ (Ph 13)  \           |
@@ -160,23 +164,15 @@ Run the provided Python plotting script:
 ```bash
 python3 plot_subduction.py
 ```
-This script reads the binary outputs and generates three publication-ready figures inside the `images/` directory:
-1. **`images/subduction_full_zone.png`**: A full 2D cross-section showing the subducting slab, phase distribution, temperature isotherms, and plate velocity field.
-2. **`images/subduction_mantle_wedge.png`**: A two-panel zoomed-in view of the mantle wedge ($X \in [300, 700]\text{ km}$, $Z \in [-150, 0]\text{ km}$) displaying:
-   * **Top Panel**: Active phase boundaries (serpentinite decoupling, hydrated mantle wedge) and velocity vectors.
-   * **Bottom Panel**: Magma/melt generation zone in the mantle wedge beneath the volcanic arc.
-3. **`images/subduction_evolution.png`**: A three-panel evolutionary sequence showing how the slab sinks over time.
+This script reads the binary outputs and generates a publication-ready figure inside the `images/` directory:
+* **`images/subduction_evolution.png`**: A three-panel evolutionary sequence showing how the slab sinks and transforms over time (at initial, mid, and final stages).
 
 ---
 
 ## 8. Analyzing the Results
 
-### Slab Eclogitization and Angle
-In the full profile (`images/subduction_full_zone.png`), watch how the subducting slab (green olivine mantle + blue oceanic crust) sinks. As the blue oceanic crust descends below $\sim 60\text{ km}$, it transforms into dark red **Eclogite** (Phase 13). The high density of eclogite drives the slab down, steepening the subduction angle.
+### Slab Eclogitization and Evolution
+In the evolution panels (`images/subduction_evolution.png`), watch how the subducting slab (blue oceanic crust + green mantle olivine) sinks. As the blue oceanic crust descends below $\sim 60\text{ km}$, it undergoes a phase transition to dark red **Eclogite** (Phase 13). The high density of eclogite provides negative buoyancy, pulling the slab down and stabilizing the subduction interface.
 
-### Mantle Wedge Flow and Hydration
-Observe the velocity vectors in the mantle wedge. The descending slab drags the adjacent wedge mantle downwards, establishing a **corner flow`** convection cell. 
-Directly above the slab, you will see a thin yellow layer of **Serpentinite** (Phase 9) at shallow depths, which transitions into **Hydrated Mantle** (Phase 16) at greater depths.
-
-### Arc Magmatism
-Look at the zoomed-in plot (`images/subduction_mantle_wedge.png`). The hydrated mantle (Phase 16) sits in the hot core of the mantle wedge ($T > 800^\circ\text{C}$). Because of hydration, this region starts melting, visible as a red-colored anomaly of high **magma fraction**. The extracted magma travels vertically through the diking channel (Phase 14) directly above the melting zone to form the volcanic arc at the surface.
+### Mantle Wedge Hydration & Melting
+Directly above the descending slab, hydration processes transform the wedge mantle. At shallow depths ($< 65\text{ km}$), releasing water hydrates the mantle wedge to form a thin yellow layer of **Serpentinite** (Phase 9), which transitions to a green-blue **Hydrated Mantle** (Phase 16) at greater depths. The hot core of the mantle wedge undergoes partial wet melting once temperatures exceed the water-saturated solidus, feeding magma vertically to build the volcanic arc crust (Phase 14) at the surface.
