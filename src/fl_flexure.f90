@@ -180,13 +180,13 @@ subroutine get_column_weights(q)
     use params
     implicit none
     double precision, intent(out) :: q(nx)
-    double precision :: rho, dz
+    double precision :: rho, dz, rho_b
     integer :: i, j
     double precision, external :: Eff_dens
     !$ACC routine(Eff_dens) seq
 
-    !$ACC parallel loop private(rho, dz, j) async(1)
-    !$OMP parallel do private(rho, dz, j)
+    !$ACC parallel loop private(rho, dz, rho_b, j) async(1)
+    !$OMP parallel do private(rho, dz, rho_b, j)
     do i = 1, nx
         q(i) = 0.d0
         do j = 1, nz-1
@@ -200,6 +200,21 @@ subroutine get_column_weights(q)
             dz = cord(j, i, 2) - cord(j+1, i, 2)
             q(i) = q(i) + rho * g * dz
         enddo
+        ! Fix A: remove the flexural-deflection load feedback.
+        ! A downward deflection lengthens the meshed column, inflating q and
+        ! cancelling the Winkler restoring force rho_m*g*w -> runaway subsidence
+        ! (worst where the bottom density is high). Subtract the weight of the
+        ! segment between the undeflected reference (zoriginal) and the current
+        ! deflected bottom, using the bottom-element density, so Load carries
+        ! only the tectonic anomaly.
+        if (i .eq. 1) then
+            rho_b = Eff_dens(nz-1, 1)
+        elseif (i .eq. nx) then
+            rho_b = Eff_dens(nz-1, nx-1)
+        else
+            rho_b = 0.5d0 * (Eff_dens(nz-1, i-1) + Eff_dens(nz-1, i))
+        endif
+        q(i) = q(i) - rho_b * g * (zoriginal(nz, i) - cord(nz, i, 2))
     enddo
 end subroutine get_column_weights
 
