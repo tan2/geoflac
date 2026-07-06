@@ -26,8 +26,8 @@ def main():
         print("Error: No simulation data found. Please run the simulation first.")
         sys.exit(1)
 
-    # Create a directory for plots if it doesn't exist
-    os.makedirs('plots', exist_ok=True)
+    # Create a directory for images if it doesn't exist
+    os.makedirs('images', exist_ok=True)
     
     # Plot final frame
     frame = nrec
@@ -138,8 +138,7 @@ def main():
     ax1.set_ylim(-300, 10)
     
     plt.tight_layout()
-    plt.savefig('subduction_full_zone.png', dpi=300)
-    plt.savefig('plots/subduction_full_zone.png', dpi=300)
+    plt.savefig('images/subduction_full_zone.png', dpi=300)
     plt.close()
     
     # ----------------------------------------------------
@@ -218,11 +217,10 @@ def main():
     ax_b.set_ylim(z_zoom_min, z_zoom_max)
     
     plt.tight_layout()
-    plt.savefig('subduction_mantle_wedge.png', dpi=300)
-    plt.savefig('plots/subduction_mantle_wedge.png', dpi=300)
+    plt.savefig('images/subduction_mantle_wedge.png', dpi=300)
     plt.close()
     
-    print("Saved 'subduction_full_zone.png' and 'subduction_mantle_wedge.png'")
+    print("Saved 'images/subduction_full_zone.png' and 'images/subduction_mantle_wedge.png'")
     
     # ----------------------------------------------------
     # Plot 3: Subduction Evolution Sequence
@@ -245,8 +243,8 @@ def main():
             ax.set_xlim(0, 960)
             
         axes_evo[-1].set_xlabel('Distance (km)', fontsize=11, fontweight='bold')
-        plt.savefig('plots/subduction_evolution.png', dpi=300)
-        print("Saved 'plots/subduction_evolution.png'")
+        plt.savefig('images/subduction_evolution.png', dpi=300)
+        print("Saved 'images/subduction_evolution.png'")
 
 if __name__ == '__main__':
     main()
