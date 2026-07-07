@@ -55,7 +55,7 @@
 3  23  31  10  0  0  0  0  0  0  0  0  0
 3  1  31  1  0  0  0  0  0  0  0  0  0
 2  1  126  10  0  0  0  0  0  0  0  0  0
-2  1  126  1  0  0  0  0  0  0  0  0  0
+2  1  126  200  10000.0  3300.0  0  0  0  0  0  0  0
 ;
 ; Hydrostatic pressure  applied at the bottom (on the depth of rzbo and TOP!!)
 ; {y,n(1,0),auto(2)}, Pressure at compens.depth, substratum phase, addit. dens. diff, damp_vis
