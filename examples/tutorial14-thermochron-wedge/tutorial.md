@@ -20,16 +20,20 @@ This tutorial implements a thermomechanical wedge model that refines the classic
                v                            v
   ============+======+=====================+======+======
   \ Accretionary Wedge                     |  Backstop
-   \                                       |  (Rigid)
-    \  Basal Detachment (Ramp-and-Flat)    |
-     \______________________/\____________/|
+   \  (Crustal Shortening)                 |  (Rigid)
+    \                                      |
+     \___ (Flat 1)                         |
+         \___ (Flat 2)                     |
+             \___ (Flat 3)                 |
+                 \________________________/|
+             Basal Detachment (Ramp-and-Flat)
 ```
 
 ---
 
 ## 2. Model Setup
 
-The model represents a regional cross-section of the orogenic wedge down to $30 depth.
+The model represents a regional cross-section of the orogenic wedge down to $30\text{ km}$ depth.
 
 ### Geometry, Mesh, and Time
 * **Dimensions**: $250\text{ km}$ wide ($X \in [0, 250]\text{ km}$), $30\text{ km}$ deep ($Z \in [-30, 0]\text{ km}$).
