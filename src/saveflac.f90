@@ -47,6 +47,10 @@ open (1,file='q_init.rs',access='direct',recl=nx*kindr)
 write (1,rec=nrec) q_init
 close (1)
 
+open (1,file='vel_flex_old.rs',access='direct',recl=nx*kindr)
+write (1,rec=nrec) vel_flex_old
+close (1)
+
 open (1,file='vel.rs',access='direct',recl=nwords*kindr) 
 write (1,rec=nrec) vel
 close (1)

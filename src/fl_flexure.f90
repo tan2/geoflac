@@ -8,7 +8,7 @@ subroutine fl_flexure
     double precision :: r_block(2, nx), u_block(2, nx)
     double precision :: x(nx), dx(nx)
     double precision :: D(nx), E, nu, Te, rho_m, lambda, mu
-    double precision :: cord_old_z, w_winkler_1, w_winkler_nx
+    double precision :: cord_old_z, w_winkler_1, w_winkler_nx, dflex, vel_flex
     integer :: i, j, iph, bc_idx
     double precision :: a_i, c_i, b_i
 
@@ -160,13 +160,28 @@ subroutine fl_flexure
     call solve_block_tridiagonal(nx, a_block, b_block, c_block, r_block, u_block)
     !$ACC end serial
 
-    ! 8. Apply new deflections, update bottom boundary coordinates & velocities
-    !$ACC parallel loop private(cord_old_z) async(1)
-    !$OMP parallel do private(cord_old_z)
+    ! 8. Apply new deflections, update bottom boundary coordinate and apply flexure velocity to the whole column
+    !$ACC parallel loop private(cord_old_z, vel_flex, j) async(1)
+    !$OMP parallel do private(cord_old_z, vel_flex, j)
     do i = 1, nx
+        ! Subtract previous step's flexure velocity to prevent velocity accumulation/inflation
+        do j = 1, nz - 1
+            vel(j, i, 2) = vel(j, i, 2) - vel_flex_old(i)
+        enddo
+
         cord_old_z = cord(nz, i, 2)
         cord(nz, i, 2) = zoriginal(nz, i) - u_block(2, i)
-        vel(nz, i, 2) = (cord(nz, i, 2) - cord_old_z) / dt
+
+        vel_flex = 0.d0
+        if (dt .gt. 0.d0) vel_flex = (cord(nz, i, 2) - cord_old_z) / dt
+
+        do j = 1, nz - 1
+            vel(j, i, 2) = vel(j, i, 2) + vel_flex
+        enddo
+        vel(nz, i, 2) = vel_flex
+
+        ! Store new flexure velocity for the next step
+        vel_flex_old(i) = vel_flex
     enddo
 
     !$ACC wait(1)

@@ -52,6 +52,13 @@ goto 102
 101 q_init = 0.d0
 102 continue
 
+open (1,file='vel_flex_old.rs',access='direct',recl=nx*kindr,status='old',err=103)
+read (1,rec=nrec) vel_flex_old
+close (1)
+goto 104
+103 vel_flex_old = 0.d0
+104 continue
+
 open (1,file='vel.rs',access='direct',recl=nwords*kindr) 
 read (1,rec=nrec) vel
 close (1)
