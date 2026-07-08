@@ -132,10 +132,12 @@ def main():
             ax.grid(True, linestyle=':', alpha=0.5)
             ax.set_aspect('equal')
             
+        # Create an images directory for evolution plots
+        os.makedirs('images', exist_ok=True)
         axes_evo[-1].set_xlabel('Distance (km)', fontsize=11, fontweight='bold')
         fig_evo.colorbar(im, ax=axes_evo.tolist(), orientation='vertical', pad=0.02, shrink=0.6, label='Plastic Strain')
-        plt.savefig('plots/evolution_thermochron_wedge.png', dpi=300)
-        print("Saved 'plots/evolution_thermochron_wedge.png'")
+        plt.savefig('images/evolution_thermochron_wedge.png', dpi=300)
+        print("Saved 'images/evolution_thermochron_wedge.png'")
 
 if __name__ == '__main__':
     main()
