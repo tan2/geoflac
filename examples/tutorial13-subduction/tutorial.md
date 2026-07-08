@@ -55,17 +55,33 @@ The model represents a regional 2D cross-section of the upper mantle and crust d
 
 Because subduction requires a pre-existing slab to start, we initialize the model with a dipping slab and a realistic thermal profile. Both the subducting (left) and overriding (right) plates are modeled as oceanic lithosphere:
 
-### 1. Lithospheric Geotherm
-We divide the domain into 5 thermal zones using [`nzone_age`](../doc/input_description.md#initial-structure):
-* **Subducting Plate (Nodes 1 to 58)**: Young oceanic plate (thermal age $100\text{ Myr}$) initialized with a cooling half-space geotherm.
-* **Wedge and Overriding Plate (Nodes 59 to 186)**: Older, stable oceanic plate (thermal age $200\text{ Myr}$), showing a thicker lithospheric geotherm.
+### 1. Horizontal Zoning and Geotherm Transitions (`nzone_age`)
+We partition the domain horizontally into 5 zones using the `nzone_age` input block. In `subduction.inp`, the thermal ages of the plates transition across the model:
+* **Subducting Plate (Zones 1-3, Nodes 1 to 75)**: Young oceanic plate (thermal age $100\text{ Myr}$) initialized with a cooling half-space geotherm (`ictherm = 1`).
+* **Overriding Plate (Zones 4-5, Nodes 170 to 186)**: Older, thicker oceanic plate (thermal age $200\text{ Myr}$).
+* **Transition Zone (Nodes 76 to 170)**: 
+  A smooth transition is established by setting `ixtb2 = -1` for Zone 3 (ending at node 75) and `ixtb1 = -1` for Zone 4 (starting at node 170):
+  ```fortran
+   1, 100.0, 0.0, 0.0, 76, -1
+      4, 1.5 7.5 17.5
+      1 3 16 4
+   1, 200.0, 0.0, 0.0, -1, 170
+      4, 1.5 7.5 17.5
+      1 3 16 4
+  ```
+  The solver detects the `-1` flags and linearly interpolates the thermal age from $100\text{ Myr}$ to $200\text{ Myr}$ between nodes 76 and 170, creating a realistic, gradual warming of the lithosphere towards the overriding plate.
 
-### 2. Layer structure
-Both plates have a standard 3-layer oceanic crust structure:
-* **Sediment (Phase 1)**: $1.5\text{ km}$ thick.
-* **Basaltic Crust (Phase 3)**: $6.0\text{ km}$ thick.
-* **Hydrated Slab Mantle (Phase 16)**: $10.0\text{ km}$ thick.
+### 2. Layer Structure and Tapering Thicknesses
+In this model, both plates share a standard 3-layer oceanic crust structure of constant thickness:
+* **Sediment (Phase 1)**: $1.5\text{ km}$ thick (interface at $1.5\text{ km}$ depth).
+* **Basaltic Crust (Phase 3)**: $6.0\text{ km}$ thick (interface at $7.5\text{ km}$ depth).
+* **Hydrated Slab Mantle (Phase 16)**: $10.0\text{ km}$ thick (interface at $17.5\text{ km}$ depth).
 * **Lithospheric Mantle (Phase 4)**: Olivine below $17.5\text{ km}$ depth.
+
+#### Tapering Thickness Mechanism
+Although this specific subduction setup uses uniform layer depths across the entire domain, the same `nzone_age` transition mechanism can be used to model **tapering layer thicknesses**. 
+
+If the depths of the layer interfaces (`hc`) differ between two adjacent zones marked with the `-1` transition flags, the solver will linearly interpolate the interface depths for all intermediate columns. For example, if Zone A (ending at node 75) specifies a sediment layer depth of $1.5\text{ km}$, and Zone B (starting at node 170) specifies a depth of $4.5\text{ km}$, the sediment layer will smoothly taper and thicken from $1.5\text{ km}$ to $4.5\text{ km}$ across the transition region.
 
 ### 3. Dipping Slab Initialization (Inhomogeneities)
 We insert slanting inclusions to model the initial dipping subducted oceanic crust and slab core:
