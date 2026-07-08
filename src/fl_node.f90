@@ -370,18 +370,25 @@ do i=1,nx
 end do
 !$OMP end do
 !$OMP end parallel
-! Prestress to form the topo when density differences are present WITHOUT PUSHING OR PULLING!
 if (i_prestress.eq.1.and.time.lt.600.d3*sec_year) then
+     !$OMP parallel do private(i,k)
      !$ACC parallel loop collapse(2) async(1)
      do k = 1,2
         do i = 1, nx
-            vel(nz,i,k) = 0
+            vel(nz,i,k) = 0.d0
         enddo
+     enddo
+     !$OMP end parallel do
+
+     !$OMP parallel do private(j,k)
+     !$ACC parallel loop collapse(2) async(1)
+     do k = 1,2
         do j = 1, nz
-            vel(j,1,k) = 0
-            vel(j,nx,k) = 0
+            vel(j,1,k) = 0.d0
+            vel(j,nx,k) = 0.d0
         enddo
-    enddo
+     enddo
+     !$OMP end parallel do
 endif
 return
 end subroutine fl_node

@@ -31,10 +31,12 @@ subroutine fl_flexure
 
     ! 2. Compute current vertical column weights (lithostatic loads)
     call get_column_weights(q)
+    !$ACC wait(1)
 
     ! 3. If q_init is completely uninitialized (all zeros), initialize it with the starting column weights
     ! Handled cleanly on host and page-migrated automatically by CUDA Managed Memory
     if (all(q_init .eq. 0.d0)) then
+        !$ACC update host(q)
         q_init = q
     endif
 
