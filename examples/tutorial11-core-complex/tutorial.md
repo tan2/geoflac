@@ -273,4 +273,4 @@ Where:
 
 If yielding occurs ($f(\boldsymbol{\sigma}^{\text{trial}}) > 0$), a plastic return mapping is performed:
 1. The solver projects the stress state back to the yield envelope.
-2. The plastic strain increment is accumulated into the Eulerian element's total `aps` array.
+2. The plastic strain increment is accumulated into the element's total `aps` array.
