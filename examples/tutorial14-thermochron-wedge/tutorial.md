@@ -53,13 +53,36 @@ The layers of the continental crust (such as basalt, continental basement, metas
 
 ---
 
-## 4. Boundary Conditions
+## 4. Boundary Conditions & Nodal Flexure
 
-The mechanical boundary conditions simulate the tectonic convergence:
+The mechanical boundary conditions simulate the tectonic convergence and lithospheric flexural loading:
 1. **Left Boundary (Side 1)**: Inflow velocity representing the incoming continental plate.
 2. **Right Boundary (Side 3)**: Locked vertical/horizontal velocities representing the collision backstop.
-3. **Bottom Boundary (Side 2)**: Hydrostatic pressure support to represent buoyancy.
-4. **Top Boundary (Side 4)**: Free surface with topography diffusion (`topo_removal_rate = 1.0e-6`).
+3. **Top Boundary (Side 4)**: Free surface with topography diffusion (`topo_removal_rate = 1.0e-6`).
+4. **Bottom Boundary (Side 2)**: Flexural boundary condition (`nbc = 200`) simulating the elastic bending of the underlying lithosphere under tectonic loads.
+
+### Flexural Governing Equation
+The vertical deflection $w(x)$ of the bottom boundary is governed by the 1D thin elastic plate flexure equation:
+
+$$\frac{d^2}{dx^2} \left( D(x) \frac{d^2 w}{dx^2} \right) + \rho_m g w = q(x) - q_{init}(x)$$
+
+Where:
+* $w(x)$ is the downward vertical deflection [m].
+* $D(x) = \frac{E T_e^3}{12 (1 - \nu^2)}$ is the flexural rigidity [N$\cdot$m], calculated dynamically using the Lamé parameters of the bottom elements.
+* $T_e$ is the elastic thickness of the plate (`Te = bca = 10000.0` meters, or $10\text{ km}$).
+* $\rho_m$ is the underlying asthenosphere density (`rho_m = bcb = 3300.0` $\text{kg/m}^3$).
+* $g$ is gravitational acceleration ($10.0\text{ m/s}^2$).
+* $\rho_m g w$ is the Winkler foundation buoyancy restoring force.
+* $q(x) - q_{init}(x)$ is the excess load [Pa] representing the change in vertical lithostatic column weight relative to the initial state.
+
+### Numerical Implementation (Tridiagonal Solver & Whole Column Coupling)
+1. **Block Tridiagonal Formulation**: The fourth-order flexure equation is split into two coupled second-order differential equations in terms of vertical deflection $w$ and bending moment $M = D \frac{d^2 w}{dx^2}$. These equations are discretized in [fl_flexure.f90](../../src/fl_flexure.f90) using a second-order non-uniform finite-difference scheme, yielding a block tridiagonal linear system solved on the GPU.
+2. **Elastic Column Translation**: In each step, if a column $i$ undergoes an incremental vertical deflection $\Delta w_i = w_i(t) - w_i(t - dt)$:
+   * The coordinates of all nodes in that vertical column ($j = 1$ to $nz$) are shifted downward by $\Delta w_i$ to keep element thicknesses unchanged:
+     $$z_{j,i} \leftarrow z_{j,i} - \Delta w_i$$
+   * The vertical velocities of the entire column are updated by the flexural deflection velocity:
+     $$v_{z,\, j,i} \leftarrow v_{z,\, j,i} - \frac{\Delta w_i}{dt}$$
+   * To prevent velocity accumulation/inflation across timesteps, the previous step's flexural velocity is subtracted at the start of the next flexure step.
 
 ---
 
