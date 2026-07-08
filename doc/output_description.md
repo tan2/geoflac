@@ -111,3 +111,22 @@ When VisIt loads `.vts` (grid) or `.vtp` (marker) files converted via the utilit
 | **`age_ZHe`** | Scalar | $\text{Myr}$ | Zircon (U-Th)/He cooling age. |
 | **`age_AFT`** | Scalar | $\text{Myr}$ | Apatite Fission Track cooling age. |
 | **`age_AHe`** | Scalar | $\text{Myr}$ | Apatite (U-Th)/He cooling age. |
+
+---
+
+## 3. Restart / Checkpoint Files (`*.rs`)
+
+During a simulation run, the solver periodically saves its complete state to binary checkpoint files (typically every `nsave` steps) to allow restarts without loss of state. These files are stored in the run directory with the `.rs` extension:
+
+*   **`time.rs`**: Current simulation time (`time`) and time step (`dt`) [direct access, $2 \times 8$ bytes].
+*   **`cord.rs`**: Eulerian coordinates of grid nodes [direct access, $2 \cdot nz \cdot nx$ double precision words].
+*   **`vel.rs`**: Nodal velocity vector field [direct access, $2 \cdot nz \cdot nx$ double precision words].
+*   **`dhacc.rs` / `extr_acc.rs`**: Accumulated topography changes and extrusion arrays [direct access, $(nx-1)$ double precision words].
+*   **`q_init.rs`**: Initial vertical column weights at start of the simulation [direct access, $nx$ double precision words].
+*   **`vel_flex_old.rs`**: Flexure-induced vertical velocity from the previous timestep, used to track and prevent velocity accumulation when applying vertical flexure displacements [direct access, $nx$ double precision words].
+*   **`temp.rs`**: Nodal temperatures [direct access, $nz \cdot nx$ double precision words].
+*   **`xoriginal.rs` / `zoriginal.rs`**: Nodal coordinates at the beginning of the experiment, used for cumulative displacement tracking [direct access, $nz \cdot nx$ double precision words].
+*   **`phase.rs`**: Element phase IDs [direct access, $(nz-1) \cdot (nx-1)$ double precision words].
+*   **`strain.rs` / `stress.rs`**: Element strain and stress tensors [direct access].
+*   **`aps.rs` / `fmagma.rs` / `source.rs`**: Element accumulated plastic strain, magma fraction, and heat sources [direct access].
+*   **`marker1.rs` / `marker2.rs`**: Nodal marker coordinates, ages (marker1) and integer properties, phases, IDs (marker2) [direct access].

@@ -597,6 +597,20 @@ This document describes the primary data arrays used in the `geoflac` Fortran en
 *   **Update Locations:**
     *   **Assignment:** `src/marker_data.f90` (typically assigned once during creation in `add_marker`).
 
+---
+
+## `vel_flex_old`
+
+*   **Meaning:** Flexure-induced vertical velocity from the previous timestep [m/s]. Used to prevent cumulative velocity inflation when applying flexural deflection shifts to the entire grid column.
+*   **Shape:** `(nx)`
+*   **Dimension 1 (`nx`):** Horizontal index (node), from 1 (left) to `nx` (right).
+*   **Update Locations:**
+    *   **Initialization:** `src/arrays.f90` (allocated and initialized to `0.d0` in `allocate_arrays`).
+    *   **Main Update:** `src/fl_flexure.f90` (subtracted from node velocities at the start of the step, recalculated as `vel_flex = dflex / dt` and applied to the column, and then stored back into `vel_flex_old` at the end of the step).
+    *   **Restart/State:** Written to `vel_flex_old.rs` in `src/saveflac.f90` and restored from it in `src/rsflac.f90` (with fallback to `0.d0` for backwards compatibility).
+
+---
+
 ## Remeshing and Temporary Workspace Arrays
 
 The following arrays are allocated to manage dynamic grid restructuring (remeshing) or as short-term workspace inside subroutines. They are generally not part of the persistent physical state.
