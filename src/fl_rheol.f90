@@ -25,6 +25,16 @@ double precision :: vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4, &
                     s11,s22,s12,srII,srI,srs2,stII, &
                     ar1,ar2,ar3,ar4
 double precision :: shpdx_loc(3, 4), shpdz_loc(3, 4), sr_loc(3, 4)
+double precision :: s11_start(4), s22_start(4), s12_start(4), s33_start(4)
+double precision :: s11_final, s22_final, s12_final, s33_final
+double precision :: tr_s_start, tr_s_final
+double precision :: ee11_start, ee22_start, ee33_start, ee12_start
+double precision :: ee11_final, ee22_final, ee33_final, ee12_final
+double precision :: de11_el, de22_el, de33_el, de12_el
+double precision :: de11_ne, de22_ne, de33_ne, de12_ne
+double precision :: s11_avg, s22_avg, s12_avg, s33_avg
+double precision :: q_shear_k, q_shear_elem
+double precision :: lambda, mu, denom_elastic
 double precision :: Eff_visc
 integer :: i, j, k, iph, irh, &
            ipls
@@ -44,9 +54,19 @@ dtavg = dtavg + dt
 !$OMP                  vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4, &
 !$OMP                  x1,y1,x2,y2,x3,y3,x4,y4, &
 !$OMP                  em,eda,edb,s11,s22,s12,srII,srI,srs2,stII, &
-!$OMP                  ar1,ar2,ar3,ar4,shpdx_loc,shpdz_loc,sr_loc)
+!$OMP                  ar1,ar2,ar3,ar4,shpdx_loc,shpdz_loc,sr_loc, &
+!$OMP                  s11_start,s22_start,s12_start,s33_start, &
+!$OMP                  s11_final,s22_final,s12_final,s33_final, &
+!$OMP                  tr_s_start,tr_s_final, &
+!$OMP                  ee11_start,ee22_start,ee33_start,ee12_start, &
+!$OMP                  ee11_final,ee22_final,ee33_final,ee12_final, &
+!$OMP                  de11_el,de22_el,de33_el,de12_el, &
+!$OMP                  de11_ne,de22_ne,de33_ne,de12_ne, &
+!$OMP                  s11_avg,s22_avg,s12_avg,s33_avg, &
+!$OMP                  q_shear_k,q_shear_elem, &
+!$OMP                  lambda,mu,denom_elastic)
 !$OMP do schedule(guided)
-!$ACC parallel loop gang vector collapse(2) private(depl,s11p,s22p,s12p,s33p,s11v,s22v,s12v,s33v,shpdx_loc,shpdz_loc,sr_loc) async(1)
+!$ACC parallel loop gang vector collapse(2) private(depl,s11p,s22p,s12p,s33p,s11v,s22v,s12v,s33v,shpdx_loc,shpdz_loc,sr_loc,s11_start,s22_start,s12_start,s33_start) async(1)
 do i = 1,nx-1
     do j = 1,nz-1
 
@@ -185,6 +205,13 @@ do i = 1,nx-1
         endif
         vis = visn(j,i)
 
+        do k = 1,4
+            s11_start(k) = stress0(j,i,1,k)
+            s22_start(k) = stress0(j,i,2,k)
+            s12_start(k) = stress0(j,i,3,k)
+            s33_start(k) = stress0(j,i,4,k)
+        enddo
+
         ! Cycle by triangles
         do k = 1,4
             de11 = sr_loc(1,k)*dt
@@ -296,6 +323,59 @@ do i = 1,nx-1
         strain(j,i,1) = strain(j,i,1) + s11*dt
         strain(j,i,2) = strain(j,i,2) + s22*dt
         strain(j,i,3) = strain(j,i,3) + s12*dt
+
+        ! Non-elastic shear heating calculation
+        if (ishearh .eq. 1) then
+            q_shear_elem = 0.d0
+            do k = 1, 4
+                s11_final = stress0(j,i,1,k)
+                s22_final = stress0(j,i,2,k)
+                s12_final = stress0(j,i,3,k)
+                s33_final = stress0(j,i,4,k)
+
+                lambda = bulkm - 2.d0/3.d0 * rmu
+                mu = rmu
+
+                denom_elastic = 3.d0 * lambda + 2.d0 * mu
+                if (abs(denom_elastic) .lt. 1.d-30) denom_elastic = sign(1.d-30, denom_elastic)
+
+                ! Elastic strain at start of step
+                tr_s_start = s11_start(k) + s22_start(k) + s33_start(k)
+                ee11_start = (s11_start(k) - (lambda / denom_elastic) * tr_s_start) / (2.d0 * mu)
+                ee22_start = (s22_start(k) - (lambda / denom_elastic) * tr_s_start) / (2.d0 * mu)
+                ee33_start = (s33_start(k) - (lambda / denom_elastic) * tr_s_start) / (2.d0 * mu)
+                ee12_start = s12_start(k) / (2.d0 * mu)
+
+                ! Elastic strain at end of step
+                tr_s_final = s11_final + s22_final + s33_final
+                ee11_final = (s11_final - (lambda / denom_elastic) * tr_s_final) / (2.d0 * mu)
+                ee22_final = (s22_final - (lambda / denom_elastic) * tr_s_final) / (2.d0 * mu)
+                ee33_final = (s33_final - (lambda / denom_elastic) * tr_s_final) / (2.d0 * mu)
+                ee12_final = s12_final / (2.d0 * mu)
+
+                ! Incremental elastic strain of this step
+                de11_el = ee11_final - ee11_start
+                de22_el = ee22_final - ee22_start
+                de33_el = ee33_final - ee33_start
+                de12_el = ee12_final - ee12_start
+
+                ! Non-elastic strain increment
+                de11_ne = sr_loc(1,k)*dt - de11_el
+                de22_ne = sr_loc(2,k)*dt - de22_el
+                de12_ne = sr_loc(3,k)*dt - de12_el
+                de33_ne = 0.d0 - de33_el
+
+                s11_avg = 0.5d0 * (s11_start(k) + s11_final)
+                s22_avg = 0.5d0 * (s22_start(k) + s22_final)
+                s12_avg = 0.5d0 * (s12_start(k) + s12_final)
+                s33_avg = 0.5d0 * (s33_start(k) + s33_final)
+
+                q_shear_k = s11_avg * de11_ne + s22_avg * de22_ne + 2.d0 * s12_avg * de12_ne + s33_avg * de33_ne
+                q_shear_elem = q_shear_elem + 0.25d0 * q_shear_k
+            enddo
+
+            sshrheat(j,i) = sshrheat(j,i) + q_shear_elem
+        endif
 
     enddo
 enddo
