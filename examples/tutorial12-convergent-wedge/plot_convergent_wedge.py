@@ -58,12 +58,13 @@ def main():
     
     # Plot aps
     im1 = ax1.pcolormesh(X_km, Z_km, aps, cmap=cmap_aps, vmin=0.01, vmax=2.5, shading='flat')
+    # Top surface boundary and Left boundary
     ax1.plot(X_km[:, 0], Z_km[:, 0], color='black', linewidth=1.5)
+    ax1.plot(X_km[0, :], Z_km[0, :], color='black', linewidth=1.5)
     cbar1 = fig.colorbar(im1, ax=ax1, orientation='vertical', pad=0.02, shrink=0.8)
     cbar1.set_label('Accumulated Plastic Strain', fontsize=11, fontweight='bold')
     
     # Overlay velocity arrows (downsample for clarity)
-    # nx is 51, nz is 21. Let's skip every 2 elements in x and 1 in z
     skip_x = 2
     skip_z = 1
     q1 = ax1.quiver(X_km[::skip_z, ::skip_x], Z_km[::skip_z, ::skip_x], 
@@ -89,7 +90,9 @@ def main():
     cmap_phase = mcolors.ListedColormap(colors_phase)
     
     im2 = ax2.pcolormesh(X_km, Z_km, phase, cmap=cmap_phase, shading='flat', vmin=0.5, vmax=2.5)
+    # Top surface boundary and Left boundary
     ax2.plot(X_km[:, 0], Z_km[:, 0], color='black', linewidth=1.5)
+    ax2.plot(X_km[0, :], Z_km[0, :], color='black', linewidth=1.5)
     
     # Legend for phases
     from matplotlib.patches import Patch
@@ -120,21 +123,27 @@ def main():
     plt.savefig('images/final_state_convergent_wedge.png', dpi=300)
     print("Saved 'images/final_state_convergent_wedge.png'")
     
-    # Create an evolution plot
+    # Create an evolution plot (showing second invariant of strain rate srII, which is stored as log10(srII))
     if nrec >= 3:
         fig_evo, axes_evo = plt.subplots(3, 1, figsize=(12, 12), sharex=True, sharey=True)
         # Select 3 frames: initial (1), middle (nrec // 2 + 1), final (nrec)
         frames_to_plot = [1, nrec // 2 + 1, nrec]
         
+        im = None
+        vmin_sr = -16.0
+        vmax_sr = -13.0
         for idx, f_idx in enumerate(frames_to_plot):
             ax = axes_evo[idx]
             x_f, z_f = fl.read_mesh(f_idx)
-            aps_f = fl.read_aps(f_idx)
+            srII_f = fl.read_srII(f_idx)
             t_f = fl.time[f_idx - 1]
             
-            im = ax.pcolormesh(x_f, z_f, aps_f, cmap=cmap_aps, vmin=0.01, vmax=2.5, shading='flat')
+            im = ax.pcolormesh(x_f, z_f, srII_f, cmap='magma', vmin=vmin_sr, vmax=vmax_sr, shading='flat')
+            # Top surface boundary and Left boundary
             ax.plot(x_f[:, 0], z_f[:, 0], color='black', linewidth=1.5)
-            ax.set_title(f'Accumulated Plastic Strain at t = {t_f:.2f} Myr', fontsize=12, fontweight='bold')
+            ax.plot(x_f[0, :], z_f[0, :], color='black', linewidth=1.5)
+            
+            ax.set_title(f'Strain Rate (log₁₀ s⁻¹) Evolution at t = {t_f:.2f} Myr', fontsize=12, fontweight='bold')
             ax.set_ylabel('Depth (km)', fontsize=10)
             ax.set_xlim(0, 70)
             ax.set_ylim(-10, 7)
@@ -142,7 +151,7 @@ def main():
             ax.set_aspect('equal')
             
         axes_evo[-1].set_xlabel('Distance (km)', fontsize=11, fontweight='bold')
-        fig_evo.colorbar(im, ax=axes_evo.tolist(), orientation='vertical', pad=0.02, shrink=0.6, label='Plastic Strain')
+        fig_evo.colorbar(im, ax=axes_evo.tolist(), orientation='vertical', pad=0.02, shrink=0.6, label='Second Invariant of Strain Rate (log₁₀ s⁻¹)')
         plt.savefig('images/evolution_convergent_wedge.png', dpi=300)
         print("Saved 'images/evolution_convergent_wedge.png'")
         
