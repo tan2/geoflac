@@ -30,7 +30,6 @@ def main():
     os.makedirs('images', exist_ok=True)
     
     # 18 phases defined in subduction.inp
-    # Map each phase ID to a specific name and hexadecimal color
     phase_info = {
         1:  ("Sediment", "#fdbf6f"),
         2:  ("Continental Crust", "#fdbf6f"),
@@ -71,7 +70,7 @@ def main():
             temp_f = fl.read_temperature(f_idx)
             t_f = fl.time[f_idx - 1]
             
-            # Map original phase IDs to 0..6 for compact mapping
+            # Map original phase IDs to 0..len(active_phases)-1 for compact mapping
             phase_mapped = np.zeros_like(phase_f, dtype=int)
             for p_idx, pid in enumerate(active_phases):
                 phase_mapped[phase_f == pid] = p_idx
@@ -86,8 +85,8 @@ def main():
             ax.set_title(f'Subduction Evolution at t = {t_f:.2f} Myr', fontsize=12, fontweight='bold', pad=5)
             ax.set_ylabel('Depth (km)', fontsize=11, fontweight='bold')
             ax.grid(True, linestyle=':', alpha=0.3, color='gray')
-            ax.set_ylim(-300, 10)
-            ax.set_xlim(0, 960)
+            ax.set_ylim(-200, 10)
+            ax.set_xlim(0, 600)
             ax.set_aspect('equal')
             
         axes_evo[-1].set_xlabel('Distance (km)', fontsize=12, fontweight='bold')

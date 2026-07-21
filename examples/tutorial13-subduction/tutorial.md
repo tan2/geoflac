@@ -32,163 +32,77 @@ Subduction zones are the primary drivers of plate tectonics and volcanic arc sys
 ### Key Processes Modeled:
 1. **Slab Pull (Eclogitization)**: As the subducting oceanic crust (basalt, Phase 3/7) goes deeper, pressure and temperature increase. This induces a phase transition to **Eclogite** (Phase 13), which is significantly denser ($\rho = 3480\text{ kg/m}^3$ vs $2880\text{ kg/m}^3$), providing the slab pull force that stabilizes subduction.
 2. **Slab Dehydration & Mantle Hydration**: Dehydrating subducted crust releases water into the overlying mantle wedge (olivine, Phase 4/8). At shallow depths ($< 65\text{ km}$), this hydrates the mantle wedge to form **Serpentinite** (Phase 9), a very weak rock ($\phi = 3^\circ$, $c = 4\text{ MPa}$) that decouples the plates.
-3. **Mantle Wedge Melting**: At greater depths ($> 65\text{ km}$), water hydrates the hot mantle wedge to form **Hydrated Mantle** (Phase 16). The presence of water lowers the solidus (melting temperature). When temperatures exceed this wet solidus, the hydrated mantle wedge undergoes partial melting.
-4. **Magma Diking & Volcanism**: The generated magma collects and migrates vertically through the crust (via a parameterized diking channel, Phase 14) to build a volcanic arc at the surface.
+3. **Mantle Wedge Melting**: Phase 16 represents chlorite-bearing hydrated mantle in the subducting lithosphere. As the slab descends, Phase 16 undergoes dehydration breakdown. The released water migrates upward to wet the hot mantle wedge, significantly lowering its solidus (melting temperature) and inducing wet partial melting.
+4. **Magma Dynamics & Crustal Processing**:
+   * **a. Magma Migration Modeling**: When partial melting occurs in the mantle wedge, it will produce `prod-magma` amount of magma per unit of time per unit of partial melting. Parts (`ratio-mantle-mzone`) of the magma is extracted and evenly distributed in an invertical triangle, whose tip is in the partial melting element and base on the Moho. The angle of the triangle is controlled by the parameter `angle-mzone`. The rest of the magma is distributed within the crust, forming vertical dikes with `nelem-dike` element thick. The volume of these magma will form arc crust (Phase 14) at the surface.
+   * **b. Weakening Effects of Magma**: The presence of magma reduces local rock strength. Magma-bearing elements undergo severe rheological weakening (lowered viscosity `weaken-ratio-viscous`, reduced yield stress `weaken-ratio-plastic,`).
+   * **c. Magma Freezing (Crystallization) Modeling**: As ascending magma enters colder environments ($T < T_{\text{solidus}}$), it cools and freezes. The freezing rate is controlled with `lambda-freeze` and its temperature dependence is `lambda-freeze-tdep`. During freezing, the latant heat is released, which will increase the local tempeature.
 
 ---
 
 ## 2. Model Setup
 
-The model represents a regional 2D cross-section of the upper mantle and crust down to $300\text{ km}$ depth.
+The model represents a regional 2D cross-section of the upper mantle and crust down to $200\text{ km}$ depth and $600\text{ km}$ wide.
 
 ### Geometry and Mesh
-* **Dimensions**: $960\text{ km}$ wide ($X \in [0, 960]\text{ km}$), $300\text{ km}$ deep ($Z \in [-300, 0]\text{ km}$).
-* **Grid Resolution**: $185 \times 64$ elements ($186 \times 65$ nodes), configured in [`subduction.inp`](subduction.inp).
+* **Dimensions**: $600\text{ km}$ wide ($X \in [0, 600]\text{ km}$), $200\text{ km}$ deep ($Z \in [-200, 0]\text{ km}$).
+* **Grid Resolution**: $100 \times 40$ elements ($101 \times 41$ nodes), defined in [`subduction.inp`](subduction.inp).
 * **Non-Uniform Grid Zones**:
   To resolve the subduction zone and arc with high detail while saving computation time elsewhere, a variable grid is defined:
-  * **X direction (5 zones)**: High resolution ($2\text{ km}$ elements) in the center ($X \in [300, 600]\text{ km}$) where subduction occurs, and coarser resolution ($6\text{ km}$ elements) near the left and right boundaries.
-  * **Z direction (5 zones)**: High resolution ($1.5\text{ km}$ elements) near the surface ($Z \in [-50, 0]\text{ km}$) to capture crustal faults and the volcanic arc, and coarser resolution ($9\text{ km}$ elements) at depth ($Z < -150\text{ km}$).
+  * **X direction (5 zones)**: High resolution ($\sim 2.7\text{ km}$ elements) in the center ($X \in [200, 450]\text{ km}$) where subduction occurs, and coarser resolution ($\sim 11\text{ km}$ elements) near the left and right boundaries.
+  * **Z direction (3 zones)**: High resolution near the surface ($Z \in [-50, 0]\text{ km}$) to capture crustal faults and the volcanic arc, and coarser resolution at depth.
 
 ---
 
 ## 3. Initial Thermal and Phase Structure
 
-Because subduction requires a pre-existing slab to start, we initialize the model with a dipping slab and a realistic thermal profile. Both the subducting (left) and overriding (right) plates are modeled as oceanic lithosphere:
+Because subduction requires a pre-existing slab to start, we initialize the model with a dipping slab extending down to **$50\text{ km}$ depth** and distinct plate thermal profiles. Both the subducting (left) and overriding (right) plates are modeled as oceanic lithosphere:
 
-### 1. Horizontal Zoning and Geotherm Transitions (`nzone_age`)
-We partition the domain horizontally into 5 zones using the `nzone_age` input block. In `subduction.inp`, the thermal ages of the plates transition across the model:
-* **Subducting Plate (Zones 1-3, Nodes 1 to 75)**: Young oceanic plate (thermal age $100\text{ Myr}$) initialized with a cooling half-space geotherm (`ictherm = 1`).
-* **Overriding Plate (Zones 4-5, Nodes 170 to 186)**: Older, thicker oceanic plate (thermal age $200\text{ Myr}$).
-* **Transition Zone (Nodes 76 to 170)**: 
-  A smooth transition is established by setting `ixtb2 = -1` for Zone 3 (ending at node 75) and `ixtb1 = -1` for Zone 4 (starting at node 170):
-  ```fortran
-   1, 100.0, 0.0, 0.0, 76, -1
-      4, 1.5 7.5 17.5
-      1 3 16 4
-   1, 200.0, 0.0, 0.0, -1, 170
-      4, 1.5 7.5 17.5
-      1 3 16 4
-  ```
-  The solver detects the `-1` flags and linearly interpolates the thermal age from $100\text{ Myr}$ to $200\text{ Myr}$ between nodes 76 and 170, creating a realistic, gradual warming of the lithosphere towards the overriding plate.
+### 1. Thermal Age Contrast (`nzone_age`)
+We partition the domain horizontally into 2 primary plate thermal age segments using the `nzone_age` input block:
+* **Subducting Plate (Nodes 1 to 31)**: Older, colder oceanic plate (thermal age **$140\text{ Myr}$**) initialized with a cooling half-space geotherm (`ictherm = 1`).
+  * **Layer Structure**: $1.5\text{ km}$ Sediment (Phase 1), $6.0\text{ km}$ Basaltic Crust (Phase 3), $10.0\text{ km}$ Hydrated Slab Mantle (Phase 16), and Olivine Lithospheric Mantle (Phase 4) below.
+* **Overriding Plate (Nodes 32 to 101)**: Younger, warmer oceanic plate (thermal age **$60\text{ Myr}$**).
+  * **Layer Structure**: $1.5\text{ km}$ Sediment (Phase 1), $6.0\text{ km}$ Basaltic Crust (Phase 3), and Olivine Mantle (Phase 4) below.
 
-### 2. Layer Structure and Tapering Thicknesses
-In this model, both plates share a standard 3-layer oceanic crust structure of constant thickness:
-* **Sediment (Phase 1)**: $1.5\text{ km}$ thick (interface at $1.5\text{ km}$ depth).
-* **Basaltic Crust (Phase 3)**: $6.0\text{ km}$ thick (interface at $7.5\text{ km}$ depth).
-* **Hydrated Slab Mantle (Phase 16)**: $10.0\text{ km}$ thick (interface at $17.5\text{ km}$ depth).
-* **Lithospheric Mantle (Phase 4)**: Olivine below $17.5\text{ km}$ depth.
-
-#### Tapering Thickness Mechanism
-Although this specific subduction setup uses uniform layer depths across the entire domain, the same `nzone_age` transition mechanism can be used to model **tapering layer thicknesses**. 
-
-If the depths of the layer interfaces (`hc`) differ between two adjacent zones marked with the `-1` transition flags, the solver will linearly interpolate the interface depths for all intermediate columns. For example, if Zone A (ending at node 75) specifies a sediment layer depth of $1.5\text{ km}$, and Zone B (starting at node 170) specifies a depth of $4.5\text{ km}$, the sediment layer will smoothly taper and thicken from $1.5\text{ km}$ to $4.5\text{ km}$ across the transition region.
-
-### 3. Dipping Slab Initialization (Inhomogeneities)
-We insert slanting inclusions to model the initial dipping subducted oceanic crust and slab core:
-* **Slab Crust (Phase 3)**: A $7.5\text{ km}$ thick slanting basalt layer dipping at $\sim 45^\circ$, initialized using slanting inhomogeneities (`geometry = 4`).
-* **Weak Seed (Phase 16)**: A weak zone immediately above the slab to decouple the plates and initialize the shear zone (`init.pl.strain = 1.0`).
-* **Cold Slab Core**: A slanting temperature anomaly (`geometry = 13`, `amp = -500°C`) is applied to model the cold core of the subducting lithosphere, preventing the slab from warming up and weakening too quickly.
+### 2. Pre-existing Slab Inclusions (Extended to $50\text{ km}$ Depth)
+To initiate subduction smoothly at $X \approx 200-280\text{ km}$ (node 30), initial heterogeneities are inserted dipping at $\sim 45^\circ$ to the right:
+* **Dipping Basaltic Slab Crust (Phase 3)**: Inserted between nodes 30-42 dipping from surface down to `iy2 = 16` (**$50\text{ km}$ depth**).
+* **Weak Shear Zone (Phase 16 & -1)**: Hydrated weak shear zone immediately above the dipping slab (nodes 27-45, `iy2 = 16`).
+* **Cold Slab Core**: Temperature anomaly (`geometry = 13`, `amp = -500°C`) extending down to `iy2 = 17` to preserve the cold thermal core of the subducting slab.
 
 ---
 
-## 4. Boundary Conditions
+## 4. Mechanical Boundary Conditions
 
-The mechanical boundary conditions compress the domain to drive subduction:
-
-1. **Left Boundary (Side 1)**: Inflow velocity of $V_x = 4.9\text{ cm/yr} \approx 1.56 \times 10^{-9}\text{ m/s}$ (`nbc = 10`), driving the subducting plate.
-2. **Right Boundary (Side 3)**: Locked horizontal velocity $V_x = 0.0$ (`nbc = 10`), representing a rigid backstop for the overriding plate.
-3. **Bottom Boundary (Side 2)**: Hydrostatic pressure support (`nyhydro = 2`, `iphsub = 4`) balancing buoyancy and allowing material to flow in/out of the bottom boundary as the slab subducts.
-4. **Top Boundary (Side 4)**: Free surface with topography diffusion (`topo_removal_rate = 1.0e-6`), simulating surface erosion and sedimentation.
+* **Left Boundary (Side 1)**: Pushed rightward at a constant convergence velocity $V_x = +1.56 \times 10^{-9}\text{ m/s}$ ($\sim 5\text{ cm/yr}$).
+* **Right Boundary (Side 3)**: Fixed stationary boundary ($V_x = 0$).
+* **Bottom Boundary (Side 2)**: Hydrostatic pressure boundary with basal temperature fixed at $1330^\circ\text{C}$.
 
 ---
 
-## 5. Mantle Wedge Melting, Magma Distribution & Freezing
+## 5. Running the Simulation
 
-The magma module in GeoFLAC models wet melting, transport, distribution, and freezing of magma:
+1. **Compile the Solver** (with OpenMP support for speed):
+   ```bash
+   cd src/
+   make clean && make omp=1
+   cd ../examples/tutorial13-subduction/
+   ```
 
-### 1. Magma Generation & Wet Melting
-When `itype_melting = 1` is set in [`subduction.inp`](subduction.inp), wet melting calculations are activated. Melting is computed for cells in the mantle wedge containing water/hydration (specifically **Phase 16, Hydrated Mantle**). The water-saturated solidus is calculated based on Grove et al. (2009) Nature:
-- For depths $d < 80\text{ km}$:
-  $$T_{solidus} = 800^\circ\text{C}$$
-- For depths $d \ge 80\text{ km}$:
-  $$T_{solidus} = 800 + 6.2 \times 10^{-8} \cdot (d - 80000)^2\text{ } (^\circ\text{C})$$
-
-If the local temperature $T$ exceeds $T_{solidus}$, the partial melt fraction (magma fraction increment) $F$ generated in that step is:
-$$F = \min\left(\frac{C_p \cdot (T - T_{solidus})}{L_{fusion}}, 0.10\right)$$
-where $C_p$ is heat capacity and $L_{fusion}$ is latent heat of fusion (`latent_heat_magma = 420000.0` J/kg). The melt generation is capped at a maximum of 10% per step.
-To simulate the energy consumed by the phase transition, the local temperature is pulled back to $T_{solidus}$ (latent heat buffering), subtracting the overshoot $T - T_{solidus}$ from the element's corner nodes.
-
-### 2. Magma Distribution & Transport (Diking vs Percolation)
-Once generated in the mantle wedge ($j > j_{moho}$), the melt is instantaneously extracted and transported upwards. It is distributed between the mantle wedge and the crust:
-
-#### Mantle Wedge Percolation (Porosity Flow)
-* In the mantle wedge (depths below the Moho, $j_{moho} < jj \le j$), magma ascends by porous percolation through a slanted cone centered at the melting point, with a dip defined by `angle_mzone = 30.0` degrees.
-* A fraction of the extracted magma (`ratio_mantle_mzone = 0.1`, i.e. 10%) is distributed to the mantle wedge elements within this cone:
-  $$\Delta f_{magma}^{mantle} = f_{melt} \cdot \text{ratio\_mantle\_mzone} \cdot A_{ratio} \cdot \text{prod\_magma} \cdot dt$$
-  where $A_{ratio}$ is the area ratio of the mantle cone to the melting element, and `prod_magma = 2e-15` is the magma extraction rate.
-
-#### Crustal Diking Conduit
-* In the overriding crust (depths above the Moho, $jj \le j_{moho}$), magma ascends by fast vertical diking through a conduit of width `nelem_dike = 1` element, centered horizontally above the melting source.
-* The remaining fraction of extracted magma ($1 - \text{ratio\_mantle\_mzone} = 0.9$, i.e. 90%) is transported directly to the crust:
-  $$\Delta f_{magma}^{crust} = \frac{f_{melt} \cdot (1 - \text{ratio\_mantle\_mzone}) \cdot A_{ratio} \cdot \text{prod\_magma} \cdot dt}{n_{col}}$$
-  where $n_{col}$ is the number of elements in the diking channel.
-* The total accumulated magma fraction $f_{magma}$ in any element is capped at `fmagma_max = 0.1` (10%).
-
-### 3. Freezing and Crystallization
-As the magma ascends to shallower, colder parts of the crust, it crystallizes (freezes) dynamically:
-* The crystallization rate is temperature-dependent:
-  $$\lambda_{eff} = \lambda_{freeze} \cdot e^{-\lambda_{freeze\_tdep} \cdot (T - T_{top})}$$
-  where `lambda_freeze = 1e-13` s$^{-1}$ and `lambda_freeze_tdep = 0.002` K$^{-1}$.
-* The magma fraction is reduced by $\Delta f_{magma} = \min(f_{magma}, f_{magma} \cdot dt \cdot \lambda_{eff})$.
-* Freezing releases latent heat back into the node coordinates, raising their temperatures by:
-  $$\Delta T = \frac{\Delta f_{magma} \cdot L_{fusion}}{4 \cdot C_{p\_eff}}$$
-* Elements within the diking conduit that accumulate frozen magma are dynamically converted into arc crust (Phase 14).
-
-### 4. Feedbacks on Rheology
-The presence of magma significantly weakens both the viscous and plastic strength of the host rock:
-* **Viscous Weakening**:
-  $$\eta_{eff} = \eta_0 \cdot e^{-\text{weaken\_ratio\_viscous} \cdot f_{magma} / f_{magma\_max}}$$
-* **Plastic Weakening**: Cohesion and friction angle are weakened linearly:
-  $$c = c_0 \cdot \left(1 - (1 - \text{weaken\_ratio\_plastic}) \cdot \frac{f_{magma}}{f_{magma\_max}}\right)$$
-  $$\phi = \phi_0 \cdot \left(1 - (1 - \text{weaken\_ratio\_plastic}) \cdot \frac{f_{magma}}{f_{magma\_max}}\right)$$
-  Since `weaken_ratio_plastic = 1.0` and `weaken_ratio_viscous = 1.0`, the presence of magma reduces the viscosity to $1/e \approx 37\%$ of its original value, and cohesion/friction angle to 0!
+2. **Execute the Code**:
+   ```bash
+   ../../src/flac subduction.inp
+   ```
 
 ---
 
-## 6. Remeshing
+## 6. Visualizing the Evolution
 
-As the slab subducts deep into the mantle, elements around the subduction interface undergo severe shear strain and flatten. To prevent the simulation from crashing due to grid distortion:
-* **`ny_rem = 1`**: Activates the automatic remeshing engine.
-* **`mode_rem = 3`**: Restores the Left, Right, and Bottom boundaries to their initial vertical/horizontal walls while preserving the top free-surface topography.
-* **`ntest_rem = 500`**: Checks the grid angles every 500 time steps.
-* **`angle_rem = 5.`**: Triggers a rebuild if any grid element is distorted by more than $5^\circ$.
+A python script [`plot_subduction.py`](plot_subduction.py) is provided to visualize the lithological evolution and temperature geotherms of the subduction process.
 
----
-
-## 7. Running the Simulation and Plotting
-
-### Step 1: Run the Solver
-Because the 24 Myr subduction simulation is computationally heavy ($\sim 4.8$ million steps), we run a short validation case of **5.0 Myr**:
+To generate the plots, execute:
 ```bash
-export OMP_NUM_THREADS=15
-../../src/flac subduction.inp
+./plot_subduction.py
 ```
-The solver will output binary files (e.g. `phase.0`, `temp.0`, `fmagma.0`, `vel.0`) every 200 kyrs.
-
-### Step 2: Generate the Visualizations
-Run the provided Python plotting script:
-```bash
-python3 plot_subduction.py
-```
-This script reads the binary outputs and generates a publication-ready figure inside the `images/` directory:
-* **`images/subduction_evolution.png`**: A three-panel evolutionary sequence showing how the slab sinks and transforms over time (at initial, mid, and final stages).
-
----
-
-## 8. Analyzing the Results
-
-### Slab Eclogitization and Evolution
-In the evolution panels (`images/subduction_evolution.png`), watch how the subducting slab (blue oceanic crust + green mantle olivine) sinks. As the blue oceanic crust descends below $\sim 60\text{ km}$, it undergoes a phase transition to dark red **Eclogite** (Phase 13). The high density of eclogite provides negative buoyancy, pulling the slab down and stabilizing the subduction interface.
-
-### Mantle Wedge Hydration & Melting
-Directly above the descending slab, hydration processes transform the wedge mantle. At shallow depths ($< 65\text{ km}$), releasing water hydrates the mantle wedge to form a thin yellow layer of **Serpentinite** (Phase 9), which transitions to a green-blue **Hydrated Mantle** (Phase 16) at greater depths. The hot core of the mantle wedge undergoes partial wet melting once temperatures exceed the water-saturated solidus, feeding magma vertically to build the volcanic arc crust (Phase 14) at the surface.
+This reads the simulation output files and saves the lithological phase and temperature profile sequence to `images/subduction_evolution.png`.
