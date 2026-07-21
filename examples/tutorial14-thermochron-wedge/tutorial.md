@@ -244,17 +244,22 @@ Generate diagnostic figures showing the shear zones and phases:
 ```bash
 python3 plot_thermochron_wedge.py
 ```
-This script creates:
-1. **`thermochron_wedge.png`**: A two-panel plot displaying:
-   * **Top Panel**: Accumulated plastic strain (shear zones) and temperature isotherms.
+This script outputs image files in the `images/` directory:
+1. **`images/thermochron_wedge.png`**: A two-panel plot displaying:
+   * **Top Panel**: Accumulated plastic strain (shear zones) and temperature isotherms within $X \in [0, 250]\text{ km}$ and $Z \in [-40, 12]\text{ km}$, outlined by all 4 outer mesh boundaries.
    * **Bottom Panel**: Deformed lithological phases and grid mesh.
-2. **`images/evolution_thermochron_wedge.png`**: The evolution of shear localization and faults over time.
+
+   ![Thermochron Wedge Diagnostic Plot](images/thermochron_wedge.png)
+
+2. **`images/evolution_thermochron_wedge.png`**: A 3-panel evolution sequence showing the deformation of lithological phases across the domain ($X \in [0, 250]\text{ km}$, $Z \in [-40, 12]\text{ km}$) over time.
+
+   ![Thermochron Wedge Phase Evolution](images/evolution_thermochron_wedge.png)
 
 ---
 
 ## 8. Reference Literature
 For the physical details, parameter studies, and application to the Taiwan Orogeny, please refer to:
-* **Tan et al. (2024)**, *Mountain building process of the Taiwan orogeny*, Science Advances, 10, eadp8056. [PDF reference](file:///home/tan2/Dropbox/Papers/2024/Science%20Advances/Tan%20et%20al-2024-Mountain%20building%20process%20of%20the%20Taiwan%20orogeny.pdf)
+* **Tan et al. (2024)**, *Mountain building process of the Taiwan orogeny*, Science Advances, 10, eadp8056.
 
 ---
 
