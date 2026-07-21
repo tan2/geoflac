@@ -159,8 +159,9 @@ def main(path, start=1, end=-1):
 
 
 def compute_s1(sxx, szz, sxz):
-    mag = np.sqrt(0.25*(sxx - szz)**2 + sxz**2)
-    theta = 0.5 * np.arctan2(2*sxz,  sxx-szz)
+    with np.errstate(all='ignore'):
+        mag = np.sqrt(0.25*(sxx - szz)**2 + sxz**2)
+        theta = 0.5 * np.arctan2(2*sxz,  sxx-szz)
 
     # VTK requires vector field (velocity, coordinate) has 3 components.
     # Allocating a 3-vector tmp array for VTK data output.
