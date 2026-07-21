@@ -43,6 +43,14 @@ open (1,file='extr_acc.rs',access='direct',recl=(nx-1)*kindr)
 write (1,rec=nrec) extr_acc(1:nx-1)
 close (1)
 
+open (1,file='q_init.rs',access='direct',recl=nx*kindr)
+write (1,rec=nrec) q_init
+close (1)
+
+open (1,file='vel_flex_old.rs',access='direct',recl=nx*kindr)
+write (1,rec=nrec) vel_flex_old
+close (1)
+
 open (1,file='vel.rs',access='direct',recl=nwords*kindr) 
 write (1,rec=nrec) vel
 close (1)
@@ -70,6 +78,13 @@ open (1,file='temp.rs',access='direct',recl=nwords*kindr)
 write (1,rec=nrec) temp
 close (1)
 
+! Original location
+open (1,file='xoriginal.rs',access='direct',recl=nwords*kindr)
+write (1,rec=nrec) xoriginal
+close (1)
+open (1,file='zoriginal.rs',access='direct',recl=nwords*kindr)
+write (1,rec=nrec) zoriginal
+close (1)
 
 ! 2-D (nx-1)*(nz-1) arrays - elements defined
 nwords = (nz-1)*(nx-1)

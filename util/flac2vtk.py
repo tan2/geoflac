@@ -52,6 +52,13 @@ def main(path, start=1, end=-1):
         a = fl.read_temperature(i)
         vts_dataarray(fvts, a.swapaxes(0,1), 'Temperature')
 
+        cr = fl.read_coolingrate(i)
+        vts_dataarray(fvts, cr.swapaxes(0,1), 'Cooling rate')
+
+        x0, z0 = fl.read_original_mesh(i)
+        vts_dataarray(fvts, x0.swapaxes(0,1), 'x0')
+        vts_dataarray(fvts, z0.swapaxes(0,1), 'z0')
+
         fvts.write('  </PointData>\n')
 
         # element-based field
@@ -61,6 +68,14 @@ def main(path, start=1, end=-1):
         a = fl.read_srII(i)
         srat = a
         vts_dataarray(fvts, a.swapaxes(0,1), 'Strain rate')
+
+        srxx, srzz, srxz = fl.read_strain_rate(i)
+        vts_dataarray(fvts, srxx.swapaxes(0,1), 'Sr xx')
+        vts_dataarray(fvts, srzz.swapaxes(0,1), 'Sr zz')
+        vts_dataarray(fvts, srxz.swapaxes(0,1), 'Sr xz')
+
+        sr1 = compute_s1(srxx, srzz, srxz)
+        vts_dataarray(fvts, sr1.swapaxes(0,1), 'Strain rate 1-axis', 3)
 
         a = fl.read_eII(i)
         eii = a
@@ -144,8 +159,9 @@ def main(path, start=1, end=-1):
 
 
 def compute_s1(sxx, szz, sxz):
-    mag = np.sqrt(0.25*(sxx - szz)**2 + sxz**2)
-    theta = 0.5 * np.arctan2(2*sxz,  sxx-szz)
+    with np.errstate(all='ignore'):
+        mag = np.sqrt(0.25*(sxx - szz)**2 + sxz**2)
+        theta = 0.5 * np.arctan2(2*sxz,  sxx-szz)
 
     # VTK requires vector field (velocity, coordinate) has 3 components.
     # Allocating a 3-vector tmp array for VTK data output.
@@ -159,7 +175,7 @@ def compute_s1(sxx, szz, sxz):
 def vts_dataarray(f, data, data_name=None, data_comps=None):
     if data.dtype in (int, np.int32, np.int_):
         dtype = 'Int32'
-    elif data.dtype in (float, np.single, np.double, np.float,
+    elif data.dtype in (float, np.single, np.double,
                         np.float32, np.float64, np.float128):
         dtype = 'Float32'
     else:

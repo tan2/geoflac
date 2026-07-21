@@ -1,0 +1,159 @@
+#!/usr/bin/env python3
+import sys
+import os
+
+# Add geoflac utilities path
+sys.path.append('../../util')
+import flac
+import numpy as np
+
+try:
+    import matplotlib
+    # Use non-interactive Agg backend to avoid GUI window popup issues in terminal environments
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+    import matplotlib.colors as mcolors
+except ImportError:
+    print("Error: matplotlib is required to plot. Please install it.")
+    sys.exit(1)
+
+def main():
+    # Instantiate Flac reader
+    fl = flac.Flac()
+    nrec = fl.nrec
+    print(f"Number of available records: {nrec}")
+    if nrec == 0:
+        print("Error: No simulation data found. Please run the simulation first.")
+        sys.exit(1)
+
+    # Create a directory for plots if it doesn't exist
+    os.makedirs('images', exist_ok=True)
+    
+    # We will generate a premium plot for the final state
+    final_frame = nrec
+    time_myr = fl.time[final_frame - 1]  # time in Myr
+    print(f"Plotting final frame {final_frame} at time {time_myr:.2f} Myr...")
+    
+    # Read mesh coordinates
+    x, z = fl.read_mesh(final_frame)
+    X_km = x
+    Z_km = z
+    
+    # Read variables
+    aps = fl.read_aps(final_frame)
+    phase = fl.read_phase(final_frame)
+    vx, vz = fl.read_vel(final_frame)
+    
+    # Coordinates are already in km, velocities are already in cm/yr
+    vx_cm_yr = vx
+    vz_cm_yr = vz
+    
+    # Create the final state premium plot
+    fig, axes = plt.subplots(2, 1, figsize=(12, 9), sharex=True)
+    
+    # Subplot 1: Accumulated Plastic Strain (aps) and Shear Conjugate Thrust Faults
+    ax1 = axes[0]
+    cmap_aps = plt.colormaps.get_cmap('YlOrRd')
+    cmap_aps.set_under('#fcfcfc')
+    
+    # Plot aps
+    im1 = ax1.pcolormesh(X_km, Z_km, aps, cmap=cmap_aps, vmin=0.01, vmax=2.5, shading='flat')
+    # Top surface boundary and Left boundary
+    ax1.plot(X_km[:, 0], Z_km[:, 0], color='black', linewidth=1.5)
+    ax1.plot(X_km[0, :], Z_km[0, :], color='black', linewidth=1.5)
+    cbar1 = fig.colorbar(im1, ax=ax1, orientation='vertical', pad=0.02, shrink=0.8)
+    cbar1.set_label('Accumulated Plastic Strain', fontsize=11, fontweight='bold')
+    
+    # Overlay velocity arrows (downsample for clarity)
+    skip_x = 2
+    skip_z = 1
+    q1 = ax1.quiver(X_km[::skip_z, ::skip_x], Z_km[::skip_z, ::skip_x], 
+                    vx_cm_yr[::skip_z, ::skip_x], vz_cm_yr[::skip_z, ::skip_x],
+                    color='#1d3557', scale=30.0, width=0.0015, headwidth=4, headlength=5)
+    
+    # Add velocity scale key at bottom right
+    ax1.quiverkey(q1, X=0.90, Y=0.08, U=1.0, label='1 cm/yr', labelpos='E',
+                  coordinates='axes', fontproperties={'weight': 'bold', 'size': 9})
+    
+    ax1.set_ylabel('Depth (km)', fontsize=12, fontweight='bold')
+    ax1.set_title(f'Convergent Wedge: Shear Localization & Thrust Faulting at {time_myr:.2f} Myr', 
+                  fontsize=14, fontweight='bold', pad=12)
+    ax1.grid(True, linestyle=':', alpha=0.5, color='gray')
+    ax1.set_xlim(0, 70)
+    ax1.set_ylim(-10, 7)
+    ax1.set_aspect('equal')
+    
+    # Subplot 2: Lithological Phases (Upper Crust vs Basal Detachment)
+    ax2 = axes[1]
+    # Discrete colors for phase 1 (beige) and phase 2 (blue-grey)
+    colors_phase = ['#e5c494', '#8da0cb']
+    cmap_phase = mcolors.ListedColormap(colors_phase)
+    
+    im2 = ax2.pcolormesh(X_km, Z_km, phase, cmap=cmap_phase, shading='flat', vmin=0.5, vmax=2.5)
+    # Top surface boundary and Left boundary
+    ax2.plot(X_km[:, 0], Z_km[:, 0], color='black', linewidth=1.5)
+    ax2.plot(X_km[0, :], Z_km[0, :], color='black', linewidth=1.5)
+    
+    # Legend for phases
+    from matplotlib.patches import Patch
+    legend_elements = [
+        Patch(facecolor='#e5c494', edgecolor='gray', label='Accretionary Wedge (Phase 1)'),
+        Patch(facecolor='#8da0cb', edgecolor='gray', label='Basal Detachment (Phase 2)')
+    ]
+    ax2.legend(handles=legend_elements, loc='upper left', framealpha=0.9)
+    
+    # Overlay grid lines to show mesh deformation
+    # Plot vertical mesh lines
+    for i in range(0, x.shape[0], 2):
+        ax2.plot(x[i, :], z[i, :], color='black', alpha=0.2, linewidth=0.5)
+    # Plot horizontal mesh lines
+    for j in range(0, x.shape[1], 2):
+        ax2.plot(x[:, j], z[:, j], color='black', alpha=0.2, linewidth=0.5)
+        
+    ax2.set_xlabel('Distance (km)', fontsize=12, fontweight='bold')
+    ax2.set_ylabel('Depth (km)', fontsize=12, fontweight='bold')
+    ax2.set_title(f'Deformed Lithological Phases & Grid Mesh at {time_myr:.2f} Myr', 
+                  fontsize=14, fontweight='bold', pad=12)
+    ax2.grid(True, linestyle=':', alpha=0.5, color='gray')
+    ax2.set_xlim(0, 70)
+    ax2.set_ylim(-10, 7)
+    ax2.set_aspect('equal')
+    
+    plt.tight_layout()
+    plt.savefig('images/final_state_convergent_wedge.png', dpi=300)
+    print("Saved 'images/final_state_convergent_wedge.png'")
+    
+    # Create an evolution plot (showing second invariant of strain rate srII, which is stored as log10(srII))
+    if nrec >= 3:
+        fig_evo, axes_evo = plt.subplots(3, 1, figsize=(12, 12), sharex=True, sharey=True)
+        # Select 3 frames: initial (1), middle (nrec // 2 + 1), final (nrec)
+        frames_to_plot = [1, nrec // 2 + 1, nrec]
+        
+        im = None
+        vmin_sr = -16.0
+        vmax_sr = -13.0
+        for idx, f_idx in enumerate(frames_to_plot):
+            ax = axes_evo[idx]
+            x_f, z_f = fl.read_mesh(f_idx)
+            srII_f = fl.read_srII(f_idx)
+            t_f = fl.time[f_idx - 1]
+            
+            im = ax.pcolormesh(x_f, z_f, srII_f, cmap='magma', vmin=vmin_sr, vmax=vmax_sr, shading='flat')
+            # Top surface boundary and Left boundary
+            ax.plot(x_f[:, 0], z_f[:, 0], color='black', linewidth=1.5)
+            ax.plot(x_f[0, :], z_f[0, :], color='black', linewidth=1.5)
+            
+            ax.set_title(f'Strain Rate (log₁₀ s⁻¹) Evolution at t = {t_f:.2f} Myr', fontsize=12, fontweight='bold')
+            ax.set_ylabel('Depth (km)', fontsize=10)
+            ax.set_xlim(0, 70)
+            ax.set_ylim(-10, 7)
+            ax.grid(True, linestyle=':', alpha=0.5)
+            ax.set_aspect('equal')
+            
+        axes_evo[-1].set_xlabel('Distance (km)', fontsize=11, fontweight='bold')
+        fig_evo.colorbar(im, ax=axes_evo.tolist(), orientation='vertical', pad=0.02, shrink=0.6, label='Second Invariant of Strain Rate (log₁₀ s⁻¹)')
+        plt.savefig('images/evolution_convergent_wedge.png', dpi=300)
+        print("Saved 'images/evolution_convergent_wedge.png'")
+        
+if __name__ == '__main__':
+    main()

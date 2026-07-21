@@ -55,6 +55,7 @@ gprof = 0
 
 ## for GNU gfortran >= 5
 ifeq ($(F90), gfortran)
+	CFLAGS += -ffree-form -ffree-line-length-none
 	ifeq ($(omp), 1)
 		CFLAGS += -fopenmp
 		LDFLAGS += -fopenmp
@@ -101,8 +102,8 @@ ifeq ($(F90), pgf90)
 		LDFLAGS += -mp
 	endif
 	ifeq ($(acc), 1)
-		CFLAGS += -acc -ta=tesla:cc70,managed -Mcuda -Minfo=accel
-		LDFLAGS += -acc -ta=tesla:cc70,managed -Mcuda
+		CFLAGS += -acc -gpu=managed -cuda -Minfo=accel
+		LDFLAGS += -acc -gpu=managed -cuda
 	endif
         ifeq ($(debug), 0)
                 CFLAGS += -O2 -Minfo=all
@@ -151,6 +152,7 @@ SRCS =	\
 	dt_mass.f90 \
 	euler2bar.f90 \
 	fl_move.f90 \
+	fl_flexure.f90 \
 	fl_node.f90 \
 	fl_rheol.f90 \
 	fl_srate.f90 \
@@ -244,7 +246,7 @@ ifneq ($(IS_REPO),)
 	@echo >> snapshot.diff
 	@echo >> snapshot.diff
 	@echo '== Code modification (checked-in but not in "origin") ==' >> snapshot.diff
-	@git log --patch --no-merges origin..HEAD >> snapshot.diff
+	@git log --patch --no-merges origin..HEAD >> snapshot.diff 2>/dev/null || true
 else
 	@echo "Warning: Not a git repository. Cannot take code snapshot." | tee -a snapshot.diff
 	@echo "Warning: Use 'git clone' to copy the code!" | tee -a snapshot.diff

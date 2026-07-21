@@ -1,0 +1,82 @@
+name: Build
+
+on:
+  push:
+    branches: [ "master" ]
+    tags: [ "v*" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Fortran (macOS)
+        if: runner.os == 'macOS'
+        uses: fortran-lang/setup-fortran@v1
+        with:
+          compiler: gcc
+          version: 13
+
+      - name: Install Dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew untap aws/tap || true
+          brew install libomp
+
+      - name: Setup MSYS2 (Windows)
+        if: runner.os == 'Windows'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            make
+            mingw-w64-x86_64-gcc-fortran
+
+      - name: Build (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          export LDFLAGS="$LDFLAGS -L$(brew --prefix libomp)/lib"
+          export CPPFLAGS="$CPPFLAGS -I$(brew --prefix libomp)/include"
+          make -C src
+
+      - name: Build (Windows)
+        if: runner.os == 'Windows'
+        shell: msys2 {0}
+        run: |
+          make -C src
+
+      - name: Prepare Artifacts
+        shell: bash
+        run: |
+          mkdir -p dist
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            if [ -f src/flac.exe ]; then
+              cp src/flac.exe dist/flac.exe
+            elif [ -f src/flac ]; then
+              cp src/flac dist/flac.exe
+            fi
+          else
+            if [ -f src/flac ]; then
+              cp src/flac dist/flac
+            fi
+          fi
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: flac-${{ runner.os }}
+          path: dist/
+

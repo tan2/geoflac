@@ -45,6 +45,8 @@ call init_stress
 call init_bc
 
 temp0 = temp
+xoriginal = cord(:,:,1)
+zoriginal = cord(:,:,2)
 shrheat = 0
 sshrheat = 0
 dtopo = 0
@@ -53,6 +55,7 @@ fmelt = 0
 fmagma = 0
 e2sr = 1d-16
 se2sr = 1d-16
+q_init = 0.d0
 
 call update_acc
 
@@ -80,7 +83,7 @@ include 'precision.inc'
 
 !$ACC update device(nx,nz,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
 !$ACC     ny_rem,mode_rem,ntest_rem,ivis_shape, &
-!$ACC     itype_melting,nelem_serp,nmass_update,nopbmax,nydrsides,nystressbc, &
+!$ACC     itype_melting,nelem_serp,nelem_dike,nmass_update,nopbmax,nydrsides,nystressbc, &
 !$ACC     nofbc,nofside(maxbc),nbc1(maxbc),nbc2(maxbc),nbc(maxbc), &
 !$ACC     mix_strain,mix_stress,lastsave,lastout, &
 !$ACC     io_vel,io_srII,io_eII,io_aps,io_sII,io_sxx,io_szz, &
@@ -114,14 +117,14 @@ include 'precision.inc'
 !$ACC     dt_elastic,demf, &
 !$ACC     dtout_screen,dtout_file,dtsave_file, &
 !$ACC     visc(maxph),den(maxph),alfa(maxph),beta(maxph),pln(maxph), &
-!$ACC     acoef(maxph),eactiv(maxph),rl(maxph),rm(maxph), &
+!$ACC     acoef(maxph),eactiv(maxph),vactiv(maxph),rl(maxph),rm(maxph), &
 !$ACC     plstrain1(maxph),plstrain2(maxph),fric1(maxph),fric2(maxph), &
 !$ACC     cohesion1(maxph),cohesion2(maxph), &
 !$ACC     dilat1(maxph),dilat2(maxph), &
 !$ACC     conduct(maxph),cp(maxph), &
 !$ACC     ts(maxph),tl(maxph),tk(maxph),fk(maxph), &
 !$ACC     ten_off,tau_heal,xinitaps(maxinh), &
-!$ACC     t_top,t_bot,hs,hr,bot_bc, &
+!$ACC     extra_pres,t_top,t_bot,hs,hr,bot_bc, &
 !$ACC     hc(maxzone_age,maxzone_layer), &
 !$ACC     age_1(maxzone_age),tp1(maxzone_age),tp2(maxzone_age), &
 !$ACC     g,pisos,drosub,damp_vis, &

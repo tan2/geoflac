@@ -12,7 +12,7 @@ integer :: jj, j, i, iph, &
            jbelow, k, kinc, kk, n
 double precision :: yy, dep2, depth, press, quad_area, &
                     tmpr, trtmpr, trpres, trpres2, &
-                    solidus, pmelt, total_phase_ratio
+                    solidus, pmelt, total_phase_ratio, dt_melt
 
 ! max. depth (m) of eclogite phase transition, no serpentinization below it
 real*8, parameter :: max_basalt_depth = 150.d3
@@ -71,7 +71,7 @@ do kk = 1 , nmarkers
         !    if(phase_ratio(kocean1,jbelow,i) > 0.8d0 .or. &
         !         phase_ratio(kocean2,jbelow,i) > 0.8d0 .or. &
         !         phase_ratio(karc1,jbelow,i) > 0.8d0 .or. &
-        !         phase_ratio(ksed1,jbelow,i) > 0.8d0) then
+        !         phase_ratio(ksed2,jbelow,i) > 0.8d0) then
         !        !$ACC atomic write
         !        !$OMP atomic write
         !        itmp(j,i) = 1
@@ -104,7 +104,7 @@ do kk = 1 , nmarkers
         do jbelow = min(j+1,nz-1), min(j+nelem_serp,nz-1)
             if(phase_ratio(kocean1,jbelow,i) > 0.8d0 .or. &
                 phase_ratio(kocean2,jbelow,i) > 0.8d0 .or. &
-                phase_ratio(ksed1,jbelow,i) > 0.8d0) then
+                phase_ratio(ksed2,jbelow,i) > 0.8d0) then
                 !$ACC atomic write
                 !$OMP atomic write
                 itmp(j,i) = 1
@@ -112,7 +112,7 @@ do kk = 1 , nmarkers
                 exit
             endif
         enddo
-    case (kocean0, kocean1, kocean2)
+    case (koceandry, kocean1, kocean2)
         ! basalt -> eclogite
         ! phase change pressure
         ! Phase Diagram taken from Hacker, JGR, 2003 (Figure 8 or Figure 1)
@@ -138,14 +138,14 @@ do kk = 1 , nmarkers
         !$OMP atomic write
         itmp(j,i) = 1
         mark_phase(kk) = kmant1
-    case (ksed2)
+    case (ksed1)
         ! compaction, uncosolidated sediment -> sedimentary rock
         if (tmpr < 80d0 .or. depth < 2d3) cycle
         !$ACC atomic write
         !$OMP atomic write
         itmp(j,i) = 1
-        mark_phase(kk) = ksed1
-    case (ksed1)
+        mark_phase(kk) = ksed2
+    case (ksed2)
         ! sedimentary rock -> metamorphic sedimentary rock
         if (tmpr < 250d0 .and. depth < 7d3) cycle
         !$ACC atomic write
@@ -206,7 +206,7 @@ enddo
 !$OMP end parallel do
 
 if (itype_melting == 1) then
-    !$OMP parallel do private(tmpr, yy, depth, solidus, pmelt, total_phase_ratio)
+    !$OMP parallel do private(tmpr, yy, depth, solidus, pmelt, total_phase_ratio, dt_melt)
     !$ACC parallel loop collapse(2) async(1)
     do i = 1, nx-1
         do j = 1, nz-1
@@ -225,19 +225,38 @@ if (itype_melting == 1) then
 
                 solidus = max(680+0.6d-3*(depth-140d3), 930-313*(1-exp(-depth/7d3)))
                 if (tmpr > solidus) then
-                    ! fraction of partial melting
-                    ! 10% of melting at solidus + 50 C
-                    ! Hirschmann, 2000 G3.
-                    pmelt = min((tmpr - solidus) / 50 * 0.1d0, 0.1d0)
+                    ! fraction of partial melting (enthalpy formulation)
+                    ! F = cp * (T - T_solidus) / L_fusion, capped at 10%
+                    if (latent_heat_magma > 0.d0) then
+                        pmelt = min(cp(ksed2) * (tmpr - solidus) / latent_heat_magma, 0.1d0)
+                    else
+                        pmelt = min((tmpr - solidus) / 50.d0 * 0.1d0, 0.1d0)
+                    endif
                     fmelt(j,i) = pmelt * total_phase_ratio
                     !print *, j, i, tmpr, pmelt
+                    
+                    ! Pull temperature back to solidus (latent heat buffering)
+                    ! Subtract overshoot (T_apparent - T_solidus) from element's 4 corner nodes
+                    dt_melt = tmpr - solidus
+                    !$ACC atomic update
+                    !$OMP atomic update
+                    temp(j,i) = temp(j,i) - dt_melt
+                    !$ACC atomic update
+                    !$OMP atomic update
+                    temp(j,i+1) = temp(j,i+1) - dt_melt
+                    !$ACC atomic update
+                    !$OMP atomic update
+                    temp(j+1,i) = temp(j+1,i) - dt_melt
+                    !$ACC atomic update
+                    !$OMP atomic update
+                    temp(j+1,i+1) = temp(j+1,i+1) - dt_melt
                 endif
             endif
         enddo
     enddo
     !$OMP end parallel do
 
-    !$OMP parallel do private(tmpr, yy, depth, solidus, pmelt, total_phase_ratio, press)
+    !$OMP parallel do private(tmpr, yy, depth, solidus, pmelt, total_phase_ratio, press, dt_melt)
     !$ACC parallel loop collapse(2) async(1)
     do i = 1, nx-1
         do j = 1, nz-1
@@ -245,7 +264,7 @@ if (itype_melting == 1) then
             ! basalt and eclogite rock melting
             ! solidus from Gutscher, 2000 Geology
             total_phase_ratio = phase_ratio(kocean1,j,i) + phase_ratio(kocean2,j,i) &
-                                + phase_ratio(kocean0,j,i) + phase_ratio(keclg,j,i)
+                                + phase_ratio(koceandry,j,i) + phase_ratio(keclg,j,i)
             if (total_phase_ratio > 0.6d0 .and. cord(j,i,2) > -max_melting_depth) then
                 tmpr = 0.25d0 * (temp(j,i)+temp(j,i+1)+temp(j+1,i)+temp(j+1,i+1))
 
@@ -264,19 +283,39 @@ if (itype_melting == 1) then
                 endif
 
                 if (tmpr > solidus) then
-                    ! fraction of partial melting
-                    ! XXX: assuming 10% of melting at solidus + 20 C
-                    pmelt = min((tmpr - solidus) / 20 * 0.1d0, 0.1d0)
+                    ! fraction of partial melting (enthalpy formulation)
+                    ! F = cp * (T - T_solidus) / L_fusion, capped at 10%
+                    if (latent_heat_magma > 0.d0) then
+                        pmelt = min(cp(kocean1) * (tmpr - solidus) / latent_heat_magma, 0.1d0)
+                    else
+                        pmelt = min((tmpr - solidus) / 20.d0 * 0.1d0, 0.1d0)
+                    endif
                     !$ACC atomic update
                     !$OMP atomic update
                     fmelt(j,i) = fmelt(j,i) + pmelt * total_phase_ratio
+                    
+                    ! Pull temperature back to solidus (latent heat buffering)
+                    ! Subtract overshoot (T_apparent - T_solidus) from element's 4 corner nodes
+                    dt_melt = tmpr - solidus
+                    !$ACC atomic update
+                    !$OMP atomic update
+                    temp(j,i) = temp(j,i) - dt_melt
+                    !$ACC atomic update
+                    !$OMP atomic update
+                    temp(j,i+1) = temp(j,i+1) - dt_melt
+                    !$ACC atomic update
+                    !$OMP atomic update
+                    temp(j+1,i) = temp(j+1,i) - dt_melt
+                    !$ACC atomic update
+                    !$OMP atomic update
+                    temp(j+1,i+1) = temp(j+1,i+1) - dt_melt
                 endif
             endif
         enddo
     enddo
     !$OMP end parallel do
 
-    !$OMP parallel do private(tmpr, yy, depth, jj, solidus, pmelt)
+    !$OMP parallel do private(tmpr, yy, depth, jj, solidus, pmelt, dt_melt)
     !$ACC parallel loop async(1)
     do i = 1, nx-1
         do j = nz-1, 1, -1
@@ -299,16 +338,35 @@ if (itype_melting == 1) then
                         solidus = 800 + 6.2e-8 * (depth - 80.d3)**2
                     endif
                     if (tmpr > solidus) then
-                        ! fraction of partial melting
-                        ! 10% of melting at solidus + 50 C
-                        ! Hirschmann, 2000 G3.
-                        pmelt = min((tmpr - solidus) / 50 * 0.1d0, 0.1d0)
+                        ! fraction of partial melting (enthalpy formulation)
+                        ! F = cp * (T - T_solidus) / L_fusion, capped at 10%
+                        if (latent_heat_magma > 0.d0) then
+                            pmelt = min(cp(kmant1) * (tmpr - solidus) / latent_heat_magma, 0.1d0)
+                        else
+                            pmelt = min((tmpr - solidus) / 50.d0 * 0.1d0, 0.1d0)
+                        endif
                         !$ACC atomic update
                         !$OMP atomic update
                         fmelt(jj,i) = fmelt(jj,i) + pmelt * (phase_ratio(kmant1, jj, i)  &
                                                              + phase_ratio(kmant2, jj, i) &
                                                              + phase_ratio(kserp, jj, i))
                         !print *, jj, i, tmpr, pmelt
+                        
+                        ! Pull temperature back to solidus (latent heat buffering)
+                        ! Subtract overshoot (T_apparent - T_solidus) from element's 4 corner nodes
+                        dt_melt = tmpr - solidus
+                        !$ACC atomic update
+                        !$OMP atomic update
+                        temp(jj,i) = temp(jj,i) - dt_melt
+                        !$ACC atomic update
+                        !$OMP atomic update
+                        temp(jj,i+1) = temp(jj,i+1) - dt_melt
+                        !$ACC atomic update
+                        !$OMP atomic update
+                        temp(jj+1,i) = temp(jj+1,i) - dt_melt
+                        !$ACC atomic update
+                        !$OMP atomic update
+                        temp(jj+1,i+1) = temp(jj+1,i+1) - dt_melt
                     endif
                 enddo
                 ! no need to look up further

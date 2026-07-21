@@ -47,7 +47,7 @@ do i = 1,nx-1
     ! Calculate pisos (isostatic pressure at the bottom boundary in the left corner!!)
     ! for AUTOMATIC Wrinkler b.c
     ! pisos is the pressure at y = rzbo 
-    if(i.eq.nx-1 .and. nyhydro.eq.2) pisos = rogh
+    if(i.eq.nx-1 .and. nyhydro.eq.2) pisos = rogh + extra_pres
 end do
 
 

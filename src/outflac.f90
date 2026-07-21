@@ -64,6 +64,24 @@ if( io_temp.eq.1 ) then
     close (1)
 endif
 
+! Cooling rate (dT/dt) in [C/Myr]
+nwords = nz*nx
+Dn2(1:nz,1:nx,1) = real((temp(1:nz,1:nx) - temp0(1:nz,1:nx)) / (dt / (sec_year * 1.d6)))
+open (1,file='coolingrate.0',access='direct',recl=nwords*kindr)
+write (1,rec=nrec) Dn2(1:nz,1:nx,1)
+close (1)
+
+
+nwords = nz*nx
+Dn2(1:nz,1:nx,1) = real(xoriginal(1:nz,1:nx))
+open (1,file='xoriginal.0',access='direct',recl=nwords*kindr)
+write (1,rec=nrec) Dn2(1:nz,1:nx,1)
+close (1)
+Dn2(1:nz,1:nx,1) = real(zoriginal(1:nz,1:nx))
+open (1,file='zoriginal.0',access='direct',recl=nwords*kindr)
+write (1,rec=nrec) Dn2(1:nz,1:nx,1)
+close (1)
+
 
 deallocate( Dn2 )
 
@@ -85,6 +103,33 @@ if( io_srII.eq.1 ) then
         enddo
     enddo
     open (1,file='srII.0',access='direct',recl=nwords*kindr) 
+    write (1,rec=nrec) De
+    close (1)
+
+    do i = 1, nx-1
+        do j = 1, nz-1
+            De(j,i) = real(se2sr(j,i,1)/dtavg)
+        end do
+    end do
+    open (1,file='srxx.0',access='direct',recl=nwords*kindr)
+    write (1,rec=nrec) De
+    close (1)
+
+    do i = 1, nx-1
+        do j = 1, nz-1
+            De(j,i) = real(se2sr(j,i,2)/dtavg)
+        end do
+    end do
+    open (1,file='srzz.0',access='direct',recl=nwords*kindr)
+    write (1,rec=nrec) De
+    close (1)
+
+    do i = 1, nx-1
+        do j = 1, nz-1
+            De(j,i) = real(se2sr(j,i,3)/dtavg)
+        end do
+    end do
+    open (1,file='srxz.0',access='direct',recl=nwords*kindr)
     write (1,rec=nrec) De
     close (1)
 endif

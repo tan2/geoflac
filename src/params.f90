@@ -7,14 +7,14 @@ integer, parameter :: maxbc = 20   ! max # of bcs
 integer, parameter :: maxzone_age = 32   ! max # of nzone_age
 integer, parameter :: maxzone_layer = 10   ! max # of layers in a nzone_age column
 integer, parameter :: maxph = 20   ! max # of phases
-integer, parameter :: maxinh = 50   ! max # of inhomogeneities
+integer, parameter :: maxinh = 100  ! max # of inhomogeneities
 
 real*8, parameter :: sec_year = 3.1558d+7  ! seconds in a year
 
 
 integer :: nx,nz,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
      ny_rem,mode_rem,ntest_rem,ivis_shape, &
-     itype_melting,nelem_serp,nmass_update,nopbmax,nydrsides,nystressbc, &
+     itype_melting,nelem_serp,nelem_dike,nmass_update,nopbmax,nydrsides,nystressbc, &
      nofbc,nofside(maxbc),nbc1(maxbc),nbc2(maxbc),nbc(maxbc), &
      mix_strain,mix_stress,lastsave,lastout, &
      io_vel,io_srII,io_eII,io_aps,io_sII,io_sxx,io_szz, &
@@ -38,7 +38,7 @@ integer :: nx,nz,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
 
 !$ACC declare create(nx,nz,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
 !$ACC     ny_rem,mode_rem,ntest_rem,ivis_shape, &
-!$ACC     itype_melting,nelem_serp,nmass_update,nopbmax,nydrsides,nystressbc, &
+!$ACC     itype_melting,nelem_serp,nelem_dike,nmass_update,nopbmax,nydrsides,nystressbc, &
 !$ACC     nofbc,nofside(maxbc),nbc1(maxbc),nbc2(maxbc),nbc(maxbc), &
 !$ACC     mix_strain,mix_stress,lastsave,lastout, &
 !$ACC     io_vel,io_srII,io_eII,io_aps,io_sII,io_sxx,io_szz, &
@@ -72,14 +72,14 @@ real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
      dt_elastic,demf, &
      dtout_screen,dtout_file,dtsave_file, &
      visc(maxph),den(maxph),alfa(maxph),beta(maxph),pln(maxph), &
-     acoef(maxph),eactiv(maxph),rl(maxph),rm(maxph), &
+     acoef(maxph),eactiv(maxph),vactiv(maxph),rl(maxph),rm(maxph), &
      plstrain1(maxph),plstrain2(maxph),fric1(maxph),fric2(maxph), &
      cohesion1(maxph),cohesion2(maxph), &
      dilat1(maxph),dilat2(maxph), &
      conduct(maxph),cp(maxph), &
      ts(maxph),tl(maxph),tk(maxph),fk(maxph), &
      ten_off,tau_heal,xinitaps(maxinh), &
-     t_top,t_bot,hs,hr,bot_bc, &
+     extra_pres,t_top,t_bot,hs,hr,bot_bc, &
      hc(maxzone_age,maxzone_layer), &
      age_1(maxzone_age),tp1(maxzone_age),tp2(maxzone_age), &
      g,pisos,drosub,damp_vis, &
@@ -101,14 +101,14 @@ real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
 !$ACC     dt_elastic,demf, &
 !$ACC     dtout_screen,dtout_file,dtsave_file, &
 !$ACC     visc(maxph),den(maxph),alfa(maxph),beta(maxph),pln(maxph), &
-!$ACC     acoef(maxph),eactiv(maxph),rl(maxph),rm(maxph), &
+!$ACC     acoef(maxph),eactiv(maxph),vactiv(maxph),rl(maxph),rm(maxph), &
 !$ACC     plstrain1(maxph),plstrain2(maxph),fric1(maxph),fric2(maxph), &
 !$ACC     cohesion1(maxph),cohesion2(maxph), &
 !$ACC     dilat1(maxph),dilat2(maxph), &
 !$ACC     conduct(maxph),cp(maxph), &
 !$ACC     ts(maxph),tl(maxph),tk(maxph),fk(maxph), &
 !$ACC     ten_off,tau_heal,xinitaps(maxinh), &
-!$ACC     t_top,t_bot,hs,hr,bot_bc, &
+!$ACC     extra_pres,t_top,t_bot,hs,hr,bot_bc, &
 !$ACC     hc(maxzone_age,maxzone_layer), &
 !$ACC     age_1(maxzone_age),tp1(maxzone_age),tp2(maxzone_age), &
 !$ACC     g,pisos,drosub,damp_vis, &

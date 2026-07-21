@@ -6,6 +6,12 @@ use arrays
 use params
 include 'precision.inc'
 
+integer, parameter :: nd1(4) = (/1, 3, 1, 1/)
+integer, parameter :: nd2(4) = (/2, 2, 2, 4/)
+integer, parameter :: nd3(4) = (/3, 4, 4, 3/)
+double precision :: xcord(4), ycord(4), xvel(4), yvel(4)
+integer :: a, b, c, k
+
 
 ! Move Grid
 if (movegrid .eq. 0) return
@@ -24,12 +30,17 @@ enddo
 !$OMP end do
 !$OMP end parallel
 
+!$ACC wait(1)
+!$ACC update self(cord, vel)
+
+! Call flexural boundary update
+call fl_flexure
+
 ! Diffuse topography
 if( topo_kappa.gt.0.d0) call diff_topo
 
 
-!$OMP parallel private(i,j,x1,y1,x2,y2,x3,y3,x4,y4, &
-!$OMP                  vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4, &
+!$OMP parallel private(i,j,k,a,b,c,xcord,ycord,xvel,yvel, &
 !$OMP                  det,dw12,s11,s22,s12)
 !$OMP do
 !--- Adjusting Stresses And Updating Areas Of Elements
@@ -38,92 +49,63 @@ do  i = 1,nx-1
     do  j = 1,nz-1
 
         ! Coordinates
-        x1 = cord (j  ,i  ,1)
-        y1 = cord (j  ,i  ,2)
-        x2 = cord (j+1,i  ,1)
-        y2 = cord (j+1,i  ,2)
-        x3 = cord (j  ,i+1,1)
-        y3 = cord (j  ,i+1,2)
-        x4 = cord (j+1,i+1,1)
-        y4 = cord (j+1,i+1,2)
+        xcord(1) = cord(j  ,i  ,1)
+        ycord(1) = cord(j  ,i  ,2)
+        xcord(2) = cord(j+1,i  ,1)
+        ycord(2) = cord(j+1,i  ,2)
+        xcord(3) = cord(j  ,i+1,1)
+        ycord(3) = cord(j  ,i+1,2)
+        xcord(4) = cord(j+1,i+1,1)
+        ycord(4) = cord(j+1,i+1,2)
 
         ! Velocities
-        vx1 = vel (j  ,i  ,1)
-        vy1 = vel (j  ,i  ,2)
-        vx2 = vel (j+1,i  ,1)
-        vy2 = vel (j+1,i  ,2)
-        vx3 = vel (j  ,i+1,1)
-        vy3 = vel (j  ,i+1,2)
-        vx4 = vel (j+1,i+1,1)
-        vy4 = vel (j+1,i+1,2)
+        xvel(1) = vel(j  ,i  ,1)
+        yvel(1) = vel(j  ,i  ,2)
+        xvel(2) = vel(j+1,i  ,1)
+        yvel(2) = vel(j+1,i  ,2)
+        xvel(3) = vel(j  ,i+1,1)
+        yvel(3) = vel(j  ,i+1,2)
+        xvel(4) = vel(j+1,i+1,1)
+        yvel(4) = vel(j+1,i+1,2)
 
-        ! (1) Element A:
-        det=((x2*y3-y2*x3)-(x1*y3-y1*x3)+(x1*y2-y1*x2))
-        dvol(j,i,1) = det*area(j,i,1) - 1
-        area(j,i,1) = 1.d0/det
+        do k = 1, 4
+            a = nd1(k)
+            b = nd2(k)
+            c = nd3(k)
 
-        ! Adjusting stresses due to rotation
-        dw12 = 0.5d0*(vx1*(x3-x2)+vx2*(x1-x3)+vx3*(x2-x1) - &
-            vy1*(y2-y3)-vy2*(y3-y1)-vy3*(y1-y2))/det*dt
-        s11 = stress0(j,i,1,1)
-        s22 = stress0(j,i,2,1)
-        s12 = stress0(j,i,3,1)
-        stress0(j,i,1,1) = s11 + s12*2*dw12
-        stress0(j,i,2,1) = s22 - s12*2*dw12
-        stress0(j,i,3,1) = s12 + dw12*(s22-s11)
+            det = (xcord(b)*ycord(c) - ycord(b)*xcord(c)) - &
+                  (xcord(a)*ycord(c) - ycord(a)*xcord(c)) + &
+                  (xcord(a)*ycord(b) - ycord(a)*xcord(b))
 
-        ! rotate strains 
-        s11 = strain(j,i,1)
-        s22 = strain(j,i,2)
-        s12 = strain(j,i,3)
-        strain(j,i,1) = s11 + s12*2*dw12
-        strain(j,i,2) = s22 - s12*2*dw12
-        strain(j,i,3) = s12 + dw12*(s22-s11)
+            dvol(j,i,k) = det*area(j,i,k) - 1.d0
+            area(j,i,k) = 1.d0/det
 
-        ! (2) Element B:
-        det=((x2*y4-y2*x4)-(x3*y4-y3*x4)+(x3*y2-y3*x2))
-        dvol(j,i,2) = det*area(j,i,2) - 1
-        area(j,i,2) = 1.d0/det
+            ! Adjusting stresses due to rotation
+            dw12 = 0.5d0 * ( &
+                xvel(a) * (xcord(c) - xcord(b)) + &
+                xvel(b) * (xcord(a) - xcord(c)) + &
+                xvel(c) * (xcord(b) - xcord(a)) + &
+                yvel(a) * (ycord(c) - ycord(b)) + &
+                yvel(b) * (ycord(a) - ycord(c)) + &
+                yvel(c) * (ycord(b) - ycord(a)) ) / det * dt
 
-        ! Adjusting stresses due to rotation
-        dw12 = 0.5d0*(vx3*(x4-x2)+vx2*(x3-x4)+vx4*(x2-x3) - &
-           vy3*(y2-y4)-vy2*(y4-y3)-vy4*(y3-y2))/det*dt
-        s11 = stress0(j,i,1,2)
-        s22 = stress0(j,i,2,2)
-        s12 = stress0(j,i,3,2)
-        stress0(j,i,1,2) = s11 + s12*2*dw12
-        stress0(j,i,2,2) = s22 - s12*2*dw12
-        stress0(j,i,3,2) = s12 + dw12*(s22-s11)
+            s11 = stress0(j,i,1,k)
+            s22 = stress0(j,i,2,k)
+            s12 = stress0(j,i,3,k)
+            stress0(j,i,1,k) = s11 + s12*2*dw12
+            stress0(j,i,2,k) = s22 - s12*2*dw12
+            stress0(j,i,3,k) = s12 + dw12*(s22-s11)
 
-        ! (3) Element C:
-        det=((x2*y4-y2*x4)-(x1*y4-y1*x4)+(x1*y2-y1*x2))
-        dvol(j,i,3) = det*area(j,i,3) - 1
-        area(j,i,3) = 1.d0/det
-
-        ! Adjusting stresses due to rotation
-        dw12 = 0.5d0*(vx1*(x4-x2)+vx2*(x1-x4)+vx4*(x2-x1) - &
-           vy1*(y2-y4)-vy2*(y4-y1)-vy4*(y1-y2))/det*dt
-        s11 = stress0(j,i,1,3)
-        s22 = stress0(j,i,2,3)
-        s12 = stress0(j,i,3,3)
-        stress0(j,i,1,3) = s11 + s12*2*dw12
-        stress0(j,i,2,3) = s22 - s12*2*dw12
-        stress0(j,i,3,3) = s12 + dw12*(s22-s11)
-
-        ! (4) Element D:
-        det=((x4*y3-y4*x3)-(x1*y3-y1*x3)+(x1*y4-y1*x4))
-        dvol(j,i,4) = det*area(j,i,4) - 1
-        area(j,i,4) = 1.d0/det
-
-        ! Adjusting stresses due to rotation
-        dw12 = 0.5d0*(vx1*(x3-x4)+vx4*(x1-x3)+vx3*(x4-x1) - &
-            vy1*(y4-y3)-vy4*(y3-y1)-vy3*(y1-y4))/det*dt
-        s11 = stress0(j,i,1,4)
-        s22 = stress0(j,i,2,4)
-        s12 = stress0(j,i,3,4)
-        stress0(j,i,1,4) = s11 + s12*2*dw12
-        stress0(j,i,2,4) = s22 - s12*2*dw12
-        stress0(j,i,3,4) = s12 + dw12*(s22-s11)
+            ! rotate strains (only stored for Triangle A, k=1)
+            if (k .eq. 1) then
+                s11 = strain(j,i,1)
+                s22 = strain(j,i,2)
+                s12 = strain(j,i,3)
+                strain(j,i,1) = s11 + s12*2*dw12
+                strain(j,i,2) = s22 - s12*2*dw12
+                strain(j,i,3) = s12 + dw12*(s22-s11)
+            endif
+        enddo
 
         if (any(area(j,i,:) <= 0)) then
             ! write(333, *) 'area', j, i, nloop
@@ -146,7 +128,6 @@ do  i = 1,nx-1
 enddo
 !$OMP end do
 !$OMP end parallel
-
 return
 end subroutine fl_move
 
@@ -179,7 +160,7 @@ if( topo_kappa .gt. 0.d0 ) then
     ! !$ACC parallel loop async(1)
     ! do i = 1, nx-1
     !     ! higher erosion for sediments above mean topo
-    !     if (iphase(1,i) == ksed2 .and. cord(1,i,2) > topomean) stmpn(i) = stmpn(i) * 10
+    !     if (iphase(1,i) == ksed1 .and. cord(1,i,2) > topomean) stmpn(i) = stmpn(i) * 10
     ! enddo
 
 
@@ -332,7 +313,7 @@ subroutine resurface
       if (chgtopo * kinc >= elz .and. kinc .ne. max_markers_per_elem) then
             ! sedimentation, add a sediment marker
             !write(6,*) 'sediment', i, chgtopo, elz
-            call add_marker_at_top(i, 0.1d0, time, nloop, ksed2)
+            call add_marker_at_top(i, 0.1d0, time, nloop, ksed1)
 
             dhacc(i) = 0
             ichanged = 1

@@ -43,8 +43,8 @@ class Flac(object):
         # read record number
         tmp = np.fromfile('_contents.0', sep=' ')
         tmp.shape = (-1, 3)
-        self.frames = tmp[:,0]
-        self.steps = tmp[:,1]
+        self.frames = tmp[:,0].astype(int)
+        self.steps = tmp[:,1].astype(int)
         self.time = tmp[:,2]
         self.nrec = len(self.time)
 
@@ -86,6 +86,32 @@ class Flac(object):
         T = self._read_data(f, columns)
         self._reshape_nodal_fields(T)
         return T
+
+
+    def read_coolingrate(self, frame):
+        columns = 1
+        f = open('coolingrate.0')
+        offset = (frame-1) * columns * self.nnodes * sizeoffloat
+        f.seek(offset)
+        cr = self._read_data(f, columns)
+        self._reshape_nodal_fields(cr)
+        return cr
+
+
+
+    def read_original_mesh(self, frame):
+        columns = 1
+        f = open('xoriginal.0')
+        offset = (frame-1) * columns * self.nnodes * sizeoffloat
+        f.seek(offset)
+        x0 = self._read_data(f, columns)
+        self._reshape_nodal_fields(x0)
+        f = open('zoriginal.0')
+        offset = (frame-1) * columns * self.nnodes * sizeoffloat
+        f.seek(offset)
+        z0 = self._read_data(f, columns)
+        self._reshape_nodal_fields(z0)
+        return x0, z0
 
 
     def read_aps(self, frame):
@@ -219,6 +245,27 @@ class Flac(object):
         self._reshape_elemental_fields(srII)
         return srII
 
+    def read_strain_rate(self, frame):
+        columns = 1
+        f = open('srxx.0')
+        offset = (frame-1) * columns * self.nelements * sizeoffloat
+        f.seek(offset)
+        srxx = self._read_data(f, columns, count=self.nelements)
+        self._reshape_elemental_fields(srxx)
+
+        f = open('srzz.0')
+        offset = (frame-1) * columns * self.nelements * sizeoffloat
+        f.seek(offset)
+        srzz = self._read_data(f, columns, count=self.nelements)
+        self._reshape_elemental_fields(srzz)
+
+        f = open('srxz.0')
+        offset = (frame-1) * columns * self.nelements * sizeoffloat
+        f.seek(offset)
+        srxz = self._read_data(f, columns, count=self.nelements)
+        self._reshape_elemental_fields(srxz)
+        return srxx, srzz, srxz
+
 
     def read_pres(self, frame):
         columns = 1
@@ -288,8 +335,8 @@ class Flac(object):
 
         suffix = '.%06d.0' % frame
         f2 = open('marker2' + suffix)
-        dead = self._read_data(f2, count=n, dtype=np.int32)
-        tmp = self._read_data(f2, count=n, dtype=np.int32)
+        dead = self._read_data(f2, count=n, dtype=np.int32).astype(np.uint8)
+        tmp = self._read_data(f2, count=n, dtype=np.int32).astype(np.uint8)
         phase = self._remove_dead_markers(tmp, dead)
         tmp = self._read_data(f2, count=n, dtype=np.int32)
         ntriag = self._remove_dead_markers(tmp, dead)
@@ -830,9 +877,8 @@ def elem_coord(x, z):
 
 
 def make_uniform_grid(xmin, xmax, zmin, zmax, dx, dz):
-    # grid size
-    nx = (xmax - xmin) / dx + 1
-    nz = (zmax - zmin) / dz + 1
+    nx = int((xmax - xmin) / dx + 1)
+    nz = int((zmax - zmin) / dz + 1)
 
     # generate uniform grid
     xx = np.linspace(xmin, xmax, nx)
@@ -923,7 +969,7 @@ def printing(*args, **kwd):
     stream = kwd.get('stream')
     if stream == None:
         stream = sys.stdout
-    elif isinstance(stream, (str, unicode)):
+    elif isinstance(stream, str):
         filename = stream
         stream = open(filename, 'w')
 

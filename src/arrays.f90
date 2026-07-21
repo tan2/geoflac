@@ -8,7 +8,8 @@ module arrays
   ! fortran array allocatable
   double precision, allocatable:: cord(:,:,:), temp(:,:), vel(:,:,:), stress0(:,:,:,:), &
        force(:,:,:), amass(:,:), rmass(:,:), &
-       area(:,:,:), dvol(:,:,:), strain(:,:,:), bc(:,:,:)
+       area(:,:,:), dvol(:,:,:), strain(:,:,:), bc(:,:,:), &
+       xoriginal(:,:), zoriginal(:,:)
 
   integer, allocatable :: ncod(:,:,:), iphase(:,:), &
       nopbou(:,:), ncodbou(:,:), jmoho(:)
@@ -19,9 +20,9 @@ module arrays
       strainr(:,:,:,:), flux(:,:,:,:), &
       aps(:,:),visn(:,:),e2sr(:,:), &
       temp0(:,:),source(:,:),shrheat(:,:), &
-      bcstress(:,:)
+      bcstress(:,:), q_init(:), vel_flex_old(:)
 
-  double precision, allocatable :: se2sr(:,:), sshrheat(:,:)
+  double precision, allocatable :: se2sr(:,:,:), sshrheat(:,:)
 
   ! remeshing arrays
   double precision, allocatable :: pt(:,:,:), barcord(:,:,:), &
@@ -52,6 +53,8 @@ contains
     allocate(dvol(nz-1, nx-1, ntri))
     allocate(strain(nz-1, nx-1, 3))
     allocate(bc(nz, nx, 2))
+    allocate(xoriginal(nz, nx))
+    allocate(zoriginal(nz, nx))
 
     allocate(ncod(nz, nx, 2))
     allocate(iphase(nz-1, nx-1))
@@ -76,7 +79,7 @@ contains
     allocate(shrheat(nz-1, nx-1))
     allocate(bcstress(((nz-1)+(nx-1))*2, 3))
 
-    allocate(se2sr(nz-1,nx-1))
+    allocate(se2sr(nz-1, nx-1, 3))
     allocate(sshrheat(nz-1,nx-1))
 
     allocate(pt((nz-1)*(nx-1)*2, 2, 3), barcord(nz, nx, 3), &
@@ -90,6 +93,9 @@ contains
     allocate(dummye(nz-1, nx-1))
     allocate(stmpn(max(nx,nz)))
     allocate(itmp(nz, nx))
+    allocate(q_init(nx))
+    allocate(vel_flex_old(nx))
+    vel_flex_old = 0.d0
 
   end subroutine allocate_arrays
 

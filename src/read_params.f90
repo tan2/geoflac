@@ -107,6 +107,9 @@ call AdvanceToNextInputLine(4, line)
 read(4,*,err=1000) i_prestress
 line = line + 1
 call AdvanceToNextInputLine(4, line)
+read(4,*,err=1000) extra_pres
+line = line + 1
+call AdvanceToNextInputLine(4, line)
 read(4,*,err=1000) itherm
 line = line + 1
 call AdvanceToNextInputLine(4, line)
@@ -191,8 +194,8 @@ read(4,*,err=1000) nphase
 line = line + 1
 do i = 1, nphase 
     call AdvanceToNextInputLine(4, line)
-    read(4,*,err=1000) irheol(i),visc(i),den(i),alfa(i),beta(i),pln(i),acoef(i),eactiv(i),rl(i),rm(i), &
-         plstrain1(i),plstrain2(i),fric1(i),fric2(i),cohesion1(i),cohesion2(i), &
+    read(4,*,err=1000) irheol(i),visc(i),den(i),alfa(i),beta(i),pln(i),acoef(i),eactiv(i),vactiv(i), &
+         rl(i),rm(i),plstrain1(i),plstrain2(i),fric1(i),fric2(i),cohesion1(i),cohesion2(i), &
          dilat1(i),dilat2(i), &
          conduct(i),cp(i),ts(i),tl(i),tk(i),fk(i)
     line = line + 1
@@ -240,7 +243,7 @@ call AdvanceToNextInputLine(4, line)
 read(4,*,err=1000) v_min, v_max, ivis_shape,efoldc
 line = line + 1
 call AdvanceToNextInputLine(4, line)
-read(4,*,err=1000) itype_melting, nelem_serp, prod_magma, rho_magma
+read(4,*,err=1000) itype_melting, nelem_serp, nelem_dike, prod_magma, rho_magma
 line = line + 1
 call AdvanceToNextInputLine(4, line)
 read(4,*,err=1000) angle_mzone, fmagma_max, ratio_mantle_mzone
@@ -257,8 +260,8 @@ weaken_ratio_viscous = log(weaken_ratio_viscous)
 call AdvanceToNextInputLine(4, line)
 read(4,*,err=1000)  ny_rem, mode_rem, ntest_rem, angle_rem
 line = line + 1
-if ( mode_rem.ne.1 .and. mode_rem.ne.11 .and. mode_rem.ne.3 ) then
-    call SysMsg('Illegal remeshing mode! Allowable - 1, 3 or 11')
+if ( mode_rem.ne.1 .and. mode_rem.ne.11 .and. mode_rem.ne.3 .and. mode_rem.ne.4) then
+    call SysMsg('Illegal remeshing mode! Allowable - 1, 3, 4or 11')
     stop
 endif
 ! dx_rem - remeshing criteria for mode_rem=11

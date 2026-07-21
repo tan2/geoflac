@@ -51,7 +51,7 @@ do i = 1,nx-1
 enddo
 !$OMP end parallel do
 return
-end
+end subroutine init_areas
 
 !  1 - 3
 !  |   |

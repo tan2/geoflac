@@ -35,7 +35,7 @@ close (1)
 
 ! min element width and thickness
 dxmin = minval(cord(1,2:nx,1) - cord(1,1:nx-1,1))
-dzmin = minval(cord(2,1,1:nz-1) - cord(2,1,2:nz))
+dzmin = minval(cord(1:nz-1,1,2) - cord(2:nz,1,2))
 
 open (1,file='dhacc.rs',access='direct',recl=(nx-1)*kindr)
 read (1,rec=nrec) dhacc(1:nx-1)
@@ -44,6 +44,20 @@ close (1)
 open (1,file='extr_acc.rs',access='direct',recl=(nx-1)*kindr)
 read (1,rec=nrec) extr_acc(1:nx-1)
 close (1)
+
+open (1,file='q_init.rs',access='direct',recl=nx*kindr,status='old',err=101)
+read (1,rec=nrec) q_init
+close (1)
+goto 102
+101 q_init = 0.d0
+102 continue
+
+open (1,file='vel_flex_old.rs',access='direct',recl=nx*kindr,status='old',err=103)
+read (1,rec=nrec) vel_flex_old
+close (1)
+goto 104
+103 vel_flex_old = 0.d0
+104 continue
 
 open (1,file='vel.rs',access='direct',recl=nwords*kindr) 
 read (1,rec=nrec) vel
@@ -73,6 +87,13 @@ open (1,file='temp.rs',access='direct',recl=nwords*kindr)
 read (1,rec=nrec) temp
 close (1)
 
+! Original location
+open (1,file='xoriginal.rs',access='direct',recl=nwords*kindr)
+read (1,rec=nrec) xoriginal
+close (1)
+open (1,file='zoriginal.rs',access='direct',recl=nwords*kindr)
+read (1,rec=nrec) xoriginal
+close (1)
 
 ! 2-D (nx-1)*(nz-1) arrays - elements defined
 nwords = (nz-1)*(nx-1)
