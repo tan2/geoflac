@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-The Correction Utility: plot_corrected_tc.py
+The Correction Utility: tcage_correction.py
 
 This script takes two inputs:
 1.  Sample List File: A text file containing a list of geological thermochronology samples.
@@ -28,6 +28,24 @@ Example File Contents:
 AFT       60.0      7.31      6.5     peak_sample
 AHe       40.0      -0.84     2.1     valley_sample
 AHe       20.0      -8.14     0.5     flat_sample
+
+---------------------------------------------------------
+Expected Format of the Screen Output:
+---------------------------------------------------------
+The final output is printed to standard output in a clean, space-separated format with a header line beginning with '#'.
+
+Columns:
+1. TC_type             : The type of thermochronometer system (e.g. AFT, AHe).
+2. x_sample            : The sample horizontal position in km.
+3. z_sample            : The sample vertical elevation in km.
+4. TC_age              : The observed sample age in Myr.
+5. model_age_corrected : The corrected modeled thermochronology age in Myr.
+6. note                : The optional comment label copied from the sample input file.
+
+Example Screen Output:
+# TC_type  x_sample  z_sample  TC_age  model_age_corrected  note
+AFT       60.00     7.31      6.50    3.45                 peak_sample
+AHe       40.00     -0.84     2.10    -1.00                valley_sample
 """
 import sys
 import os
