@@ -327,6 +327,24 @@ class Flac(object):
         return phase
 
 
+    def read_topo(self, frame):
+        columns = 1
+        f = open('topo.0')
+        offset = (frame-1) * columns * self.nx * sizeoffloat
+        f.seek(offset)
+        topo = self._read_data(f, columns, count=self.nx)
+        return topo
+
+
+    def read_dtopo(self, frame):
+        columns = 1
+        f = open('dtopo.0')
+        offset = (frame-1) * columns * self.nx * sizeoffloat
+        f.seek(offset)
+        dtopo = self._read_data(f, columns, count=self.nx)
+        return dtopo
+
+
     def read_markers(self, frame):
         # read tracer size
         tmp = np.fromfile('_markers.0', sep=' ')
