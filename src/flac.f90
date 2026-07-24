@@ -14,8 +14,7 @@ call fl_therm
 
 if (itherm .eq.2) goto 500  ! Thermal calculation only
 
-! Calculation of strain rates from velocity
-call fl_srate
+
 
 ! Changing marker phases
 ! XXX: change_phase is slow, don't call it every loop
