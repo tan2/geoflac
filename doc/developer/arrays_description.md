@@ -248,25 +248,12 @@ This document describes the primary data arrays used in the `geoflac` Fortran en
 
 ---
 
-## `strainr`
-
-*   **Meaning:** Deviatoric strain rate components for each sub-triangle [1/s].
-*   **Shape:** `(3, 4, nz-1, nx-1)`
-*   **Dimension 1 (3):** Strain rate components (1: sr_xx, 2: sr_zz, 3: sr_xz).
-*   **Dimension 2 (4):** Sub-triangle index.
-*   **Dimension 3 (`nz-1`):** Vertical index (element).
-*   **Dimension 4 (`nx-1`):** Horizontal index (element).
-*   **Update Locations:**
-    *   **Main Update:** `src/fl_srate.f90` (calculated from nodal velocities and element geometry).
-
----
-
 ## `e2sr`
 
 *   **Meaning:** Second invariant of the deviatoric strain rate, averaged over time [1/s].
 *   **Shape:** `(nz-1, nx-1)`
 *   **Update Locations:**
-    *   **Main Update:** `src/fl_srate.f90` (averaged over `ifreq_avgsr` time steps).
+    *   **Main Update:** `src/fl_rheol.f90` (averaged over `ifreq_avgsr` time steps).
 
 ---
 
@@ -281,8 +268,8 @@ This document describes the primary data arrays used in the `geoflac` Fortran en
     *   `2`: Integrated vertical normal strain rate $\int \dot{\epsilon}_{zz} \, dt$
     *   `3`: Integrated shear strain rate $\int \dot{\epsilon}_{xz} \, dt$
 *   **Update Locations:**
-    *   **Main Accumulation:** `src/fl_srate.f90` (adds the current step's strain increment: `se2sr = se2sr + strainr * dt`).
-    *   **Averaging & Reset:** `src/fl_srate.f90` computes the second invariant of strain rate `e2sr` at the end of the averaging interval (`dtavg`) using the accumulated components in `se2sr`, then resets `se2sr` to `0.d0` (or initialized to `1d-16` in `setflac.f90`).
+    *   **Main Accumulation:** `src/fl_rheol.f90` (adds the current step's strain increment: `se2sr = se2sr + sr_loc * dt`).
+    *   **Averaging & Reset:** `src/fl_rheol.f90` computes the second invariant of strain rate `e2sr` at the end of the averaging interval (`dtavg`) using the accumulated components in `se2sr`, then resets `se2sr` to `0.d0` (or initialized to `1d-16` in `setflac.f90`).
 
 ---
 
@@ -313,7 +300,7 @@ This document describes the primary data arrays used in the `geoflac` Fortran en
 *   **Meaning:** Shear heating (viscous dissipation) term, averaged over time.
 *   **Shape:** `(nz-1, nx-1)`
 *   **Update Locations:**
-    *   **Main Update:** `src/fl_srate.f90` (calculated as $\sigma_{ij} \dot{\epsilon}_{ij}$ and averaged over `ifreq_avgsr` time steps).
+    *   **Main Update:** `src/fl_rheol.f90` (calculated as $\sigma_{ij} \dot{\epsilon}_{ij}$ and averaged over `ifreq_avgsr` time steps).
 
 ---
 
@@ -324,8 +311,8 @@ This document describes the primary data arrays used in the `geoflac` Fortran en
 *   **Dimension 1 (`nz-1`):** Vertical index (element).
 *   **Dimension 2 (`nx-1`):** Horizontal index (element).
 *   **Update Locations:**
-    *   **Main Accumulation:** `src/fl_srate.f90` (adds viscous dissipation power density: `sshrheat = sshrheat + shear_heating * dt`).
-    *   **Averaging & Reset:** `src/fl_srate.f90` computes the time-averaged shear heating `shrheat` at the end of the averaging interval as `sshrheat / dtavg`, then resets `sshrheat` to `0.d0`.
+    *   **Main Accumulation:** `src/fl_rheol.f90` (adds viscous dissipation power density: `sshrheat = sshrheat + shear_heating * dt`).
+    *   **Averaging & Reset:** `src/fl_rheol.f90` computes the time-averaged shear heating `shrheat` at the end of the averaging interval as `sshrheat / dtavg`, then resets `sshrheat` to `0.d0`.
 
 ---
 
