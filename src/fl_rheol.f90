@@ -20,6 +20,10 @@ double precision :: bulkm,rmu,coh,phi,psi, &
                     diss, poiss, &
                     quad_area, s0, s0a,s0b, &
                     sII_plas, sII_visc, young
+double precision :: vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4, &
+                    x1,y1,x2,y2,x3,y3,x4,y4, &
+                    em,eda,edb
+double precision :: shpdx_loc(3, 4), shpdz_loc(3, 4), sr_loc(3, 4)
 double precision :: Eff_visc
 integer :: i, j, k, iph, irh, &
            ipls
@@ -32,14 +36,100 @@ integer :: i, j, k, iph, irh, &
 !$OMP                  s11v,s22v,s12v,s33v, &
 !$OMP                  depl,ipls,diss, &
 !$OMP                  sII_plas,sII_visc, &
-!$OMP                  quad_area,s0a,s0b,s0)
+!$OMP                  quad_area,s0a,s0b,s0, &
+!$OMP                  vx1,vy1,vx2,vy2,vx3,vy3,vx4,vy4, &
+!$OMP                  x1,y1,x2,y2,x3,y3,x4,y4, &
+!$OMP                  em,eda,edb,shpdx_loc,shpdz_loc,sr_loc)
 !$OMP do schedule(guided)
-!$ACC parallel loop gang vector collapse(2) private(depl,s11p,s22p,s12p,s33p,s11v,s22v,s12v,s33v) async(1)
+!$ACC parallel loop gang vector collapse(2) private(depl,s11p,s22p,s12p,s33p,s11v,s22v,s12v,s33v,shpdx_loc,shpdz_loc,sr_loc) async(1)
 do i = 1,nx-1
     do j = 1,nz-1
         ! iphase (j,i) is number of a phase NOT a rheology
         iph = iphase(j,i)
         irh = irheol(iph)
+
+        ! Calculate element strain rates on the fly
+        vx1 = vel(j  ,i  ,1)
+        vy1 = vel(j  ,i  ,2)
+        vx2 = vel(j+1,i  ,1)
+        vy2 = vel(j+1,i  ,2)
+        vx3 = vel(j  ,i+1,1)
+        vy3 = vel(j  ,i+1,2)
+        vx4 = vel(j+1,i+1,1)
+        vy4 = vel(j+1,i+1,2)
+
+        x1 = cord(j  ,i  ,1)
+        y1 = cord(j  ,i  ,2)
+        x2 = cord(j+1,i  ,1)
+        y2 = cord(j+1,i  ,2)
+        x3 = cord(j  ,i+1,1)
+        y3 = cord(j  ,i+1,2)
+        x4 = cord(j+1,i+1,1)
+        y4 = cord(j+1,i+1,2)
+
+        shpdx_loc(1, 1) = (y2 - y3) * area(j, i, 1)
+        shpdx_loc(2, 1) = (y3 - y1) * area(j, i, 1)
+        shpdx_loc(3, 1) = (y1 - y2) * area(j, i, 1)
+
+        shpdz_loc(1, 1) = (x3 - x2) * area(j, i, 1)
+        shpdz_loc(2, 1) = (x1 - x3) * area(j, i, 1)
+        shpdz_loc(3, 1) = (x2 - x1) * area(j, i, 1)
+
+        shpdx_loc(1, 2) = (y2 - y4) * area(j, i, 2)
+        shpdx_loc(2, 2) = (y4 - y3) * area(j, i, 2)
+        shpdx_loc(3, 2) = (y3 - y2) * area(j, i, 2)
+
+        shpdz_loc(1, 2) = (x4 - x2) * area(j, i, 2)
+        shpdz_loc(2, 2) = (x3 - x4) * area(j, i, 2)
+        shpdz_loc(3, 2) = (x2 - x3) * area(j, i, 2)
+
+        shpdx_loc(1, 3) = (y2 - y4) * area(j, i, 3)
+        shpdx_loc(2, 3) = (y4 - y1) * area(j, i, 3)
+        shpdx_loc(3, 3) = (y1 - y2) * area(j, i, 3)
+
+        shpdz_loc(1, 3) = (x4 - x2) * area(j, i, 3)
+        shpdz_loc(2, 3) = (x1 - x4) * area(j, i, 3)
+        shpdz_loc(3, 3) = (x2 - x1) * area(j, i, 3)
+
+        shpdx_loc(1, 4) = (y4 - y3) * area(j, i, 4)
+        shpdx_loc(2, 4) = (y3 - y1) * area(j, i, 4)
+        shpdx_loc(3, 4) = (y1 - y4) * area(j, i, 4)
+
+        shpdz_loc(1, 4) = (x3 - x4) * area(j, i, 4)
+        shpdz_loc(2, 4) = (x1 - x3) * area(j, i, 4)
+        shpdz_loc(3, 4) = (x4 - x1) * area(j, i, 4)
+
+        sr_loc(1,1) = vx1 * shpdx_loc(1, 1) + vx2 * shpdx_loc(2, 1) + vx3 * shpdx_loc(3, 1)
+        sr_loc(2,1) = vy1 * shpdz_loc(1, 1) + vy2 * shpdz_loc(2, 1) + vy3 * shpdz_loc(3, 1)
+        sr_loc(3,1) = 0.5d0*(vx1 * shpdz_loc(1, 1) + vx2 * shpdz_loc(2, 1) + vx3 * shpdz_loc(3, 1) + &
+                             vy1 * shpdx_loc(1, 1) + vy2 * shpdx_loc(2, 1) + vy3 * shpdx_loc(3, 1))
+
+        sr_loc(1,2) = vx3 * shpdx_loc(1, 2) + vx2 * shpdx_loc(2, 2) + vx4 * shpdx_loc(3, 2)
+        sr_loc(2,2) = vy3 * shpdz_loc(1, 2) + vy2 * shpdz_loc(2, 2) + vy4 * shpdz_loc(3, 2)
+        sr_loc(3,2) = 0.5d0*(vx3 * shpdz_loc(1, 2) + vx2 * shpdz_loc(2, 2) + vx4 * shpdz_loc(3, 2) + &
+                             vy3 * shpdx_loc(1, 2) + vy2 * shpdx_loc(2, 2) + vy4 * shpdx_loc(3, 2))
+
+        sr_loc(1,3) = vx1 * shpdx_loc(1, 3) + vx2 * shpdx_loc(2, 3) + vx4 * shpdx_loc(3, 3)
+        sr_loc(2,3) = vy1 * shpdz_loc(1, 3) + vy2 * shpdz_loc(2, 3) + vy4 * shpdz_loc(3, 3)
+        sr_loc(3,3) = 0.5d0*(vx1 * shpdz_loc(1, 3) + vx2 * shpdz_loc(2, 3) + vx4 * shpdz_loc(3, 3) + &
+                             vy1 * shpdx_loc(1, 3) + vy2 * shpdx_loc(2, 3) + vy4 * shpdx_loc(3, 3))
+
+        sr_loc(1,4) = vx1 * shpdx_loc(1, 4) + vx4 * shpdx_loc(2, 4) + vx3 * shpdx_loc(3, 4)
+        sr_loc(2,4) = vy1 * shpdz_loc(1, 4) + vy4 * shpdz_loc(2, 4) + vy3 * shpdz_loc(3, 4)
+        sr_loc(3,4) = 0.5d0*(vx1 * shpdz_loc(1, 4) + vx4 * shpdz_loc(2, 4) + vx3 * shpdz_loc(3, 4) + &
+                             vy1 * shpdx_loc(1, 4) + vy4 * shpdz_loc(2, 4) + vy3 * shpdz_loc(3, 4))
+
+        if ( mix_strain .eq. 1 ) then
+            do k = 1, 3, 2
+                em = 0.5d0*(sr_loc(1,k)+sr_loc(2,k)+sr_loc(1,k+1)+sr_loc(2,k+1))
+                eda = sr_loc(1,k)-sr_loc(2,k)
+                edb = sr_loc(1,k+1)-sr_loc(2,k+1)
+                sr_loc(1,k) = 0.5d0*(em+eda)
+                sr_loc(2,k) = 0.5d0*(em-eda)
+                sr_loc(1,k+1) = 0.5d0*(em+edb)
+                sr_loc(2,k+1) = 0.5d0*(em-edb)
+            enddo
+        endif
 
         ! Elastic modules & viscosity & plastic properties
         bulkm = rl(iph) + 2.d0*rm(iph)/3.d0
@@ -63,9 +153,9 @@ do i = 1,nx-1
         do k = 1,4
 
             ! Incremental strains
-            de11 = strainr(1,k,j,i)*dt
-            de22 = strainr(2,k,j,i)*dt
-            de12 = strainr(3,k,j,i)*dt
+            de11 = sr_loc(1,k)*dt
+            de22 = sr_loc(2,k)*dt
+            de12 = sr_loc(3,k)*dt
             de33 = 0.d0
             dv = dvol(j,i,k)
             s11p(k) = stress0(j,i,1,k) + stherm 
@@ -182,9 +272,9 @@ do i = 1,nx-1
         end if
 
         ! TOTAL FINITE STRAIN
-        strain(j,i,1) = strain(j,i,1) + 0.25d0*dt*(strainr(1,1,j,i)+strainr(1,2,j,i)+strainr(1,3,j,i)+strainr(1,4,j,i))
-        strain(j,i,2) = strain(j,i,2) + 0.25d0*dt*(strainr(2,1,j,i)+strainr(2,2,j,i)+strainr(2,3,j,i)+strainr(2,4,j,i))
-        strain(j,i,3) = strain(j,i,3) + 0.25d0*dt*(strainr(3,1,j,i)+strainr(3,2,j,i)+strainr(3,3,j,i)+strainr(3,4,j,i))
+        strain(j,i,1) = strain(j,i,1) + 0.25d0*dt*(sr_loc(1,1)+sr_loc(1,2)+sr_loc(1,3)+sr_loc(1,4))
+        strain(j,i,2) = strain(j,i,2) + 0.25d0*dt*(sr_loc(2,1)+sr_loc(2,2)+sr_loc(2,3)+sr_loc(2,4))
+        strain(j,i,3) = strain(j,i,3) + 0.25d0*dt*(sr_loc(3,1)+sr_loc(3,2)+sr_loc(3,3)+sr_loc(3,4))
 
     enddo
 enddo
