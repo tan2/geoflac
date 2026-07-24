@@ -20,7 +20,7 @@ Columns:
 1. TC_type  : The type of thermochronometer (e.g. AFT, AHe, ZFT, ZHe, Orthoclase, Biotite, Muscovite, Hornblende). Case-insensitive.
 2. x_sample : Horizontal coordinate of the sample in km.
 3. z_sample : Elevation of the sample in km (with positive being above sea level / datum, matching model).
-4. TC_age   : Observed age of the sample in Myr. Must be positive.
+4. TC_age   : Observed age of the sample in Myr` (see Note below).
 5. note     : (Optional) A note or description label for the sample.
 
 Example File Contents:
@@ -38,14 +38,16 @@ Columns:
 1. TC_type             : The type of thermochronometer system (e.g. AFT, AHe).
 2. x_sample            : The sample horizontal position in km.
 3. z_sample            : The sample vertical elevation in km.
-4. TC_age              : The observed sample age in Myr. Must be positive.
-5. model_age_corrected : The corrected modeled thermochronology age in Myr. Must be positive.
+4. TC_age              : The observed sample age in Myr.
+5. model_age_corrected : The corrected modeled thermochronology age in Myr (see Note below).
 6. note                : The optional comment label copied from the sample input file.
 
 Example Screen Output:
 # TC_type  x_sample  z_sample  TC_age  model_age_corrected  note
 AFT       60.00     7.31      6.50    3.45                 peak_sample
 AHe       40.00     -0.84     2.10    -1.00                valley_sample
+
+Note: NaN represents an unreset age (the marker/cell was never heated above Tc to reset its clock), while -1.0 represents an unclosed / open system (currently hotter than Tc).
 """
 import sys
 import os
