@@ -299,7 +299,7 @@ def peak_correction(x_s, z_model, dz, target_frame_idx, fl, surf_row, vts_arr_na
         
     return age_corrected, corr_type
 
-def process_sample(s, x_surf, z_surf, fl, target_frame_idx, surf_row, xc_surf, xc, zc, target_frame_num, t1_time):
+def process_sample(s, x_surf, z_surf, fl, target_frame_idx, surf_row, xc_surf, xc, zc, target_frame_num, t1_time, z_mesh=None):
     """
     Processes a single geological sample by calculating topography offset and applying age corrections.
     
@@ -318,38 +318,32 @@ def process_sample(s, x_surf, z_surf, fl, target_frame_idx, surf_row, xc_surf, x
         - 'age': float, observed sample age (Myr).
         - 'note': str, comment label.
     x_surf : numpy.ndarray of shape (nx,)
-        Horizontal coordinates of the nodes along the top surface swath (km).
+        Horizontal coordinates of top surface nodes (km).
     z_surf : numpy.ndarray of shape (nx,)
-        Vertical coordinates of the nodes along the top surface swath (km).
+        Vertical elevations of top surface nodes (km).
     fl : flac.FlacFromVTK
-        Unified parser instance for StructuredGrid and PolyData reader.
+        Initialized reader instance.
     target_frame_idx : int
-        0-based index of the current time step frame in the simulation.
+        Index of current target VTS frame.
     surf_row : int
-        Row index in the grid representing the top surface (usually 0 or -1).
+        Row index corresponding to the surface (0 or -1).
     xc_surf : numpy.ndarray of shape (nx-1,)
-        Horizontal coordinates of the element cell-centers along the top surface swath (km).
+        Horizontal cell center coordinates of the top surface layer.
     xc : numpy.ndarray of shape (nx-1, nz-1)
-        2D grid of horizontal coordinates of element cell-centers (km).
+        Cell center horizontal coordinates.
     zc : numpy.ndarray of shape (nx-1, nz-1)
-        2D grid of vertical coordinates of element cell-centers (km).
+        Cell center vertical coordinates.
     target_frame_num : int
-        1-based simulation frame number corresponding to target_frame_idx.
+        Frame number of the target frame.
     t1_time : float
-        The simulation time at the target frame step today (Myr).
-        
+        Model time of the target frame (Myr).
+    z_mesh : numpy.ndarray of shape (nx, nz), optional
+        Grid node vertical coordinates (km) used to calculate local element thickness.
+
     Returns:
     --------
     dict or None
-        A dictionary containing the correction outputs:
-        - 'type': str, the thermochronometer type.
-        - 'x': float, horizontal coordinate (km).
-        - 'z': float, vertical coordinate (km).
-        - 'age_obs': float, observed age (Myr).
-        - 'age_uncorr': float, uncorrected modeled age today (Myr).
-        - 'age_corr': float, corrected modeled age (Myr).
-        - 'corr_type': str, description of the correction applied.
-        Returns None if the thermochronometer age array is missing from the VTS file.
+        Dictionary containing corrected sample data, or None if reading failed.
     """
     tc_type = s['type']
     x_s = s['x']
@@ -360,6 +354,15 @@ def process_sample(s, x_surf, z_surf, fl, target_frame_idx, surf_row, xc_surf, x
     z_model = safe_interp(x_s, x_surf, z_surf)
     dz = z_s - z_model # positive for peak, negative for valley
     
+    # Calculate local surface element thickness threshold (10% of local cell height, min 10m)
+    if z_mesh is not None:
+        sub_row = 1 if surf_row == 0 else -2
+        cell_heights = np.abs(z_mesh[:, surf_row] - z_mesh[:, sub_row])
+        dz_cell = safe_interp(x_s, x_surf, cell_heights)
+        dz_thresh = max(0.01, 0.1 * dz_cell)
+    else:
+        dz_thresh = 0.05
+
     vts_arr_name = get_vts_array_name(tc_type)
     try:
         age_field = fl.read_cell_data(target_frame_idx, vts_arr_name)
@@ -374,11 +377,11 @@ def process_sample(s, x_surf, z_surf, fl, target_frame_idx, surf_row, xc_surf, x
     age_corrected = age_model_uncorr
     corr_type = "None"
 
-    # Apply correction logic
-    if dz < -0.05:
+    # Apply correction logic using resolution-adaptive threshold
+    if dz < -dz_thresh:
         age_corrected = valley_correction(x_s, z_s, xc, zc, age_field)
         corr_type = "Valley (2D)"
-    elif dz > 0.05:
+    elif dz > dz_thresh:
         try:
             age_corrected, corr_type = peak_correction(
                 x_s, z_model, dz, target_frame_idx, fl,
@@ -495,7 +498,7 @@ def main():
     for s in samples:
         res = process_sample(
             s, x_surf, z_surf, fl, target_frame_idx,
-            surf_row, xc_surf, xc, zc, target_frame_num, t1_time
+            surf_row, xc_surf, xc, zc, target_frame_num, t1_time, z_mesh=z_mesh
         )
         if res is not None:
             corrected_samples.append(res)
