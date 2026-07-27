@@ -277,7 +277,7 @@ subroutine resurface
                 n = mark_id_elem(k, 1, i)
                 ntriag = mark_ntriag(n)
                 ! get physical coordinate (x, y) of marker n
-                m = mark_ntriag(i)
+                m = ntriag
                 kk = mod(m-1, 2) + 1
                 jj = mod((m - kk) / 2, nz-1) + 1
                 ii = (m - kk) / 2 / (nz - 1) + 1
