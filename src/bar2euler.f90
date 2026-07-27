@@ -39,6 +39,12 @@ do i = 1 , nmarkers
   ! interpolate nodal values to the marker
   x = cord(j1,i1,1)*ba1 + cord(j2,i2,1)*ba2 + cord(j3,i3,1)*ba3
   y = cord(j1,i1,2)*ba1 + cord(j2,i2,2)*ba2 + cord(j3,i3,2)*ba3
+
+  ! adjust y for non-tectonic topographic accumulation on surface nodes
+  if (j1 .eq. 1) y = y - dhacc_correction(i1)*ba1
+  if (j2 .eq. 1) y = y - dhacc_correction(i2)*ba2
+  if (j3 .eq. 1) y = y - dhacc_correction(i3)*ba3
+
   mark_x(i) = x
   mark_y(i) = y
 enddo

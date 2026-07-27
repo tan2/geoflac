@@ -341,12 +341,23 @@ This document describes the primary data arrays used in the `geoflac` Fortran en
 
 ## `dhacc`
 
-*   **Meaning:** Accumulated change in topography (elevation change) for each element at the surface.
+*   **Meaning:** Accumulated non-tectonic surface elevation change ($\Delta h$) for each surface element since the last marker resurfacing (addition/deletion) [m]. Saved in `dhacc.rs`.
 *   **Shape:** `(nx-1)`
 *   **Dimension 1 (`nx-1`):** Horizontal index (element).
 *   **Update Locations:**
-    *   **Main Update:** `src/fl_move.f90` (accumulates the average `dtopo` of the two nodes defining the element top).
-    *   **Reset:** `src/fl_move.f90` resets to zero after remeshing or if it exceeds certain criteria.
+    *   **Main Accumulation:** `src/fl_move.f90` (accumulates element-averaged `dtopo` and `extrusion`).
+    *   **Marker Addition/Deletion & Reset:** `src/fl_move.f90` (`resurface` adds/deletes markers when `dhacc(i)` exceeds threshold and resets `dhacc(i) = 0.d0`).
+
+---
+
+## `dhacc_correction`
+
+*   **Meaning:** Accumulated non-tectonic surface elevation displacement ($\Delta h$) at each surface node since the last remeshing (from erosion, sedimentation, and volcanic extrusion) [m]. Saved in `dhacc_corr.rs`.
+*   **Shape:** `(nx)`
+*   **Dimension 1 (`nx`):** Horizontal index (node).
+*   **Update Locations:**
+    *   **Main Accumulation:** `src/fl_move.f90` (accumulates nodal `dtopo` and `extrusion`).
+    *   **Reset After Remeshing:** `src/remesh.f90` (resets `dhacc_correction(:) = 0.d0` after remeshing and marker re-mapping complete).
 
 ---
 

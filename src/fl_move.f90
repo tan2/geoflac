@@ -184,9 +184,14 @@ if( topo_kappa .gt. 0.d0 ) then
         dtopo(i) = min(dtopo(i), 0.5*(cord(1,i,2)-cord(2,i,2)))
     enddo
 
-    ! accumulated topo change since last resurface
+    ! accumulated non-tectonic topo change per surface node for marker topographic correction
     !$ACC wait(1)
     !$ACC parallel loop async(2)
+    do i = 1, nx
+        dhacc_correction(i) = dhacc_correction(i) + dtopo(i)
+    enddo
+
+    ! accumulated non-tectonic topo change per surface element for resurfacing
     do i = 1, nx-1
         dhacc(i) = dhacc(i) + 0.5d0 * (dtopo(i) + dtopo(i + 1))
     enddo
@@ -214,6 +219,12 @@ if (arc_extrusion_rate > 0) then
             / (cord(1,i+1,1) - cord(1,i,1) + 0.5d0 * (cord(1,i,1) - cord(1,i-1,1) + cord(1,i+2,1) - cord(1,i+1,1)))
         !print *, i, extrusion(i), totalmelt
         extr_acc(i) = extr_acc(i) + extrusion(i)
+        !$ACC atomic update
+        dhacc_correction(i) = dhacc_correction(i) + extrusion(i)
+        !$ACC atomic update
+        dhacc_correction(i+1) = dhacc_correction(i+1) + extrusion(i)
+        !$ACC atomic update
+        dhacc(i) = dhacc(i) + extrusion(i)
         !$ACC atomic update
         cord(1,i,2) = cord(1,i,2) + extrusion(i)
         !$ACC atomic update
@@ -251,7 +262,7 @@ subroutine resurface
   do i = 1, nx-1
       ! averge thickness of this element
       elz = 0.5d0 * (cord(1,i,2) - cord(2,i,2) + cord(1,i+1,2) - cord(2,i+1,2))
-      ! change in topo
+      ! change in topo over this element
       chgtopo = dhacc(i)
       ! # of markers in this element
       kinc = nmark_elem(1,i)
@@ -306,7 +317,7 @@ subroutine resurface
                 nmark_elem(1, i) = nmark_elem(1, i) - 1
             endif
 
-            dhacc(i) = 0
+            dhacc(i) = 0.d0
             ichanged = 1
       endif
 
@@ -315,7 +326,7 @@ subroutine resurface
             !write(6,*) 'sediment', i, chgtopo, elz
             call add_marker_at_top(i, 0.1d0, time, nloop, ksed1)
 
-            dhacc(i) = 0
+            dhacc(i) = 0.d0
             ichanged = 1
       endif
 

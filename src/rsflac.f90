@@ -41,6 +41,11 @@ open (1,file='dhacc.rs',access='direct',recl=(nx-1)*kindr)
 read (1,rec=nrec) dhacc(1:nx-1)
 close (1)
 
+open (1,file='dhacc_corr.rs',access='direct',recl=nx*kindr)
+read (1,rec=nrec) dhacc_correction(1:nx)
+close (1)
+!$ACC update device(dhacc, dhacc_correction) async(1)
+
 open (1,file='extr_acc.rs',access='direct',recl=(nx-1)*kindr)
 read (1,rec=nrec) extr_acc(1:nx-1)
 close (1)
@@ -197,6 +202,7 @@ call init_areas
 call init_bc
 
 temp0 = temp
+!$ACC kernels async(1)
 shrheat = 0
 sshrheat = 0
 dtopo = 0
@@ -204,6 +210,7 @@ extrusion = 0
 fmelt = 0
 se2sr = 1d-16
 e2sr = 1d-16
+!$ACC end kernels
 
 call update_acc
 

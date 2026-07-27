@@ -100,6 +100,9 @@ do while( time .le. time_max )
       call marker2elem
       !$ACC end parallel
       !$ACC update self(nmarkers) async(1)
+      !$ACC kernels async(1)
+      dhacc_correction(:) = 0.d0
+      !$ACC end kernels
     endif
   endif
 

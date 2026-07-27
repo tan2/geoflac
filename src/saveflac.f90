@@ -39,6 +39,10 @@ open (1,file='dhacc.rs',access='direct',recl=(nx-1)*kindr)
 write (1,rec=nrec) dhacc(1:nx-1)
 close (1)
 
+open (1,file='dhacc_corr.rs',access='direct',recl=nx*kindr)
+write (1,rec=nrec) dhacc_correction(1:nx)
+close (1)
+
 open (1,file='extr_acc.rs',access='direct',recl=(nx-1)*kindr)
 write (1,rec=nrec) extr_acc(1:nx-1)
 close (1)
