@@ -92,7 +92,8 @@ use arrays
 use params
 implicit none
 
-integer :: iph, j, i
+integer, intent(in) :: j, i
+integer :: iph
 double precision :: Eff_cp
 
 iph = iphase(j,i)
@@ -111,7 +112,8 @@ use arrays
 use params
 implicit none
 
-integer :: iph, j, i
+integer, intent(in) :: j, i
+integer :: iph
 double precision :: Eff_conduct
 
 iph = iphase(j,i)
