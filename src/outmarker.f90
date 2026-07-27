@@ -2,11 +2,11 @@ subroutine outmarker
 USE marker_data
 use arrays
 use params
-
-include 'precision.inc'
-parameter( kindr=4, kindi=4 )
-real(kindr) D1d(nmarkers)
-integer(kindi) D1i(nmarkers)
+implicit none
+integer, parameter :: kindr=4, kindi=4
+integer :: i, l, nrec, nwords
+real(kindr) :: D1d(nmarkers)
+integer(kindi) :: D1i(nmarkers)
 
 character*100 fn
 

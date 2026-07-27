@@ -246,8 +246,11 @@ subroutine pre_plast (i,j,coh,phi,psi,hardn)
 !$ACC routine seq
 use arrays
 use params
-include 'precision.inc'
-
+implicit none
+integer, intent(in) :: i, j
+double precision, intent(out) :: coh, phi, psi, hardn
+integer :: iph
+double precision :: pls_curr, f, c, d, h, dpl
 pls_curr = aps(j,i)
 
 phi = 0

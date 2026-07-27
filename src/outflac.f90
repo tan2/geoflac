@@ -5,12 +5,12 @@
 subroutine outflac
 use arrays
 use params
-include 'precision.inc'
-
-parameter( kindr=4, kindi=4 )
-
-real(kindr), allocatable :: D1d(:),De(:,:),Dn2(:,:,:)
-real(kindr) rtime
+implicit none
+integer, parameter :: kindr=4, kindi=4
+integer :: nrec, nwords, i, j, ii, iph
+double precision :: sxx, szz, sxz, syy, dtmpr, dl, strainI, strainII, srateII, stressI, stressII, Eff_dens, Eff_conduct
+real(kindr), allocatable :: D1d(:), De(:,:), Dn2(:,:,:)
+real(kindr) :: rtime
 
 ! define record number and write it to contents
 if( lastout .eq. 1 ) then

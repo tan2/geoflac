@@ -5,9 +5,9 @@
 subroutine init_cord
 use arrays
 use params
-include 'precision.inc'
-
-dimension rmesh1(nx+nz)
+implicit none
+integer :: i, j
+double precision :: rmesh1(nx+nz), x, y, amp
 
 if (ircoord .gt. 0) then
     ! read the coordinates from file
@@ -96,9 +96,8 @@ end
 
 subroutine test_grid
 use params
-include 'precision.inc'
-
-
+implicit none
+integer :: i, nelsum
 !- X direction
 nelsum =0
 do i = 1,nzonx

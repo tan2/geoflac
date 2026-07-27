@@ -8,8 +8,9 @@
 subroutine init_areas
 use arrays
 use params
-include 'precision.inc'
-
+implicit none
+integer :: i, j
+double precision :: x1, y1, x2, y2, x3, y3, x4, y4, det, det1
 !$OMP parallel do
 do i = 1,nx-1
     do j = 1,nz-1
@@ -77,8 +78,11 @@ end subroutine init_areas
 function total_area( iph )
 use arrays
 use params
-include 'precision.inc'
-
+implicit none
+integer, intent(in) :: iph
+double precision :: total_area
+integer :: i, j
+double precision :: area_t, x1, y1, x2, y2, x3, y3, x4, y4, det
 area_t = 0
 !$OMP parallel do reduction(+:area_t)
 do i = 1,nx-1

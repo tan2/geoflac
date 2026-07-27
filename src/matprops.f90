@@ -5,8 +5,11 @@ function Eff_dens( j, i)
   use arrays
   use params
   use phases
-  include 'precision.inc'
-
+  implicit none
+  integer, intent(in) :: j, i
+  double precision :: Eff_dens
+  integer :: iph, ii, k
+  double precision :: adi_grad, den_ramp_dist, amp410, amp660, zcord, tmpr0, zsurf, tmpr, deptmpr410, deptmpr420, den_amp, deptmpr660, deptmpr670, press, ratio, dens
   ! Adiabatic gradient
   adi_grad = 3.d-1
   ! Density transition thickness
@@ -131,8 +134,11 @@ function Eff_visc( j, i )
 !$ACC routine seq
 use arrays
 use params
-include 'precision.inc'
-
+implicit none
+integer, intent(in) :: j, i
+double precision :: Eff_visc
+integer :: k
+double precision :: adi_grad, r, zcord, tmpr0, zsurf, tmpr, s11, s22, s33, pres, deptmpr410, deptmpr660, srat, pow, pow1, vis
 ! Adiabatic gradient
 adi_grad = 3.d-1
 

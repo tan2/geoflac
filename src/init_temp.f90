@@ -3,7 +3,9 @@
 subroutine init_temp
 use arrays
 use params
-include 'precision.inc'
+implicit none
+integer :: i, j, k, n, i1, i2, ixc, iwidth, kk
+double precision :: ratio, age_1n, tp1n, tp2n, y, amp, pert, pert2
 
 !  Read distribution of temperatures from the dat file
 if (irtemp .gt. 0) then
@@ -125,8 +127,11 @@ subroutine init_geotherm_profile(n, i, age_1n, tp1n, tp2n)
     !$ACC routine vector
     use arrays
     use params
-    include 'precision.inc'
-
+    implicit none
+    integer, intent(in) :: n, i
+    double precision, intent(in) :: age_1n, tp1n, tp2n
+    integer :: j, k
+    double precision :: diffusivity, age, f, yL0, age_init, tau_d, y, tss, tt, ymoho, cond, dens_c, rr, tm, qm, bot_dep, temp1, ylayer1, ylayer2
     double precision, parameter :: pi = 3.14159265358979323846d0
 
 

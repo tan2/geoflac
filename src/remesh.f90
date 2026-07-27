@@ -319,8 +319,10 @@ end
 !===============================================
 subroutine rem_barcord(nzt,nxt)
 use arrays
-include 'precision.inc'
+implicit none
 integer :: nzt,nxt
+integer :: i, j, k, l, lt, io, jo, m, n, mm, nmin, numqu
+double precision :: perr, xx, yy, a1, a2, a3, amod, amodmin, dist1, dist2, dist3
 
 
 perr = 1.d-4

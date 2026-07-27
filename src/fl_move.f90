@@ -4,13 +4,13 @@
 subroutine fl_move
 use arrays
 use params
-include 'precision.inc'
-
+implicit none
 integer, parameter :: nd1(4) = (/1, 3, 1, 1/)
 integer, parameter :: nd2(4) = (/2, 2, 2, 4/)
 integer, parameter :: nd3(4) = (/3, 4, 4, 3/)
 double precision :: xcord(4), ycord(4), xvel(4), yvel(4)
-integer :: a, b, c, k
+integer :: a, b, c, k, i, j
+double precision :: det, dw12, s11, s22, s12
 
 
 ! Move Grid
@@ -139,8 +139,9 @@ subroutine diff_topo
 use arrays
 use params
 use phases
-include 'precision.inc'
-
+implicit none
+integer :: i, j
+double precision :: topomean, snder, quad_area, totalmelt, arc_extrusion_rate
 !EROSION PROCESSES
 if( topo_kappa .gt. 0.d0 ) then
 
@@ -256,8 +257,9 @@ subroutine resurface
   use arrays
   use params
   use phases
-  include 'precision.inc'
-
+  implicit none
+  integer :: i, j, k, m, n, ii, jj, kk, i1, i2, i3, j1, j2, j3, kinc, ichanged, kmax, nmax, ntriag, n_to_add
+  double precision :: elz, chgtopo, chgtopo2, dz_ratio, ymax, y, ba1, ba2, ba3
   !$ACC serial private(dz_ratio) async(1)
   do i = 1, nx-1
       ! averge thickness of this element
@@ -362,8 +364,11 @@ subroutine add_marker_at_top(i, dz_ratio, time, loop, kph)
   use myrandom_mod
   use marker_data
   use arrays
-  include 'precision.inc'
-
+  implicit none
+  integer, intent(in) :: i, loop, kph
+  double precision, intent(in) :: dz_ratio, time
+  integer :: j, iseed, icount, inc
+  double precision :: r1, r2, x1, y1, x2, y2, xx, yy
   iseed = loop + i
   icount = 0
   do while(.true.)

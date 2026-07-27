@@ -3,9 +3,9 @@
 subroutine read_params(inputfile)
 use arrays
 use params
-include 'precision.inc'
-
+implicit none
 character*200 inputfile
+integer :: i, j, iu, line
 
 iu = 4
 open( iu, file=inputfile )

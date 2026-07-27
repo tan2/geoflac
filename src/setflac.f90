@@ -4,9 +4,7 @@
 subroutine setflac
 use arrays
 use params
-include 'precision.inc'
-
-
+implicit none
 nloop = 0
 time = 0.d0
 !$ACC update device(nloop,time)
@@ -79,8 +77,7 @@ end
 subroutine update_acc
 use arrays
 use params
-include 'precision.inc'
-
+implicit none
 !$ACC update device(nx,nz,nzonx,nzony,nelz_x(maxzone),nelz_y(maxzone), &
 !$ACC     ny_rem,mode_rem,ntest_rem,ivis_shape, &
 !$ACC     itype_melting,nelem_serp,nelem_dike,nmass_update,nopbmax,nydrsides,nystressbc, &

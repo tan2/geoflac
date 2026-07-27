@@ -6,13 +6,14 @@ subroutine fl_therm
 !$ACC routine(Eff_conduct) seq
 use arrays
 use params
-include 'precision.inc'
-
+implicit none
 double precision :: D(3,3)  ! diffusion operator
 double precision :: diff_elem(nz-1, nx-1)
 double precision :: inv_area
 double precision :: x1, y1, x2, y2, x3, y3, x4, y4
 double precision :: shpdx_1, shpdx_2, shpdx_3, shpdz_1, shpdz_2, shpdz_3
+integer :: i, j, iph, jm, ii, ihalf, ii_start, ii_end, ncol, jj, ihalfwidth_mzone
+double precision :: tan_mzone, cp_eff, cond_eff, dissip, quad_area, fr_lambda, delta_fmagma, deltaT, real_area13, area_n, rhs, area_ratio, z_moho, z_melt, x_melt, h, x, z, tmpr, Eff_cp, Eff_conduct
 
 tan_mzone = tan(0.5d0 * angle_mzone * 3.14159265358979323846d0 / 180.d0)
 ! max. width of the magma zone @ moho (as if melting occurs at 200 km)

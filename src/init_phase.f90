@@ -5,9 +5,8 @@
 subroutine init_phase
 use arrays
 use params
-include 'precision.inc'
-
-
+implicit none
+integer :: i, j, k, ii, jj, k1, k2
 if (irphase .gt. 0) then
     !  Read distribution of the phases from the dat file
     open(12, file=phasefile)
@@ -57,6 +56,8 @@ end
 subroutine check_visc_rheol
 use arrays
 use params
+implicit none
+integer :: i, j, iph
 
 ! Check if viscous rheology present
 ivis_present = 0

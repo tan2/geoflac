@@ -3,10 +3,10 @@ subroutine lpeuler2bar
 USE marker_data
 use arrays
 use params
-
-include 'precision.inc'
-
+implicit none
 character*200 msg
+integer :: n, i, j, k, kk, ntr, inc
+double precision :: xx, yy, bar1, bar2
 
 !$ACC kernels async(1)
 mark_id_elem(:,:,:) = 0

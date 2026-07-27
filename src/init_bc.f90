@@ -5,7 +5,9 @@ subroutine init_bc
 
   use arrays
   use params
-  include 'precision.inc'
+  implicit none
+  integer :: i, n, ndbc, numbp, numbp1, nnop, nebou, mid_j
+  double precision :: x, x1, x2, xn, xa
   !
   !      ---- bc(nh*2)-for each nodal degree-of-freedom this is assigned zero
   !      value,unless a boundary condition is applied,in which case it is
@@ -347,8 +349,10 @@ subroutine velbc_visc(i)
 
   use arrays
   use params
-  include 'precision.inc'
-
+  implicit none
+  integer, intent(in) :: i
+  integer :: ii, ie, jj
+  double precision :: tmp, tmp1, Eff_visc
   if (nofside(i).eq.1) then
       ii = 1
       ie = 1
@@ -389,8 +393,8 @@ subroutine vbcal
 
   use arrays
   use params
-  include 'precision.inc'
-
+  implicit none
+  integer :: i, j, k
   vbc = 0.d0
 
   do i = 1,nx
