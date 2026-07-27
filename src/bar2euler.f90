@@ -50,9 +50,13 @@ end subroutine bar2euler
 subroutine shape_functions(j, i, shp2)
   !$ACC routine seq
   use arrays
+  implicit none
 
-  include 'precision.inc'
+  integer, intent(in) :: j, i
   double precision, intent(out) :: shp2(2,3,2)
+  double precision :: x1, x2, x3, y1, y2, y3, det
+  integer :: k
+
   do k = 1 , 2
       if (k.eq.1) then
           x1 = cord(j  ,i  ,1)
@@ -93,9 +97,11 @@ end subroutine shape_functions
 subroutine bar2xy(ba1, ba2, shp, x, y)
   !$ACC routine seq
   use arrays
+  implicit none
 
-  include 'precision.inc'
-  double precision :: shp(2,3)
+  double precision, intent(in) :: ba1, ba2, shp(2,3)
+  double precision, intent(out) :: x, y
+  double precision :: xnum, xdem
 
   xnum = ba2*shp(1,3) - shp(2,1)*shp(1,3) - shp(2,3)*ba1 + shp(2,3)*shp(1,1)
   xdem = shp(1,3)*shp(2,2) - shp(2,3)*shp(1,2)
