@@ -227,8 +227,9 @@ subroutine stressbc (i,n,numbp,numbp1,x)
   use params
   implicit none
 
-  integer :: i, n, numbp, numbp1
-  double precision :: x, fun
+  integer, intent(in) :: i, n, numbp, numbp1
+  double precision, intent(in) :: x
+  double precision :: fun
   double precision, parameter :: pi2 = 2.d0 * 3.14159d0
 
   fun =  bca(i) + bcb(i)*x + bcc(i)*x*x  & 
@@ -285,8 +286,8 @@ subroutine velbc (i,numbp,x,mid_j)
   use arrays
   use params
   implicit none
-  integer :: i, numbp, mid_j
-  double precision :: x
+  integer, intent(in) :: i, numbp, mid_j
+  double precision, intent(in) :: x
   double precision, parameter :: pi2 = 2.d0 * 3.14159d0
   double precision :: fun
   integer :: ii1, jj1

@@ -4,7 +4,7 @@ subroutine read_params(inputfile)
 use arrays
 use params
 implicit none
-character*200 inputfile
+character*200, intent(in) :: inputfile
 integer :: i, j, iu, line, u11
 
 iu = 4

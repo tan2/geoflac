@@ -260,7 +260,7 @@ end
 subroutine rem_trpars(nzt,nxt)
 use arrays
 implicit none
-integer :: nzt,nxt
+integer, intent(in) :: nzt,nxt
 integer :: i, j, k, n
 double precision :: x1, x2, x3, y1, y2, y3, det
 
@@ -320,7 +320,7 @@ end
 subroutine rem_barcord(nzt,nxt)
 use arrays
 implicit none
-integer :: nzt,nxt
+integer, intent(in) :: nzt,nxt
 integer :: i, j, k, l, lt, io, jo, m, n, mm, nmin, numqu
 double precision :: perr, xx, yy, a1, a2, a3, amod, amodmin, dist1, dist2, dist3
 
@@ -438,8 +438,9 @@ end
 subroutine rem_interpolate( nzt, nxt, dummy, arr )
 use arrays
 implicit none
-integer :: nzt,nxt
-double precision :: dummy(nzt,nxt), arr(nzt,nxt)
+integer, intent(in) :: nzt,nxt
+double precision, intent(out) :: dummy(nzt,nxt)
+double precision, intent(inout) :: arr(nzt,nxt)
 integer :: i, j, io, jo, numq
 double precision :: f1, f2, f3
 

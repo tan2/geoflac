@@ -141,8 +141,10 @@ end
 subroutine mesh1 (x1,x2,xmesh,n,nzon,nelz,sizez)
 !$ACC routine seq
 implicit none
-double precision :: x1, x2, xmesh(n), sizez(nzon)
-integer :: n, nzon, nelz(nzon), k, i, nel
+integer, intent(in) :: n, nzon, nelz(nzon)
+double precision, intent(in) :: x1, x2, sizez(nzon)
+double precision, intent(out) :: xmesh(n)
+integer :: k, i, nel
 double precision :: xbeg, xend, elemsize, all_ratio, magnification, ratio
 all_ratio = 0.d0
 nel = 1

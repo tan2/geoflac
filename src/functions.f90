@@ -89,7 +89,7 @@ end subroutine eigen2x2
 subroutine SysMsg( message )
 use params
 implicit none
-character* (*) message
+character* (*), intent(in) :: message
 integer :: u
 
 !$OMP critical (sysmsg1)

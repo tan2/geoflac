@@ -50,8 +50,9 @@ MODULE marker_data
     use arrays
     use params
     implicit none
-    integer :: iph, j, i, inc
-    double precision :: x, y, age
+    double precision, intent(in) :: x, y, age
+    integer, intent(in) :: iph, j, i
+    integer, intent(out) :: inc
     integer :: ntr, kk, nm
     double precision :: bar1, bar2
     !character*200 msg
@@ -112,8 +113,8 @@ MODULE marker_data
     use params
     implicit none
     
-    integer :: j1, j2, i1, i2, iph, &
-               kk, n, j, i
+    integer, intent(in) :: j1, j2, i1, i2, iph
+    integer :: kk, n, j, i
 
     ! reset the markers within elements in the rectangular region
     !$OMP parallel do private(i,j,n,kk)
