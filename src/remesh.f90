@@ -339,7 +339,7 @@ do i = 1, nxt
         amodmin = 1.d+10
 
         numtr(j,i) = 0
-        do io = max(1, i-mm), min(nxt-1, i+mm)
+        search_loop: do io = max(1, i-mm), min(nxt-1, i+mm)
             do jo = max(1, j-mm), min(nzt-1, j+mm)
                 do k = 1, 2
                     n = 2*( (nzt-1)*(io-1)+jo-1 ) + k
@@ -358,13 +358,11 @@ do i = 1, nxt
                     barcord(j,i,1) = a1
                     barcord(j,i,2) = a2
                     barcord(j,i,3) = a3
-                    goto 10
+                    exit search_loop
                 end do
 
             end do
-        end do
-
-10      continue
+        end do search_loop
     
     ! if a point is outside of the mesh
     if( numtr(j,i) .eq. 0 ) then

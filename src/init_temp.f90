@@ -4,51 +4,52 @@ subroutine init_temp
 use arrays
 use params
 implicit none
-integer :: i, j, k, n, i1, i2, ixc, iwidth, kk
+integer :: i, j, k, n, i1, i2, ixc, iwidth, kk, u, ios
+character(len=256) :: iomsg
 double precision :: ratio, age_1n, tp1n, tp2n, y, amp, pert, pert2
 
 !  Read distribution of temperatures from the dat file
 if (irtemp .gt. 0) then
-    open( 1, file=tempfile, status='old', err=101 )
-    do i = 1, nx
-    do j = 1, nz
-        read( 1, * ,err=102 ) temp(j,i)
-!     if(temp(j,i).ge.1000.d0) temp(j,i) = 1000.d0
-    enddo
-    enddo
-    close(1)
-
-   goto 10
-    101 call SysMsg('INIT_TEMP: Cannot open file with temperatures initial distrib!')
-    stop 21
-    102 call SysMsg('INIT_TEMP: Error reading file with temperatures initial distrib!')
-    stop 21
-endif
-
-!!  geotherm of a given age accross the box with variable age
-do n = 1, nzone_age
-    if (n /= 1) then
-        if (iph_col_trans(n-1) == 1) cycle
+    open(newunit=u, file=tempfile, status='old', iostat=ios, iomsg=iomsg)
+    if (ios /= 0) then
+        call SysMsg('INIT_TEMP: Cannot open file with temperatures initial distrib: ' // trim(iomsg))
+        stop 21
     endif
-
-    do i = ixtb1(n), ixtb2(n)
-        if (iph_col_trans(n) == 1) then
-            i1 = ixtb1(n)
-            i2 = ixtb2(n)
-            ratio = (cord(1,i,1) - cord(1,i1,1)) / (cord(1,i2,1) - cord(1,i1,1))
-            age_1n = age_1(n) + (age_1(n+1) - age_1(n)) * ratio
-            tp1n = tp1(n) + (tp1(n+1) - tp1(n)) * ratio
-            tp2n = tp2(n) + (tp2(n+1) - tp2(n)) * ratio
-        else
-            age_1n = age_1(n)
-            tp1n = tp1(n)
-            tp2n = tp2(n)
-        endif
-        call init_geotherm_profile(n, i, age_1n, tp1n, tp2n)
+    do i = 1, nx
+        do j = 1, nz
+            read(u, *, iostat=ios) temp(j,i)
+!     if(temp(j,i).ge.1000.d0) temp(j,i) = 1000.d0
+            if (ios /= 0) then
+                call SysMsg('INIT_TEMP: Error reading file with temperatures initial distrib!')
+                stop 21
+            endif
+        enddo
     enddo
-enddo
+    close(u)
+else
+    !!  geotherm of a given age accross the box with variable age
+    do n = 1, nzone_age
+        if (n /= 1) then
+            if (iph_col_trans(n-1) == 1) cycle
+        endif
 
-10 continue
+        do i = ixtb1(n), ixtb2(n)
+            if (iph_col_trans(n) == 1) then
+                i1 = ixtb1(n)
+                i2 = ixtb2(n)
+                ratio = (cord(1,i,1) - cord(1,i1,1)) / (cord(1,i2,1) - cord(1,i1,1))
+                age_1n = age_1(n) + (age_1(n+1) - age_1(n)) * ratio
+                tp1n = tp1(n) + (tp1(n+1) - tp1(n)) * ratio
+                tp2n = tp2(n) + (tp2(n+1) - tp2(n)) * ratio
+            else
+                age_1n = age_1(n)
+                tp1n = tp1(n)
+                tp2n = tp2(n)
+            endif
+            call init_geotherm_profile(n, i, age_1n, tp1n, tp2n)
+        enddo
+    enddo
+endif
 
 ! DISTRIBUTE SOURCES in elements
 do j = 1,nz-1

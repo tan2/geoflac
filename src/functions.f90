@@ -90,12 +90,13 @@ subroutine SysMsg( message )
 use params
 implicit none
 character* (*) message
+integer :: u
 
 !$OMP critical (sysmsg1)
-open( 13, file='sys.msg', position="append", action="write" )
-write(13, * ) "Loops:", nloop, "Time[Ma]:", time/sec_year/1.d+6
-write(13, * ) message
-close(13)
+open( newunit=u, file='sys.msg', position="append", action="write" )
+write(u, * ) "Loops:", nloop, "Time[Ma]:", time/sec_year/1.d+6
+write(u, * ) message
+close(u)
 !$OMP end critical (sysmsg1)
 
 return

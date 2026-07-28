@@ -6,16 +6,16 @@ subroutine init_phase
 use arrays
 use params
 implicit none
-integer :: i, j, k, ii, jj, k1, k2
+integer :: i, j, k, ii, jj, k1, k2, u
 if (irphase .gt. 0) then
     !  Read distribution of the phases from the dat file
-    open(12, file=phasefile)
+    open(newunit=u, file=phasefile)
     do i=1,nx-1
         do j=1,nz-1
-            read(12,*) ii,jj,iphase(j,i)
+            read(u,*) ii,jj,iphase(j,i)
         enddo
     enddo
-    close(12)
+    close(u)
 endif
 
 !   Put different rheologies for inclusions 

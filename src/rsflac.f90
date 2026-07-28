@@ -8,19 +8,19 @@ USE marker_data
 implicit none
 
 integer, parameter :: kindr=8, kindi=4
-integer :: nrec, nwords, i, j, k, iph, n
+integer :: nrec, nwords, i, j, k, iph, n, u, ios
 real*8 rtime, rdt, time_my
 character*200 msg
 
-open( 1, file='_contents.rs', status='old' )
-read( 1, * ) nrec, nloop, time_my, nmarkers, i
-close(1)
+open(newunit=u, file='_contents.rs', status='old' )
+read(u, * ) nrec, nloop, time_my, nmarkers, i
+close(u)
 
 
 ! Read time and dt
-open (1,file='time.rs',access='direct',recl=2*8) 
-read (1,rec=nrec) rtime, rdt
-close (1)
+open(newunit=u, file='time.rs', access='direct', recl=2*8) 
+read(u, rec=nrec) rtime, rdt
+close(u)
 time = rtime
 dt = rdt
 
@@ -29,40 +29,42 @@ dvol = 0
 ! Coordinates and velocities
 nwords = nz*nx*2
 
-open (1,file='cord.rs',access='direct',recl=nwords*kindr) 
-read (1,rec=nrec) cord
-close (1)
+open(newunit=u, file='cord.rs', access='direct', recl=nwords*kindr) 
+read(u, rec=nrec) cord
+close(u)
 
 ! min element width and thickness
 dxmin = minval(cord(1,2:nx,1) - cord(1,1:nx-1,1))
 dzmin = minval(cord(1:nz-1,1,2) - cord(2:nz,1,2))
 
-open (1,file='dhacc.rs',access='direct',recl=(nx-1)*kindr)
-read (1,rec=nrec) dhacc(1:nx-1)
-close (1)
+open(newunit=u, file='dhacc.rs', access='direct', recl=(nx-1)*kindr)
+read(u, rec=nrec) dhacc(1:nx-1)
+close(u)
 
-open (1,file='dhacc_corr.rs',access='direct',recl=nx*kindr)
-read (1,rec=nrec) dhacc_correction(1:nx)
-close (1)
+open(newunit=u, file='dhacc_corr.rs', access='direct', recl=nx*kindr)
+read(u, rec=nrec) dhacc_correction(1:nx)
+close(u)
 !$ACC update device(dhacc, dhacc_correction) async(1)
 
-open (1,file='extr_acc.rs',access='direct',recl=(nx-1)*kindr)
-read (1,rec=nrec) extr_acc(1:nx-1)
-close (1)
+open(newunit=u, file='extr_acc.rs', access='direct', recl=(nx-1)*kindr)
+read(u, rec=nrec) extr_acc(1:nx-1)
+close(u)
 
-open (1,file='q_init.rs',access='direct',recl=nx*kindr,status='old',err=101)
-read (1,rec=nrec) q_init
-close (1)
-goto 102
-101 q_init = 0.d0
-102 continue
+open(newunit=u, file='q_init.rs', access='direct', recl=nx*kindr, status='old', iostat=ios)
+if (ios == 0) then
+    read(u, rec=nrec) q_init
+    close(u)
+else
+    q_init = 0.d0
+endif
 
-open (1,file='vel_flex_old.rs',access='direct',recl=nx*kindr,status='old',err=103)
-read (1,rec=nrec) vel_flex_old
-close (1)
-goto 104
-103 vel_flex_old = 0.d0
-104 continue
+open(newunit=u, file='vel_flex_old.rs', access='direct', recl=nx*kindr, status='old', iostat=ios)
+if (ios == 0) then
+    read(u, rec=nrec) vel_flex_old
+    close(u)
+else
+    vel_flex_old = 0.d0
+endif
 
 open (1,file='vel.rs',access='direct',recl=nwords*kindr) 
 read (1,rec=nrec) vel

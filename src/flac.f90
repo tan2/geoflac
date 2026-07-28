@@ -11,33 +11,29 @@ implicit none
 ! Skip the therm calculations if itherm = 3
 call fl_therm
 
-if (itherm .eq.2) goto 500  ! Thermal calculation only
+if (itherm /= 2) then
+    ! Changing marker phases
+    ! XXX: change_phase is slow, don't call it every loop
+    if( mod(nloop, ifreq_rmasses).eq.0 ) call change_phase
 
+    ! Update stresses by constitutive law (and mix isotropic stresses)
+    call fl_rheol
 
+    ! update stress boundary conditions
+    if (nystressbc.eq.1) call bc_update
 
-! Changing marker phases
-! XXX: change_phase is slow, don't call it every loop
-if( mod(nloop, ifreq_rmasses).eq.0 ) call change_phase
+    ! Calculations in a node: forces, balance, velocities, new coordinates
+    call fl_node
 
-! Update stresses by constitutive law (and mix isotropic stresses)
-call fl_rheol
+    ! New coordinates
+    call fl_move
 
-! update stress boundary conditions
-if (nystressbc.eq.1) call bc_update
+    ! Adjust real masses due to temperature
+    if( mod(nloop,ifreq_rmasses).eq.0 ) call rmasses
 
-! Calculations in a node: forces, balance, velocities, new coordinates
-call fl_node
-
-! New coordinates
-call fl_move
-
-! Adjust real masses due to temperature
-if( mod(nloop,ifreq_rmasses).eq.0 ) call rmasses
-
-! Adjust inertial masses or time step due to deformations
-if( mod(nloop,ifreq_imasses) .eq. 0 ) call dt_mass
-
-500 continue
+    ! Adjust inertial masses or time step due to deformations
+    if( mod(nloop,ifreq_imasses) .eq. 0 ) call dt_mass
+endif
 
 
 return

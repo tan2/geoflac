@@ -394,7 +394,7 @@ subroutine vbcal
   use arrays
   use params
   implicit none
-  integer :: i, j, k
+  integer :: i, j, k, u
   vbc = 0.d0
 
   do i = 1,nx
@@ -407,9 +407,9 @@ subroutine vbcal
   enddo
   if(vbc.eq.0.d0) vbc=1.d-10
 
-  open(13,file = 'vbc.s')
-  write(13,*) vbc
-  close(13)
+  open(newunit=u, file='vbc.s')
+  write(u,*) vbc
+  close(u)
   !$ACC update device(vbc) async(1)
 
   return
