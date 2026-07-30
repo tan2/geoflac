@@ -236,7 +236,7 @@ implicit none
 integer, intent(in) :: i, j
 double precision, intent(out) :: coh, phi, psi, hardn
 integer :: iph
-double precision :: pls_curr, f, c, d, h, dpl
+double precision :: pls_curr, f, c, d, h, dpl, fma
 pls_curr = aps(j,i)
 
 phi = 0
@@ -281,10 +281,10 @@ enddo
 
 phi = 1 / phi
 coh = 1 / coh
-
+fma = min(fmagma(j,i)+fmagma2(j,i),fmagma_max)
 if (itype_melting == 1) then
-    phi = phi * (1 - (1 - weaken_ratio_plastic) * fmagma(j,i) / fmagma_max)
-    coh = coh * (1 - (1 - weaken_ratio_plastic) * fmagma(j,i) / fmagma_max)
+    phi = phi * (1 - (1 - weaken_ratio_plastic) * fma / fmagma_max)
+    coh = coh * (1 - (1 - weaken_ratio_plastic) * fma / fmagma_max)
 endif
 
 return

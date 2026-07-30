@@ -124,6 +124,11 @@ open (1,file='fmagma.rs',access='direct',recl=nwords*kindr)
 read (1,rec=nrec) fmagma
 close (1)
 
+! Magma2
+open (1,file='fmagma2.rs',access='direct',recl=nwords*kindr)
+read (1,rec=nrec) fmagma2
+close (1)
+
 ! Heat sources
 open (1,file='source.rs',access='direct',recl=nwords*kindr) 
 read (1,rec=nrec) source
@@ -210,6 +215,7 @@ sshrheat = 0
 dtopo = 0
 extrusion = 0
 fmelt = 0
+fmelt2 = 0
 se2sr = 1d-16
 e2sr = 1d-16
 !$ACC end kernels

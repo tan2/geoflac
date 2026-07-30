@@ -108,6 +108,11 @@ open (1,file='fmagma.rs',access='direct',recl=nwords*kindr)
 write (1,rec=nrec) fmagma
 close (1)
 
+! Magma2
+open (1,file='fmagma2.rs',access='direct',recl=nwords*kindr)
+write (1,rec=nrec) fmagma2
+close (1)
+
 ! Heat sources
 open (1,file='source.rs',access='direct',recl=nwords*kindr) 
 write (1,rec=nrec) source

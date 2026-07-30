@@ -50,7 +50,9 @@ sshrheat = 0
 dtopo = 0
 extrusion = 0
 fmelt = 0
+fmelt2 = 0
 fmagma = 0
+fmagma2 = 0
 e2sr = 1d-16
 se2sr = 1d-16
 q_init = 0.d0
@@ -106,7 +108,7 @@ implicit none
 !$ACC     dx_rem,angle_rem,topo_kappa,fac_kappa, &
 !$ACC     v_min,v_max,efoldc, &
 !$ACC     dxmin,dzmin, &
-!$ACC     prod_magma,rho_magma, &
+!$ACC     prod_magma,rho_magma,prod_magma2, &
 !$ACC     bca(maxbc),bcb(maxbc),bcc(maxbc),xReyn, &
 !$ACC     bcd(maxbc),bce(maxbc),bcf(maxbc),bcg(maxbc),bch(maxbc),bci(maxbc), &
 !$ACC     dt_scale,strain_inert,vbc,frac, &

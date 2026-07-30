@@ -335,14 +335,6 @@ subroutine velbc (i,numbp,x,mid_j)
       endif
   endif
 
-  ! - y component 
-
-  !            if (nbc(i) .eq. 30 ) then
-  !       ncod(numbp,3) = 1
-  !       bc  (numbp,3) = fun
-  !        write(*,*) numbp,ncod(numbp,3),bc(numbp,3)
-  !             endif
-
   return
 end subroutine velbc
 

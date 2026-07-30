@@ -9,7 +9,7 @@ function Eff_dens( j, i)
   integer, intent(in) :: j, i
   double precision :: Eff_dens
   integer :: iph, ii, k
-  double precision :: adi_grad, den_ramp_dist, amp410, amp660, zcord, tmpr0, zsurf, tmpr, deptmpr410, deptmpr420, den_amp, deptmpr660, deptmpr670, press, ratio, dens
+  double precision :: adi_grad, den_ramp_dist, amp410, amp660, zcord, tmpr0, zsurf, tmpr, deptmpr410, deptmpr420, den_amp, deptmpr660, deptmpr670, press, ratio, dens, fma
   ! Adiabatic gradient
   adi_grad = 3.d-1
   ! Density transition thickness
@@ -77,7 +77,8 @@ function Eff_dens( j, i)
   if (any(iph == mantle_phases)) then
       Eff_dens = Eff_dens * den_amp
   endif
-  Eff_dens = Eff_dens - fmagma(j,i) * (Eff_dens - rho_magma)
+  fma = min(fmagma(j,i)+fmagma2(j,i),fmagma_max)
+  Eff_dens = Eff_dens - fma * (Eff_dens - rho_magma)
   return
 end function Eff_dens
 
@@ -140,7 +141,7 @@ implicit none
 integer, intent(in) :: j, i
 double precision :: Eff_visc
 integer :: k
-double precision :: adi_grad, r, zcord, tmpr0, zsurf, tmpr, s11, s22, s33, pres, deptmpr410, deptmpr660, srat, pow, pow1, vis
+double precision :: adi_grad, r, zcord, tmpr0, zsurf, tmpr, s11, s22, s33, pres, deptmpr410, deptmpr660, srat, pow, pow1, vis, fma
 ! Adiabatic gradient
 adi_grad = 3.d-1
 
@@ -204,7 +205,8 @@ do k = 1, nphase
 enddo
 
 Eff_visc = 1 / Eff_visc
-if (itype_melting == 1) Eff_visc = Eff_visc * exp(weaken_ratio_viscous * fmagma(j,i) / fmagma_max)
+fma = min(fmagma(j,i)+fmagma2(j,i),fmagma_max)
+if (itype_melting == 1) Eff_visc = Eff_visc * exp(weaken_ratio_viscous * fma / fmagma_max)
 
 ! Final cut-off
 Eff_visc = min(v_max, max(v_min, Eff_visc))

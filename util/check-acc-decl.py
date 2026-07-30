@@ -3,7 +3,7 @@
 # OpenACC Variable Declaration Consistency Checker
 # ==============================================================================
 # Purpose:
-#   Verifies that global variable declarations in 'params.f90' match exactly 
+#   Verifies that global variable declarations in 'params.f90' match exactly
 #   with OpenACC directives:
 #     1. '!$ACC declare create' in 'params.f90'
 #     2. '!$ACC update device' in 'setflac.f90'
@@ -19,7 +19,7 @@
 #     in the middle of multi-line declarations/directives as it halts parsing loops.
 #   - Line Continuation: All continuation lines in directives must end with '&'.
 #   - Final Parenthesis Constraint: Array variables (e.g., 'dumC(4)') should not
-#     be placed at the very end of a block/clause because the parser strips 
+#     be placed at the very end of a block/clause because the parser strips
 #     closing parentheses differently for F90 vs. ACC directives. Always place
 #     a scalar variable (e.g., 'xmodalcpx') at the end of the lists.
 #

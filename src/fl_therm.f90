@@ -14,10 +14,16 @@ double precision :: x1, y1, x2, y2, x3, y3, x4, y4
 double precision :: shpdx_1, shpdx_2, shpdx_3, shpdz_1, shpdz_2, shpdz_3
 integer :: i, j, iph, jm, ii, ihalf, ii_start, ii_end, ncol, jj, ihalfwidth_mzone
 double precision :: tan_mzone, cp_eff, cond_eff, dissip, quad_area, fr_lambda, delta_fmagma, deltaT, real_area13, area_n, rhs, area_ratio, z_moho, z_melt, x_melt, h, x, z, tmpr, Eff_cp, Eff_conduct
+double precision :: delta_fmagma2, deltaT1, deltaT2, deltaT3
+double precision :: x_sum, z_sum, w_sum, w_barrier, weight, x_center, z_center
+double precision :: x_wide_l, x_wide_r, w_l, w_r, h2, z_surf, tan_mzone2_l, tan_mzone2_r
+integer :: i_center, j_center, ihalfwidth_mzone2_l, ihalfwidth_mzone2_r
+logical :: found
 
 tan_mzone = tan(0.5d0 * angle_mzone * 3.14159265358979323846d0 / 180.d0)
 ! max. width of the magma zone @ moho (as if melting occurs at 200 km)
 ihalfwidth_mzone = ceiling(tan_mzone * 200e3 / dxmin)
+w_barrier = 1.0d-4
 
 ! real_area = 0.5* (1./area(n,t))
 ! Calculate Fluxes in every triangle
@@ -40,15 +46,8 @@ ihalfwidth_mzone = ceiling(tan_mzone * 200e3 / dxmin)
 temp0(:,:) = temp(:,:)
 !$ACC end kernels
 
-    !$OMP Parallel private(i,j,iph,cp_eff,cond_eff,dissip,quad_area, &
-    !$OMP                  fr_lambda, &
-    !$OMP                  delta_fmagma,deltaT,real_area13,area_n,rhs, &
-    !$OMP                  jm,area_ratio,z_moho,z_melt,x_melt,h,x,z,inv_area, &
-    !$OMP                  x1,y1,x2,y2,x3,y3,x4,y4, &
-    !$OMP                  shpdx_1,shpdx_2,shpdx_3,shpdz_1,shpdz_2,shpdz_3, &
-    !$OMP                  ii,ihalf,ii_start,ii_end,ncol)
-
 if (itype_melting == 1) then
+    !$OMP Parallel private(i,j,cp_eff,tmpr,fr_lambda,delta_fmagma,delta_fmagma2,deltaT,deltaT1,deltaT2,deltaT3)
     ! M: fmegma, magma fraction in the element
     ! dM/dt = P - M * fr_lambda
     ! Rearrange after forward Euler for dM/dt
@@ -78,10 +77,16 @@ if (itype_melting == 1) then
             tmpr = 0.25d0*(temp0(j,i)+temp0(j+1,i)+temp0(j,i+1)+temp0(j+1,i+1))
             fr_lambda = lambda_freeze * exp(-lambda_freeze_tdep * (tmpr-t_top))
             delta_fmagma = min(fmagma(j,i), fmagma(j,i) * dt * fr_lambda)
+            delta_fmagma2 = min(fmagma2(j,i), fmagma2(j,i) * dt * fr_lambda)
             fmagma(j,i) = fmagma(j,i) - delta_fmagma
+            fmagma2(j,i) = fmagma2(j,i) - delta_fmagma2
 
             ! latent heat released by freezing magma
-            deltaT = delta_fmagma * latent_heat_magma / cp_eff / 4
+            deltaT1 = delta_fmagma * latent_heat_magma / cp_eff / 4
+            deltaT2 = delta_fmagma2 * latent_heat_magma / cp_eff / 4
+            ! latent heat absort by melting mantle
+            deltaT3 = (fmelt2(j,i) * latent_heat_magma / cp_eff / 4 ) * prod_magma2 * dt
+            deltaT = deltaT1 + deltaT2 - deltaT3
             !$OMP atomic update
             !$ACC atomic update
             temp(j  ,i  ) = temp(j  ,i  ) + deltaT
@@ -94,10 +99,108 @@ if (itype_melting == 1) then
             !$OMP atomic update
             !$ACC atomic update
             temp(j+1,i+1) = temp(j+1,i+1) + deltaT
-        end do
+        enddo
     enddo
     !$OMP end do
+         
+    temp = min(temp, t_bot)
+    !$OMP end parallel     
 
+    x_sum = 0.d0
+    z_sum = 0.d0
+    w_sum = 0.d0
+    x_wide_l = 0.d0
+    x_wide_r = 0.d0
+    w_l = 0.d0
+    w_r = 0.d0
+
+    !$OMP Parallel private(i,j,weight,x)
+    !Calculate melting center and magma width
+    !center = sum( (x,z)*fmelt) / sum( fmelt )
+    !width = 2 * ( sum( melt*(x-x_center)**2 ) / sum( melt ) )**0.5
+    !_________________________surface
+    !          /|\
+    !         / | \
+    !        /  |  \
+    !       /   |   \
+    !      /    |    \       * melting center
+    !     /     |h    \
+    !    /      |      \
+    !   /       |       \
+    !  /        |        \
+    ! /         |         \
+    ! ----------*----------
+    !   wide_l     wide_r
+
+    !$OMP do reduction(+:x_sum,z_sum,w_sum)
+    do i = 1,nx-1
+        do j = 1,nz-1
+            weight = fmelt2(j,i)
+            if (weight > w_barrier) then
+                x_sum = x_sum + 0.25d0 * (cord(j,i,1)+cord(j,i+1,1)+cord(j+1,i,1)+cord(j+1,i+1,1)) * weight 
+                z_sum = z_sum + 0.25d0 * (cord(j,i,2)+cord(j,i+1,2)+cord(j+1,i,2)+cord(j+1,i+1,2)) * weight
+                w_sum = w_sum + weight
+            endif
+        enddo
+    enddo
+    !$OMP end do
+    !$OMP single
+    if (w_sum > 0.0d0) then 
+        x_center = x_sum / w_sum
+        z_center = z_sum / w_sum 
+        found = .false.
+        do i = 1,nx-1
+            do j = 1,nz-1
+                if (cord(j,i,1) <= x_center .and. cord(j,i+1,1) >= x_center) then
+                    if (cord(j,i,2) >= z_center .and. cord(j+1,i,2) <= z_center) then
+                        i_center = i
+                        j_center = j
+                        found = .true.
+                        exit
+                    endif
+                endif
+            enddo
+            if (found) exit
+        enddo
+    endif
+    !$OMP end single
+    !$OMP barrier
+    if (w_sum > 0.0d0) then
+        !$OMP do reduction(+:x_wide_l,x_wide_r,w_l,w_r)
+        do i = 1,nx-1
+            do j = 1,nz-1
+                weight = fmelt2(j,i)
+                x = 0.25d0 * (cord(j,i,1)+cord(j,i+1,1)+cord(j+1,i,1)+cord(j+1,i+1,1))  
+                if (weight > w_barrier .and. x < x_center) then
+                    x_wide_l = x_wide_l + (x_center - x)**2 * weight
+                    w_l = w_l + weight
+                elseif (weight > w_barrier .and. x > x_center) then
+                    x_wide_r = x_wide_r + (x - x_center)**2 * weight
+                    w_r = w_r + weight
+                endif
+            enddo
+        enddo
+        !$OMP end do
+        !$OMP single
+        x_wide_l = 1.8d0*sqrt(x_wide_l/w_l)
+        x_wide_r = 1.8d0*sqrt(x_wide_r/w_r)
+        if (x_wide_l < dxmin) x_wide_l = dxmin
+        if (x_wide_r < dxmin) x_wide_r = dxmin
+        if (x_wide_l /= x_wide_l) x_wide_l = dxmin
+        if (x_wide_r /= x_wide_r) x_wide_r = dxmin
+        !write(333,*)'kk',i_l,i_r,x_wide_l,x_wide_r,time/sec_year/1d6
+        z_surf = 0.5d0 * (cord(1,i_center,2) + cord(1,i_center+1,2))
+        h2 = z_surf - z_center
+        tan_mzone2_l = x_wide_l/h2
+        tan_mzone2_r = x_wide_r/h2
+        ihalfwidth_mzone2_l = ceiling(tan_mzone2_l * 150e3 / dxmin)
+        ihalfwidth_mzone2_r = ceiling(tan_mzone2_r * 150e3 / dxmin)
+        !write(333,*) 'oo',i_center,j_center,x_center,z_center
+        !$OMP end single
+    endif
+    !$OMP end parallel
+
+    !$OMP Parallel private(i,j,jm,quad_area,area_ratio,ii,jj,z_moho,z_melt,x_melt,h,x,z)
     !$OMP do
     !$ACC parallel loop collapse(2) async(1)
     do i = 1,nx-1
@@ -138,6 +241,7 @@ if (itype_melting == 1) then
                 ! area_ratio: the area of the mantle triangle / the area of the melting element
                 area_ratio = h * h * tan_mzone / quad_area
                 ! ii: the potential region of magma distribution zone at moho
+                !write(333,*) x_center, z_center, i_center, j_center
                 do ii = max(1,i-ihalfwidth_mzone), min(nx-1,i+ihalfwidth_mzone)
                     do jj = jmoho(ii)+1, j
                         x = 0.5d0 * (cord(jj,ii,1) + cord(jj,ii+1,1))
@@ -150,12 +254,44 @@ if (itype_melting == 1) then
                     enddo
                 enddo
             endif
+
+            ! MOR basalt melting
+            if (fmelt2(j,i) > 0) then
+                ! This element is under melting.
+                ! Within mantle, melts migrate by percolation, propagate upward slantly
+                area_ratio = 0.5d0 * (h2 * h2 * tan_mzone2_l / quad_area + h2 * h2 * tan_mzone2_r / quad_area)
+                ! ii: the potential region of magma distribution zone at moho
+                do ii = max(1,i_center-ihalfwidth_mzone2_l), min(nx-1,i_center+ihalfwidth_mzone2_r)
+                    do jj = 1, j_center
+                        !write(333,*)ii,jj
+                        x = 0.5d0 * (cord(jj,ii,1) + cord(jj,ii+1,1))
+                        z = 0.5d0 * (cord(jj,ii,2) + cord(jj,ii+1,2))
+                        !write(333,*)i_center,ihalfwidth_mzone2,j_center,x,x_center,tan_mzone2,z_surf,z
+                        if (x < x_center .and. abs(x_center - x) <= tan_mzone2_l * (z_surf - z)) then
+                            !$OMP atomic update
+                            !$ACC atomic update
+                            fmagma2(jj,ii)=fmagma2(jj,ii) + fmelt2(j,i) * area_ratio * prod_magma2 * dt
+                        endif
+                        if (x >= x_center .and. abs(x - x_center) <= tan_mzone2_r * (z_surf - z)) then
+                            !$OMP atomic update
+                            !$ACC atomic update
+                            fmagma2(jj,ii)=fmagma2(jj,ii) + fmelt2(j,i) * area_ratio * prod_magma2 * dt
+                        endif
+                    enddo
+                enddo
+            endif
             fmagma(j,i) = min(fmagma(j,i), fmagma_max)
+            fmagma2(j,i) = min(fmagma2(j,i), fmagma_max)
         enddo
     enddo
+    !$OMP end do
+    !$OMP end parallel
 endif
 
 !$ACC parallel loop collapse(2) async(1)
+!$OMP Parallel private(i,j,iph,cp_eff,cond_eff,dissip,inv_area,real_area13,area_n,rhs, &
+!$OMP                  x1,y1,x2,y2,x3,y3,x4,y4, &
+!$OMP                  shpdx_1,shpdx_2,shpdx_3,shpdz_1,shpdz_2,shpdz_3)
 !$OMP do
 do i = 1,nx-1
     do j = 1,nz-1

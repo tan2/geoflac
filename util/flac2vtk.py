@@ -120,9 +120,15 @@ def main(path, start=1, end=-1):
         a = fl.read_fmelt(i)
         vts_dataarray(fvts, a.swapaxes(0,1), 'Melt fraction')
 
+        a = fl.read_fmelt2(i)
+        vts_dataarray(fvts, a.swapaxes(0,1), 'Melt fraction2')
+        
         a = fl.read_fmagma(i)
         vts_dataarray(fvts, a.swapaxes(0,1), 'Magma fraction')
 
+        a = fl.read_fmagma2(i)
+        vts_dataarray(fvts, a.swapaxes(0,1), 'Magma fraction2')
+        
         a = fl.read_diss(i)
         vts_dataarray(fvts, a.swapaxes(0,1), 'Dissipation')
 

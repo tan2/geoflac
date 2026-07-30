@@ -215,11 +215,11 @@ if( io_aps.eq.1 ) then
 endif
 
 
-! Stress II in [kb]
+! Stress II in [MPa]
 if( io_sII.eq.1 ) then
     do i = 1, nx-1
         do j = 1, nz-1
-            De(j,i) = real(stressII(j,i) * 1.d-8)
+            De(j,i) = real(stressII(j,i) * 1.d-6)
         end do
     end do
     open (1,file='sII.0',access='direct',recl=nwords*kindr) 
@@ -228,12 +228,12 @@ if( io_sII.eq.1 ) then
 endif
 
 
-! Sxx in [kb]
+! Sxx in [MPa]
 if( io_sxx.eq.1 ) then
     do i = 1, nx-1
         do j = 1, nz-1
             sxx = 0.25d0 * (stress0(j,i,1,1)+stress0(j,i,1,2)+stress0(j,i,1,3)+stress0(j,i,1,4) )
-            De(j,i) = real(( sxx-stressI(j,i) ) * 1.d-8)
+            De(j,i) = real(( sxx-stressI(j,i) ) * 1.d-6)
         end do
     end do
     open (1,file='sxx.0',access='direct',recl=nwords*kindr) 
@@ -242,12 +242,12 @@ if( io_sxx.eq.1 ) then
 endif
 
 
-! Szz in [kb]
+! Szz in [MPa]
 if( io_szz.eq.1 ) then
     do i = 1, nx-1
         do j = 1, nz-1
             szz = 0.25d0 * (stress0(j,i,2,1)+stress0(j,i,2,2)+stress0(j,i,2,3)+stress0(j,i,2,4) )
-            De(j,i) = real(( szz-stressI(j,i) ) * 1.d-8)
+            De(j,i) = real(( szz-stressI(j,i) ) * 1.d-6)
         end do
     end do
     open (1,file='szz.0',access='direct',recl=nwords*kindr) 
@@ -256,12 +256,12 @@ if( io_szz.eq.1 ) then
 endif
 
 
-! Sxz and Syy in [kb]
+! Sxz and Syy in [MPa]
 if( io_sxz.eq.1 ) then
     do i = 1, nx-1
         do j = 1, nz-1
             sxz = 0.25d0 * (stress0(j,i,3,1)+stress0(j,i,3,2)+stress0(j,i,3,3)+stress0(j,i,3,4))
-            De(j,i) = real(sxz * 1.d-8)
+            De(j,i) = real(sxz * 1.d-6)
         end do
     end do
     open (1,file='sxz.0',access='direct',recl=nwords*kindr) 
@@ -271,7 +271,7 @@ if( io_sxz.eq.1 ) then
     do i = 1, nx-1
         do j = 1, nz-1
             syy = 0.25d0 * (stress0(j,i,4,1)+stress0(j,i,4,2)+stress0(j,i,4,3)+stress0(j,i,4,4))
-            De(j,i) = real(( syy-stressI(j,i) ) * 1.d-8)
+            De(j,i) = real(( syy-stressI(j,i) ) * 1.d-6)
         end do
     end do
     open (1,file='syy.0',access='direct',recl=nwords*kindr)
@@ -280,11 +280,11 @@ if( io_sxz.eq.1 ) then
 endif
 
 
-! Pressure in [kb]
+! Pressure in [MPa]
 if( io_pres.eq.1 ) then
     do i = 1, nx-1
         do j = 1, nz-1
-            De(j,i) = real(stressI(j,i) * 1.d-8)
+            De(j,i) = real(stressI(j,i) * 1.d-6)
         end do
     end do
     open (1,file='pres.0',access='direct',recl=nwords*kindr) 
@@ -342,8 +342,18 @@ if( io_src.eq.1 ) then
     write (1,rec=nrec) De
     close (1)
 
+    De(1:nz-1,1:nx-1) = real(fmelt2(1:nz-1,1:nx-1))
+    open (1,file='fmelt2.0',access='direct',recl=nwords*kindr)
+    write (1,rec=nrec) De
+    close (1)
+    
     De(1:nz-1,1:nx-1) = real(fmagma(1:nz-1,1:nx-1))
     open (1,file='fmagma.0',access='direct',recl=nwords*kindr)
+    write (1,rec=nrec) De
+    close (1)
+    
+    De(1:nz-1,1:nx-1) = real(fmagma2(1:nz-1,1:nx-1))
+    open (1,file='fmagma2.0',access='direct',recl=nwords*kindr)
     write (1,rec=nrec) De
     close (1)
 endif

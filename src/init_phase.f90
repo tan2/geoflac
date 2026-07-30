@@ -34,6 +34,7 @@ do i = 1,inhom
     if (igeom (i) .eq.3) then
         do j = ix1(i),ix2(i)
             k = nint(float(iy2(i)-iy1(i))/float(ix2(i)-ix1(i))*(j-ix1(i))) + iy1(i)
+            aps(k,j)=xinitaps(i)
             if( inphase(i) > 0) iphase(k,j) = inphase(i)
         end do
     endif
