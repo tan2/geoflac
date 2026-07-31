@@ -14,7 +14,7 @@ double precision :: x1, y1, x2, y2, x3, y3, x4, y4
 double precision :: shpdx_1, shpdx_2, shpdx_3, shpdz_1, shpdz_2, shpdz_3
 integer :: i, j, iph, jm, ii, ihalf, ii_start, ii_end, ncol, jj, ihalfwidth_mzone
 double precision :: tan_mzone, cp_eff, cond_eff, dissip, quad_area, fr_lambda, delta_fmagma, deltaT, real_area13, area_n, rhs, area_ratio, z_moho, z_melt, x_melt, h, x, z, tmpr, Eff_cp, Eff_conduct
-double precision :: delta_fmagma2, deltaT1, deltaT2, deltaT3
+double precision :: delta_fmagma2, deltaT1, deltaT2
 double precision :: x_sum, z_sum, w_sum, w_barrier, weight, x_center, z_center
 double precision :: x_wide_l, x_wide_r, w_l, w_r, h2, z_surf, tan_mzone2_l, tan_mzone2_r
 integer :: i_center, j_center, ihalfwidth_mzone2_l, ihalfwidth_mzone2_r
@@ -47,7 +47,7 @@ temp0(:,:) = temp(:,:)
 !$ACC end kernels
 
 if (itype_melting == 1) then
-    !$OMP Parallel private(i,j,cp_eff,tmpr,fr_lambda,delta_fmagma,delta_fmagma2,deltaT,deltaT1,deltaT2,deltaT3)
+    !$OMP Parallel private(i,j,cp_eff,tmpr,fr_lambda,delta_fmagma,delta_fmagma2,deltaT,deltaT1,deltaT2)
     ! M: fmegma, magma fraction in the element
     ! dM/dt = P - M * fr_lambda
     ! Rearrange after forward Euler for dM/dt
@@ -84,9 +84,7 @@ if (itype_melting == 1) then
             ! latent heat released by freezing magma
             deltaT1 = delta_fmagma * latent_heat_magma / cp_eff / 4
             deltaT2 = delta_fmagma2 * latent_heat_magma / cp_eff / 4
-            ! latent heat absort by melting mantle
-            deltaT3 = (fmelt2(j,i) * latent_heat_magma / cp_eff / 4 ) * prod_magma2 * dt
-            deltaT = deltaT1 + deltaT2 - deltaT3
+            deltaT = deltaT1 + deltaT2
             !$OMP atomic update
             !$ACC atomic update
             temp(j  ,i  ) = temp(j  ,i  ) + deltaT
