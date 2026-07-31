@@ -261,7 +261,7 @@ enddo
 !$OMP end parallel do
 
 if (itype_melting == 1) then
-    !$OMP parallel do private(tmpr, yy, depth, solidus, pmelt, total_phase_ratio)
+    !$OMP parallel do private(tmpr, yy, depth, solidus, pmelt, total_phase_ratio, dt_melt)
     !$ACC parallel loop collapse(2) async(1)
     do i = 1, nx-1
         do j = 1, nz-1
@@ -277,11 +277,30 @@ if (itype_melting == 1) then
 
                 solidus = -5.02d0*press**2+1.32d2*press+1.09d3
                 if (tmpr > solidus) then
-                    ! fraction of partial melting
-                    ! 10%  of melting at solidus + 35 C
-                    pmelt = 0.1d0 * ((tmpr - solidus) / 35.0d0)**3
-                    pmelt = min(pmelt, 0.1d0)
-                    fmelt2(j,i) = pmelt
+                    ! fraction of partial melting (enthalpy formulation)
+                    ! F = cp * (T - T_solidus) / L_fusion, capped at 10%
+                    if (latent_heat_magma > 0.d0) then
+                        pmelt = min(cp(kmant1) * (tmpr - solidus) / latent_heat_magma, 0.1d0)
+                    else
+                        pmelt = min((tmpr - solidus) / 35.d0 * 0.1d0, 0.1d0)
+                    endif
+                    fmelt2(j,i) = pmelt * total_phase_ratio
+
+                    ! Pull temperature back to solidus (latent heat buffering)
+                    ! Subtract overshoot (T_apparent - T_solidus) from element's 4 corner nodes
+                    dt_melt = tmpr - solidus
+                    !$ACC atomic update
+                    !$OMP atomic update
+                    temp(j,i) = temp(j,i) - dt_melt
+                    !$ACC atomic update
+                    !$OMP atomic update
+                    temp(j,i+1) = temp(j,i+1) - dt_melt
+                    !$ACC atomic update
+                    !$OMP atomic update
+                    temp(j+1,i) = temp(j+1,i) - dt_melt
+                    !$ACC atomic update
+                    !$OMP atomic update
+                    temp(j+1,i+1) = temp(j+1,i+1) - dt_melt
                 endif
             endif
          enddo
