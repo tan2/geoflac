@@ -175,8 +175,9 @@ if( topo_kappa .gt. 0.d0 ) then
             stmpn(i-1)*(cord(1,i  ,2)-cord(1,i-1,2))/(cord(1,i  ,1)-cord(1,i-1,1)) ) / &
             (cord(1,i+1,1)-cord(1,i-1,1))
         if (snder < 0) then
+            ! scale erosion rate by the relative erodibility of the surface phase
             iph = iphase(1,i)
-            snder = snder * fk(iph)
+            snder = snder * erodibility(iph)
         endif
         dtopo(i) = dt * snder
     end do

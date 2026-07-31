@@ -171,7 +171,7 @@ Phase changes are activated and will take place among certain of the defined pha
 | Parameters  | Types |  Description  |
 |:------------|:-----:|:--------------|
 |**nphase**| int | Number of different types of phases (materials), max. 20.|
-|**_irheol(i),visc(i), den(i), alfa(i),beta(i), pln(i),acoef(i),eactiv(i), vactiv(i), rl(i),rm(i), plstrain1(i),plstrain2(i), fric1(i),fric2(i), cohesion1(i),cohesion2(i), dilat1(i),dilat2(i), conduct(i),cp(i), ts(i),tl(i),tk(i),fk(i)_**| int, 24 dbl | See below.|
+|**_irheol(i),visc(i), den(i), alfa(i),beta(i), pln(i),acoef(i),eactiv(i), vactiv(i), rl(i),rm(i), plstrain1(i),plstrain2(i), fric1(i),fric2(i), cohesion1(i),cohesion2(i), dilat1(i),dilat2(i), conduct(i),cp(i), ts(i),tl(i),tk(i),erodibility(i)_**| int, 24 dbl | See below.|
 
 
 +  **irheol**: Rheology for this phase (see below).
@@ -209,7 +209,7 @@ Phase changes are activated and will take place among certain of the defined pha
 +  **ts**:  solidus temperature in Celsius, only used for the hydrated mantle phase.
 +  **tl**:  liquidus temperature in Celsius.
 +  **tk**:  latent heat of fusion temperature, not used.
-+  **fk**:  coeff of latent heat of fusion, not used.
++  **erodibility**: relative erodibility of this phase (dimensionless). Scales the surface erosion rate computed in `diff_topo` (`src/fl_move.f90`) wherever this phase sits at the surface; has no effect on deposition. A value of 1 leaves the erosion rate unscaled.
 
 
 ## INITIAL PHASE DISTRIBUTION

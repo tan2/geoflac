@@ -77,7 +77,7 @@ real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
      cohesion1(maxph),cohesion2(maxph), &
      dilat1(maxph),dilat2(maxph), &
      conduct(maxph),cp(maxph), &
-     ts(maxph),tl(maxph),tk(maxph),fk(maxph), &
+     ts(maxph),tl(maxph),tk(maxph),erodibility(maxph), &
      ten_off,tau_heal,xinitaps(maxinh), &
      extra_pres,t_top,t_bot,hs,hr,bot_bc, &
      hc(maxzone_age,maxzone_layer), &
@@ -106,7 +106,7 @@ real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
 !$ACC     cohesion1(maxph),cohesion2(maxph), &
 !$ACC     dilat1(maxph),dilat2(maxph), &
 !$ACC     conduct(maxph),cp(maxph), &
-!$ACC     ts(maxph),tl(maxph),tk(maxph),fk(maxph), &
+!$ACC     ts(maxph),tl(maxph),tk(maxph),erodibility(maxph), &
 !$ACC     ten_off,tau_heal,xinitaps(maxinh), &
 !$ACC     extra_pres,t_top,t_bot,hs,hr,bot_bc, &
 !$ACC     hc(maxzone_age,maxzone_layer), &
