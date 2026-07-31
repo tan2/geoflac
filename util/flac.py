@@ -663,7 +663,7 @@ class FlacFromVTK(object):
 
 
     def read_sII(self, frame):
-        return self.read_cell_data(frame, "sII")
+        return self.read_cell_data(frame, "Stress")
 
 
     def read_sxx(self, frame):

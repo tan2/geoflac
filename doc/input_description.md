@@ -339,11 +339,11 @@ Phase changes are activated and will take place among certain of the defined pha
 * **io-srII**  Deviatoric strain rate - second invariant, log10().  srII.0
 * **io-eII**  Dev. strain - second invariant, first invariant.        eII.0, eI.0
 * **io-aps** Total accumulated plastic strain    aps.0
-* **io-sII**  Dev. stress - sqrt(second invariant), in kbars  sII.0
-* **io-sxx** Dev. stress – xx component, in kbars   sxx.0
-* **io-szz**  Dev. stress – zz component, in kbars   szz.0
-* **io-sxz** Stress - xz (shear) component,  in kbars   sxz.0
-* **io-pres** Pressure, in kbars       pres.0
+* **io-sII**  Dev. stress - sqrt(second invariant), in Pa  sII.0
+* **io-sxx** Dev. stress – xx component, in Pa   sxx.0
+* **io-szz**  Dev. stress – zz component, in Pa   szz.0
+* **io-sxz** Stress - xz (shear) component,  in Pa   sxz.0, syy.0
+* **io-pres** Pressure, in Pa       pres.0
 * **io-temp** Temperatur, in Celsius      temp.0
 * **io-phase** Phase # (1-n as defined in input file).   phase.0
 * **io-visc** Viscosity, log10(Pa-s)      visc.0
