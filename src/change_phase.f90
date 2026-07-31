@@ -10,7 +10,7 @@ use phases
 implicit none
 
 integer :: jj, j, i, iph, &
-           jbelow, k, kinc, kk, n, iph1, iph2, jocmoho, jcheck
+           jbelow, k, kinc, kk, n, iph1, iph2, jocmoho
 double precision :: yy, dep2, dep3, depth, press, quad_area, &
                     tmpr, trtmpr, trpres, trpres2, &
                     solidus, pmelt, total_phase_ratio, dt_melt
@@ -27,8 +27,8 @@ real*8, parameter :: max_melting_depth = 200.d3
 real*8, parameter :: serpentine_temp = 550.d0
 
 ! max. depth (m) to check MOR basalt
-real*8, parameter :: check_depth = 30.d3
-real*8, parameter :: new_crust_thickness = 7.d3
+real*8, parameter :: check_oc_depth = 30.d3
+real*8, parameter :: new_oc_thickness = 7.d3
 real*8, parameter :: mor_temp = 1215.d0
 real*8, parameter :: max_mant_melting_depth = 150.d3
 
@@ -40,17 +40,14 @@ itmp = 0  ! indicates which element has phase-changed markers
 !$ACC serial async(1)
 do j = 1, nz-1
     dep2 = 0.25d0*(cord(j,1,2)+cord(j+1,1,2)+cord(j,2,2)+cord(j+1,2,2))
-    if (cord(1,1,2) - dep2 >= check_depth) then 
-      jcheck = j
-      exit
-    end if
+    if (cord(1,1,2) - dep2 >= check_oc_depth) exit
 end do
 jj = min(max(2, j), nz-1)
 !$ACC end serial
 !$ACC serial async(1)
 do j = 1, nz-1
     dep2 = 0.25d0*(cord(j,1,2)+cord(j+1,1,2)+cord(j,2,2)+cord(j+1,2,2))
-    if (cord(1,1,2) - dep2 >= new_crust_thickness) exit
+    if (cord(1,1,2) - dep2 >= new_oc_thickness) exit
 end do
 jocmoho = min(max(2, j), nz-1)
 !$ACC end serial
