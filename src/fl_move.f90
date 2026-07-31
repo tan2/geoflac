@@ -266,7 +266,7 @@ do i = 2, nx-2
     do j = 1, nz-1
         iph = iphase(j,i)
         if (iph /= kocean1 .and. quotient >= 1) then
-            call newphase2marker(j,j+j_oc-1,i,i,kocean1)
+            call newphase2marker(j,min(nz-1,j+j_oc-1),i,i,kocean1)
             exit
         endif
     enddo
