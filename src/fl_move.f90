@@ -242,15 +242,27 @@ if (arc_extrusion_rate > 0) then
 endif
 
 ! MOR test
+! New oceanic crust construction from the second (hydrous-mantle-melt) magma
+! pool fmagma2, analogous to the arc-extrusion block above but for a
+! mid-ocean-ridge-style setting.
 !$ACC parallel loop async(1)
 do i = 2, nx-2
+    ! volume of magma-2 currently stored in this column (area-weighted)
     total_melt = 0
     !$ACC loop reduction(+:total_melt)
     do j = 1, nz-1
         quad_area = 0.5d0/area(j,i,1) + 0.5d0/area(j,i,2)
         total_melt = total_melt + quad_area * fmagma2(j,i)
     enddo
+    ! height of new crust this column's magma-2 would form if extruded
+    ! onto the surface this timestep
     extrusion_height = dt * total_melt * prod_magma2 / (cord(1,i+1,1) - cord(1,i,1))
+
+    ! Walk down from the surface, accumulating element thicknesses into
+    ! ele_height, until it exceeds half of extrusion_height. j_oc is the
+    ! row where that happens: roughly how many rows of new crust the
+    ! extruded magma volume is equivalent to. quotient and remainder are
+    ! left as computed at that row and reused below.
     ele_height = 0
     do j = 1, nz-1
         ele_height = ele_height + abs(0.5d0 * (cord(j+1,i+1,2)+cord(j+1,i,2)) - 0.5d0 * (cord(j,i+1,2)+cord(j,i,2)))
@@ -263,6 +275,10 @@ do i = 2, nx-2
             cycle
         endif
     enddo
+
+    ! If there's enough accumulated magma-2 (quotient >= 1, i.e.
+    ! ele_height <= extrusion_height), relabel the top j_oc rows below the
+    ! first non-oceanic-crust element as freshly-formed oceanic crust.
     do j = 1, nz-1
         iph = iphase(j,i)
         if (iph /= kocean1 .and. quotient >= 1) then
@@ -270,6 +286,9 @@ do i = 2, nx-2
             exit
         endif
     enddo
+
+    ! Whatever extrusion height wasn't converted into a full row (remainder)
+    ! is added directly to the two surface nodes bounding this column.
     extr_acc(i) = extr_acc(i) + remainder/2
     !$ACC atomic update
     cord(1,i,2) = cord(1,i,2) + remainder/2
