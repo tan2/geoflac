@@ -18,7 +18,7 @@ double precision :: delta_fmagma2, deltaT1, deltaT2
 double precision :: x_sum, z_sum, w_sum, w_barrier, weight, x_center, z_center
 double precision :: x_wide_l, x_wide_r, w_l, w_r, h2, z_surf, tan_mzone2_l, tan_mzone2_r
 integer :: i_center, j_center, ihalfwidth_mzone2_l, ihalfwidth_mzone2_r
-logical :: found
+logical :: found, mor_zone_valid
 
 tan_mzone = tan(0.5d0 * angle_mzone * 3.14159265358979323846d0 / 180.d0)
 ! max. width of the magma zone @ moho (as if melting occurs at 200 km)
@@ -111,6 +111,11 @@ if (itype_melting == 1) then
     x_wide_r = 0.d0
     w_l = 0.d0
     w_r = 0.d0
+    ! Whether i_center, j_center, h2, tan_mzone2_l/r, ihalfwidth_mzone2_l/r
+    ! were actually computed this call. Reset every call (these are plain
+    ! locals, not SAVEd) so a stale value from a previous timestep can
+    ! never leak into the MOR-basalt migration block below.
+    mor_zone_valid = .false.
 
     !$OMP Parallel private(i,j,weight,x)
     !Calculate melting center and magma width
@@ -143,9 +148,9 @@ if (itype_melting == 1) then
     enddo
     !$OMP end do
     !$OMP single
-    if (w_sum > 0.0d0) then 
+    if (w_sum > 0.0d0) then
         x_center = x_sum / w_sum
-        z_center = z_sum / w_sum 
+        z_center = z_sum / w_sum
         found = .false.
         do i = 1,nx-1
             do j = 1,nz-1
@@ -160,10 +165,16 @@ if (itype_melting == 1) then
             enddo
             if (found) exit
         enddo
+        ! Only now are i_center/j_center guaranteed to be set. Guard the
+        ! rest of the melting-zone calculation (and the migration block
+        ! that uses it, below) on this rather than on w_sum > 0.0d0 alone:
+        ! w_sum > 0 doesn't guarantee the point-in-cell search above
+        ! actually found a containing element.
+        mor_zone_valid = found
     endif
     !$OMP end single
     !$OMP barrier
-    if (w_sum > 0.0d0) then
+    if (mor_zone_valid) then
         !$OMP do reduction(+:x_wide_l,x_wide_r,w_l,w_r)
         do i = 1,nx-1
             do j = 1,nz-1
@@ -253,8 +264,11 @@ if (itype_melting == 1) then
                 enddo
             endif
 
-            ! MOR basalt melting
-            if (fmelt2(j,i) > 0) then
+            ! MOR basalt melting. Also requires mor_zone_valid: i_center,
+            ! j_center, h2, tan_mzone2_l/r, ihalfwidth_mzone2_l/r are only
+            ! meaningful when the melting-center search above actually
+            ! located a containing element this timestep.
+            if (fmelt2(j,i) > 0 .and. mor_zone_valid) then
                 ! This element is under melting.
                 ! Within mantle, melts migrate by percolation, propagate upward slantly
                 area_ratio = 0.5d0 * (h2 * h2 * tan_mzone2_l / quad_area + h2 * h2 * tan_mzone2_r / quad_area)
