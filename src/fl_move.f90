@@ -144,7 +144,7 @@ use phases
 implicit none
 integer :: i, j, iph, j_oc
 double precision :: topomean, snder, quad_area, totalmelt, arc_extrusion_rate
-double precision :: total_melt, extrusion_height, ele_height, quotient, remainder
+double precision :: total_melt, extrusion_height, ele_height, quotient, remainder, delta_fmagma2
 !EROSION PROCESSES
 if( topo_kappa .gt. 0.d0 ) then
 
@@ -247,12 +247,17 @@ endif
 ! mid-ocean-ridge-style setting.
 !$ACC parallel loop async(1)
 do i = 2, nx-2
-    ! volume of magma-2 currently stored in this column (area-weighted)
+    ! volume of magma-2 currently stored in this column (area-weighted),
+    ! depleting the fraction extruded this timestep from the source
+    ! reservoir (mirrors how fl_therm.f90 subtracts delta_fmagma2 when
+    ! fmagma2 freezes instead of erupting)
     total_melt = 0
     !$ACC loop reduction(+:total_melt)
     do j = 1, nz-1
         quad_area = 0.5d0/area(j,i,1) + 0.5d0/area(j,i,2)
         total_melt = total_melt + quad_area * fmagma2(j,i)
+        delta_fmagma2 = min(fmagma2(j,i), fmagma2(j,i) * prod_magma2 * dt)
+        fmagma2(j,i) = fmagma2(j,i) - delta_fmagma2
     enddo
     ! height of new crust this column's magma-2 would form if extruded
     ! onto the surface this timestep
@@ -262,8 +267,10 @@ do i = 2, nx-2
     ! ele_height, until it exceeds half of extrusion_height. j_oc is the
     ! row where that happens: roughly how many rows of new crust the
     ! extruded magma volume is equivalent to. quotient and remainder are
-    ! left as computed at that row and reused below.
+    ! left as computed at that row and reused below. j_oc defaults to 1
+    ! in case the loop never satisfies the exit condition.
     ele_height = 0
+    j_oc = 1
     do j = 1, nz-1
         ele_height = ele_height + abs(0.5d0 * (cord(j+1,i+1,2)+cord(j+1,i,2)) - 0.5d0 * (cord(j,i+1,2)+cord(j,i,2)))
         quotient = extrusion_height / ele_height
@@ -271,8 +278,6 @@ do i = 2, nx-2
         if (quotient >= 0.d0 .and. quotient < 2.d0) then
             j_oc = j
             exit
-        else
-            cycle
         endif
     enddo
 
