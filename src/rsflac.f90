@@ -136,16 +136,14 @@ read (1,rec=nrec) source
 close (1)
 
 ! Markers
+! Euler (x,y) coordinates are not part of the restart file; see the
+! matching comment in saveflac.f90.
 nwords = nmarkers
 nrec = 1
 open (1,file='marker1.rs',access='direct',recl=nwords*kindr)
 read (1,rec=nrec) mark_a1(1:nmarkers)
 nrec = nrec + 1
 read (1,rec=nrec) mark_a2(1:nmarkers)
-nrec = nrec + 1
-read (1,rec=nrec) mark_x(1:nmarkers)
-nrec = nrec + 1
-read (1,rec=nrec) mark_y(1:nmarkers)
 nrec = nrec + 1
 read (1,rec=nrec) mark_age(1:nmarkers)
 nrec = nrec + 1

@@ -5,8 +5,11 @@ MODULE marker_data
   integer, parameter :: max_markers_per_elem=32
 
   SAVE
-  double precision, allocatable :: mark_a1(:), mark_a2(:) ! baricentric coordinates
-  double precision, allocatable :: mark_x(:), mark_y(:)   ! Euler coordinates
+  ! baricentric coordinates. Euler (absolute x,y) coordinates are NOT stored
+  ! persistently: they're fully recoverable from (mark_a1, mark_a2,
+  ! mark_ntriag) plus the current cord array, via bar2euler(). Computed
+  ! transiently wherever needed (see bar2euler.f90).
+  double precision, allocatable :: mark_a1(:), mark_a2(:)
   double precision, allocatable :: mark_age(:)            ! creation time
   integer(1), allocatable :: mark_dead(:)     ! 0 or 1, fits in 1 byte
   integer, allocatable :: mark_ntriag(:)      ! global triangle index, up to 2*(nx-1)*(nz-1); needs full width
@@ -25,7 +28,6 @@ MODULE marker_data
     !$ACC update device(max_markers) async(1)
 
     allocate(mark_a1(max_markers), mark_a2(max_markers), &
-             mark_x(max_markers), mark_y(max_markers), &
              mark_age(max_markers), &
              mark_dead(max_markers), &
              mark_ntriag(max_markers), &
@@ -92,8 +94,6 @@ MODULE marker_data
     ! recording the id of markers belonging to the element
     mark_id_elem(nm,j,i) = kk
 
-    mark_x(kk) = x
-    mark_y(kk) = y
     mark_dead(kk) = 1
     mark_a1(kk) = bar1
     mark_a2(kk) = bar2

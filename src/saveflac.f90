@@ -120,19 +120,15 @@ write (1,rec=nrec) source
 close (1)
 
 ! Markers
-call bar2euler
-!$ACC wait
-
+! Euler (x,y) coordinates are not saved: they're not part of the
+! persistent marker state and are regenerated via bar2euler() from
+! mark_a1/mark_a2/mark_ntriag + cord whenever needed after a restart.
 nwords = nmarkers
 nrec = 1
 open (1,file='marker1.rs',access='direct',recl=nwords*kindr)
 write (1,rec=nrec) mark_a1(1:nmarkers)
 nrec = nrec + 1
 write (1,rec=nrec) mark_a2(1:nmarkers)
-nrec = nrec + 1
-write (1,rec=nrec) mark_x(1:nmarkers)
-nrec = nrec + 1
-write (1,rec=nrec) mark_y(1:nmarkers)
 nrec = nrec + 1
 write (1,rec=nrec) mark_age(1:nmarkers)
 nrec = nrec + 1
