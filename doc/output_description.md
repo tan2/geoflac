@@ -129,4 +129,4 @@ During a simulation run, the solver periodically saves its complete state to bin
 *   **`phase.rs`**: Element phase IDs [direct access, $(nz-1) \cdot (nx-1)$ double precision words].
 *   **`strain.rs` / `stress.rs`**: Element strain and stress tensors [direct access].
 *   **`aps.rs` / `fmagma.rs` / `source.rs`**: Element accumulated plastic strain, magma fraction, and heat sources [direct access].
-*   **`marker1.rs` / `marker2.rs`**: Nodal marker coordinates, ages (marker1) and integer properties, phases, IDs (marker2) [direct access].
+*   **`marker1.rs` / `marker2.rs`**: Marker coordinates, ages, barycentric coordinates (marker1) and active-status flags, triangle indices, phases (marker2) [direct access].

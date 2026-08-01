@@ -550,6 +550,7 @@ This document describes the primary data arrays used in the `geoflac` Fortran en
 ## `mark_phase`
 
 *   **Meaning:** Material phase ID assigned to each marker.
+*   **Type:** `integer(1)` (signed 1 byte). Phase IDs must stay within 1..127, so `maxph` (`src/params.f90`) cannot exceed 127.
 *   **Shape:** `(max_markers)`
 *   **Dimension 1:** Total marker index.
 *   **Update Locations:**
@@ -571,6 +572,7 @@ This document describes the primary data arrays used in the `geoflac` Fortran en
 ## `mark_dead`
 
 *   **Meaning:** Status flag for marker activity.
+*   **Type:** `integer(1)` (signed 1 byte).
 *   **Value:** `1` for active, `0` for dead/inactive.
 *   **Shape:** `(max_markers)`
 *   **Update Locations:**
@@ -581,19 +583,11 @@ This document describes the primary data arrays used in the `geoflac` Fortran en
 
 ## `mark_ntriag`
 
-*   **Meaning:** Index of the sub-triangle within an element where the marker is currently located.
+*   **Meaning:** Global flattened triangle index identifying which sub-triangle of which element currently contains the marker: `2*(nx-1)*(nz-1)` possible values, decoded as `k = mod(n-1,2)+1` (sub-triangle 1 or 2), `j = mod((n-k)/2, nz-1)+1` (element row), `i = (n-k)/2/(nz-1)+1` (element column). See e.g. `src/change_phase.f90` or `src/lpeuler2bar.f90` for the decode.
+*   **Type:** Default `integer` (4 bytes). Kept full width deliberately -- its range scales with mesh size and can exceed 127 (or even 32767) on realistic meshes, so it cannot be narrowed the way `mark_dead`/`mark_phase` were.
 *   **Shape:** `(max_markers)`
 *   **Update Locations:**
     *   **Main Update:** `src/marker2elem.f90` (re-calculated during the search process to find which element/triangle contains the marker).
-
----
-
-## `mark_ID`
-
-*   **Meaning:** Unique identification number for each marker.
-*   **Shape:** `(max_markers)`
-*   **Update Locations:**
-    *   **Assignment:** `src/marker_data.f90` (typically assigned once during creation in `add_marker`).
 
 ---
 

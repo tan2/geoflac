@@ -11,6 +11,7 @@ integer, parameter :: kindr=8, kindi=4
 integer :: nrec, nwords, i, j, k, iph, n, u, ios
 real*8 rtime, rdt, time_my
 character*200 msg
+integer(kindi), allocatable :: ibuf(:)   ! widening buffer for byte-sized marker fields
 
 open(newunit=u, file='_contents.rs', status='old' )
 read(u, * ) nrec, nloop, time_my, nmarkers, i
@@ -150,17 +151,23 @@ read (1,rec=nrec) mark_age(1:nmarkers)
 nrec = nrec + 1
 close (1)
 
+! marker2.rs stores each field as a full-width (kindi=4) record regardless
+! of the in-memory type, so mark_dead/mark_phase (1 byte each) are read
+! into the 4-byte ibuf and narrowed explicitly; mark_ntriag is already
+! full width and can be read directly.
+allocate(ibuf(nmarkers))
 nrec = 1
 open (1,file='marker2.rs',access='direct',recl=nwords*kindi)
-read (1,rec=nrec) mark_dead(1:nmarkers)
+read (1,rec=nrec) ibuf
+mark_dead(1:nmarkers) = int(ibuf, 1)
 nrec = nrec + 1
 read (1,rec=nrec) mark_ntriag(1:nmarkers)
 nrec = nrec + 1
-read (1,rec=nrec) mark_phase(1:nmarkers)
-nrec = nrec + 1
-read (1,rec=nrec) mark_ID(1:nmarkers)
+read (1,rec=nrec) ibuf
+mark_phase(1:nmarkers) = int(ibuf, 1)
 nrec = nrec + 1
 close (1)
+deallocate(ibuf)
 
 ! recount marker phase
 mark_id_elem(:,:,:) = 0
@@ -170,7 +177,7 @@ do n = 1, nmarkers
     if(mark_dead(n) .eq. 0) cycle
 
      if(mark_ntriag(n).lt.1 .or. mark_ntriag(n).gt.2*(nx-1)*(nz-1)) then
-         print *, 'Wrong marker ntriag', mark_ID(n), mark_ntriag(n)
+         print *, 'Wrong marker ntriag', n, mark_ntriag(n)
          stop 999
      endif
 

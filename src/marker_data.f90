@@ -8,10 +8,9 @@ MODULE marker_data
   double precision, allocatable :: mark_a1(:), mark_a2(:) ! baricentric coordinates
   double precision, allocatable :: mark_x(:), mark_y(:)   ! Euler coordinates
   double precision, allocatable :: mark_age(:)            ! creation time
-  integer, allocatable :: mark_dead(:)
-  integer, allocatable :: mark_ntriag(:)      ! number of FE-triangle
-  integer, allocatable :: mark_phase(:)
-  integer, allocatable :: mark_ID(:)          ! unique ID-number
+  integer(1), allocatable :: mark_dead(:)     ! 0 or 1, fits in 1 byte
+  integer, allocatable :: mark_ntriag(:)      ! global triangle index, up to 2*(nx-1)*(nz-1); needs full width
+  integer(1), allocatable :: mark_phase(:)    ! phase id, fits in 1 byte (< 128 phases)
 
   integer, allocatable :: mark_id_elem(:,:,:), nmark_elem(:,:)
   !$ACC declare create(max_markers)
@@ -30,8 +29,7 @@ MODULE marker_data
              mark_age(max_markers), &
              mark_dead(max_markers), &
              mark_ntriag(max_markers), &
-             mark_phase(max_markers), &
-             mark_ID(max_markers))
+             mark_phase(max_markers))
 
     allocate(mark_id_elem(max_markers_per_elem, nz-1, nx-1))
     allocate(nmark_elem(nz-1, nx-1))
@@ -97,12 +95,11 @@ MODULE marker_data
     mark_x(kk) = x
     mark_y(kk) = y
     mark_dead(kk) = 1
-    mark_ID(kk) = kk
     mark_a1(kk) = bar1
     mark_a2(kk) = bar2
     mark_age(kk) = age
     mark_ntriag(kk) = ntr
-    mark_phase(kk) = iph
+    mark_phase(kk) = int(iph, 1)
 
   end subroutine add_marker
 
@@ -124,7 +121,8 @@ MODULE marker_data
 
         do n = 1 , nmark_elem(j,i)
           kk = mark_id_elem(n,j,i)
-          mark_phase(kk) = iph
+          ! explicit narrowing: mark_phase is 1 byte, iph is default integer
+          mark_phase(kk) = int(iph, 1)
         enddo
 
         iphase(j,i) = iph

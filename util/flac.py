@@ -379,6 +379,10 @@ class Flac(object):
 
         suffix = '.%06d.0' % frame
         f2 = self._open('marker2' + suffix)
+        # marker2.NNNNNN.0 is always written as int32 per field by
+        # src/outmarker.f90, regardless of the in-memory Fortran type
+        # (marker_data.f90 stores mark_dead/mark_phase as 1-byte integers,
+        # but widens them before writing), so dtype=np.int32 here is correct.
         dead = self._read_data(f2, count=n, dtype=np.int32).astype(np.uint8)
         tmp = self._read_data(f2, count=n, dtype=np.int32).astype(np.uint8)
         phase = self._remove_dead_markers(tmp, dead)
@@ -402,6 +406,9 @@ class Flac(object):
         tmp = self._read_data(f1, count=n)
         a2 = self._remove_dead_markers(tmp, dead)
 
+        # marker IDs are never stored on disk (Fortran's mark_ID was always
+        # equal to a marker's own array index, so it was removed as
+        # redundant); synthesize the same values here from position.
         tmp = np.arange(1, n+1)
         ID = self._remove_dead_markers(tmp, dead)
         f1.close()

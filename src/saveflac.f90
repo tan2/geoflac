@@ -11,6 +11,7 @@ implicit none
 integer, parameter :: kindr=8, kindi=4
 integer nrec, nwords
 real*8 rtime, rdt
+integer(kindi), allocatable :: ibuf(:)   ! widening buffer for byte-sized marker fields
 
 ! define record number and write it to contents
 
@@ -137,16 +138,21 @@ write (1,rec=nrec) mark_age(1:nmarkers)
 nrec = nrec + 1
 close (1)
 
+! marker2.rs stores each field as a full-width (kindi=4) record regardless
+! of the in-memory type, so mark_dead/mark_phase (1 byte each) are widened
+! into ibuf before writing; mark_ntriag is already full width.
+allocate(ibuf(nmarkers))
 nrec = 1
 open (1,file='marker2.rs',access='direct',recl=nwords*kindi)
-write (1,rec=nrec) mark_dead(1:nmarkers)
+ibuf = mark_dead(1:nmarkers)
+write (1,rec=nrec) ibuf
 nrec = nrec + 1
 write (1,rec=nrec) mark_ntriag(1:nmarkers)
 nrec = nrec + 1
-write (1,rec=nrec) mark_phase(1:nmarkers)
-nrec = nrec + 1
-write (1,rec=nrec) mark_ID(1:nmarkers)
+ibuf = mark_phase(1:nmarkers)
+write (1,rec=nrec) ibuf
 nrec = nrec + 1
 close (1)
+deallocate(ibuf)
 return
 end
