@@ -19,7 +19,12 @@ if(narg /= 1) then
 endif
 call getarg(1, inputfile)
 
-open( newunit=u_out, file='output.asc' )
+! unit 333 is also written to directly (without an open) from
+! rem_test.f90, init_marker.f90, and fl_move.f90; connecting it here
+! to output.asc means those writes land there too, instead of the
+! default fort.333 fallback.
+u_out = 333
+open( unit=u_out, file='output.asc' )
 
 time0 = secnds(0.0)
 
