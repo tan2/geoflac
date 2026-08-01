@@ -132,8 +132,10 @@ def main(path, start=1, end=-1):
         a = fl.read_diss(i)
         vts_dataarray(fvts, a.swapaxes(0,1), 'Dissipation')
 
-        # logrithm of effective viscosity
-        eff_visc = np.log10(a + 1e-45) + 8 - srat
+        # logrithm of effective viscosity (was reading stale `a` left over
+        # from read_diss above instead of sii; the +8 was a kbar->Pa
+        # conversion that no longer applies now that sII is written in Pa)
+        eff_visc = np.log10(sii + 1e-45) - srat
         vts_dataarray(fvts, eff_visc.swapaxes(0,1), 'Eff. Visc')
 
         a = fl.read_visc(i)
@@ -142,8 +144,9 @@ def main(path, start=1, end=-1):
         a = fl.read_phase(i)
         vts_dataarray(fvts, a.swapaxes(0,1), 'Phase')
 
-        # Work done by stress
-        a = sii * 1e8 * eii
+        # Work done by stress (the *1e8 was a stale kbar->Pa conversion;
+        # sii is already in Pa)
+        a = sii * eii
         vts_dataarray(fvts, a.swapaxes(0,1), 'Work')
 
         fvts.write('  </CellData>\n')

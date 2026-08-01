@@ -678,7 +678,7 @@ def write_new_inp(data, comments_map, final_comments, filename):
                                      (False, ";=============================================================")],
                    default_trailing="       -iprestress: allow topo build up by isostasy")
         write_line('extra_pres', f"{data['extra_pres']}",
-                   default_trailing="    -extra pressure (GPa)")
+                   default_trailing="    -extra pressure (Pa)")
         write_line('itherm', f"{data['itherm']}",
                    default_trailing="        -itherm (1-mech+therm, 2-no mech)")
         write_line('istress_therm', f"{data['istress_therm']}",

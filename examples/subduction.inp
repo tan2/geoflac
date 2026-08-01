@@ -73,7 +73,7 @@
 ;            C o n d i t i o n s : T h e r m a l
 ;=============================================================
 0       ; iprestress: allow topo build up by isostasy for 600 kyrs
-0.0     ; extra pressure (GPa)
+0.0     ; extra pressure (Pa)
 1        ; itherm  (1-mech+therm, 2-no mech)
 0        ; istress_therm: Add THERMAL STRESSES (0,1,2-just 1 step)
 1        ; ishearh: Add SHEAR heating

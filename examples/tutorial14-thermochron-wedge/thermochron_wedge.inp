@@ -67,7 +67,7 @@
 ;            C o n d i t i o n s : T h e r m a l
 ;=============================================================
 0
-0.0  ; extra pressure (GPa)
+0.0  ; extra pressure (Pa)
 1
 0
 0

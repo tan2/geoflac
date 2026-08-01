@@ -102,7 +102,7 @@
 | Parameters  | Types |  Description  |
 |:------------|:-----:|:--------------|
 |**i-prestress**| int | Let model equilibrate given initial state, by running model for 600 kyrs before any BC changes are allowed (0-no, 1-yes).  Temperature and stress will redistribute; topography, and mountain roots will isostatically adjust.|
-|**extra pressure**| dbl | extra pressure (GPa) to support Archimed force.|
+|**extra pressure**| dbl | extra pressure (Pa) to support Archimed force.|
 |**itherm**| int | 1-mechanical+thermal calculation, 2-no mechenical. NOTE: usually itherm=1.|
 |**istress-therm**| int | Add thermal stress (0-no, 1-yes). |
 |**ishearh**| int | Add shear heating.|
