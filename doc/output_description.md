@@ -56,11 +56,11 @@ When a simulation is run, the solver writes outputs to binary files at regular t
     *   **Meaning**: Heat source term (includes radiogenic decay and shear heating).
     *   **Units**: $\text{W/kg}$ (or $\text{W/m}^3$).
 *   **`diss.0`**
-    *   **Meaning**: Energy dissipation rate due to plastic and viscous work.
-    *   **Units**: $\text{W/kg}$ (or $\text{W/m}^3$).
+    *   **Meaning**: Shear heating dissipation rate, normalized by the reference radiogenic heat production rate `hs`: `shrheat/den/hs`.
+    *   **Units**: Dimensionless (ratio to `hs`).
 *   **`coolingrate.0`**
     *   **Meaning**: Cooling rate ($dT/dt$) tracked for markers.
-    *   **Units**: $^\circ\text{C}/\text{Myr}$ (or $^\circ\text{C}/\text{s}$).
+    *   **Units**: $^\circ\text{C}/\text{Myr}$.
 
 ### D. Boundary & 1D Surface Outputs
 *   **`forc.0`**
@@ -83,9 +83,9 @@ When VisIt loads `.vts` (grid) or `.vtp` (marker) files converted via the utilit
 
 | VisIt Dataset Name | Source Binary File | Dimension / Type | Units | Physical Meaning |
 |:-------------------|:-------------------|:-----------------|:------|:-----------------|
-| **`Velocity`** | `vel.0` | 3D Vector | $\text{m/s}$ | Velocity vector field ($V_x$, $V_z$, with $V_y=0.0$). Converted from $\text{cm/yr}$ during VTK export. |
+| **`Velocity`** | `vel.0` | 3D Vector | $\text{cm/yr}$ | Velocity vector field ($V_x$, $V_z$, with $V_y=0.0$). |
 | **`Temperature`** | `temp.0` | Scalar | $^\circ\text{C}$ | Temperature. |
-| **`Cooling rate`** | `coolingrate.0` | Scalar | $^\circ\text{C}/\text{s}$ | Rock cooling rate ($dT/dt$). |
+| **`Cooling rate`** | `coolingrate.0` | Scalar | $^\circ\text{C}/\text{Myr}$ | Rock cooling rate ($dT/dt$). |
 | **`Phase`** | `phase.0` | Scalar (Int) | Dimensionless | Rock type phase ID. |
 | **`Plastic strain`** | `aps.0` | Scalar | Dimensionless | Accumulated plastic strain. |
 | **`Strain rate`** | `srII.0` | Scalar | $\log_{10}(\text{s}^{-1})$ | Second invariant of deviatoric strain rate. |
@@ -95,7 +95,7 @@ When VisIt loads `.vts` (grid) or `.vtp` (marker) files converted via the utilit
 | **`Sxx`, `Szz`, `Sxz`, `Syy`**| `sxx.0`, `szz.0`, `sxz.0`, `syy.0`| Scalar | $\text{Pa}$ | Deviatoric stress tensor components. |
 | **`Density`** | `density.0` | Scalar | $\text{kg/m}^3$ | Bulk density. |
 | **`Viscosity`** | `visc.0` | Scalar | $\log_{10}(\text{Pa}\cdot\text{s})$ | Effective shear viscosity. |
-| **`Dissipation`** | `diss.0` | Scalar | $\text{W/kg}$ | Mechanical energy dissipation rate. |
+| **`Dissipation`** | `diss.0` | Scalar | Dimensionless | Shear heating dissipation rate, normalized by the reference radiogenic heat production rate `hs`: `shrheat/den/hs`. |
 | **`Melt fraction`** | `melt.0` | Scalar | Dimensionless | Partial melt volume fraction. |
 | **`Magma fraction`**| `magma.0` | Scalar | Dimensionless | Migrating magma volume fraction. |
 | **`Area`** | Calculated | Scalar | $\text{m}^2$ | Area of the grid element. |
