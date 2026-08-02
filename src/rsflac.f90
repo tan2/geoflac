@@ -238,6 +238,11 @@ call dt_mass
 ! Initiate parameters for stress averaging
 dtavg=0
 nsrate=-1
+! dtavg/nsrate are reset after update_acc's bulk push above (which must
+! run before rmasses/init_visc/dt_mass, since those need nx, nz, and the
+! other params scalars/small arrays already on device); push these two
+! explicitly so the device copy doesn't retain a stale pre-reset value.
+!$ACC update device(dtavg, nsrate) async(1)
 
 return
 end
