@@ -129,6 +129,7 @@
     + 12: continental geotherm (plate cooling model with radiogenic heating in the crust). **age-1** is the  thermal age (Myrs) of the plate. **tp1** is the plate thickness (km). **tp2** is the Moho depth (km). Radiogenic parameters **hs** and **hr** from above.
     + 21: constant geothermal gradient for the top layer, then constant **t-bot** to the bottom. **age-1** is the layer thickness (km).
     + 22: constant geothermal gradient for the top two layers, then constant **t-bot** to the bottom. **age-1** is the temperature at the layer interface, **tp1** is top layer thickness (km). **tp2** is the combined top 2 layers thickness (km).
+    + 13: continental geotherm (Hasterok & Chapman, 2011), integrating the steady-state 1-D heat equation layer by layer (upper crust, lower crust, mantle lithosphere), each with its own conductivity and radiogenic heat generation, clamped to **t-bot** once reached. **age-1** is the surface heat flow (mW/m2). **tp1** is the upper crust thickness (km). **tp2** is the lower crust thickness (km).
 * **nph-layer**: # (N) of layers in this zone (max 10)
     + **hc(1, 2, ..., N-1)**: depths of layer interfaces (km).
     + **iph-col(1, 2, ..., N-1, N)**: phase of each layer.
