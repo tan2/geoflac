@@ -209,7 +209,8 @@ if (itype_melting == 1) then
     endif
     !$OMP end parallel
 
-    !$OMP Parallel private(i,j,jm,quad_area,area_ratio,ii,jj,z_moho,z_melt,x_melt,h,x,z)
+    !$OMP Parallel private(i,j,jm,quad_area,area_ratio,ii,jj,z_moho,z_melt,x_melt,h,x,z, &
+    !$OMP                  ihalf,ii_start,ii_end,ncol)
     !$OMP do
     !$ACC parallel loop collapse(2) async(1)
     do i = 1,nx-1

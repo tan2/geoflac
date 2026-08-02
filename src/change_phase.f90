@@ -63,7 +63,7 @@ jocmoho = min(max(2, j), nz-1)
 
 
 !open (1,file='change_ckeck.0')
-!$OMP parallel private(kk,i,j,k,n,tmpr,depth,iph,press,jbelow,trpres,trpres2,kinc,quad_area,yy)
+!$OMP parallel private(kk,i,j,k,n,tmpr,depth,iph,press,jbelow,trpres,trpres2,kinc,quad_area,yy,solidus,trtmpr)
 !$OMP do schedule(guided)
 !$ACC parallel loop async(1)
 do kk = 1 , nmarkers
@@ -261,7 +261,7 @@ enddo
 !$OMP end parallel do
 
 if (itype_melting == 1) then
-    !$OMP parallel do private(tmpr, yy, depth, solidus, pmelt, total_phase_ratio, dt_melt)
+    !$OMP parallel do private(tmpr, yy, depth, solidus, pmelt, total_phase_ratio, press, dt_melt)
     !$ACC parallel loop collapse(2) async(1)
     do i = 1, nx-1
         do j = 1, nz-1

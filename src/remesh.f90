@@ -478,7 +478,7 @@ do i = 1, nxt
         arr(j,i) = barcord(j,i,1)*f1 + barcord(j,i,2)*f2 + barcord(j,i,3)*f3
     end do
 end do
-!$end parallel do
+!$OMP end parallel do
 
 return
 
