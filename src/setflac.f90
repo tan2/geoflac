@@ -7,6 +7,7 @@ use params
 implicit none
 nloop = 0
 time = 0.d0
+istart_profile = 50
 !$ACC update device(nloop,time)
 
 ! Mesh generator

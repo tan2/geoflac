@@ -238,6 +238,7 @@ call dt_mass
 ! Initiate parameters for stress averaging
 dtavg=0
 nsrate=-1
+istart_profile = 50
 ! dtavg/nsrate are reset after update_acc's bulk push above (which must
 ! run before rmasses/init_visc/dt_mass, since those need nx, nz, and the
 ! other params scalars/small arrays already on device); push these two

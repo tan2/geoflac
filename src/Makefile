@@ -12,6 +12,8 @@
 ## acc = 1: enable openacc support (requiring PGI/NVIDIA compiler)
 ## coverage = 1: enable code coverage analysis (used for debugging)
 ## gprof = 1: enable profiling (used for tuning optimization)
+## nprof = 1: enable NVTX profiling ranges for NVIDIA Nsight (forces nvfortran;
+##            also requires cuda_path, e.g. make acc=1 nprof=1 cuda_path=/path/to/cuda)
 
 
 ########################################################################
@@ -47,6 +49,11 @@ omp = 1
 acc = 0
 coverage = 0
 gprof = 0
+nprof = 0
+## only used when nprof = 1: path to the CUDA toolkit providing libnvToolsExt
+## (e.g. $(NVHPC_ROOT)/Linux_x86_64/<version>/cuda). Must be set on the
+## command line; there is no portable default.
+cuda_path =
 
 
 ########################################################################
@@ -54,9 +61,15 @@ gprof = 0
 ## (Usually you won't need to modify anything below)
 ########################################################################
 
+ifeq ($(nprof), 1)
+	F90 := nvfortran
+	FC = $(F90)
+	CFLAGS += -DUSE_NVTX
+endif
+
 ## for GNU gfortran >= 5
 ifeq ($(FC), gfortran)
-	CFLAGS += -ffree-form -ffree-line-length-none
+	CFLAGS += -ffree-form -ffree-line-length-none -cpp
 	ifeq ($(omp), 1)
 		CFLAGS += -fopenmp
 		LDFLAGS += -fopenmp
@@ -103,6 +116,7 @@ endif
 
 ## for PGI / NVIDIA HPC SDK (pgf90 or nvfortran)
 ifneq ($(filter pgf90 nvfortran,$(FC)),)
+	CFLAGS += -cpp
 	ifeq ($(omp), 1)
 		CFLAGS += -mp
 		LDFLAGS += -mp
@@ -117,6 +131,10 @@ ifneq ($(filter pgf90 nvfortran,$(FC)),)
                CFLAGS += -O0 -Mbounds -Mchkstk -traceback
                LDFLAGS +=
         endif
+	ifeq ($(nprof), 1)
+		CFLAGS += -I$(cuda_path)/include -L$(cuda_path)/lib64 -lnvToolsExt
+		LDFLAGS += -L$(cuda_path)/lib64 -Wl,-rpath,$(cuda_path)/lib64 -lnvToolsExt
+	endif
 endif
 
 ## for Solaris
@@ -150,6 +168,10 @@ MODULE_SRCS = \
 	arrays.f90 \
 	phases.f90 \
 	marker_data.f90
+
+ifeq ($(nprof), 1)
+	MODULE_SRCS += nvtx_mod.f90
+endif
 
 SRCS =	\
 	bar2euler.f90 \
@@ -241,6 +263,9 @@ fl_node.o: arrays.o params.o
 fl_rheol.o: arrays.o params.o
 fl_therm.o: arrays.o params.o
 flac.o: arrays.o params.o
+ifeq ($(nprof), 1)
+flac.o: nvtx_mod.o
+endif
 functions.o: arrays.o params.o
 init_areas.o: arrays.o params.o
 init_bc.o: arrays.o params.o
