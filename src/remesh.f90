@@ -106,6 +106,12 @@ call rem_interpolate( nzt, nxt, dummye, aps )
 if (itype_melting == 1) then
     call rem_interpolate( nzt, nxt, dummye, fmagma )
     call rem_interpolate( nzt, nxt, dummye, fmagma2 )
+    ! Dike-intrusion eigenstrain/marker tracking (persistent parts only;
+    ! dike_added/dike_released are same-timestep scratch, recomputed fresh
+    ! every fl_therm.f90 call and never needed across a remesh event)
+    call rem_interpolate( nzt, nxt, dummye, dike_backlog )
+    call rem_interpolate( nzt, nxt, dummye, dike_marker_vol )
+    call rem_interpolate( nzt, nxt, dummye, mor_marker_vol )
 endif
 
 

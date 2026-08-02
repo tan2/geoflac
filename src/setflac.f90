@@ -34,6 +34,13 @@ call check_visc_rheol
 ! Inverse Areas of triangles
 call init_areas
 
+! Minimum element area of the initial (t=0) grid; used later as the
+! per-timestep cap on dike-intrusion eigenstrain release. Computed once
+! here (never recomputed after remeshing) and persisted across restarts
+! (see saveflac.f90/rsflac.f90), since a restart's current grid is no
+! longer the initial one.
+Amin = minval(0.5d0/area(:,:,1) + 0.5d0/area(:,:,2))
+
 ! Initiate temperature field
 call init_temp
 
@@ -133,7 +140,7 @@ implicit none
 !$ACC     hc(maxzone_age,maxzone_layer), &
 !$ACC     age_1(maxzone_age),tp1(maxzone_age),tp2(maxzone_age), &
 !$ACC     g,pisos,drosub,damp_vis, &
-!$ACC     angle_mzone,fmagma_max,ratio_mantle_mzone, &
+!$ACC     angle_mzone,fmagma_max,ratio_mantle_mzone,ratio_crust_mzone,Amin, &
 !$ACC     latent_heat_magma,lambda_freeze,lambda_freeze_tdep, &
 !$ACC     weaken_ratio_plastic,weaken_ratio_viscous, &
 !$ACC     dtavg, &

@@ -90,11 +90,18 @@ real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
      hc(maxzone_age,maxzone_layer), &
      age_1(maxzone_age),tp1(maxzone_age),tp2(maxzone_age), &
      g,pisos,drosub,damp_vis, &
-     angle_mzone,fmagma_max,ratio_mantle_mzone, &
+     angle_mzone,fmagma_max,ratio_mantle_mzone,ratio_crust_mzone, &
      latent_heat_magma,lambda_freeze,lambda_freeze_tdep, &
      weaken_ratio_plastic,weaken_ratio_viscous, &
      dtavg, &
      time,dt,time_max
+
+! Minimum element area in the initial (t=0) grid, computed once in setflac.f90
+! (and reloaded on restart, since a restart's current grid is no longer the
+! initial one). Used as the per-timestep cap on dike-intrusion eigenstrain
+! release in fl_therm.f90/fl_rheol.f90.
+double precision :: Amin
+!$ACC declare create(Amin)
 
 !$ACC declare create(x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
 !$ACC     dx_rem,angle_rem,topo_kappa,fac_kappa, &
@@ -119,7 +126,7 @@ real*8 :: x0,z0,rxbo,rzbo,sizez_x(maxzone),sizez_y(maxzone), &
 !$ACC     hc(maxzone_age,maxzone_layer), &
 !$ACC     age_1(maxzone_age),tp1(maxzone_age),tp2(maxzone_age), &
 !$ACC     g,pisos,drosub,damp_vis, &
-!$ACC     angle_mzone,fmagma_max,ratio_mantle_mzone, &
+!$ACC     angle_mzone,fmagma_max,ratio_mantle_mzone,ratio_crust_mzone, &
 !$ACC     latent_heat_magma,lambda_freeze,lambda_freeze_tdep, &
 !$ACC     weaken_ratio_plastic,weaken_ratio_viscous, &
 !$ACC     dtavg, &

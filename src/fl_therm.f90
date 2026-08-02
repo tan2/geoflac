@@ -4,8 +4,12 @@
 subroutine fl_therm
 !$ACC routine(Eff_cp) seq
 !$ACC routine(Eff_conduct) seq
+!$ACC routine(add_marker) seq
+!$ACC routine(count_phase_ratio) seq
 use arrays
 use params
+use phases
+use marker_data
 implicit none
 double precision :: D(3,3)  ! diffusion operator
 double precision :: diff_elem(nz-1, nx-1)
@@ -19,6 +23,9 @@ double precision :: x_sum, z_sum, w_sum, w_barrier, weight, x_center, z_center
 double precision :: x_wide_l, x_wide_r, w_l, w_r, h2, z_surf, tan_mzone2_l, tan_mzone2_r
 integer :: i_center, j_center, ihalfwidth_mzone2_l, ihalfwidth_mzone2_r
 logical :: found, mor_zone_valid
+! dike-intrusion eigenstrain/marker bookkeeping (arc and MOR pathways)
+integer :: jtop, kinc, n_to_add, kk, inc
+double precision :: elem_area, pending, released, xc, yc, marker_vol_unit
 
 tan_mzone = tan(0.5d0 * angle_mzone * 3.14159265358979323846d0 / 180.d0)
 ! max. width of the magma zone @ moho (as if melting occurs at 200 km)
@@ -209,7 +216,14 @@ if (itype_melting == 1) then
     endif
     !$OMP end parallel
 
-    !$OMP Parallel private(i,j,jm,quad_area,area_ratio,ii,jj,z_moho,z_melt,x_melt,h,x,z, &
+    ! Zero the this-timestep dike-migration accumulator (arc pathway); it's
+    ! consumed by the post-pass below into dike_backlog/dike_released and
+    ! must not carry over any value from a previous call.
+    !$ACC kernels async(1)
+    dike_added = 0.d0
+    !$ACC end kernels
+
+    !$OMP Parallel private(i,j,jm,quad_area,area_ratio,ii,jj,jtop,z_moho,z_melt,x_melt,h,x,z, &
     !$OMP                  ihalf,ii_start,ii_end,ncol)
     !$OMP do
     !$ACC parallel loop collapse(2) async(1)
@@ -228,7 +242,7 @@ if (itype_melting == 1) then
                 !     ~ the thickness of the crust column / the thickness of the melting element
                 area_ratio = (cord(1,i,2)+cord(1,i+1,2)-cord(jm,i,2)-cord(jm,i+1,2)) / &
                     (cord(j,i,2)+cord(j,i+1,2)-cord(j+1,i,2)-cord(j+1,i+1,2))
-                
+
                 ihalf = max(0, (nelem_dike - 1) / 2)
                 ii_start = max(1, i - ihalf)
                 ii_end = min(nx-1, ii_start + max(1, nelem_dike) - 1)
@@ -236,10 +250,21 @@ if (itype_melting == 1) then
                 ncol = ii_end - ii_start + 1
 
                 do ii = ii_start, ii_end
-                    do jj = 1, jmoho(ii)
+                    ! Dikes stop at the topmost non-sediment element: don't
+                    ! intrude into loose/compacting sediment (ksed1/ksed2)
+                    ! sitting at the very top of the column.
+                    jtop = 1
+                    do while (jtop < jmoho(ii) .and. &
+                              (iphase(jtop,ii) == ksed1 .or. iphase(jtop,ii) == ksed2))
+                        jtop = jtop + 1
+                    enddo
+                    do jj = jtop, jmoho(ii)
                         !$OMP atomic update
                         !$ACC atomic update
-                        fmagma(jj,ii) = fmagma(jj,ii) + fmelt(j,i) * (1d0 - ratio_mantle_mzone) * area_ratio * prod_magma * dt / ncol
+                        fmagma(jj,ii) = fmagma(jj,ii) + fmelt(j,i) * ratio_crust_mzone * area_ratio * prod_magma * dt / ncol
+                        !$OMP atomic update
+                        !$ACC atomic update
+                        dike_added(jj,ii) = dike_added(jj,ii) + fmelt(j,i) * ratio_crust_mzone * area_ratio * prod_magma * dt / ncol
                     enddo
                 enddo
 
@@ -284,11 +309,17 @@ if (itype_melting == 1) then
                             !$OMP atomic update
                             !$ACC atomic update
                             fmagma2(jj,ii)=fmagma2(jj,ii) + fmelt2(j,i) * area_ratio * prod_magma2 * dt
+                            !$OMP atomic update
+                            !$ACC atomic update
+                            mor_marker_vol(jj,ii) = mor_marker_vol(jj,ii) + fmelt2(j,i) * area_ratio * prod_magma2 * dt
                         endif
                         if (x >= x_center .and. abs(x - x_center) <= tan_mzone2_r * (z_surf - z)) then
                             !$OMP atomic update
                             !$ACC atomic update
                             fmagma2(jj,ii)=fmagma2(jj,ii) + fmelt2(j,i) * area_ratio * prod_magma2 * dt
+                            !$OMP atomic update
+                            !$ACC atomic update
+                            mor_marker_vol(jj,ii) = mor_marker_vol(jj,ii) + fmelt2(j,i) * area_ratio * prod_magma2 * dt
                         endif
                     enddo
                 enddo
@@ -299,6 +330,64 @@ if (itype_melting == 1) then
     enddo
     !$OMP end do
     !$OMP end parallel
+
+    ! Rate-cap this timestep's dike-migration accumulation (arc pathway) at
+    ! 0.01% of Amin (the initial grid's minimum element area) per timestep,
+    ! banking whatever exceeds that in dike_backlog for release later. The
+    ! released amount feeds fl_rheol.f90's eigenstrain term (dv1p) and also
+    ! accumulates toward the next new marker. The MOR pathway (fmagma2) has
+    ! no rate cap; its marker accumulator just tracks fmagma2's own
+    ! additions directly.
+    !$OMP parallel do private(ii,jj,elem_area,pending,released,kinc,marker_vol_unit,n_to_add,kk,xc,yc,inc) collapse(2)
+    !$ACC parallel loop collapse(2) async(1)
+    do ii = 1, nx-1
+        do jj = 1, nz-1
+            elem_area = 0.5d0/area(jj,ii,1) + 0.5d0/area(jj,ii,2)
+
+            pending = dike_added(jj,ii)*elem_area + dike_backlog(jj,ii)
+            released = min(pending, 1.0d-4*Amin)
+            dike_backlog(jj,ii) = pending - released
+            dike_released(jj,ii) = released / elem_area
+            dike_marker_vol(jj,ii) = dike_marker_vol(jj,ii) + released
+
+            ! New marker, arc pathway: once enough released dike volume has
+            ! accumulated to represent at least one marker's average share
+            ! of this element, add fresh karc1 markers at the centroid.
+            kinc = nmark_elem(jj,ii)
+            if (kinc > 0 .and. kinc < max_markers_per_elem) then
+                marker_vol_unit = elem_area / kinc
+                if (dike_marker_vol(jj,ii) >= marker_vol_unit) then
+                    n_to_add = min(ceiling(dike_marker_vol(jj,ii)/marker_vol_unit), max_markers_per_elem - kinc)
+                    xc = 0.25d0*(cord(jj,ii,1)+cord(jj+1,ii,1)+cord(jj,ii+1,1)+cord(jj+1,ii+1,1))
+                    yc = 0.25d0*(cord(jj,ii,2)+cord(jj+1,ii,2)+cord(jj,ii+1,2)+cord(jj+1,ii+1,2))
+                    do kk = 1, n_to_add
+                        call add_marker(xc, yc, karc1, time, jj, ii, inc)
+                    enddo
+                    dike_marker_vol(jj,ii) = 0.d0
+                    call count_phase_ratio(jj,ii)
+                endif
+            endif
+
+            ! New marker, MOR pathway: same idea, using mor_marker_vol and
+            ! kocean1, no rate cap (mirrors fl_move.f90's existing fmagma2
+            ! extrusion-conversion mechanism, but for the migrated-into-crust
+            ! portion rather than what erupts at the surface).
+            kinc = nmark_elem(jj,ii)
+            if (kinc > 0 .and. kinc < max_markers_per_elem) then
+                marker_vol_unit = elem_area / kinc
+                if (mor_marker_vol(jj,ii) >= marker_vol_unit) then
+                    n_to_add = min(ceiling(mor_marker_vol(jj,ii)/marker_vol_unit), max_markers_per_elem - kinc)
+                    xc = 0.25d0*(cord(jj,ii,1)+cord(jj+1,ii,1)+cord(jj,ii+1,1)+cord(jj+1,ii+1,1))
+                    yc = 0.25d0*(cord(jj,ii,2)+cord(jj+1,ii,2)+cord(jj,ii+1,2)+cord(jj+1,ii+1,2))
+                    do kk = 1, n_to_add
+                        call add_marker(xc, yc, kocean1, time, jj, ii, inc)
+                    enddo
+                    mor_marker_vol(jj,ii) = 0.d0
+                    call count_phase_ratio(jj,ii)
+                endif
+            endif
+        enddo
+    enddo
 endif
 
 !$ACC parallel loop collapse(2) async(1)

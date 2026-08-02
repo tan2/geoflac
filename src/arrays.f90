@@ -24,6 +24,22 @@ module arrays
 
   double precision, allocatable :: se2sr(:,:,:), sshrheat(:,:)
 
+  ! Dike-intrusion eigenstrain tracking, arc pathway (fmelt/fmagma).
+  ! dike_added: this-timestep's raw accumulation from migration (scratch,
+  !   zeroed and consumed within a single fl_therm.f90 call).
+  ! dike_backlog: persistent, banked volumetric strain not yet released
+  !   (rate-capped at 10% of Amin per timestep); survives remeshing.
+  ! dike_released: this-timestep's actual released eigenstrain, computed by
+  !   fl_therm.f90 and consumed by fl_rheol.f90 the same timestep (scratch).
+  ! dike_marker_vol: persistent accumulator of released volume, until enough
+  !   has arrived to add a new marker; survives remeshing.
+  double precision, allocatable :: dike_added(:,:), dike_backlog(:,:), &
+      dike_released(:,:), dike_marker_vol(:,:)
+
+  ! Same idea for the MOR pathway (fmelt2/fmagma2), but no rate cap/backlog:
+  ! just accumulates fmagma2's own additions until enough for a new marker.
+  double precision, allocatable :: mor_marker_vol(:,:)
+
   ! remeshing arrays
   double precision, allocatable :: pt(:,:,:), barcord(:,:,:), &
             cold(:,:,:), cnew(:,:,:), &
@@ -98,6 +114,18 @@ contains
     allocate(q_init(nx))
     allocate(vel_flex_old(nx))
     vel_flex_old = 0.d0
+
+    ! dike-intrusion eigenstrain/marker tracking
+    allocate(dike_added(nz-1, nx-1))
+    allocate(dike_backlog(nz-1, nx-1))
+    allocate(dike_released(nz-1, nx-1))
+    allocate(dike_marker_vol(nz-1, nx-1))
+    allocate(mor_marker_vol(nz-1, nx-1))
+    dike_added = 0.d0
+    dike_backlog = 0.d0
+    dike_released = 0.d0
+    dike_marker_vol = 0.d0
+    mor_marker_vol = 0.d0
 
   end subroutine allocate_arrays
 

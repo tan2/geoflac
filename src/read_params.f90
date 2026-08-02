@@ -244,7 +244,7 @@ call AdvanceToNextInputLine(4, line)
 read(4,*,err=1000) itype_melting, nelem_serp, nelem_dike, prod_magma, prod_magma2, rho_magma
 line = line + 1
 call AdvanceToNextInputLine(4, line)
-read(4,*,err=1000) angle_mzone, fmagma_max, ratio_mantle_mzone
+read(4,*,err=1000) angle_mzone, fmagma_max, ratio_mantle_mzone, ratio_crust_mzone
 line = line + 1
 call AdvanceToNextInputLine(4, line)
 read(4,*,err=1000) latent_heat_magma, lambda_freeze, lambda_freeze_tdep

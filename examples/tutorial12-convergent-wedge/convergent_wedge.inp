@@ -118,7 +118,7 @@ phasedat.inp  ; file with distribution of phase on the 2D grid
 ;
 ;Magma:
 0, 2, 1, 2e-15, 0.0, 2700.0
-30.0, 0.1, 0.1
+30.0, 0.1, 0.1, 0.1
 420000.0, 1e-13, 0.002
 1.0, 1.0
 ;

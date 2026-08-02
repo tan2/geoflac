@@ -218,7 +218,15 @@ do i = 1,nx-1
             de22 = sr_loc(2,k)*dt
             de12 = sr_loc(3,k)*dt
             de33 = 0.d0
-            dv = dvol(j,i,k)
+            ! Dike-intrusion eigenstrain (arc melting pathway, see
+            ! fl_therm.f90): freshly-released dike volume dilates this
+            ! element beyond what its node geometry (dvol) alone shows,
+            ! the same trick already used for thermal-expansion stress
+            ! (stherm) above -- the constitutive law is told the element
+            ! dilated by this much extra, relaxing/lowering stress, and
+            ! the actual node displacement then emerges over subsequent
+            ! timesteps via the normal force-balance solve.
+            dv = dvol(j,i,k) - dike_released(j,i)
             s11p(k) = stress0(j,i,1,k) + stherm 
             s22p(k) = stress0(j,i,2,k) + stherm 
             s12p(k) = stress0(j,i,3,k) 

@@ -131,9 +131,26 @@ read (1,rec=nrec) fmagma2
 close (1)
 
 ! Heat sources
-open (1,file='source.rs',access='direct',recl=nwords*kindr) 
+open (1,file='source.rs',access='direct',recl=nwords*kindr)
 read (1,rec=nrec) source
 close (1)
+
+! Dike-intrusion eigenstrain/marker tracking (persistent parts only)
+open (1,file='dike_backlog.rs',access='direct',recl=nwords*kindr)
+read (1,rec=nrec) dike_backlog
+close (1)
+open (1,file='dike_marker_vol.rs',access='direct',recl=nwords*kindr)
+read (1,rec=nrec) dike_marker_vol
+close (1)
+open (1,file='mor_marker_vol.rs',access='direct',recl=nwords*kindr)
+read (1,rec=nrec) mor_marker_vol
+close (1)
+
+! Minimum element area of the initial grid (see setflac.f90)
+open(newunit=u, file='Amin.rs')
+read(u,*) Amin
+close(u)
+!$ACC update device(Amin) async(1)
 
 ! Markers
 ! Euler (x,y) coordinates are not part of the restart file; see the

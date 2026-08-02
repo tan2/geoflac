@@ -270,7 +270,7 @@ Phase changes are activated and will take place among certain of the defined pha
 | Parameters  | Types |  Description  |
 |:------------|:-----:|:--------------|
 |**itype-melting, nelem-serp, nelem-dike, prod-magma, rho-magma**|3 int, 2 dbl| See below.|
-|**angle-mzone, fmagma-max, ratio-mantle-mzone**|4 dbl| See below.|
+|**angle-mzone, fmagma-max, ratio-mantle-mzone, ratio-crust-mzone**|4 dbl| See below.|
 |**latent-heat-magma, lambda-freeze, lambda-freeze-tdep**|3 dbl| See below.|
 |**weaken-ratio-plastic, weaken-ratio-viscous**|2 dbl| See below.|
 
@@ -282,6 +282,7 @@ Phase changes are activated and will take place among certain of the defined pha
 * **angle-mzone**: angle (in degrees) of the magma zone in the mantle.
 * **fmagma-max**: max volume ratio of magma (dimensionless fraction).
 * **ratio-mantle-mzone**: ratio of magma staying in the mantle. It will affect how much magma resides in the mantle wedge, respectively.
+* **ratio-crust-mzone**: fraction of the arc melt (not staying in the mantle, i.e., not **ratio-mantle-mzone**) that intrudes into the crust as dikes, tracked element-by-element in **fmagma** and given a mechanical volume-expansion effect (rate-capped at 0.01% of the initial grid's minimum element area per timestep) once enough has migrated into a given crustal element. The remainder, `1 - ratio-mantle-mzone - ratio-crust-mzone`, erupts at the surface (the existing arc-extrusion mechanism). Sufficiently accumulated dike volume in an element also spawns new karc1 (arc crust) markers there.
 * **latent-heat-magma**: the latent heat of magma freezing in J/kg.
 * **lambda-freeze, lambda-freeze-tdep**: temperature-dependent decaying constant of magma (ie. freezing) M(dt)=M(0)*(1-lambda*dt), where lambda = **lambda-freeze** (in s^-1) x exp(-**lambda-freeze-tdep** x (T - **t_top**)). These will affect how long magma can remain in the mantle wedge. Additionally, more freezing will release more latent heat and increase the temperature in the mantle wedge.
 * **weaken-ratio-plastic, weaken-ratio-viscous**: Magma induced weakening for yield stress (plastic) and viscosity. Saturated at **fmagma-max**.

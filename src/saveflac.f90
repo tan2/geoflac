@@ -9,7 +9,7 @@ USE marker_data
 implicit none
 
 integer, parameter :: kindr=8, kindi=4
-integer nrec, nwords
+integer nrec, nwords, u
 real*8 rtime, rdt
 integer(kindi), allocatable :: ibuf(:)   ! widening buffer for byte-sized marker fields
 
@@ -115,9 +115,27 @@ write (1,rec=nrec) fmagma2
 close (1)
 
 ! Heat sources
-open (1,file='source.rs',access='direct',recl=nwords*kindr) 
+open (1,file='source.rs',access='direct',recl=nwords*kindr)
 write (1,rec=nrec) source
 close (1)
+
+! Dike-intrusion eigenstrain/marker tracking (persistent parts only;
+! dike_added/dike_released are same-timestep scratch, not saved)
+open (1,file='dike_backlog.rs',access='direct',recl=nwords*kindr)
+write (1,rec=nrec) dike_backlog
+close (1)
+open (1,file='dike_marker_vol.rs',access='direct',recl=nwords*kindr)
+write (1,rec=nrec) dike_marker_vol
+close (1)
+open (1,file='mor_marker_vol.rs',access='direct',recl=nwords*kindr)
+write (1,rec=nrec) mor_marker_vol
+close (1)
+
+! Minimum element area of the initial grid (see setflac.f90); constant for
+! the whole run, so a plain formatted file (not indexed by nrec) suffices.
+open(newunit=u, file='Amin.rs')
+write(u,*) Amin
+close(u)
 
 ! Markers
 ! Euler (x,y) coordinates are not saved: they're not part of the
